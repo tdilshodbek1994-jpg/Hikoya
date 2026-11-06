@@ -43,6 +43,7 @@
 | Import | TXT, Markdown, DOCX, EPUB (spine tartibi), PDF (matn qatlami; skaner qilingan PDF uchun aniq xabar) |
 | Tarmoqlanuvchi hikoyalar | bob oxirida 4 tagacha tanlov (matn + qaysi bobga); o'quvchiga «Keyingi bob» o'rniga tanlov tugmalari; qulflangan yo'l belgilanadi, ochilmaydi; tanlovni o'zgartirish mumkin; boshqa o'quvchilar foizi faqat tanlagandan keyin ko'rinadi; spoiler qoidasi tarmoqli asarda faqat tugatilgan boblarga tayanadi |
 | Audio va matn | muallif audioni tinglab, har xatboshi boshlanganda unga bosadi; o'quvchida o'qilayotgan xatboshi yoritiladi va ekran unga suriladi; xatboshiga bosilsa audio o'sha joydan davom etadi (xatboshi darajasida, so'z darajasida emas) |
+| Analitika (egasi uchun) | 7/30/90 kun: faol o'quvchilar, yangi foydalanuvchilar, Stars tushumi (kunlik ustunlar + jadval), voronka (kirdi → boshladi → haqiqatan o'qidi → to'ladi), D1/D7 qaytish, eng ko'p o'qilgan 5 asar bo'yicha boblarda «tashlab ketish»; faqat umumiy raqamlar, test va demo chiqarilgan |
 | Promo-kodlar | admin kod yaratadi (N kun Premium, limit, muddat, faqat yangi foydalanuvchilar); o'quvchi Premium sahifasida kiritadi; har kim bir marta; o'chirilgan/noma'lum kod bir xil xabar beradi; urinishlar cheklangan |
 | Do'stni taklif qilish | Profil'da shaxsiy havola (`r_<id>`); faqat havola orqali yangi ochilgan hisob bog'lanadi; taklif qiluvchi do'sti birinchi haqiqiy o'qishni (qualified read) qilgandan keyin N kun Premium oladi; oyiga limit; bildirishnoma |
 | Rus tili | interfeys tarjimasi (Profil → «Ilova tili»), 700+ matn; asarlar va admin kiritgan bo'lim nomlari tarjima qilinmaydi; `npm run i18n-check` tarjimasiz matnni ko'rsatadi |
@@ -81,7 +82,7 @@
 3. Kerak bo'lsa: AI kalitini ulash, royalti foizini belgilash, ClamAV va WAL nusxasini serverdan tashqariga yoqish.
 
 ## Raqamlar
-- Backend: 81 jadval, 160 API yo'li, 97 avtomatik test (unit + integratsiya, haqiqiy PostgreSQL).
+- Backend: 81 jadval, 161 API yo'li, 98 avtomatik test (unit + integratsiya, haqiqiy PostgreSQL).
 - Frontend: 30+ ekran, o'quvchi bundle'i ~125 KB gzip, studio alohida lazy chunk.
 - Smoke: 360 px, 18/18 (asosiy) + 15/15 (C bosqichi, `e2e/stage_c.cjs`) + 7/7 (D bosqichi, `e2e/stage_d.cjs`). Tarjima to'liqligi: `npm run i18n-check`.
 - Yuklama: 500 o'quvchi, ~100 so'rov/s, xato 0%, p95 136–285 ms.

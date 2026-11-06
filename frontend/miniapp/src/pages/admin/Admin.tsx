@@ -6,6 +6,7 @@ import { del, get, patch, post, uuid } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 import { fmtDate, useT } from "../../lib/i18n";
 import { confirmDialog } from "../../lib/tg";
+import Analytics from "./Analytics";
 
 /** Staff screens inside the same Mini App. Menu items follow permissions; the API checks them again. */
 export default function Admin() {
@@ -23,6 +24,7 @@ export default function Admin() {
       <Route path="billing" element={<Billing />} />
       <Route path="support" element={<Support />} />
       <Route path="audit" element={<Audit />} />
+      <Route path="analytics" element={<Analytics />} />
     </Routes>
   );
 }
@@ -32,6 +34,7 @@ function Menu() {
   const { can } = useAuth();
   const stats = useQuery({ queryKey: ["admin-stats"], enabled: can("stats.view_all"), queryFn: () => get("/admin/stats") });
   const items: [string, string, string][] = [
+    ["stats.view_all", "analytics", "📊 Analitika: faollik, voronka, qaytish"],
     ["comment.moderate", "moderation", "💬 Sharhlar, storis va shikoyatlar"],
     ["catalog.manage", "home", "🏠 Bosh sahifa va tahririyat tanlovi"],
     ["catalog.manage", "genres", "🏷 Janrlar"],

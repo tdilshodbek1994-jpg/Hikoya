@@ -395,3 +395,12 @@ async def promo_deactivate(promo_id: int, db: DB, actor: CurActor):
 
     await deactivate_promo(db, actor, promo_id)
     return {"ok": True}
+
+
+# ------------------------------------------------------------ owner analytics
+
+@router.get("/admin/analytics")
+async def owner_analytics(db: DB, actor: CurActor, days: int = 30):
+    from app.services.analytics import analytics
+
+    return await analytics(db, actor, days)

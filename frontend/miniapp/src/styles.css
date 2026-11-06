@@ -301,3 +301,10 @@ table.t td, table.t th { padding: 8px 6px; border-bottom: 1px solid var(--line);
 .diff-ins { background: rgba(80, 200, 120, .22); }
 .reader .speaking { background: rgba(140, 120, 255, .16); border-radius: 6px; box-shadow: 0 0 0 4px rgba(140, 120, 255, .16); transition: background .3s; }
 .btn.choice { justify-content: flex-start; text-align: left; gap: 8px; }
+.daybars { display: flex; align-items: flex-end; gap: 2px; height: 96px; margin: 6px 0 4px; border-bottom: 1px solid var(--line, rgba(127,127,127,.25)); }
+.daybar-hit { flex: 1; height: 100%; display: flex; align-items: flex-end; cursor: pointer; }
+.daybar { width: 100%; background: var(--accent); opacity: .55; border-radius: 4px 4px 0 0; }
+.daybar.on { opacity: 1; }
+.hbar { display: grid; gap: 4px; }
+.hbar-track { height: 8px; background: var(--surface-2, rgba(127,127,127,.15)); border-radius: 4px; overflow: hidden; }
+.hbar-fill { height: 100%; background: var(--accent); border-radius: 4px; }
