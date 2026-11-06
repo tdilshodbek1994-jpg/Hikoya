@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import io
+import os
 import textwrap
 from functools import lru_cache
 
@@ -23,7 +24,8 @@ from app.models import AuthorProfile, Chapter, ChapterRevision, Work
 from app.services.access import Entitlements, decide_chapter_access
 
 W, H = 1080, 1920
-FONT_DIRS = ("/usr/share/fonts/truetype/dejavu",)
+# bundled DejaVu fonts (free licence, app/assets/fonts/LICENSE-DejaVu.txt): no apt package needed
+FONT_DIRS = (os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "fonts"), "/usr/share/fonts/truetype/dejavu")
 THEMES = {
     "paper": ((246, 240, 228), (40, 34, 28), (150, 110, 70)),
     "night": ((24, 26, 34), (236, 232, 222), (210, 170, 110)),
