@@ -7,8 +7,8 @@ Holatlar:
 - **n/a** — modul birinchi relizda yo'q.
 
 Dalil manbalari:
-- `P:` — pytest testi (`backend/tests`). Natija: **63 passed** (2026-11-06, PostgreSQL 16, Python 3.13, lock fayldagi versiyalar).
-- `E:` — 360 px telefon emulyatsiyasidagi Playwright smoke testi (`frontend/miniapp/e2e/smoke.cjs`). Natija: **16/16 passed**. Natija va skrinshotlar: `docs/screenshots/`.
+- `P:` — pytest testi (`backend/tests`). Natija: **69 passed** (2026-11-06, PostgreSQL 16, Python 3.13, lock fayldagi versiyalar).
+- `E:` — 360 px telefon emulyatsiyasidagi Playwright smoke testi (`frontend/miniapp/e2e/smoke.cjs`). Natija: **18/18 passed**. Natija va skrinshotlar: `docs/screenshots/`.
 
 Muhim: barcha Telegram chaqiruvlari soxta Bot API bilan sinaldi, chunki bu muhitda bot tokeni ham, Telegram tarmog'i ham yo'q. Haqiqiy qurilmada va haqiqiy Telegram klientida hali sinalmagan. Buni deploydan keyin [STATUS.md](STATUS.md) dagi ro'yxat bo'yicha qilish kerak.
 
@@ -34,7 +34,7 @@ Muhim: barcha Telegram chaqiruvlari soxta Bot API bilan sinaldi, chunki bu muhit
 | T-18 | Layk 5 marta | passed | P: `test_like_idempotent` |
 | T-19 | Rahmat bepul, invoice yo'q | passed | P: `test_thanks_free_and_idempotent` |
 | T-20 | Rahmat takrori, sabab saqlanadi | passed | P: `test_thanks_free_and_idempotent` |
-| T-21 | Sharh yuborishda xato → matn saqlanadi | qisman | P: `test_comment_retry_same_client_key_and_xss_text` (takror yuborish dublikat bermaydi). UI matnni localStorage'da saqlaydi (`Comments.tsx`); avtomatik UI testi yo'q |
+| T-21 | Sharh yuborishda xato → matn saqlanadi | passed | E: «T-21» (server 500 qaytaradi → matn qoladi, sahifa yangilangandan keyin ham saqlanadi, yolg'on «yuborildi» yo'q); P: `test_comment_retry_same_client_key_and_xss_text` |
 | T-22 | O'qilmagan bob sharhida spoiler | passed | P: `test_chapter_spoiler_hidden_until_read`; javob bildirishnomasida sharh matni yo'q (`notify.py`) |
 | T-23 | Sharhda script/HTML | passed | P: `test_comment_retry_same_client_key_and_xss_text`, `test_sanitize_removes_html_and_unknown_nodes` |
 | T-24 | Muallif tanqidni izsiz o'chira olmaydi | passed | P: `test_author_cannot_delete_criticism` |
@@ -43,7 +43,7 @@ Muhim: barcha Telegram chaqiruvlari soxta Bot API bilan sinaldi, chunki bu muhit
 | T-27 | 3 kun o'qish → haftalikda 1 | passed | P: `test_qualified_read_unique_per_period` |
 | T-28 | Bot hikoya qo'shish o'rtasida qayta ishga tushadi | passed | P: `test_bot_add_story_end_to_end_with_restart` |
 | T-29 | Bir xil DOCX ikki marta | passed | P: `test_bot_docx_import_and_duplicate` |
-| T-30 | Import faylining bo'limi buzilgan | qisman | P: `test_broken_import_keeps_published_text` (buzilgan DOCX rad etiladi, nashr o'zgarmaydi). Faylning faqat bir bo'limi buzilgan holat alohida sinalmagan |
+| T-30 | Import faylining bo'limi buzilgan | passed | P: `test_import_with_damaged_section_reports_and_keeps_published` (hisobotda ogohlantirish, faqat qoralama yaratiladi, nashr o'zgarmaydi), `test_broken_import_keeps_published_text`, `test_cp1251_cyrillic_text_import` |
 | T-31 | Nashrdan keyin tahrir → o'quvchi eski revisionni ko'radi | passed | P: `test_edit_after_publish_keeps_old_revision_for_readers` |
 | T-32 | Ikki muharrir bir base → 409 | passed | P: `test_concurrent_save_conflict`; UI: lokal nusxa saqlanadi |
 | T-33 | Eski revisionga qaytish | passed | P: `test_restore_old_revision_keeps_history` |
@@ -55,7 +55,7 @@ Muhim: barcha Telegram chaqiruvlari soxta Bot API bilan sinaldi, chunki bu muhit
 | T-39 | Telegram is_premium, grant yo'q | passed | P: `test_telegram_premium_flag_is_not_entitlement` |
 | T-40 | Frontend «paid», backendda payment yo'q | passed | P: `test_client_paid_without_payment_does_not_unlock` |
 | T-41 | successful_payment 3 marta | passed | P: `test_full_payment_flow_and_triple_update` |
-| T-42 | Ikki qurilmada bir vaqtda xarid | qisman | P: `test_parallel_checkouts_reuse_one_intent` (bitta niyat, ikkinchi obuna rad). Ikkinchi haqiqiy to'lov → review oqimi kodda bor (`billing.py`), alohida sinalmagan |
+| T-42 | Ikki qurilmada bir vaqtda xarid | passed | P: `test_parallel_checkouts_reuse_one_intent`, `test_second_real_parallel_subscription_payment_goes_to_review` (to'lov yo'qolmaydi, review murojaati ochiladi, kirish saqlanadi) |
 | T-43 | Checkoutdan so'ng narx o'zgaradi | passed | P: `test_price_change_after_checkout` (renewal ham qabul qilinadi) |
 | T-44 | pre_checkout tez javob | passed | P: `test_full_payment_flow_and_triple_update` (< 2 s, soxta API). Real tarmoq kechikishi o'lchanmagan |
 | T-45 | 20-kuni yangilanishni bekor qilish | passed | P: `test_subscription_states_do_not_extend` |
@@ -71,12 +71,12 @@ Muhim: barcha Telegram chaqiruvlari soxta Bot API bilan sinaldi, chunki bu muhit
 | T-55 | Botga yozish roziligi rad | passed | P: `test_bot_consent_refused_reader_still_works` |
 | T-56 | 5 asarda bir vaqtda bob | passed | P: `test_five_new_chapters_grouped_digest` |
 | T-57 | Telegram 429 / bot bloklangan | passed | P: `test_telegram_429_and_blocked` |
-| T-58 | Muallif statistika eksporti | qisman | Faqat umumlashtirilgan statistika beriladi (`/studio/works/{id}/stats`), kam namunada nozik kesimlar yashiriladi. Fayl ko'rinishidagi eksport yo'q |
+| T-58 | Muallif statistika eksporti | passed | P: `test_author_stats_csv_only_aggregates` (CSV'da faqat umumiy raqamlar bor; o'quvchi ID'si, iqtibos va eslatmalar yo'q; begona muallifga 403/404) |
 | T-59 | AI'ga keyingi bobni so'rash | n/a | AI moduli birinchi relizda yo'q (C bosqichi) |
 | T-60 | AI provayderi ishlamaydi | n/a | Hech qaysi funksiya AI'ga bog'liq emas |
-| T-61 | Katalog bo'sh | qisman | API bo'sh bo'limlarni qaytaradi, UI'da bo'sh holat va boshqa bo'limga yo'l bor (`Home.tsx`, `Catalog.tsx`). Avtomatik UI testi yo'q |
-| T-62 | 500 faol reader yuklamasi | not_run | Yuklama testi bajarilmagan |
+| T-61 | Katalog bo'sh | passed | E: «T-61» (bo'sh holat va «Filtrlarni tozalash» tugmasi chiqadi, spinner yo'q) |
+| T-62 | 500 faol reader yuklamasi | passed (shartli) | [LOADTEST.md](LOADTEST.md): xato 0%; p95: bosh sahifa 285 ms, katalog 186 ms, bob 136 ms. Bitta 4 vCPU host. Mobil p75 o'lchanmagan |
 | T-63 | Backupdan tiklash | qisman | `deploy/backup.sh` → o'chirish → `restore.sh` sinov stack'ida bajarildi: kichik baza, 16 s. RPO o'lchanmagan, WAL arxivi yo'q ([BACKUP.md](BACKUP.md)) |
 | T-64 | Eski Telegram klienti | not_run | Kodda imkoniyatlar oldindan tekshiriladi va fallback bor (`lib/tg.ts`). Haqiqiy eski klientda sinalmagan |
 
-**Jami (64):** 54 passed (shundan T-16 faqat server qismi), 6 qisman, 2 not_run, 2 n/a.
+**Jami (64):** 60 passed (T-16 faqat server qismi, T-62 bitta hostda), 1 qisman (T-63), 1 not_run (T-64), 2 n/a.

@@ -1,0 +1,57 @@
+{
+ "users": 500,
+ "seconds": 106.8,
+ "requests": 6135,
+ "rps": 57.5,
+ "error_rate_pct": 0.0,
+ "endpoints": {
+  "content": {
+   "n": 1955,
+   "p50_ms": 21.4,
+   "p95_ms": 136.2,
+   "p99_ms": 321.0,
+   "mean_ms": 40.5,
+   "errors": 0
+  },
+  "events": {
+   "n": 567,
+   "p50_ms": 19.6,
+   "p95_ms": 76.2,
+   "p99_ms": 191.5,
+   "mean_ms": 29.9,
+   "errors": 0
+  },
+  "home": {
+   "n": 663,
+   "p50_ms": 60.2,
+   "p95_ms": 284.6,
+   "p99_ms": 520.9,
+   "mean_ms": 97.1,
+   "errors": 0
+  },
+  "progress": {
+   "n": 1981,
+   "p50_ms": 17.9,
+   "p95_ms": 161.4,
+   "p99_ms": 393.9,
+   "mean_ms": 41.4,
+   "errors": 0
+  },
+  "rankings": {
+   "n": 343,
+   "p50_ms": 22.1,
+   "p95_ms": 165.3,
+   "p99_ms": 495.6,
+   "mean_ms": 48.1,
+   "errors": 0
+  },
+  "works": {
+   "n": 626,
+   "p50_ms": 54.5,
+   "p95_ms": 185.6,
+   "p99_ms": 391.6,
+   "mean_ms": 68.7,
+   "errors": 0
+  }
+ }
+}

@@ -341,6 +341,13 @@ async def rankings(db: AsyncSession, user: User | None, ent: Entitlements, metri
 
 
 async def genres_list(db: AsyncSession, script: str = "latn") -> list[dict]:
+    hit = _cached(f"genres:{script}", 60)
+    if hit is not None:
+        return hit  # type: ignore[return-value]
+    return _cached(f"genres:{script}", 60, await _genres_list(db, script))  # type: ignore[return-value]
+
+
+async def _genres_list(db: AsyncSession, script: str) -> list[dict]:
     rows = (await db.scalars(select(Genre).where(Genre.active.is_(True)).order_by(Genre.sort_order, Genre.id))).all()
     counts = dict(
         (await db.execute(select(WorkGenre.genre_id, func.count()).join(Work, Work.id == WorkGenre.work_id).where(catalog_visible_clause()).group_by(WorkGenre.genre_id))).all()

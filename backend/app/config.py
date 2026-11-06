@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     debug: bool = False
 
     database_url: str = "postgresql+asyncpg://hikoya:hikoya@localhost:5432/hikoya"
+    db_pool_size: int = 20
+    db_max_overflow: int = 20
 
     # Telegram
     bot_token: str = ""

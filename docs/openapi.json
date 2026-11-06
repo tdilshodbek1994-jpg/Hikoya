@@ -2896,6 +2896,54 @@
     }
    }
   },
+  "/api/v1/me/reading-report": {
+   "get": {
+    "tags": [
+     "reading"
+    ],
+    "summary": "Reading Report",
+    "description": "Optional reading rhythm (spec 23.10): last 7 days of active minutes, goal and streak.\n\nPrivate to the user; not connected to money, TOP or forced messages.",
+    "operationId": "reading_report_api_v1_me_reading_report_get",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/works/{work_id}/like": {
    "put": {
     "tags": [
@@ -7681,6 +7729,63 @@
     "summary": "Work Stats",
     "description": "Aggregated per-work statistics for its author. No individual reader data (spec 21).",
     "operationId": "work_stats_api_v1_studio_works__work_id__stats_get",
+    "parameters": [
+     {
+      "name": "work_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Work Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/studio/works/{work_id}/stats.csv": {
+   "get": {
+    "tags": [
+     "studio"
+    ],
+    "summary": "Work Stats Csv",
+    "description": "T-58: export of the author's own aggregated numbers only (no reader ids, notes or purchases).",
+    "operationId": "work_stats_csv_api_v1_studio_works__work_id__stats_csv_get",
     "parameters": [
      {
       "name": "work_id",
