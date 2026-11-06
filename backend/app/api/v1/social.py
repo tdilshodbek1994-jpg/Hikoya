@@ -70,9 +70,15 @@ async def unfollow_work(work_id: int, db: DB, actor: CurActor):
 
 
 @router.get("/works/{work_id}/comments")
-async def comments(work_id: int, db: DB, actor: OptActor, ent: Ents, chapter_id: int | None = None, sort: str = "new", cursor: int = 0):
+async def comments(work_id: int, db: DB, actor: OptActor, ent: Ents, chapter_id: int | None = None, sort: str = "new", cursor: int = 0, block_id: str | None = None):
     w = await _work(db, actor, ent, work_id)
-    return await social.list_comments(db, actor, ent, w, chapter_id=chapter_id, sort=sort, cursor=cursor)
+    return await social.list_comments(db, actor, ent, w, chapter_id=chapter_id, sort=sort, cursor=cursor, block_id=block_id)
+
+
+@router.get("/works/{work_id}/chapters/{chapter_id}/inline-counts")
+async def inline_counts(work_id: int, chapter_id: int, db: DB, actor: OptActor, ent: Ents):
+    w = await _work(db, actor, ent, work_id)
+    return {"counts": await social.inline_counts(db, ent, w, chapter_id)}
 
 
 class CommentIn(BaseModel):
@@ -81,12 +87,14 @@ class CommentIn(BaseModel):
     parent_id: int | None = None
     spoiler: bool = False
     client_key: str = Field(min_length=8, max_length=64)
+    block_id: str = Field(default="", max_length=32)
+    quote: str = Field(default="", max_length=1000)
 
 
 @router.post("/works/{work_id}/comments")
 async def post_comment(work_id: int, body: CommentIn, db: DB, actor: CurActor, ent: Ents):
     w = await _work(db, actor, ent, work_id)
-    c = await social.create_comment(db, actor, ent, w, body.body, chapter_id=body.chapter_id, parent_id=body.parent_id, spoiler=body.spoiler, client_key=body.client_key)
+    c = await social.create_comment(db, actor, ent, w, body.body, chapter_id=body.chapter_id, parent_id=body.parent_id, spoiler=body.spoiler, client_key=body.client_key, block_id=body.block_id, quote=body.quote)
     return social.comment_dto(c, actor.user.display_name, actor.id, True)
 
 

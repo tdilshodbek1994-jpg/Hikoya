@@ -266,7 +266,7 @@ async def editor_chapter(chapter_id: int, db: DB, actor: CurActor):
     audio = (await db.execute(select(AssetLink, Asset).join(Asset, Asset.id == AssetLink.asset_id).where(AssetLink.target_type == "chapter", AssetLink.target_id == ch.id))).all()
     return {
         "work": {"id": w.id, "title": w.title, "code": w.short_code},
-        "chapter": {"id": ch.id, "title": ch.title, "editorial_state": ch.editorial_state, "access_override": ch.access_override, "preview_blocks": ch.preview_blocks},
+        "chapter": {"id": ch.id, "title": ch.title, "editorial_state": ch.editorial_state, "access_override": ch.access_override, "preview_blocks": ch.preview_blocks, "recap": ch.recap},
         "base_revision_id": head,
         "published_revision_id": ch.published_revision_id,
         "content": rev.content_json if rev else {"type": "doc", "content": []},
@@ -285,6 +285,7 @@ class ChapterPatch(BaseModel):
     free_after_at: str | None = None
     release_at: str | None = None
     preview_blocks: int | None = None
+    recap: str | None = None
 
 
 @router.patch("/chapters/{chapter_id}")

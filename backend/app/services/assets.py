@@ -38,6 +38,8 @@ def sniff(data: bytes, filename: str = "") -> tuple[str, str]:
         if brand in (b"M4A ", b"M4B "):
             return "audio", "audio/mp4"
         return "video", "video/mp4"
+    if head.startswith(b"PK\x03\x04") and name.endswith(".epub") and b"application/epub+zip" in data[:200]:
+        return "epub", "application/epub+zip"
     if head.startswith(b"PK\x03\x04") and name.endswith(".docx"):
         return "docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     is_text_name = name.endswith((".txt", ".md", ".markdown")) or not name
@@ -51,7 +53,7 @@ def sniff(data: bytes, filename: str = "") -> tuple[str, str]:
             return "text", "text/plain"
     except UnicodeDecodeError:
         pass
-    raise Invalid("Fayl turi qo'llab-quvvatlanmaydi (TXT, DOCX, MD, PDF, JPG/PNG/WebP, MP3/M4A, MP4)", code="unsupported_file")
+    raise Invalid("Fayl turi qo'llab-quvvatlanmaydi (TXT, DOCX, MD, EPUB, PDF, JPG/PNG/WebP, MP3/M4A, MP4)", code="unsupported_file")
 
 
 def limit_for(kind: str, source: str) -> int:
@@ -63,6 +65,7 @@ def limit_for(kind: str, source: str) -> int:
         "text": s.limit_text_mib,
         "docx": s.limit_docx_mib,
         "pdf": s.limit_upload_media_mib,
+        "epub": s.limit_docx_mib,
         "audio": s.limit_upload_media_mib,
         "video": s.limit_upload_media_mib,
     }[kind] * MIB
@@ -120,7 +123,26 @@ def _media_meta(kind: str, data: bytes) -> dict:
         if data.startswith(b"\x89PNG"):
             meta["width"] = int.from_bytes(data[16:20], "big")
             meta["height"] = int.from_bytes(data[20:24], "big")
+    elif kind in ("video", "audio") and data[4:8] == b"ftyp":
+        from app.integrations.media import mp4_duration
+
+        d = mp4_duration(data)
+        if d is not None:
+            meta["duration"] = d
     return meta
+
+
+async def _antivirus(data: bytes) -> str:
+    from app.integrations.media import ScannerUnavailable, VirusFound, clamav_scan
+
+    try:
+        return await clamav_scan(data)
+    except VirusFound as e:
+        raise Invalid("Faylda zararli kod aniqlandi, u saqlanmadi", code="virus_found", signature=e.signature) from e
+    except ScannerUnavailable as e:
+        if get_settings().clamav_required:
+            raise Invalid("Antivirus tekshiruvi hozir ishlamayapti, keyinroq urinib ko'ring", code="scanner_unavailable") from e
+        return "unavailable"
 
 
 async def store_upload(db: AsyncSession, owner_id: int | None, data: bytes, filename: str, *, source: str = "app", public: bool = False, meta: dict | None = None) -> Asset:
@@ -131,6 +153,17 @@ async def store_upload(db: AsyncSession, owner_id: int | None, data: bytes, file
         from app.services.importer import check_docx_container
 
         check_docx_container(data)
+    if kind == "epub":
+        from app.services.importer import check_zip_container
+
+        check_zip_container(data)
+    av = await _antivirus(data)
+    if kind == "video" and data[4:8] == b"ftyp":
+        from app.integrations.media import mp4_duration
+
+        dur = mp4_duration(data)
+        if dur is None:
+            raise Invalid("Video davomiyligini aniqlab bo'lmadi (MP4 moov/mvhd topilmadi)", code="video_invalid")
     checksum = hashlib.sha256(data).hexdigest()
     key = f"{kind}/{checksum[:2]}/{checksum}-{secrets.token_hex(4)}"
     # public only for cover/avatar images; originals are private by default
@@ -155,7 +188,7 @@ async def store_upload(db: AsyncSession, owner_id: int | None, data: bytes, file
         storage_key=key,
         visibility="public" if public else "private",
         processing_state="ready",
-        meta={**_media_meta(kind, data), **img_meta, **(meta or {}), **({"variants": variant_keys} if variant_keys else {})},
+        meta={**_media_meta(kind, data), **img_meta, **(meta or {}), "av": av, **({"variants": variant_keys} if variant_keys else {})},
     )
     db.add(asset)
     await db.flush()

@@ -53,6 +53,8 @@ class Order(Base, Timestamped):
     scope_key: Mapped[str] = mapped_column(String(48))  # e.g. "premium" or "work:12"
     expires_at: Mapped[datetime]
     paid_at: Mapped[datetime | None] = mapped_column(nullable=True)
+    # gift: payer is user_id, access goes to recipient_user_id (also kept in the snapshot)
+    recipient_user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
 
 
 class PurchaseIntentLock(Base):
@@ -181,3 +183,32 @@ class SupportMessage(Base, Timestamped):
     author_user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     is_staff: Mapped[bool] = mapped_column(default=False)
     body: Mapped[str] = mapped_column(Text)
+
+
+class RoyaltyEntry(Base, Timestamped):
+    """Author share of a single-work sale (model A). pending → available → paid; refund → reversed."""
+
+    __tablename__ = "royalty_entries"
+    __table_args__ = (UniqueConstraint("payment_id", "author_id"), Index("ix_royalty_author_state", "author_id", "state"))
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    author_id: Mapped[int] = mapped_column(ForeignKey("author_profiles.id"))
+    work_id: Mapped[int] = mapped_column(ForeignKey("works.id"))
+    payment_id: Mapped[int] = mapped_column(ForeignKey("payments.id"))
+    gross_stars: Mapped[int]
+    share_percent: Mapped[int]
+    amount_stars: Mapped[int]
+    state: Mapped[str] = mapped_column(String(16), default="pending")  # pending | available | paid | reversed
+    available_at: Mapped[datetime]
+    payout_id: Mapped[int | None] = mapped_column(ForeignKey("royalty_payouts.id"), nullable=True)
+    reversed_at: Mapped[datetime | None] = mapped_column(nullable=True)
+
+
+class RoyaltyPayout(Base, Timestamped):
+    __tablename__ = "royalty_payouts"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    author_id: Mapped[int] = mapped_column(ForeignKey("author_profiles.id"), index=True)
+    amount_stars: Mapped[int]
+    method_note: Mapped[str] = mapped_column(Text, default="")  # how it was paid outside the app
+    created_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)

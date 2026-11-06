@@ -56,8 +56,8 @@ export default function ImportPage() {
     <div className="page no-nav">
       <TopBar title={t("Matn importi")} />
       <div className="pad stack">
-        <p className="small muted">{t("TXT, Markdown (≤5 MiB) yoki DOCX (≤10 MiB). Import faqat qoralama yaratadi; nashr qilingan matn o'zgarmaydi. PDF faqat biriktirma bo'ladi.")}</p>
-        <input type="file" accept=".txt,.md,.markdown,.docx" disabled={busy} onChange={(e) => onFile(e.target.files?.[0])} />
+        <p className="small muted">{t("TXT, Markdown (≤5 MiB), DOCX yoki EPUB (≤10 MiB), PDF (matn qatlami bo'lsa). Import faqat qoralama yaratadi; nashr qilingan matn o'zgarmaydi.")}</p>
+        <input type="file" accept=".txt,.md,.markdown,.docx,.epub,.pdf" disabled={busy} onChange={(e) => onFile(e.target.files?.[0])} />
         {dup && (
           <div className="panel" style={{ borderColor: "var(--premium)" }}>
             <b>{t("Bu fayl allaqachon import qilingan")}</b>

@@ -21,6 +21,8 @@ async def products(db: DB, work_id: int | None = None):
 
 class OrderIn(BaseModel):
     product_id: int
+    # gift: the recipient's Telegram ID (they must have opened the app once). Never a username.
+    gift_to_telegram_id: int | None = None
 
 
 @router.post("/billing/orders")
@@ -28,7 +30,14 @@ async def create_order(body: OrderIn, db: DB, actor: CurActor, idempotency_key: 
     limiter.hit(f"order:{actor.id}", 10, 60)
     if not idempotency_key:
         raise Invalid("Idempotency-Key sarlavhasi kerak", code="idempotency_required")
-    order = await billing.create_order(db, actor.user, body.product_id, idempotency_key)
+    recipient = None
+    if body.gift_to_telegram_id:
+        from app.models import User
+
+        recipient = await db.scalar(select(User).where(User.telegram_user_id == body.gift_to_telegram_id))
+        if recipient is None:
+            raise Invalid("Bu foydalanuvchi hali ilovani ochmagan. Avval u ilovaga kirsin.", code="recipient_not_found")
+    order = await billing.create_order(db, actor.user, body.product_id, idempotency_key, recipient=recipient)
     return billing.order_dto(order)
 
 

@@ -66,6 +66,11 @@ class Settings(BaseSettings):
     limit_bot_file_mib: int = 16
     limit_upload_media_mib: int = 100
     story_video_max_seconds: int = 60
+    # Optional antivirus (clamd INSTREAM). Empty host = scanning disabled.
+    clamav_host: str = ""
+    clamav_port: int = 3310
+    # True: an unreachable scanner rejects the upload; False: upload is stored with av="unavailable"
+    clamav_required: bool = False
 
     # Community
     comment_max_chars: int = 2000
@@ -87,9 +92,15 @@ class Settings(BaseSettings):
     quiet_hours_end: str = "09:00"
 
     # AI (stage C module, optional)
-    ai_provider: str = ""  # empty = disabled
+    ai_provider: str = ""  # "" = disabled | "anthropic"
     ai_api_key: str = ""
-    ai_model: str = ""
+    ai_model: str = "claude-opus-5-5"
+    ai_max_tokens: int = 4000
+    ai_daily_limit_per_user: int = 20
+
+    # Author royalties (model A: share of single-work sales). 0 = disabled.
+    royalty_share_percent: int = 0
+    royalty_hold_days: int = 21  # Stars refunds are possible for a while; keep revenue pending
 
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
 

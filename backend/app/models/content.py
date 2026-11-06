@@ -125,6 +125,8 @@ class Chapter(Base, Timestamped):
     free_after_at: Mapped[datetime | None] = mapped_column(nullable=True)
     release_at: Mapped[datetime | None] = mapped_column(nullable=True)
     preview_blocks: Mapped[int] = mapped_column(default=3)
+    # «Qayerda to'xtagandim?» — author-written recap, shown only to readers who finished this chapter
+    recap: Mapped[str] = mapped_column(Text, default="")
     published_at: Mapped[datetime | None] = mapped_column(nullable=True)
     words: Mapped[int] = mapped_column(default=0)
     has_audio: Mapped[bool] = mapped_column(default=False)
@@ -310,3 +312,35 @@ class RankingSnapshot(Base):
     formula_version: Mapped[str] = mapped_column(String(16))
     computed_at: Mapped[datetime] = mapped_column(server_default=func.now())
     items: Mapped[list] = mapped_column(default=list)
+
+
+class Character(Base, Timestamped):
+    """Character card. Hidden until the reader has read ``reveal_chapter_id`` (no spoilers)."""
+
+    __tablename__ = "characters"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    work_id: Mapped[int] = mapped_column(ForeignKey("works.id", ondelete="CASCADE"), index=True)
+    name: Mapped[str] = mapped_column(String(120))
+    description: Mapped[str] = mapped_column(Text, default="")
+    avatar_asset_id: Mapped[int | None] = mapped_column(ForeignKey("assets.id"), nullable=True)
+    reveal_chapter_id: Mapped[int | None] = mapped_column(ForeignKey("chapters.id", ondelete="SET NULL"), nullable=True)
+    sort_order: Mapped[int] = mapped_column(default=0)
+    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), default=utcnow, onupdate=utcnow)
+
+
+class BetaReaderGrant(Base, Timestamped):
+    """Invite to read unpublished drafts and leave feedback. Beta reads never count in stats."""
+
+    __tablename__ = "beta_reader_grants"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    work_id: Mapped[int] = mapped_column(ForeignKey("works.id", ondelete="CASCADE"), index=True)
+    chapter_id: Mapped[int | None] = mapped_column(ForeignKey("chapters.id", ondelete="CASCADE"), nullable=True)  # None = all chapters
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True)
+    token: Mapped[str] = mapped_column(String(48), unique=True)
+    note: Mapped[str] = mapped_column(Text, default="")
+    created_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    expires_at: Mapped[datetime]
+    redeemed_at: Mapped[datetime | None] = mapped_column(nullable=True)
+    revoked_at: Mapped[datetime | None] = mapped_column(nullable=True)

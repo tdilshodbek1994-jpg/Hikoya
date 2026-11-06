@@ -111,7 +111,7 @@ async def _check_restricted(db: AsyncSession, user: User) -> None:
 
 
 async def create_comment(
-    db: AsyncSession, actor: Actor, ent: Entitlements, work: Work, body: str, *, chapter_id: int | None = None, parent_id: int | None = None, spoiler: bool = False, client_key: str = ""
+    db: AsyncSession, actor: Actor, ent: Entitlements, work: Work, body: str, *, chapter_id: int | None = None, parent_id: int | None = None, spoiler: bool = False, client_key: str = "", block_id: str = "", quote: str = ""
 ) -> Comment:
     s = get_settings()
     text = clean_plain(body)
@@ -145,6 +145,19 @@ async def create_comment(
         if parent is None or parent.work_id != work.id or parent.status != "published":
             raise NotFound("Sharh topilmadi")
         chapter_id = parent.chapter_id
+        block_id, quote = parent.block_id, ""  # replies live in the parent's thread
+    if block_id and not parent:
+        # inline comment «Shu joyga izoh»: the block must exist in the published revision
+        if chapter is None or not chapter.published_revision_id:
+            raise Invalid("Izoh uchun bob kerak", code="chapter_required")
+        from app.models import ChapterRevision
+
+        rev = await db.get(ChapterRevision, chapter.published_revision_id)
+        if rev is None or block_id not in (rev.block_ids or []):
+            raise Invalid("Matn joyi topilmadi (bob yangilangan bo'lishi mumkin)", code="block_not_found")
+        quote = clean_plain(quote, s.share_quote_max_chars)
+    elif not parent:
+        block_id, quote = "", ""
     status = "published"
     new_account = actor.user.created_at > utcnow() - timedelta(days=1)
     if new_account and _LINK_RE.search(text):
@@ -159,6 +172,8 @@ async def create_comment(
         status=status,
         is_author_reply=await is_work_author(db, actor, work),
         client_key=client_key[:64],
+        block_id=block_id[:32],
+        quote=quote,
     )
     db.add(c)
     await db.flush()
@@ -215,7 +230,7 @@ async def pin_comment(db: AsyncSession, actor: Actor, comment: Comment, on: bool
 
 
 async def list_comments(
-    db: AsyncSession, actor: Actor | None, ent: Entitlements, work: Work, *, chapter_id: int | None, sort: str = "new", cursor: int = 0, limit: int = 30
+    db: AsyncSession, actor: Actor | None, ent: Entitlements, work: Work, *, chapter_id: int | None, sort: str = "new", cursor: int = 0, limit: int = 30, block_id: str | None = None
 ) -> dict:
     chapter = None
     if chapter_id:
@@ -227,6 +242,8 @@ async def list_comments(
     uid = actor.id if actor else None
     q = select(Comment, User.display_name).join(User, User.id == Comment.user_id).where(Comment.work_id == work.id)
     q = q.where(Comment.chapter_id == chapter_id) if chapter_id else q.where(Comment.chapter_id.is_(None))
+    if block_id is not None:
+        q = q.where(Comment.block_id == block_id[:32])
     # own pending comments are visible to their author
     q = q.where((Comment.status == "published") | ((Comment.status == "pending") & (Comment.user_id == (uid or -1))))
     order = [Comment.pinned.desc()]
@@ -248,6 +265,8 @@ def comment_dto(c: Comment, author_name: str, viewer_id: int | None, chapter_rea
         "chapter_id": c.chapter_id,
         "user": {"id": c.user_id, "name": author_name},
         "body": None if hide else c.body,
+        "block_id": c.block_id or None,
+        "quote": None if hide else (c.quote or None),
         "spoiler_hidden": hide,
         "spoiler": c.spoiler,
         "status": c.status,
@@ -364,3 +383,18 @@ async def moderation_queue(db: AsyncSession, actor: Actor, limit: int = 50) -> d
         "pending_comments": [{"id": c.id, "work_id": c.work_id, "body": c.body[:500], "created_at": c.created_at.isoformat()} for c in pending],
         "pending_stories": [{"id": s.id, "author_id": s.author_id, "caption": s.caption, "created_at": s.created_at.isoformat()} for s in stories],
     }
+
+
+async def inline_counts(db: AsyncSession, ent: Entitlements, work: Work, chapter_id: int) -> dict[str, int]:
+    """Number of published inline comments per block, for margin markers in the reader."""
+    chapter = await db.get(Chapter, chapter_id)
+    if chapter is None or chapter.work_id != work.id:
+        raise NotFound("Bob topilmadi")
+    if not decide_chapter_access(work, chapter, ent).full:
+        return {}
+    rows = (
+        await db.execute(
+            select(Comment.block_id, func.count()).where(Comment.chapter_id == chapter_id, Comment.block_id != "", Comment.status == "published", Comment.parent_id.is_(None)).group_by(Comment.block_id)
+        )
+    ).all()
+    return {b: n for b, n in rows}

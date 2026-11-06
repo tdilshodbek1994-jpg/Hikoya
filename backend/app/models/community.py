@@ -55,6 +55,9 @@ class Comment(Base, Timestamped):
     edited_at: Mapped[datetime | None] = mapped_column(nullable=True)
     revision: Mapped[int] = mapped_column(default=1)
     client_key: Mapped[str] = mapped_column(String(64))
+    # inline comment: anchored to a stable block id of the chapter, with the quoted fragment
+    block_id: Mapped[str] = mapped_column(String(32), default="")
+    quote: Mapped[str] = mapped_column(Text, default="")
 
 
 class CommentVote(Base):

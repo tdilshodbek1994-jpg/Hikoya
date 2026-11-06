@@ -135,6 +135,14 @@ async def _handle_event(db: AsyncSession, ev: OutboxEvent) -> None:
         if pay:
             title = "Premium yangilandi" if p.get("renewal") else "To'lov tasdiqlandi"
             await notify(db, p["user_id"], "billing", f"billing.paid:{pay.id}", title, f"{pay.amount} ⭐", "premium", service=True)
+    elif ev.type == "billing.gift":
+        giver = await db.get(User, p["from_user_id"])
+        name = giver.display_name if giver and giver.display_name else "Do'stingiz"
+        link = "premium"
+        if p.get("access_scope") == "work" and p.get("scope_id"):
+            w = await db.get(Work, int(p["scope_id"]))
+            link = f"w_{w.short_code}" if w else "library"
+        await notify(db, p["to_user_id"], "billing", f"billing.gift:{p['payment_id']}", "🎁 Sizga sovg'a!", f"{name} sizga «{p.get('title', '')}» sovg'a qildi", link, service=True)
     elif ev.type == "billing.refunded":
         await notify(db, p["user_id"], "billing", f"billing.refunded:{p['payment_id']}", "To'lov qaytarildi", "", "premium", service=True)
     elif ev.type == "billing.subscription":

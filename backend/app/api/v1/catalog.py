@@ -32,6 +32,7 @@ from app.models import (
 from app.services import catalog as cat
 from app.services.access import can_see_work_page, chapter_policy, decide_chapter_access
 from app.services.catalog import CardBuilder, asset_urls
+from app.services.companion import recap_before
 from app.services.content import get_work_by_code
 from app.services.reading import get_progress, progress_dto, resolve_position, start_session
 
@@ -358,6 +359,8 @@ async def _chapter_payload(db, actor, ent, chapter_id: int, *, device_id: str = 
         "next_chapter": ({"id": next_ch.id, "title": next_ch.title, "locked": not decide_chapter_access(work, next_ch, ent).full} if next_ch else None),
         "position": position,
         "session_id": session_id,
+        # «Qayerda to'xtagandim?» — only the recap of a chapter this reader already finished
+        "recap": await recap_before(db, user, chapter) if full else None,
     }
 
 

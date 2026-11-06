@@ -8,6 +8,7 @@ from __future__ import annotations
 import io
 import re
 import zipfile
+from html.parser import HTMLParser
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,14 +29,20 @@ CHAPTER_RE = re.compile(
 )
 
 
-def check_docx_container(data: bytes) -> None:
+def check_zip_container(data: bytes, label: str = "EPUB") -> zipfile.ZipFile:
+    """Zip-bomb guard shared by DOCX and EPUB: entry count and total uncompressed size."""
     try:
         z = zipfile.ZipFile(io.BytesIO(data))
     except zipfile.BadZipFile as e:
-        raise Invalid("DOCX fayli buzilgan", code="docx_invalid") from e
+        raise Invalid(f"{label} fayli buzilgan", code=f"{label.lower()}_invalid") from e
     infos = z.infolist()
     if len(infos) > MAX_DOCX_ENTRIES or sum(i.file_size for i in infos) > MAX_DOCX_UNCOMPRESSED:
-        raise Invalid("DOCX ichidagi hajm juda katta", code="docx_too_large")
+        raise Invalid(f"{label} ichidagi hajm juda katta", code=f"{label.lower()}_too_large")
+    return z
+
+
+def check_docx_container(data: bytes) -> None:
+    z = check_zip_container(data, "DOCX")
     if "word/document.xml" not in z.namelist():
         raise Invalid("Bu DOCX hujjat emas", code="docx_invalid")
     if any(n.lower().endswith(("vbaproject.bin",)) for n in z.namelist()):
@@ -147,13 +154,143 @@ def parse_docx(data: bytes) -> tuple[list[dict], dict]:
     return chapters, {"warnings": warnings, "lost_formatting": sorted(lost)}
 
 
+class _XHTMLText(HTMLParser):
+    """Collects headings and paragraphs from (X)HTML. Scripts, styles and tags are dropped."""
+
+    BLOCK = {"p", "div", "li", "blockquote", "br"}
+    HEAD = {"h1", "h2", "h3"}
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.blocks: list[tuple[str, str]] = []
+        self._buf: list[str] = []
+        self._kind = "para"
+        self._skip = 0
+        self.lost: set[str] = set()
+
+    def _flush(self):
+        t = clean_plain("".join(self._buf))
+        if t:
+            self.blocks.append((self._kind, t))
+        self._buf, self._kind = [], "para"
+
+    def handle_starttag(self, tag, attrs):
+        if tag in ("script", "style", "head"):
+            self._skip += 1
+        elif tag in self.HEAD:
+            self._flush()
+            self._kind = "heading"
+        elif tag in self.BLOCK:
+            self._flush()
+        elif tag == "img":
+            self.lost.add("rasmlar (alohida yuklang)")
+        elif tag == "table":
+            self.lost.add("jadvallar")
+        elif tag in ("b", "strong"):
+            self._buf.append("**")
+        elif tag in ("i", "em"):
+            self._buf.append("*")
+
+    def handle_endtag(self, tag):
+        if tag in ("script", "style", "head"):
+            self._skip = max(0, self._skip - 1)
+        elif tag in self.HEAD or tag in self.BLOCK:
+            self._flush()
+        elif tag in ("b", "strong"):
+            self._buf.append("**")
+        elif tag in ("i", "em"):
+            self._buf.append("*")
+
+    def handle_data(self, data):
+        if not self._skip:
+            self._buf.append(data)
+
+
+def _epub_spine(z: zipfile.ZipFile) -> list[str]:
+    """Reading order from META-INF/container.xml → OPF spine. Falls back to sorted XHTML names."""
+    names = set(z.namelist())
+    try:
+        container = z.read("META-INF/container.xml").decode("utf-8", "replace")
+        m = re.search(r'full-path="([^"]+)"', container)
+        opf_path = m.group(1) if m else ""
+        opf = z.read(opf_path).decode("utf-8", "replace")
+        base = opf_path.rsplit("/", 1)[0] + "/" if "/" in opf_path else ""
+        manifest = {mm.group(1): mm.group(2) for mm in re.finditer(r'<item\b[^>]*?id="([^"]+)"[^>]*?href="([^"]+)"', opf)}
+        manifest.update({mm.group(2): mm.group(1) for mm in re.finditer(r'<item\b[^>]*?href="([^"]+)"[^>]*?id="([^"]+)"', opf)})
+        order = [base + manifest[i] for i in re.findall(r'<itemref\b[^>]*?idref="([^"]+)"', opf) if i in manifest]
+        order = [n for n in order if n in names]
+        if order:
+            return order
+    except (KeyError, UnicodeDecodeError):
+        pass
+    return sorted(n for n in names if n.lower().endswith((".xhtml", ".html", ".htm")))
+
+
+def parse_epub(data: bytes) -> tuple[list[dict], dict]:
+    z = check_zip_container(data, "EPUB")
+    warnings: list[str] = []
+    lost: set[str] = set()
+    blocks: list[tuple[str, str]] = []
+    spine = _epub_spine(z)
+    if not spine:
+        raise Invalid("EPUB ichida matn topilmadi", code="epub_invalid")
+    for name in spine:
+        if z.getinfo(name).file_size > 8 * 1024 * 1024:
+            warnings.append(f"{name} juda katta, o'tkazib yuborildi")
+            continue
+        p = _XHTMLText()
+        p.feed(z.read(name).decode("utf-8", "replace"))
+        p.close()
+        p._flush()
+        lost |= p.lost
+        file_blocks = p.blocks
+        # every spine document starts a chapter when it has no heading of its own
+        if file_blocks and file_blocks[0][0] != "heading" and blocks:
+            file_blocks = [("heading", "")] + file_blocks
+        blocks.extend(file_blocks)
+    if any(n.lower().endswith(("encryption.xml", "rights.xml")) for n in z.namelist()):
+        warnings.append("EPUB himoyalangan (DRM) bo'lishi mumkin: matn to'liq chiqmagan bo'lsa, asl faylni tekshiring.")
+    chapters = _split_chapters([(k, t) for k, t in blocks], warnings)
+    return chapters, {"warnings": warnings, "lost_formatting": sorted(lost)}
+
+
+def parse_pdf(data: bytes) -> tuple[list[dict], dict]:
+    """PDF text layer only. Layout, columns and hyphenation are often lost; the report says so."""
+    from pypdf import PdfReader
+    from pypdf.errors import PdfReadError
+
+    warnings = ["PDF'dan olingan matn tartibi buzilishi mumkin (ustunlar, sahifa raqamlari, bo'g'in ko'chirish). Har bobni o'qib chiqing."]
+    try:
+        reader = PdfReader(io.BytesIO(data))
+        if reader.is_encrypted:
+            raise Invalid("PDF parol bilan himoyalangan", code="pdf_encrypted")
+        if len(reader.pages) > 1500:
+            raise Invalid("PDF juda ko'p sahifali (1500 dan ortiq)", code="pdf_too_large")
+        pages = [(pg.extract_text() or "") for pg in reader.pages]
+    except PdfReadError as e:
+        raise Invalid("PDF faylini o'qib bo'lmadi", code="pdf_invalid") from e
+    text = "\n\n".join(pages)
+    if len(text.strip()) < 20:
+        raise Invalid("PDF ichida matn qatlami yo'q (skaner qilingan rasm). Matnni TXT/DOCX ko'rinishida yuklang.", code="pdf_no_text")
+    # join lines broken inside a paragraph; keep blank-line paragraph breaks
+    # chapter headings stay on their own paragraph before lines are joined
+    text = "\n".join(f"\n\n{ln.strip()}\n\n" if len(ln.strip()) < 90 and CHAPTER_RE.match(ln.strip()) else ln for ln in text.split("\n"))
+    text = re.sub(r"-\n(?=[a-zа-яўқғҳʻ'])", "", text)
+    text = re.sub(r"(?<![.!?:»\"])\n(?!\n)", " ", text)
+    text = re.sub(r"(?m)^\s*\d{1,4}\s*$", "", text)  # bare page numbers
+    chapters, report = parse_text(text.encode("utf-8"), markdown=False)
+    report["warnings"] = warnings + report["warnings"]
+    report["lost_formatting"] = ["sahifa tuzilishi", "shriftlar"]
+    return chapters, report
+
+
 async def start_import(db: AsyncSession, actor: Actor, asset: Asset, work_id: int, *, allow_duplicate: bool = False) -> ImportJob:
     work = await get_work(db, work_id)
     await require_edit_work(db, actor, work)
     if asset.owner_id != actor.id and not actor.has("work.edit_any"):
         raise NotFound("Fayl topilmadi")
-    if asset.kind not in ("text", "docx"):
-        raise Invalid("Matnga aylantirish faqat TXT, Markdown va DOCX uchun. PDF faqat biriktirma bo'ladi.", code="not_convertible")
+    if asset.kind not in ("text", "docx", "epub", "pdf"):
+        raise Invalid("Matnga aylantirish faqat TXT, Markdown, DOCX, EPUB va PDF uchun", code="not_convertible")
     existing = await db.scalar(
         select(ImportJob).where(ImportJob.target_work_id == work.id, ImportJob.checksum == asset.checksum, ImportJob.status.in_(("parsed", "applied"))).order_by(ImportJob.id.desc())
     )
@@ -166,6 +303,10 @@ async def start_import(db: AsyncSession, actor: Actor, asset: Asset, work_id: in
     try:
         if asset.kind == "docx":
             chapters, report = parse_docx(data)
+        elif asset.kind == "epub":
+            chapters, report = parse_epub(data)
+        elif asset.kind == "pdf":
+            chapters, report = parse_pdf(data)
         else:
             chapters, report = parse_text(data, markdown=asset.mime == "text/markdown" or True)
         status = "parsed"

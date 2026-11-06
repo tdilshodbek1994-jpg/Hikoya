@@ -21,8 +21,22 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+    # Continuous WAL archiving (RPO <= WAL_ARCHIVE_TIMEOUT, default 300 s): every finished WAL
+    # segment is gzip-copied to the "walarchive" volume. Base backups: deploy/basebackup.sh.
+    # Point-in-time restore: docs/BACKUP.md. Idle periods do not create new segments.
+    entrypoint:
+      - sh
+      - -c
+      - >-
+        mkdir -p /wal && chown postgres:postgres /wal &&
+        exec docker-entrypoint.sh postgres
+        -c wal_level=replica
+        -c archive_mode=on
+        -c archive_timeout=${WAL_ARCHIVE_TIMEOUT:-300}
+        -c "archive_command=test ! -f /wal/%f.gz && gzip -c %p > /wal/%f.gz.tmp && mv /wal/%f.gz.tmp /wal/%f.gz"
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - walarchive:/wal
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
@@ -75,6 +89,15 @@ services:
       - caddy_data:/data
     restart: unless-stopped
 
+  # Optional antivirus for uploads (clamd INSTREAM). Enable with --profile antivirus and set
+  # HIKOYA_CLAMAV_HOST=clamav in .env. Needs ~1.2 GB RAM for signatures.
+  clamav:
+    image: clamav/clamav:stable
+    profiles: ["antivirus"]
+    volumes:
+      - clamdb:/var/lib/clamav
+    restart: unless-stopped
+
   # Optional: long-polling bot for servers without a public HTTPS webhook. Enable with --profile polling
   bot:
     <<: *backend
@@ -85,5 +108,7 @@ services:
 
 volumes:
   pgdata:
+  walarchive:
   storage:
   caddy_data:
+  clamdb:

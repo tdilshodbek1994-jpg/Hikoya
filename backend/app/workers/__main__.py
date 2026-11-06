@@ -59,10 +59,11 @@ async def deliver() -> dict:
 
 
 async def expire_orders() -> int:
-    from app.services.billing import expire_stale_orders
+    from app.services.billing import expire_stale_orders, mature_royalties
 
     async with sessionmaker()() as db:
         n = await expire_stale_orders(db)
+        await mature_royalties(db)  # royalty entries leave "pending" after the refund hold period
         await db.commit()
     return n
 

@@ -600,8 +600,8 @@ async def on_wizard_file(db: AsyncSession, actor: Actor, d: BotDialog, kind: str
         return [Reply(_hdr(d) + "Muqova saqlandi."), await wizard_prompt(db, actor, d)]
     if d.step == "text" and kind == "document":
         asset = await asset_svc.store_upload(db, actor.id, data, filename, source="bot")
-        if asset.kind not in ("text", "docx"):
-            return [Reply("Matn uchun TXT, DOCX yoki MD fayl yuboring. PDF faqat biriktirma bo'ladi (keyingi qadamda).")]
+        if asset.kind not in ("text", "docx", "epub", "pdf"):
+            return [Reply("Matn uchun TXT, DOCX, MD, EPUB yoki PDF fayl yuboring.")]
         try:
             job = await importer.start_import(db, actor, asset, w.id)
         except AppError as e:

@@ -30,6 +30,8 @@ from app.models import (
     PurchaseIntentLock,
     Refund,
     RefundedCharge,
+    RoyaltyEntry,
+    RoyaltyPayout,
     Subscription,
     SupportTicket,
     TelegramUpdate,
@@ -129,7 +131,8 @@ async def active_subscription(db: AsyncSession, user_id: int, product_id: int, n
     )
 
 
-async def create_order(db: AsyncSession, user: User, product_id: int, idempotency_key: str) -> Order:
+async def create_order(db: AsyncSession, user: User, product_id: int, idempotency_key: str, recipient: User | None = None) -> Order:
+    """Create (or reuse) a checkout. ``recipient`` makes it a gift: the payer pays, the recipient gets access."""
     s = get_settings()
     if not idempotency_key or len(idempotency_key) > 80:
         raise Invalid("Idempotency-Key kerak", code="idempotency_required")
@@ -145,7 +148,16 @@ async def create_order(db: AsyncSession, user: User, product_id: int, idempotenc
     if not s.billing_enabled or version.is_demo:
         # demo prices never turn into a real payment
         raise Forbidden("To'lovlar hozircha yoqilmagan", code="billing_disabled")
-    scope_key = _scope_key(product)
+    if recipient is not None and recipient.id == user.id:
+        recipient = None
+    if recipient is not None:
+        if product.pricing_type == "subscription":
+            # a Stars subscription renews from the payer's balance; only one-time packages can be gifted
+            raise Invalid("Obunani sovg'a qilib bo'lmaydi, bir martalik Premium paketni tanlang", code="gift_subscription")
+        if recipient.status != "active":
+            raise NotFound("Foydalanuvchi topilmadi")
+    beneficiary = recipient or user
+    scope_key = _scope_key(product) if recipient is None else f"gift:{recipient.id}:{_scope_key(product)}"[:48]
     lock = await _lock_intent(db, user.id, scope_key)
     now = utcnow()
     if product.pricing_type == "subscription":
@@ -153,9 +165,9 @@ async def create_order(db: AsyncSession, user: User, product_id: int, idempotenc
         if sub and sub.renewal_state == "active":
             raise Conflict("Sizda faol obuna bor", code="already_subscribed", paid_until=sub.paid_until.isoformat() if sub.paid_until else None)
     if product.access_scope == "work":
-        has = await db.scalar(select(EntitlementGrant.id).where(EntitlementGrant.user_id == user.id, EntitlementGrant.scope_type == "work", EntitlementGrant.scope_id == product.scope_id, active_grant_filter(now)))
+        has = await db.scalar(select(EntitlementGrant.id).where(EntitlementGrant.user_id == beneficiary.id, EntitlementGrant.scope_type == "work", EntitlementGrant.scope_id == product.scope_id, active_grant_filter(now)))
         if has:
-            raise Conflict("Bu asar allaqachon sotib olingan", code="already_purchased")
+            raise Conflict("Bu asar allaqachon ochilgan" if recipient else "Bu asar allaqachon sotib olingan", code="already_purchased")
     # reuse the single active checkout for this scope (T-42) if terms are still current
     if lock.active_order_id:
         prev = await db.get(Order, lock.active_order_id)
@@ -176,6 +188,7 @@ async def create_order(db: AsyncSession, user: User, product_id: int, idempotenc
         "pricing_type": product.pricing_type,
         "duration_days": version.duration_days,
         "user_id": user.id,
+        "recipient_user_id": recipient.id if recipient else None,
         "created_at": now.isoformat(),
     }
     payload = f"o{secrets.token_urlsafe(18)}"  # unique per order; never a shared "premium" payload
@@ -188,13 +201,14 @@ async def create_order(db: AsyncSession, user: User, product_id: int, idempotenc
         idempotency_key=idempotency_key,
         scope_key=scope_key,
         expires_at=now + timedelta(minutes=s.order_ttl_minutes),
+        recipient_user_id=recipient.id if recipient else None,
     )
     db.add(order)
     await db.flush()
     link = await get_telegram().call(
         "createInvoiceLink",
-        title=product.title[:32],
-        description=(product.description or product.title)[:255],
+        title=(("🎁 " if recipient else "") + product.title)[:32],
+        description=(("Sovg'a: " + (recipient.display_name or "do'stingiz") + " uchun. " if recipient else "") + (product.description or product.title))[:255],
         payload=payload,
         currency="XTR",
         prices=[{"label": product.title[:32], "amount": version.amount}],
@@ -339,6 +353,10 @@ async def handle_successful_payment(db: AsyncSession, telegram_user_id: int, sp:
         order.paid_at = order.paid_at or now
         return pay
     terms = {k: snap.get(k) for k in ("sku", "product_version", "amount", "currency", "duration_days", "access_scope", "scope_id")}
+    # a gift grants to the recipient frozen in the snapshot, never to whoever is named later
+    beneficiary_id = int(snap.get("recipient_user_id") or user.id)
+    if beneficiary_id != user.id:
+        terms["gift_from_user_id"] = user.id
     if snap.get("pricing_type") == "subscription":
         expires = pay.subscription_expiration_date or (now + timedelta(days=30))
         sub = await db.scalar(select(Subscription).where(Subscription.immutable_payload == payload).with_for_update())
@@ -361,19 +379,94 @@ async def handle_successful_payment(db: AsyncSession, telegram_user_id: int, sp:
         await _grant(db, user.id, "payment", str(pay.id), "premium", 0, now, expires, terms)
     else:
         if snap.get("access_scope") == "work":
-            await _grant(db, user.id, "payment", str(pay.id), "work", int(snap["scope_id"]), now, None, terms)
+            await _grant(db, beneficiary_id, "payment", str(pay.id), "work", int(snap["scope_id"]), now, None, terms)
+            await _accrue_royalty(db, pay, int(snap["scope_id"]), now)
         else:
             # one-time premium package stacks after the current paid period
             from app.services.access import load_entitlements
 
-            ent = await load_entitlements(db, user.id, now)
+            ent = await load_entitlements(db, beneficiary_id, now)
             start = max(now, ent.premium_until) if ent.premium_until else now
-            await _grant(db, user.id, "payment", str(pay.id), "premium", 0, start, start + timedelta(days=int(snap.get("duration_days") or 30)), terms)
+            await _grant(db, beneficiary_id, "payment", str(pay.id), "premium", 0, start, start + timedelta(days=int(snap.get("duration_days") or 30)), terms)
     order.status = "paid"
     order.paid_at = order.paid_at or now
     await db.execute(update(PurchaseIntentLock).where(PurchaseIntentLock.user_id == user.id, PurchaseIntentLock.scope_key == order.scope_key, PurchaseIntentLock.active_order_id == order.id).values(active_order_id=None))
     await emit(db, f"billing.paid:{pay.id}", "billing.paid", {"payment_id": pay.id, "user_id": user.id, "renewal": pay.is_recurring and not pay.is_first_recurring})
+    if beneficiary_id != user.id:
+        await emit(db, f"billing.gift:{pay.id}", "billing.gift", {"payment_id": pay.id, "from_user_id": user.id, "to_user_id": beneficiary_id, "title": snap.get("title", ""), "access_scope": snap.get("access_scope"), "scope_id": snap.get("scope_id")})
     return pay
+
+
+async def _accrue_royalty(db: AsyncSession, pay: Payment, work_id: int, now: datetime) -> None:
+    """Model A: the primary author earns ``royalty_share_percent`` of a single-work sale.
+
+    The entry stays ``pending`` for ``royalty_hold_days`` (refund window) and is reversed on refund.
+    """
+    s = get_settings()
+    if s.royalty_share_percent <= 0:
+        return
+    work = await db.get(Work, work_id)
+    if work is None:
+        return
+    amount = pay.amount * s.royalty_share_percent // 100
+    if amount <= 0:
+        return
+    await db.execute(
+        insert(RoyaltyEntry)
+        .values(author_id=work.primary_author_id, work_id=work.id, payment_id=pay.id, gross_stars=pay.amount, share_percent=s.royalty_share_percent, amount_stars=amount, state="pending", available_at=now + timedelta(days=s.royalty_hold_days))
+        .on_conflict_do_nothing(index_elements=["payment_id", "author_id"])
+    )
+
+
+async def _reverse_royalty(db: AsyncSession, pay: Payment) -> None:
+    await db.execute(update(RoyaltyEntry).where(RoyaltyEntry.payment_id == pay.id, RoyaltyEntry.state != "reversed").values(state="reversed", reversed_at=utcnow()))
+
+
+async def mature_royalties(db: AsyncSession) -> int:
+    res = await db.execute(update(RoyaltyEntry).where(RoyaltyEntry.state == "pending", RoyaltyEntry.available_at <= utcnow()).values(state="available").returning(RoyaltyEntry.id))
+    return len(res.all())
+
+
+async def royalty_summary(db: AsyncSession, author_id: int) -> dict:
+    from sqlalchemy import func
+
+    rows = (await db.execute(select(RoyaltyEntry.state, func.count(), func.coalesce(func.sum(RoyaltyEntry.amount_stars), 0)).where(RoyaltyEntry.author_id == author_id).group_by(RoyaltyEntry.state))).all()
+    by = {r[0]: {"count": r[1], "stars": int(r[2])} for r in rows}
+    # a refund after payout leaves a debt that is netted against the next payout
+    debt = int(await db.scalar(select(func.coalesce(func.sum(RoyaltyEntry.amount_stars), 0)).where(RoyaltyEntry.author_id == author_id, RoyaltyEntry.state == "reversed", RoyaltyEntry.payout_id.is_not(None))) or 0)
+    available = by.get("available", {}).get("stars", 0)
+    recent = (await db.scalars(select(RoyaltyEntry).where(RoyaltyEntry.author_id == author_id).order_by(RoyaltyEntry.id.desc()).limit(50))).all()
+    payouts = (await db.scalars(select(RoyaltyPayout).where(RoyaltyPayout.author_id == author_id).order_by(RoyaltyPayout.id.desc()).limit(20))).all()
+    return {
+        "enabled": get_settings().royalty_share_percent > 0,
+        "share_percent": get_settings().royalty_share_percent,
+        "hold_days": get_settings().royalty_hold_days,
+        "by_state": by,
+        "debt_stars": debt,
+        "payable_stars": max(0, available - debt),
+        "entries": [{"id": e.id, "work_id": e.work_id, "payment_id": e.payment_id, "gross": e.gross_stars, "amount": e.amount_stars, "state": e.state, "available_at": e.available_at.isoformat(), "created_at": e.created_at.isoformat()} for e in recent],
+        "payouts": [{"id": p.id, "amount": p.amount_stars, "note": p.method_note, "created_at": p.created_at.isoformat()} for p in payouts],
+        "note": "Stars → so'm kursi va'da qilinmaydi; to'lov ilovadan tashqarida, egasi tomonidan amalga oshiriladi.",
+    }
+
+
+async def record_payout(db: AsyncSession, actor: Actor, author_id: int, note: str) -> RoyaltyPayout:
+    """Owner marks all currently available entries (minus debt) as paid out-of-band."""
+    actor.require("billing.refund")
+    entries = (await db.scalars(select(RoyaltyEntry).where(RoyaltyEntry.author_id == author_id, RoyaltyEntry.state == "available").with_for_update())).all()
+    summary = await royalty_summary(db, author_id)
+    amount = summary["payable_stars"]
+    if not entries or amount <= 0:
+        raise Invalid("To'lanadigan summa yo'q", code="nothing_payable")
+    payout = RoyaltyPayout(author_id=author_id, amount_stars=amount, method_note=note[:500], created_by=actor.id)
+    db.add(payout)
+    await db.flush()
+    for e in entries:
+        e.state, e.payout_id = "paid", payout.id
+    # settled debt: mark reversed-after-payout entries as netted by moving them to this payout's ledger
+    await db.execute(update(RoyaltyEntry).where(RoyaltyEntry.author_id == author_id, RoyaltyEntry.state == "reversed", RoyaltyEntry.payout_id.is_not(None)).values(payout_id=None))
+    await audit(db, actor, "royalty.payout", "author", author_id, after={"payout_id": payout.id, "amount": amount})
+    return payout
 
 
 async def _open_review_ticket(db: AsyncSession, pay: Payment, subject: str) -> None:
@@ -418,6 +511,7 @@ async def handle_refunded_payment(db: AsyncSession, rp: dict) -> Payment | None:
     if pay.state != "refunded":
         pay.state = "refunded"
         await _revoke_payment_grants(db, pay, "refund")
+        await _reverse_royalty(db, pay)
         pending = await db.scalar(select(Refund).where(Refund.payment_id == pay.id, Refund.state.in_(("requested", "unknown"))))
         if pending:
             pending.state, pending.completed_at = "succeeded", utcnow()
@@ -473,6 +567,7 @@ async def refund_payment(db: AsyncSession, actor: Actor, payment_id: int, reason
         await db.execute(insert(RefundedCharge).values(telegram_charge_id=pay.telegram_charge_id).on_conflict_do_nothing())
         pay.state = "refunded"
         await _revoke_payment_grants(db, pay, f"refund #{refund.id}")
+        await _reverse_royalty(db, pay)
         await audit(db, actor, "billing.refund", "payment", pay.id, reason=reason, after={"refund_id": refund.id})
         await emit(db, f"billing.refunded:{pay.id}", "billing.refunded", {"payment_id": pay.id, "user_id": pay.user_id})
     return refund

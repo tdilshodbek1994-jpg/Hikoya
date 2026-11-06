@@ -3472,6 +3472,22 @@
       }
      },
      {
+      "name": "block_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Block Id"
+      }
+     },
+     {
       "name": "authorization",
       "in": "header",
       "required": false,
@@ -3552,6 +3568,71 @@
       }
      }
     },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/works/{work_id}/chapters/{chapter_id}/inline-counts": {
+   "get": {
+    "tags": [
+     "social"
+    ],
+    "summary": "Inline Counts",
+    "operationId": "inline_counts_api_v1_works__work_id__chapters__chapter_id__inline_counts_get",
+    "parameters": [
+     {
+      "name": "work_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Work Id"
+      }
+     },
+     {
+      "name": "chapter_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Chapter Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
     "responses": {
      "200": {
       "description": "Successful Response",
@@ -7460,7 +7541,7 @@
      "content": {
       "application/json": {
        "schema": {
-        "$ref": "#/components/schemas/ApplyIn"
+        "$ref": "#/components/schemas/app__api__v1__studio__ApplyIn"
        }
       }
      }
@@ -7902,6 +7983,1313 @@
       }
      }
     ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/works/{work_id}/characters": {
+   "get": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Characters",
+    "operationId": "characters_api_v1_works__work_id__characters_get",
+    "parameters": [
+     {
+      "name": "work_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Work Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/studio/works/{work_id}/characters": {
+   "get": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Studio Characters",
+    "operationId": "studio_characters_api_v1_studio_works__work_id__characters_get",
+    "parameters": [
+     {
+      "name": "work_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Work Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Add Character",
+    "operationId": "add_character_api_v1_studio_works__work_id__characters_post",
+    "parameters": [
+     {
+      "name": "work_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Work Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CharacterIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/studio/characters/{character_id}": {
+   "patch": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Patch Character",
+    "operationId": "patch_character_api_v1_studio_characters__character_id__patch",
+    "parameters": [
+     {
+      "name": "character_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Character Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CharacterIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Del Character",
+    "operationId": "del_character_api_v1_studio_characters__character_id__delete",
+    "parameters": [
+     {
+      "name": "character_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Character Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/studio/works/{work_id}/beta-invites": {
+   "get": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Beta Invites",
+    "operationId": "beta_invites_api_v1_studio_works__work_id__beta_invites_get",
+    "parameters": [
+     {
+      "name": "work_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Work Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Create Beta Invite",
+    "operationId": "create_beta_invite_api_v1_studio_works__work_id__beta_invites_post",
+    "parameters": [
+     {
+      "name": "work_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Work Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/BetaInviteIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/studio/beta-invites/{grant_id}": {
+   "delete": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Revoke Beta",
+    "operationId": "revoke_beta_api_v1_studio_beta_invites__grant_id__delete",
+    "parameters": [
+     {
+      "name": "grant_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Grant Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/beta/{token}": {
+   "get": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Beta Overview",
+    "operationId": "beta_overview_api_v1_beta__token__get",
+    "parameters": [
+     {
+      "name": "token",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Token"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/beta/chapters/{chapter_id}": {
+   "get": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Beta Chapter",
+    "operationId": "beta_chapter_api_v1_beta_chapters__chapter_id__get",
+    "parameters": [
+     {
+      "name": "chapter_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Chapter Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/beta/chapters/{chapter_id}/feedback": {
+   "post": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Beta Feedback",
+    "operationId": "beta_feedback_api_v1_beta_chapters__chapter_id__feedback_post",
+    "parameters": [
+     {
+      "name": "chapter_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Chapter Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/BetaFeedbackIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/share/quote-card": {
+   "post": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Quote Card",
+    "operationId": "quote_card_api_v1_share_quote_card_post",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/QuoteIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/studio/storis/quote-draft": {
+   "post": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Quote Story Draft",
+    "description": "Author one-tap: a quote from own published chapter becomes a DRAFT storis (not published).",
+    "operationId": "quote_story_draft_api_v1_studio_storis_quote_draft_post",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/QuoteIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/studio/storis/{story_id}/submit": {
+   "post": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Submit Story",
+    "operationId": "submit_story_api_v1_studio_storis__story_id__submit_post",
+    "parameters": [
+     {
+      "name": "story_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Story Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/studio/royalties": {
+   "get": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "My Royalties",
+    "operationId": "my_royalties_api_v1_studio_royalties_get",
+    "parameters": [
+     {
+      "name": "author_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Author Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/royalties": {
+   "get": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Royalties Overview",
+    "operationId": "royalties_overview_api_v1_admin_royalties_get",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/royalties/{author_id}/payout": {
+   "post": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Royalty Payout",
+    "operationId": "royalty_payout_api_v1_admin_royalties__author_id__payout_post",
+    "parameters": [
+     {
+      "name": "author_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Author Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PayoutIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/ai/status": {
+   "get": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Ai Status",
+    "operationId": "ai_status_api_v1_ai_status_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/ai/works/{work_id}/recap": {
+   "post": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Ai Recap",
+    "operationId": "ai_recap_api_v1_ai_works__work_id__recap_post",
+    "parameters": [
+     {
+      "name": "work_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Work Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/ai/search": {
+   "post": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Ai Search",
+    "operationId": "ai_search_api_v1_ai_search_post",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/NLSearchIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/studio/ai/works/{work_id}/synopsis": {
+   "post": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Ai Synopsis",
+    "operationId": "ai_synopsis_api_v1_studio_ai_works__work_id__synopsis_post",
+    "parameters": [
+     {
+      "name": "work_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Work Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/studio/ai/chapters/{chapter_id}/proofread": {
+   "post": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Ai Proofread",
+    "operationId": "ai_proofread_api_v1_studio_ai_chapters__chapter_id__proofread_post",
+    "parameters": [
+     {
+      "name": "chapter_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Chapter Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/studio/ai/proofread/{request_id}/apply": {
+   "post": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Ai Apply",
+    "operationId": "ai_apply_api_v1_studio_ai_proofread__request_id__apply_post",
+    "parameters": [
+     {
+      "name": "request_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Request Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/app__api__v1__extras__ApplyIn"
+       }
+      }
+     }
+    },
     "responses": {
      "200": {
       "description": "Successful Response",
@@ -9717,33 +11105,6 @@
     ],
     "title": "AnchorIn"
    },
-   "ApplyIn": {
-    "properties": {
-     "selected": {
-      "anyOf": [
-       {
-        "items": {
-         "type": "integer"
-        },
-        "type": "array"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Selected"
-     },
-     "titles": {
-      "additionalProperties": {
-       "type": "string"
-      },
-      "type": "object",
-      "title": "Titles"
-     }
-    },
-    "type": "object",
-    "title": "ApplyIn"
-   },
    "AuthorIn": {
     "properties": {
      "pen_name": {
@@ -9857,6 +11218,54 @@
     },
     "type": "object",
     "title": "AuthorPatch"
+   },
+   "BetaFeedbackIn": {
+    "properties": {
+     "body": {
+      "type": "string",
+      "maxLength": 4000,
+      "title": "Body"
+     },
+     "block_id": {
+      "type": "string",
+      "maxLength": 32,
+      "title": "Block Id",
+      "default": ""
+     }
+    },
+    "type": "object",
+    "required": [
+     "body"
+    ],
+    "title": "BetaFeedbackIn"
+   },
+   "BetaInviteIn": {
+    "properties": {
+     "chapter_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Chapter Id"
+     },
+     "days": {
+      "type": "integer",
+      "title": "Days",
+      "default": 14
+     },
+     "note": {
+      "type": "string",
+      "maxLength": 500,
+      "title": "Note",
+      "default": ""
+     }
+    },
+    "type": "object",
+    "title": "BetaInviteIn"
    },
    "Body_upload_api_v1_studio_assets_upload_post": {
     "properties": {
@@ -9999,10 +11408,84 @@
        }
       ],
       "title": "Preview Blocks"
+     },
+     "recap": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Recap"
      }
     },
     "type": "object",
     "title": "ChapterPatch"
+   },
+   "CharacterIn": {
+    "properties": {
+     "name": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 120
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "description": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 4000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Description"
+     },
+     "reveal_chapter_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reveal Chapter Id"
+     },
+     "avatar_asset_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Avatar Asset Id"
+     },
+     "sort_order": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Sort Order"
+     }
+    },
+    "type": "object",
+    "title": "CharacterIn"
    },
    "CollectionIn": {
     "properties": {
@@ -10058,6 +11541,18 @@
       "maxLength": 64,
       "minLength": 8,
       "title": "Client Key"
+     },
+     "block_id": {
+      "type": "string",
+      "maxLength": 32,
+      "title": "Block Id",
+      "default": ""
+     },
+     "quote": {
+      "type": "string",
+      "maxLength": 1000,
+      "title": "Quote",
+      "default": ""
      }
     },
     "type": "object",
@@ -10521,6 +12016,20 @@
     ],
     "title": "ModIn"
    },
+   "NLSearchIn": {
+    "properties": {
+     "text": {
+      "type": "string",
+      "maxLength": 300,
+      "title": "Text"
+     }
+    },
+    "type": "object",
+    "required": [
+     "text"
+    ],
+    "title": "NLSearchIn"
+   },
    "NotePatch": {
     "properties": {
      "text": {
@@ -10540,6 +12049,17 @@
      "product_id": {
       "type": "integer",
       "title": "Product Id"
+     },
+     "gift_to_telegram_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Gift To Telegram Id"
      }
     },
     "type": "object",
@@ -10547,6 +12067,21 @@
      "product_id"
     ],
     "title": "OrderIn"
+   },
+   "PayoutIn": {
+    "properties": {
+     "note": {
+      "type": "string",
+      "maxLength": 500,
+      "minLength": 3,
+      "title": "Note"
+     }
+    },
+    "type": "object",
+    "required": [
+     "note"
+    ],
+    "title": "PayoutIn"
    },
    "PrefsIn": {
     "properties": {
@@ -10801,6 +12336,36 @@
     },
     "type": "object",
     "title": "PublishIn"
+   },
+   "QuoteIn": {
+    "properties": {
+     "chapter_id": {
+      "type": "integer",
+      "title": "Chapter Id"
+     },
+     "block_id": {
+      "type": "string",
+      "maxLength": 32,
+      "title": "Block Id"
+     },
+     "text": {
+      "type": "string",
+      "maxLength": 1000,
+      "title": "Text"
+     },
+     "theme": {
+      "type": "string",
+      "title": "Theme",
+      "default": "paper"
+     }
+    },
+    "type": "object",
+    "required": [
+     "chapter_id",
+     "block_id",
+     "text"
+    ],
+    "title": "QuoteIn"
    },
    "ReadIn": {
     "properties": {
@@ -11486,6 +13051,20 @@
     ],
     "title": "WorkPriceIn"
    },
+   "app__api__v1__extras__ApplyIn": {
+    "properties": {
+     "accepted": {
+      "items": {
+       "type": "integer"
+      },
+      "type": "array",
+      "maxItems": 100,
+      "title": "Accepted"
+     }
+    },
+    "type": "object",
+    "title": "ApplyIn"
+   },
    "app__api__v1__reading__HighlightIn": {
     "properties": {
      "chapter_id": {
@@ -11621,6 +13200,33 @@
      "frame_ids"
     ],
     "title": "HighlightIn"
+   },
+   "app__api__v1__studio__ApplyIn": {
+    "properties": {
+     "selected": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "integer"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Selected"
+     },
+     "titles": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "type": "object",
+      "title": "Titles"
+     }
+    },
+    "type": "object",
+    "title": "ApplyIn"
    },
    "app__api__v1__studio__NoteIn": {
     "properties": {

@@ -59,7 +59,7 @@ async def test_author_stats_csv_only_aggregates(client, db):
     """T-58."""
     w, chs, _ = await make_work(db, owner_tg=1000)
     reader = H(await login(client, 8300))
-    await client.post(f"/api/v1/highlights", json={"chapter_id": chs[0].id, "block_id": "b0000000", "quote": "maxfiy iqtibos", "note": "shaxsiy eslatma"}, headers=reader)
+    await client.post("/api/v1/highlights", json={"chapter_id": chs[0].id, "block_id": "b0000000", "quote": "maxfiy iqtibos", "note": "shaxsiy eslatma"}, headers=reader)
     owner = H(await login(client, 1000))
     r = await client.get(f"/api/v1/studio/works/{w.id}/stats.csv", headers=owner)
     assert r.status_code == 200 and r.headers["content-type"].startswith("text/csv")

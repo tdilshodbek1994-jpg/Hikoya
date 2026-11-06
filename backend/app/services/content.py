@@ -367,6 +367,8 @@ async def update_chapter_meta(db: AsyncSession, actor: Actor, chapter: Chapter, 
             setattr(chapter, k, patch[k])
     if "preview_blocks" in patch:
         chapter.preview_blocks = max(0, min(int(patch["preview_blocks"]), 30))
+    if "recap" in patch:
+        chapter.recap = clean_plain(patch["recap"], 1500)
     await audit(db, actor, "chapter.update_meta", "chapter", chapter.id, after=_jsonable(patch))
     return chapter
 
