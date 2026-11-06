@@ -37,3 +37,4 @@ Batafsil:
 - [docs/LOADTEST.md](docs/LOADTEST.md) — yuklama testi (500 o'quvchi).
 - [docs/STATUS.md](docs/STATUS.md) — nima tayyor, nima qolgan, cheklovlar va keyingi checkpoint.
 - [docs/BACKUP.md](docs/BACKUP.md) — backup, tiklash va avariyadan qaytish.
+- [docs/MIGRATE.md](docs/MIGRATE.md) — serverni ko'chirish (bitta arxiv: eksport → import).

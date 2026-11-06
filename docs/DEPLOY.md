@@ -84,6 +84,8 @@ make backup    # backup (docs/BACKUP.md)
 make demo-remove   # demo kontentni olib tashlash
 ```
 
+Boshqa serverga ko'chirish: [MIGRATE.md](MIGRATE.md).
+
 Yangilash: `git pull && make up`. Migratsiyalar `migrate` servisida avtomatik qo'llanadi.
 
 Polling bot ishlatilsa, `deploy/.env` ga `COMPOSE_PROFILES=polling` qo'shing: shunda `make up` bot konteynerini ham yangilaydi.
