@@ -291,12 +291,29 @@ async def _message(db, actor, m: dict) -> list[Reply]:
 
 
 async def setup_bot() -> None:
-    """One-time Telegram configuration: commands, menu button, webhook."""
+    """One-time Telegram configuration. Every step runs and reports its own result."""
     s = get_settings()
     tg = get_telegram()
-    await tg.call("setMyCommands", commands=[{"command": c, "description": d} for c, d in [("start", "Boshlash"), ("app", "Ilovani ochish"), ("help", "Yordam"), ("settings", "Sozlamalar"), ("paysupport", "To'lov bo'yicha yordam")]])
-    staff_cmds = [("admin", "Boshqaruv paneli"), ("new_work", "Hikoya qo'shish"), ("drafts", "Qoralamalar"), ("new_story", "Storis"), ("stats", "Statistika")]
-    await tg.call("setMyCommands", commands=[{"command": c, "description": d} for c, d in staff_cmds], scope={"type": "all_private_chats"}, language_code="uz")
-    await tg.call("setChatMenuButton", menu_button={"type": "web_app", "text": "Ilova", "web_app": {"url": s.webapp_url}})
+    steps = [
+        ("getMe", {}),
+        ("setMyCommands", {"commands": [{"command": c, "description": d} for c, d in [("start", "Boshlash"), ("app", "Ilovani ochish"), ("help", "Yordam"), ("settings", "Sozlamalar"), ("paysupport", "To'lov bo'yicha yordam")]]}),
+        ("setChatMenuButton", {"menu_button": {"type": "web_app", "text": "Ilova", "web_app": {"url": s.webapp_url}}}),
+    ]
     if s.webhook_secret:
-        await tg.call("setWebhook", url=f"{s.public_base_url}/api/v1/telegram/webhook", secret_token=s.webhook_secret, allowed_updates=ALLOWED_UPDATES, drop_pending_updates=False)
+        steps.append(("setWebhook", {"url": f"{s.public_base_url}/api/v1/telegram/webhook", "secret_token": s.webhook_secret, "allowed_updates": ALLOWED_UPDATES, "drop_pending_updates": False}))
+    else:
+        print("! HIKOYA_WEBHOOK_SECRET bo'sh: webhook o'rnatilmadi (polling rejimi uchun --profile polling)")
+    steps.append(("getWebhookInfo", {}))
+    for method, params in steps:
+        try:
+            res = await tg.call(method, **params)
+            if method == "getMe":
+                print(f"OK getMe: @{res.get('username')} (bot id {res.get('id')})")
+                if res.get("username", "").lower() != s.bot_username.lower():
+                    print(f"! DIQQAT: .env da HIKOYA_BOT_USERNAME={s.bot_username}, token esa @{res.get('username')} botiga tegishli")
+            elif method == "getWebhookInfo":
+                print(f"OK webhook: url={res.get('url')} pending={res.get('pending_update_count')} last_error={res.get('last_error_message')}")
+            else:
+                print(f"OK {method}")
+        except Exception as e:  # report and continue with the next step
+            print(f"XATO {method}: {e}")
