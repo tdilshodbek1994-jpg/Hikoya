@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { get, post } from "../lib/api";
 import { untilDate, useT } from "../lib/i18n";
-import { shareLink } from "../lib/tg";
+import { ShareSheet } from "./ShareSheet";
 import { useToast } from "./ui";
 
 /** Premium page: redeem a promo code (N days of Premium). */
@@ -37,6 +37,7 @@ export function InviteFriends() {
   const t = useT();
   const toast = useToast();
   const q = useQuery({ queryKey: ["referrals"], queryFn: () => get("/me/referrals") });
+  const [open, setOpen] = useState(false);
   const d = q.data;
   if (!d?.enabled) return null;
   return (
@@ -44,7 +45,8 @@ export function InviteFriends() {
       <b>🤝 {t("Do'stlarni taklif qiling")}</b>
       <span className="small muted">{t("Do'stingiz havola orqali kirib, birinchi hikoyani o'qisa, sizga {n} kun Premium qo'shiladi.").replace("{n}", String(d.bonus_days))}</span>
       <div className="row">
-        <button className="btn primary grow" onClick={() => shareLink(d.link, t("HIKOYA PRO'da zo'r hikoyalar bor, o'qib ko'r!"))}>{t("Havolani ulashish")}</button>
+        <button className="btn primary grow" onClick={() => setOpen(true)}>{t("Havolani ulashish")}</button>
+        <ShareSheet open={open} onClose={() => setOpen(false)} target={{ type: "app", id: 0, title: "HIKOYA PRO" }} />
         <button className="btn ghost" aria-label={t("Nusxalash")} onClick={() => navigator.clipboard?.writeText(d.link).then(() => toast(t("Nusxalandi")))}>⧉</button>
       </div>
       <span className="tiny dim">{t("Taklif qilinganlar")}: {d.invited} · {t("o'qishni boshlaganlar")}: {d.rewarded} · +{d.days_earned} {t("kun")}</span>

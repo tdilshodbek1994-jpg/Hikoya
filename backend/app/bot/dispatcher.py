@@ -27,7 +27,7 @@ from app.services.identity import get_or_create_user_by_tg, load_actor
 log = logging.getLogger("hikoya.bot")
 
 PAYMENT_KINDS = {"pre_checkout_query", "successful_payment", "refunded_payment", "subscription"}
-ALLOWED_UPDATES = ["message", "edited_message", "callback_query", "pre_checkout_query", "my_chat_member", "purchased_paid_media", "subscription"]
+ALLOWED_UPDATES = ["message", "edited_message", "callback_query", "inline_query", "pre_checkout_query", "my_chat_member", "purchased_paid_media", "subscription"]
 
 
 def update_kind(u: dict) -> str:
@@ -40,7 +40,7 @@ def update_kind(u: dict) -> str:
         return "successful_payment"
     if "refunded_payment" in m:
         return "refunded_payment"
-    for k in ("callback_query", "edited_message", "my_chat_member", "message"):
+    for k in ("callback_query", "inline_query", "edited_message", "my_chat_member", "message"):
         if k in u:
             return k
     return "other"
@@ -162,6 +162,11 @@ async def _route(db, u: dict, kind: str) -> tuple[list[tuple[int, Reply]], list[
     if kind == "refunded_payment":
         await billing.handle_refunded_payment(db, u["message"]["refunded_payment"])
         return [], []
+    if kind == "inline_query":
+        from app.services.sharing import inline_answer
+
+        after.append(("answerInlineQuery", await inline_answer(db, u["inline_query"])))
+        return [], after
     if kind == "my_chat_member":
         m = u["my_chat_member"]
         status = (m.get("new_chat_member") or {}).get("status")
@@ -311,6 +316,8 @@ async def setup_bot() -> None:
                 print(f"OK getMe: @{res.get('username')} (bot id {res.get('id')})")
                 if res.get("username", "").lower() != s.bot_username.lower():
                     print(f"! DIQQAT: .env da HIKOYA_BOT_USERNAME={s.bot_username}, token esa @{res.get('username')} botiga tegishli")
+                if not res.get("supports_inline_queries"):
+                    print("! Inline rejim o'chiq: @BotFather → /setinline → botni tanlang → masalan «hikoya nomi...». Shunda istalgan chatda @bot so'z yozib hikoya ulashish mumkin bo'ladi")
             elif method == "getWebhookInfo":
                 print(f"OK webhook: url={res.get('url')} pending={res.get('pending_update_count')} last_error={res.get('last_error_message')}")
             else:

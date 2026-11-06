@@ -91,6 +91,8 @@ def _fake(method: str, params: dict) -> Any:
         return f"https://t.me/$fake_invoice_{params.get('payload', '')}"
     if method in ("sendMessage", "sendPhoto", "sendDocument"):
         return {"message_id": 1, "chat": {"id": params.get("chat_id")}}
+    if method == "savePreparedInlineMessage":
+        return {"id": f"prepared_{params.get('user_id')}_{params.get('result', {}).get('id', '')}", "expiration_date": 0}
     if method == "getFile":
         return {"file_id": params.get("file_id"), "file_path": "fake/path"}
     return True

@@ -404,3 +404,34 @@ async def owner_analytics(db: DB, actor: CurActor, days: int = 30):
     from app.services.analytics import analytics
 
     return await analytics(db, actor, days)
+
+
+# ------------------------------------------------------------ sharing
+
+class ShareIn(BaseModel):
+    target_type: str = Field(pattern="^(work|chapter|author|app)$")
+    target_id: int = 0
+    channel: str = Field(default="link", pattern="^(message|story|link|native)$")
+
+
+@router.post("/share/prepare")
+async def share_prepare(body: ShareIn, db: DB, actor: CurActor):
+    from app.services.sharing import prepare
+
+    limiter.hit(f"share:{actor.id}", 30, 60)
+    return await prepare(db, actor.user, body.target_type, body.target_id, body.channel)
+
+
+@router.get("/me/shares")
+async def my_shares(db: DB, actor: CurActor):
+    from app.services.sharing import my_stats
+
+    return await my_stats(db, actor.user)
+
+
+@router.get("/studio/works/{work_id}/shares")
+async def work_shares(work_id: int, db: DB, actor: CurActor):
+    from app.services.sharing import work_share_stats
+
+    await _editable_work(db, actor, work_id)
+    return await work_share_stats(db, work_id)

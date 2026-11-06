@@ -14,7 +14,7 @@ backend/            Python 3.12, FastAPI, SQLAlchemy 2, Alembic (PostgreSQL 16)
   app/workers       fon worker: rejalashtirilgan nashr, outbox, bildirishnomalar
   app/integrations  Telegram Bot API, obyekt ombori (lokal / S3)
   migrations        Alembic migratsiyalari
-  tests             unit va integratsiya testlari (100 ta)
+  tests             unit va integratsiya testlari (106 ta)
 frontend/miniapp    React 19 + TypeScript + Vite, Tiptap muharriri
 deploy/             docker-compose, Caddy (HTTPS), .env.example, backup/restore
 docs/               yo'riqnomalar, qabul sinovlari, holat, OpenAPI, skrinshotlar

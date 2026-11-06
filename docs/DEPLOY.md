@@ -53,6 +53,9 @@ So'ng botni oching va `/start` bosing. Egasining `/admin` paneli ochiladi.
 
 Webhook o'rniga long-polling kerak bo'lsa (masalan, domen hali tayyor bo'lmasa): `HIKOYA_WEBHOOK_SECRET` ni bo'sh qoldiring va `--profile polling` bilan ishga tushiring.
 
+### Inline rejim (ulashish uchun)
+@BotFather → `/setinline` → botni tanlang → placeholder, masalan «hikoya nomi...». `make bot-setup` o'chiq bo'lsa eslatadi.
+
 ## 3. Xodimlar va mualliflar
 
 - Foydalanuvchi avval botni ochishi kerak.

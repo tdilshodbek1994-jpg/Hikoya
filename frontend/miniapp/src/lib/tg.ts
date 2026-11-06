@@ -25,6 +25,7 @@ interface WebApp {
   openInvoice?(url: string, cb?: (status: "paid" | "cancelled" | "failed" | "pending") => void): void;
   openLink?(url: string): void;
   openTelegramLink?(url: string): void;
+  shareMessage?(msgId: string, cb?: (sent: boolean) => void): void;
   shareToStory?(mediaUrl: string, params?: { text?: string; widget_link?: { url: string; name?: string } }): void;
   requestWriteAccess?(cb?: (granted: boolean) => void): void;
   showConfirm?(message: string, cb: (ok: boolean) => void): void;
@@ -120,6 +121,15 @@ export function confirmDialog(message: string): Promise<boolean> {
 }
 
 export const canShareToStory = () => !!wa?.shareToStory && at("7.8");
+export const canShareMessage = () => !!wa?.shareMessage && at("8.0");
+
+/** Bot API 8.0: send a prepared card message (cover + «O'qish» button) to a chat the user picks. */
+export function shareMessage(id: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (!canShareMessage()) return resolve(false);
+    wa!.shareMessage!(id, (sent) => resolve(!!sent));
+  });
+}
 
 export function shareToStory(mediaUrl: string, text: string, link: string) {
   if (canShareToStory()) wa!.shareToStory!(mediaUrl, { text: text.slice(0, 200), widget_link: { url: link, name: "HIKOYA PRO" } });

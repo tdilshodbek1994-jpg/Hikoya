@@ -1,6 +1,8 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link, useParams } from "react-router";
+import { IShare } from "../components/icons";
+import { ShareSheet } from "../components/ShareSheet";
 import { ErrorBox, Grid, Spinner, TopBar, useToast } from "../components/ui";
 import { del, get, put } from "../lib/api";
 import { useT } from "../lib/i18n";
@@ -13,6 +15,7 @@ export default function AuthorPage() {
   const toast = useToast();
   const qc = useQueryClient();
   const [report, setReport] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const { data: a, error, isLoading, refetch } = useQuery({ queryKey: ["author", id], queryFn: () => get(`/authors/${id}`) });
   const { data: stories } = useQuery({ queryKey: ["author-storis", id], queryFn: () => get(`/authors/${id}/storis`) });
   if (isLoading) return (<div className="page no-nav"><TopBar /><Spinner /></div>);
@@ -26,7 +29,8 @@ export default function AuthorPage() {
   const hasStory = stories?.story_ids?.length > 0;
   return (
     <div className="page no-nav">
-      <TopBar title={a.pen_name} />
+      <TopBar title={a.pen_name} right={<button className="icon-btn" aria-label={t("Ulashish")} onClick={() => setShareOpen(true)}><IShare /></button>} />
+      <ShareSheet open={shareOpen} onClose={() => setShareOpen(false)} target={{ type: "author", id: a.id, title: a.pen_name, cover: a.avatar_url }} />
       <div className="pad center stack" style={{ alignItems: "center" }}>
         <Link to={hasStory ? `/s/${stories.story_ids[0]}?author=${a.id}` : "#"} className={`ring ${hasStory ? "unseen" : ""}`} style={{ width: 96, height: 96 }} aria-label={hasStory ? t("Storisni ko'rish") : undefined}>
           <div className="av" style={{ fontSize: 34 }}>{a.avatar_url ? <img src={a.avatar_url} alt="" /> : a.pen_name[0]}</div>

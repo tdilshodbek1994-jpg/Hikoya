@@ -1,6 +1,8 @@
 /** startapp / ?p= parameter → route. A link never grants access by itself; pages re-check. */
 export function routeForParam(p: string): string | null {
   if (!p) return null;
+  p = p.replace(/__s\d+$/, ""); // share attribution suffix is handled by the server at login
+  if (p.startsWith("r_")) return "/";
   if (p.startsWith("w_")) return `/w/${p.slice(2)}`;
   if (p.startsWith("c_")) return `/read/${p.slice(2)}`;
   if (p.startsWith("a_")) return `/a/${p.slice(2)}`;

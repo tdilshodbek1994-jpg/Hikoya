@@ -2,10 +2,11 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { IBookmark, IChat, IFile, IFlag, IHeart, ILock, IShare, IThanks } from "../components/icons";
+import { ShareSheet } from "../components/ShareSheet";
 import { Cover, ErrorBox, Sheet, Spinner, TopBar, useToast } from "../components/ui";
 import { api, del, get, post, put } from "../lib/api";
 import { FORMAT_LABEL, STATUS_LABEL, fmtDate, useT } from "../lib/i18n";
-import { haptic, shareLink } from "../lib/tg";
+import { haptic } from "../lib/tg";
 
 const REASONS: [string, string][] = [["touched", "Ta'sirlantirdi"], ["useful", "Foydali bo'ldi"], ["waiting", "Davomini kutaman"], ["", "Shunchaki rahmat"]];
 
@@ -21,6 +22,7 @@ export default function WorkPage() {
   const [moreSyn, setMoreSyn] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [collOpen, setCollOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const lib = useQuery({ queryKey: ["library"], enabled: collOpen, queryFn: () => get("/library") });
 
   if (isLoading) return (<div className="page no-nav"><TopBar /><Spinner /></div>);
@@ -96,7 +98,8 @@ export default function WorkPage() {
 
   return (
     <div className="page no-nav">
-      <TopBar right={<button className="icon-btn" aria-label={t("Ulashish")} onClick={() => shareLink(w.share_url, w.title)}><IShare /></button>} />
+      <TopBar right={<button className="icon-btn" aria-label={t("Ulashish")} onClick={() => setShareOpen(true)}><IShare /></button>} />
+      <ShareSheet open={shareOpen} onClose={() => setShareOpen(false)} target={{ type: "work", id: w.id, title: w.title, cover: w.cover_url }} />
       <div className="hero">
         <Cover card={w} />
         <div className="grow stack" style={{ gap: 8 }}>

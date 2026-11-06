@@ -9936,6 +9936,166 @@
     }
    }
   },
+  "/api/v1/share/prepare": {
+   "post": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Share Prepare",
+    "operationId": "share_prepare_api_v1_share_prepare_post",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ShareIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/me/shares": {
+   "get": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "My Shares",
+    "operationId": "my_shares_api_v1_me_shares_get",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/studio/works/{work_id}/shares": {
+   "get": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Work Shares",
+    "operationId": "work_shares_api_v1_studio_works__work_id__shares_get",
+    "parameters": [
+     {
+      "name": "work_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Work Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/admin/genres": {
    "get": {
     "tags": [
@@ -13379,6 +13539,31 @@
      "value"
     ],
     "title": "SettingIn"
+   },
+   "ShareIn": {
+    "properties": {
+     "target_type": {
+      "type": "string",
+      "pattern": "^(work|chapter|author|app)$",
+      "title": "Target Type"
+     },
+     "target_id": {
+      "type": "integer",
+      "title": "Target Id",
+      "default": 0
+     },
+     "channel": {
+      "type": "string",
+      "pattern": "^(message|story|link|native)$",
+      "title": "Channel",
+      "default": "link"
+     }
+    },
+    "type": "object",
+    "required": [
+     "target_type"
+    ],
+    "title": "ShareIn"
    },
    "StateIn": {
     "properties": {

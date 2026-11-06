@@ -41,6 +41,9 @@ async def auth_telegram(body: TelegramAuthIn, db: DB):
         from app.services.growth import bind_referral
 
         await bind_referral(db, user, ident.start_param)
+        from app.services.sharing import record_open
+
+        await record_open(db, user, ident.start_param)
     return await _session_response(db, user, ident.start_param, body.device_label)
 
 

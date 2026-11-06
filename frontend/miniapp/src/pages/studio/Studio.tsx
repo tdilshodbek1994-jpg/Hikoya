@@ -251,12 +251,20 @@ function WorkStats() {
   const { workId } = useParams();
   const t = useT();
   const { data } = useQuery({ queryKey: ["work-stats", workId], queryFn: () => get(`/studio/works/${workId}/stats`) });
+  const shares = useQuery({ queryKey: ["work-shares", workId], queryFn: () => get(`/studio/works/${workId}/shares`) });
   if (!data) return <Spinner />;
+  const CH: Record<string, string> = { message: t("Chatga karta"), story: t("Storis"), link: t("Havola"), inline: t("Inline (@bot)"), native: t("Boshqa ilovalar") };
   const k = (v: any) => (v === null || v === undefined ? "—" : v);
   return (
     <div className="page no-nav">
       <TopBar title={t("Asar statistikasi")} />
       <div className="pad stack">
+        {!!shares.data?.by_channel?.length && (
+          <div className="panel stack" style={{ gap: 4 }}>
+            <b className="small">↗ {t("Ulashishlar")}</b>
+            {shares.data.by_channel.map((c: any) => <div key={c.channel} className="row between small"><span>{CH[c.channel] || c.channel}</span><span>{c.shares} · {t("ochildi")} {c.opens} · {t("yangi")} {c.new_users}</span></div>)}
+          </div>
+        )}
         <div className="kpis">
           <div className="kpi"><b>{data.unique_qualified_readers}</b><span>{t("Noyob o'quvchilar")}</span></div>
           <div className="kpi"><b>{data.started}</b><span>{t("Boshlaganlar")}</span></div>

@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { IAa, IAudio, IBack, IBookmark, IChat, IList, ILock, INext, IPause, IPlay, IPrev } from "../components/icons";
+import { ShareSheet } from "../components/ShareSheet";
 import { Seg, Sheet, Spinner, useToast } from "../components/ui";
 import { ApiError, get, patch, post, uuid, type Block, type Inline, type Me, type ReaderSettings } from "../lib/api";
 import { useAuth } from "../lib/auth";
@@ -192,6 +193,7 @@ export default function Reader() {
   });
   const [recapOpen, setRecapOpen] = useState(false);
   const [speaking, setSpeaking] = useState<string | null>(null);
+  const [shareOpen, setShareOpen] = useState(false);
   const seekRef = useRef<((bid: string) => boolean) | null>(null);
   useEffect(() => {
     if (!speaking) return;
@@ -420,6 +422,8 @@ export default function Reader() {
               </div>
             )}
             {d.work.comments_policy !== "closed" && <Link className="btn ghost block" to={`/w/${d.work.code}/comments?chapter=${d.chapter.id}`}><IChat /> {t("Bob muhokamasi")}</Link>}
+            <button className="btn ghost block" onClick={() => setShareOpen(true)}>↗ {t("Do'stga ulashish")}</button>
+            <ShareSheet open={shareOpen} onClose={() => setShareOpen(false)} target={{ type: "work", id: d.work.id, title: d.work.title }} />
           </div>
         )}
       </div>

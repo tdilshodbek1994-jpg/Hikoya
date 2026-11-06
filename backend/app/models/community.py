@@ -184,3 +184,29 @@ class StoryHighlightItem(Base):
     highlight_id: Mapped[int] = mapped_column(ForeignKey("story_highlights.id", ondelete="CASCADE"), primary_key=True)
     frame_id: Mapped[int] = mapped_column(ForeignKey("story_frames.id", ondelete="CASCADE"), primary_key=True)
     sort_key: Mapped[int] = mapped_column(default=0)
+
+
+class ShareLink(Base, Timestamped):
+    """One share action: who shared what, through which channel. Its id travels in the deep link."""
+
+    __tablename__ = "share_links"
+    __table_args__ = (Index("ix_share_links_target", "target_type", "target_id"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
+    target_type: Mapped[str] = mapped_column(String(16))  # work | chapter | author | story | app
+    target_id: Mapped[int] = mapped_column(default=0)
+    channel: Mapped[str] = mapped_column(String(16), default="link")  # message | story | link | inline | native
+    opens: Mapped[int] = mapped_column(default=0)
+    new_users: Mapped[int] = mapped_column(default=0)
+
+
+class ShareOpen(Base):
+    """A person who opened the app through a share link (counted once per person and link)."""
+
+    __tablename__ = "share_opens"
+
+    share_id: Mapped[int] = mapped_column(ForeignKey("share_links.id", ondelete="CASCADE"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    is_new_user: Mapped[bool] = mapped_column(default=False)
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())

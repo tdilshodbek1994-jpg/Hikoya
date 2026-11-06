@@ -67,7 +67,7 @@ Mini App / Bot → identity + permissions → services (domain) → PostgreSQL t
 
 ## Ma'lumot modeli (asosiy jadvallar)
 
-Asosiy jadvallar soni 81 ta (migratsiyalar `0001`–`0004`):
+Asosiy jadvallar soni 83 ta (migratsiyalar `0001`–`0005`):
 
 - **identity:** users, sessions, role_grants, audit_log, author_profiles, author_memberships, bot_dialogs, app_settings
 - **katalog:** genres, tags, works, work_genres, work_tags, work_contributors, home_sections, curated_collections, curated_items, ranking_snapshots
@@ -77,7 +77,7 @@ Asosiy jadvallar soni 81 ta (migratsiyalar `0001`–`0004`):
 - **storis:** author_stories, story_frames, story_views, story_actions, story_highlights, story_highlight_items
 - **to'lov:** products, product_versions, orders, purchase_intent_locks, subscriptions, payments, telegram_updates, refunds, refunded_charges, entitlement_grants, support_tickets, support_messages
 - **bildirishnoma:** notification_preferences, notifications, deliveries, outbox_events, telegram_calls
-- **C/D bosqichi:** promo_codes, promo_redemptions, referrals, chapter_choices, reader_choices, characters, beta_reader_grants, royalty_entries, royalty_payouts, ai_requests; yangi ustunlar: `chapters.recap`, `chapters.audio_sync`, `comments.block_id` / `comments.quote`, `orders.recipient_user_id`
+- **C/D bosqichi:** share_links, share_opens, promo_codes, promo_redemptions, referrals, chapter_choices, reader_choices, characters, beta_reader_grants, royalty_entries, royalty_payouts, ai_requests; yangi ustunlar: `chapters.recap`, `chapters.audio_sync`, `comments.block_id` / `comments.quote`, `orders.recipient_user_id`
 
 ### C bosqichi qarorlari
 - **Spoiler qoidasi bitta joyda** (`services/companion.read_chapter_ids`): recap, qahramon kartasi va AI qisqa mazmuni faqat o'quvchi tugatgan boblarga tayanadi. AI uchun qo'shimcha: bob hozir ham ochiq bo'lishi kerak (obuna tugasa yoki refund bo'lsa, matn modelga yuborilmaydi).
@@ -88,6 +88,7 @@ Asosiy jadvallar soni 81 ta (migratsiyalar `0001`–`0004`):
 - **Tarmoqlanuvchi hikoya** — `chapter_choices` (bob → bob, yorliq), `reader_choices` (o'quvchi va bob bo'yicha bitta oxirgi tanlov). Kirish huquqi har bob uchun alohida tekshiriladi; tanlov qulflangan bobni ochmaydi. Tarmoqli asarda «o'qilgan boblar» faqat `chapter_completions` dan olinadi (sort tartibi bo'yicha emas).
 - **Audio sinxroni** — `chapters.audio_sync = [{bid, t}]`, matn tartibiga zid vaqtlar rad etiladi; o'quvchiga faqat joriy revision'da bor bloklar uchun belgilar beriladi.
 - **Promo va taklif** — ikkalasi ham oddiy `entitlement_grants` (`source_type` = promo / referral), joriy Premium muddatidan keyin qo'shiladi; Stars to'loviga tegmaydi. Taklif mukofoti worker'da, faqat do'stning birinchi `qualified_reads` yozuvidan keyin.
+- **Ulashish** — `share_links` (foydalanuvchi + obyekt + kanal bo'yicha bitta qator, qayta bosish yangi qator yaratmaydi), deep link `<param>__s<id>`; ochilish `share_opens` da bir kishi uchun bir marta. Kartalar JPEG (Telegram photo natijalari faqat JPEG), public ombordagi kesh kaliti nom/muqova/muallif bo'yicha. Karta faqat ochiq va nashr qilingan asarlar uchun.
 - **Interfeys tili** — `users.language` (uz|ru); `lib/ru.ts` lug'ati, yo'q kalit o'zbekcha qaytadi.
 - **WAL** — `archive_command` gzip bilan `walarchive` volume'iga; base backup `pg_basebackup -Ft -z`; eski WAL `pg_archivecleanup -x .gz`.
 

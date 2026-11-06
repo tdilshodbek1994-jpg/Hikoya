@@ -44,6 +44,7 @@
 | Tarmoqlanuvchi hikoyalar | bob oxirida 4 tagacha tanlov (matn + qaysi bobga); o'quvchiga «Keyingi bob» o'rniga tanlov tugmalari; qulflangan yo'l belgilanadi, ochilmaydi; tanlovni o'zgartirish mumkin; boshqa o'quvchilar foizi faqat tanlagandan keyin ko'rinadi; spoiler qoidasi tarmoqli asarda faqat tugatilgan boblarga tayanadi |
 | Audio va matn | muallif audioni tinglab, har xatboshi boshlanganda unga bosadi; o'quvchida o'qilayotgan xatboshi yoritiladi va ekran unga suriladi; xatboshiga bosilsa audio o'sha joydan davom etadi (xatboshi darajasida, so'z darajasida emas) |
 | Analitika (egasi uchun) | 7/30/90 kun: faol o'quvchilar, yangi foydalanuvchilar, Stars tushumi (kunlik ustunlar + jadval), voronka (kirdi → boshladi → haqiqatan o'qidi → to'ladi), D1/D7 qaytish, eng ko'p o'qilgan 5 asar bo'yicha boblarda «tashlab ketish»; faqat umumiy raqamlar, test va demo chiqarilgan |
+| Ulashish | yagona «Ulashish» oynasi (asar, muallif, bob oxiri, taklif): **chatga karta** (Bot API 8.0 `savePreparedInlineMessage` + `shareMessage`: muqova, nom, muallif, annotatsiya va «📖 O'qish» tugmasi; eski klientda oddiy havola), **storis kartasi** 1080×1920, havola nusxasi, tizimning ulashish oynasi; **inline rejim** — istalgan chatda `@bot so'z` → asarlar kartasi; har ulashish havolasi (`__s<id>`) necha kishi ochganini va nechta yangi o'quvchi kelganini sanaydi; ulashish orqali kelgan yangi foydalanuvchi taklif mukofotiga ham hisoblanadi; muallif statistikasida kanal bo'yicha |
 | Promo-kodlar | admin kod yaratadi (N kun Premium, limit, muddat, faqat yangi foydalanuvchilar); o'quvchi Premium sahifasida kiritadi; har kim bir marta; o'chirilgan/noma'lum kod bir xil xabar beradi; urinishlar cheklangan |
 | Do'stni taklif qilish | Profil'da shaxsiy havola (`r_<id>`); faqat havola orqali yangi ochilgan hisob bog'lanadi; taklif qiluvchi do'sti birinchi haqiqiy o'qishni (qualified read) qilgandan keyin N kun Premium oladi; oyiga limit; bildirishnoma |
 | Rus tili | interfeys tarjimasi (Profil → «Ilova tili»), 700+ matn; asarlar va admin kiritgan bo'lim nomlari tarjima qilinmaydi; `npm run i18n-check` tarjimasiz matnni ko'rsatadi |
@@ -82,7 +83,7 @@
 3. Kerak bo'lsa: AI kalitini ulash, royalti foizini belgilash, ClamAV va WAL nusxasini serverdan tashqariga yoqish.
 
 ## Raqamlar
-- Backend: 81 jadval, 161 API yo'li, 100 avtomatik test (unit + integratsiya, haqiqiy PostgreSQL).
+- Backend: 83 jadval, 164 API yo'li, 106 avtomatik test (unit + integratsiya, haqiqiy PostgreSQL).
 - Frontend: 30+ ekran, o'quvchi bundle'i ~125 KB gzip, studio alohida lazy chunk.
 - Smoke: 360 px, 18/18 (asosiy) + 15/15 (C bosqichi, `e2e/stage_c.cjs`) + 7/7 (D bosqichi, `e2e/stage_d.cjs`). Tarjima to'liqligi: `npm run i18n-check`.
 - Yuklama: 500 o'quvchi, ~100 so'rov/s, xato 0%, p95 136–285 ms.
