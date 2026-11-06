@@ -132,9 +132,9 @@ async def _download(file_id: str, size: int | None) -> bytes:
     if not tg.enabled:
         hook = getattr(tg, "file_bytes", {})
         return hook.get(file_id, b"")
-    import httpx
+    from app.integrations.telegram import http_client
 
-    async with httpx.AsyncClient(timeout=60, proxy=s.telegram_proxy or None) as c:
+    async with http_client(60) as c:
         test = "/test" if s.telegram_test_env else ""
         r = await c.get(f"{s.telegram_api_base}/file/bot{s.bot_token}{test}/{path}")
         r.raise_for_status()

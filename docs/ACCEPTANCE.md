@@ -7,7 +7,7 @@ Holatlar:
 - **n/a** — modul birinchi relizda yo'q.
 
 Dalil manbalari:
-- `P:` — pytest testi (`backend/tests`). Natija: **98 passed** (2026-11-06, PostgreSQL 16, Python 3.13, lock fayldagi versiyalar).
+- `P:` — pytest testi (`backend/tests`). Natija: **100 passed** (2026-11-06, PostgreSQL 16, Python 3.13, lock fayldagi versiyalar).
 - `E:` — 360 px telefon emulyatsiyasidagi Playwright smoke testi (`frontend/miniapp/e2e/smoke.cjs`). Natija: **18/18 passed**. Natija va skrinshotlar: `docs/screenshots/`.
 
 Muhim: barcha Telegram chaqiruvlari soxta Bot API bilan sinaldi, chunki bu muhitda bot tokeni ham, Telegram tarmog'i ham yo'q. Haqiqiy qurilmada va haqiqiy Telegram klientida hali sinalmagan. Buni deploydan keyin [STATUS.md](STATUS.md) dagi ro'yxat bo'yicha qilish kerak.

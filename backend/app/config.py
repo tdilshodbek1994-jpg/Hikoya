@@ -38,6 +38,8 @@ class Settings(BaseSettings):
     # Optional proxy for Bot API calls when api.telegram.org is not reachable from the server,
     # e.g. "socks5://user:pass@host:1080" or "http://host:3128"
     telegram_proxy: str = ""
+    # Some hosts have a broken IPv6 route to api.telegram.org: force IPv4 for Bot API calls
+    telegram_force_ipv4: bool = False
     # When False the bot never calls Telegram (dev/test); outgoing calls are recorded.
     telegram_enabled: bool = False
 

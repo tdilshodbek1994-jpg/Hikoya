@@ -11,6 +11,8 @@ demo:          ## load original demo content (marked «demo»)
 	$(COMPOSE) exec api python -m app.cli demo
 demo-remove:
 	$(COMPOSE) exec api python -m app.cli demo-remove
+bot-check:     ## diagnose the connection to Telegram and print the fix
+	$(COMPOSE) exec api python -m app.bot check
 bot-setup:     ## set bot commands, menu button and webhook
 	$(COMPOSE) exec api python -m app.bot setup
 backup:

@@ -2,6 +2,7 @@
 
     python -m app.bot setup     # commands, menu button and webhook (if HIKOYA_WEBHOOK_SECRET is set)
     python -m app.bot polling   # local development without a public URL (deletes the webhook)
+    python -m app.bot check     # diagnose the connection to api.telegram.org and suggest a fix
 """
 
 from __future__ import annotations
@@ -40,6 +41,10 @@ def main() -> None:
     cmd = sys.argv[1] if len(sys.argv) > 1 else "polling"
     if cmd == "setup":
         asyncio.run(setup_bot())
+    elif cmd == "check":
+        from app.bot.netcheck import check
+
+        asyncio.run(check())
     else:
         asyncio.run(polling())
 

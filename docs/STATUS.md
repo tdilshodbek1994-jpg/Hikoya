@@ -82,7 +82,7 @@
 3. Kerak bo'lsa: AI kalitini ulash, royalti foizini belgilash, ClamAV va WAL nusxasini serverdan tashqariga yoqish.
 
 ## Raqamlar
-- Backend: 81 jadval, 161 API yo'li, 98 avtomatik test (unit + integratsiya, haqiqiy PostgreSQL).
+- Backend: 81 jadval, 161 API yo'li, 100 avtomatik test (unit + integratsiya, haqiqiy PostgreSQL).
 - Frontend: 30+ ekran, o'quvchi bundle'i ~125 KB gzip, studio alohida lazy chunk.
 - Smoke: 360 px, 18/18 (asosiy) + 15/15 (C bosqichi, `e2e/stage_c.cjs`) + 7/7 (D bosqichi, `e2e/stage_d.cjs`). Tarjima to'liqligi: `npm run i18n-check`.
 - Yuklama: 500 o'quvchi, ~100 so'rov/s, xato 0%, p95 136–285 ms.

@@ -14,7 +14,7 @@ backend/            Python 3.12, FastAPI, SQLAlchemy 2, Alembic (PostgreSQL 16)
   app/workers       fon worker: rejalashtirilgan nashr, outbox, bildirishnomalar
   app/integrations  Telegram Bot API, obyekt ombori (lokal / S3)
   migrations        Alembic migratsiyalari
-  tests             unit va integratsiya testlari (98 ta)
+  tests             unit va integratsiya testlari (100 ta)
 frontend/miniapp    React 19 + TypeScript + Vite, Tiptap muharriri
 deploy/             docker-compose, Caddy (HTTPS), .env.example, backup/restore
 docs/               yo'riqnomalar, qabul sinovlari, holat, OpenAPI, skrinshotlar
@@ -37,4 +37,5 @@ Batafsil:
 - [docs/LOADTEST.md](docs/LOADTEST.md) — yuklama testi (500 o'quvchi).
 - [docs/STATUS.md](docs/STATUS.md) — nima tayyor, nima qolgan, cheklovlar va keyingi checkpoint.
 - [docs/BACKUP.md](docs/BACKUP.md) — backup, tiklash va avariyadan qaytish.
+- [docs/TELEGRAM_ACCESS.md](docs/TELEGRAM_ACCESS.md) — server Telegram'ga chiqa olmasa (Timeweb): tekshiruv, IPv4, Cloudflare relay.
 - [docs/MIGRATE.md](docs/MIGRATE.md) — serverni ko'chirish (bitta arxiv: eksport → import).

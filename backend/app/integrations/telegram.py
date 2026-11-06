@@ -34,6 +34,20 @@ class TelegramUncertain(Exception):
 FakeHook = Callable[[str, dict], Any]
 
 
+def http_client(timeout: float = 15.0) -> httpx.AsyncClient:
+    """HTTP client for api.telegram.org (or a relay set in HIKOYA_TELEGRAM_API_BASE).
+
+    Honors HIKOYA_TELEGRAM_PROXY (http/socks5) and HIKOYA_TELEGRAM_FORCE_IPV4.
+    """
+    s = get_settings()
+    kw: dict[str, Any] = {"timeout": httpx.Timeout(timeout, connect=10.0)}
+    if s.telegram_proxy:
+        kw["proxy"] = s.telegram_proxy
+    elif s.telegram_force_ipv4:
+        kw["transport"] = httpx.AsyncHTTPTransport(local_address="0.0.0.0", retries=1)
+    return httpx.AsyncClient(**kw)
+
+
 class TelegramAPI:
     def __init__(self):
         s = get_settings()
@@ -55,10 +69,11 @@ class TelegramAPI:
                     return res
             return _fake(method, params)
         if self._client is None:
-            proxy = get_settings().telegram_proxy or None
-            self._client = httpx.AsyncClient(timeout=httpx.Timeout(15.0, connect=10.0), proxy=proxy)
+            self._client = http_client()
+        # long polling waits up to `timeout` seconds on the server side
+        req_timeout = httpx.Timeout(float(params.get("timeout", 0)) + 15.0, connect=10.0) if method == "getUpdates" else httpx.USE_CLIENT_DEFAULT
         try:
-            r = await self._client.post(f"{self.base}/{method}", json=params)
+            r = await self._client.post(f"{self.base}/{method}", json=params, timeout=req_timeout)
         except (httpx.TimeoutException, httpx.TransportError) as e:
             raise TelegramUncertain(f"{type(e).__name__}: {e} (api.telegram.org ga ulanib bo'lmadi)") from e
         try:
