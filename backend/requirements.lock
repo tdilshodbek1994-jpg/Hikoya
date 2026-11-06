@@ -81,6 +81,8 @@ s3transfer==0.19.3
     # via boto3
 six==1.17.0
     # via python-dateutil
+socksio==1.0.0
+    # via httpx
 sqlalchemy==2.1.8
     # via
     #   -r requirements.txt

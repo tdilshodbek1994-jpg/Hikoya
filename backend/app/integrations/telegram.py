@@ -55,11 +55,12 @@ class TelegramAPI:
                     return res
             return _fake(method, params)
         if self._client is None:
-            self._client = httpx.AsyncClient(timeout=httpx.Timeout(15.0, connect=5.0))
+            proxy = get_settings().telegram_proxy or None
+            self._client = httpx.AsyncClient(timeout=httpx.Timeout(15.0, connect=10.0), proxy=proxy)
         try:
             r = await self._client.post(f"{self.base}/{method}", json=params)
         except (httpx.TimeoutException, httpx.TransportError) as e:
-            raise TelegramUncertain(str(e)) from e
+            raise TelegramUncertain(f"{type(e).__name__}: {e} (api.telegram.org ga ulanib bo'lmadi)") from e
         try:
             body = r.json()
         except json.JSONDecodeError as e:

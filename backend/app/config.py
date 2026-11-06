@@ -35,6 +35,9 @@ class Settings(BaseSettings):
     telegram_api_base: str = "https://api.telegram.org"
     # Telegram test environment: requests go to /bot<token>/test/<method>
     telegram_test_env: bool = False
+    # Optional proxy for Bot API calls when api.telegram.org is not reachable from the server,
+    # e.g. "socks5://user:pass@host:1080" or "http://host:3128"
+    telegram_proxy: str = ""
     # When False the bot never calls Telegram (dev/test); outgoing calls are recorded.
     telegram_enabled: bool = False
 
