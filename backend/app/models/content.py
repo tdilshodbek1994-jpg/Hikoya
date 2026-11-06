@@ -5,7 +5,7 @@ from datetime import datetime
 from sqlalchemy import Float, ForeignKey, Index, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.db import Base, Timestamped
+from app.db import Base, Timestamped, utcnow
 
 
 class Genre(Base):
@@ -68,7 +68,7 @@ class Work(Base, Timestamped):
     is_demo: Mapped[bool] = mapped_column(default=False)
     search_text: Mapped[str] = mapped_column(Text, default="")
     created_by_user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
-    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
+    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), default=utcnow, onupdate=utcnow)
     published_at: Mapped[datetime | None] = mapped_column(nullable=True)
     last_chapter_published_at: Mapped[datetime | None] = mapped_column(nullable=True)
     # Denormalised public counters (recomputable from source tables).
@@ -127,7 +127,7 @@ class Chapter(Base, Timestamped):
     words: Mapped[int] = mapped_column(default=0)
     has_audio: Mapped[bool] = mapped_column(default=False)
     is_deleted: Mapped[bool] = mapped_column(default=False)
-    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
+    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), default=utcnow, onupdate=utcnow)
 
 
 class ChapterRevision(Base, Timestamped):

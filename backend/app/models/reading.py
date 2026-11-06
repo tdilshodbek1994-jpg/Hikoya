@@ -5,7 +5,7 @@ from datetime import date, datetime
 from sqlalchemy import Date, Float, ForeignKey, Index, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.db import Base, Timestamped
+from app.db import Base, Timestamped, utcnow
 
 
 class ReadingSession(Base):
@@ -130,7 +130,7 @@ class PrivateNote(Base, Timestamped):
     block_id: Mapped[str] = mapped_column(String(32), default="")
     quote: Mapped[str] = mapped_column(Text, default="")
     text: Mapped[str] = mapped_column(Text)
-    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
+    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), default=utcnow, onupdate=utcnow)
 
 
 class LibraryItem(Base):

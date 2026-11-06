@@ -5,7 +5,7 @@ from datetime import datetime
 from sqlalchemy import ForeignKey, Index, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.db import Base, Timestamped
+from app.db import Base, Timestamped, utcnow
 
 
 class User(Base, Timestamped):
@@ -112,7 +112,7 @@ class BotDialog(Base):
     step: Mapped[str] = mapped_column(String(32), default="")
     data: Mapped[dict] = mapped_column(default=dict)
     active_work_id: Mapped[int | None] = mapped_column(nullable=True)
-    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
+    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), default=utcnow, onupdate=utcnow)
 
 
 class AppSetting(Base):
@@ -120,4 +120,4 @@ class AppSetting(Base):
 
     key: Mapped[str] = mapped_column(String(64), primary_key=True)
     value: Mapped[dict] = mapped_column(default=dict)
-    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
+    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), default=utcnow, onupdate=utcnow)

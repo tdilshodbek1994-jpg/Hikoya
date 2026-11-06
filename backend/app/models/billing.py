@@ -5,7 +5,7 @@ from datetime import datetime
 from sqlalchemy import ForeignKey, Index, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.db import Base, Timestamped
+from app.db import Base, Timestamped, utcnow
 
 
 class Product(Base, Timestamped):
@@ -79,7 +79,7 @@ class Subscription(Base, Timestamped):
     first_charge_id: Mapped[str] = mapped_column(String(128), default="")
     last_charge_id: Mapped[str] = mapped_column(String(128), default="")
     last_provider_update_id: Mapped[int | None] = mapped_column(nullable=True)
-    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
+    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), default=utcnow, onupdate=utcnow)
 
 
 class Payment(Base, Timestamped):
@@ -170,7 +170,7 @@ class SupportTicket(Base, Timestamped):
     subject: Mapped[str] = mapped_column(String(160), default="")
     status: Mapped[str] = mapped_column(String(16), default="open")  # open|in_progress|resolved|closed
     assignee_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
-    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
+    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), default=utcnow, onupdate=utcnow)
 
 
 class SupportMessage(Base, Timestamped):

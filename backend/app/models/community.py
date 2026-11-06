@@ -5,7 +5,7 @@ from datetime import datetime
 from sqlalchemy import ForeignKey, Index, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.db import Base, Timestamped
+from app.db import Base, Timestamped, utcnow
 
 
 class Like(Base, Timestamped):
@@ -22,7 +22,7 @@ class Thanks(Base, Timestamped):
     work_id: Mapped[int] = mapped_column(ForeignKey("works.id", ondelete="CASCADE"), primary_key=True)
     reason: Mapped[str] = mapped_column(String(24), default="")  # touched | useful | waiting
     active: Mapped[bool] = mapped_column(default=True)
-    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
+    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), default=utcnow, onupdate=utcnow)
 
 
 class Follow(Base, Timestamped):
