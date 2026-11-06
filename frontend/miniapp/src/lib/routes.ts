@@ -7,6 +7,7 @@ export function routeForParam(p: string): string | null {
   if (p.startsWith("st_")) return `/s/${p.slice(3)}`;
   if (p.startsWith("s_")) return `/studio/w/${p.slice(2)}`;
   if (p.startsWith("e_")) return `/studio/e/${p.slice(2)}`;
+  if (p.startsWith("b_")) return `/beta/${p.slice(2)}`;
   const map: Record<string, string> = {
     premium: "/premium", library: "/library", notifications: "/notifications", q_review: "/studio/reviews", q_moderation: "/admin/moderation",
     studio: "/studio", support: "/support", settings: "/profile",

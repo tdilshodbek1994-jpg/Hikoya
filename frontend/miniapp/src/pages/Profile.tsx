@@ -35,7 +35,7 @@ export default function Profile() {
       <div className="pad stack">
         <div className="panel row">
           <div className="ring" style={{ width: 56, height: 56, padding: 2 }}><div className="av" style={{ fontSize: 22 }}>{me.display_name[0]}</div></div>
-          <div className="grow"><b>{me.display_name}</b><div className="small muted">{ent?.premium ? "⭐ Premium" : t("Bepul o'quvchi")}</div></div>
+          <div className="grow"><b>{me.display_name}</b><div className="small muted">{ent?.premium ? "⭐ Premium" : t("Bepul o'quvchi")}</div>{me.telegram_user_id && <button className="tiny dim link" onClick={() => navigator.clipboard?.writeText(String(me.telegram_user_id))}>ID: {me.telegram_user_id} ⧉</button>}</div>
           <Link to="/premium" className="btn premium" style={{ minHeight: 38 }}>{ent?.premium ? t("Obuna") : "Premium"}</Link>
         </div>
         {studio && <Link to="/studio" className="btn primary block">✍️ {t("Ijod ustaxonasi")}</Link>}

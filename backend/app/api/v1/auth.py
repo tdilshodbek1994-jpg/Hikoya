@@ -59,6 +59,7 @@ async def me_dto(db, actor) -> dict:
     return {
         "id": u.id,
         "display_name": u.display_name,
+        "telegram_user_id": u.telegram_user_id,
         "language": u.language,
         "script": u.script,
         "onboarding_done": u.onboarding_done,

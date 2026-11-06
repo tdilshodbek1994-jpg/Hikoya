@@ -292,6 +292,7 @@ function Billing() {
         ))}
         <p className="tiny dim">{t("Demo narx real to'lovni yoqmaydi. Narx o'rnatilgach yangi versiya yaratiladi.")}</p>
         {can("billing.manage_products") && <WorkPrice />}
+        <RoyaltyAdmin />
         <h3 className="mt16">{t("Holatlar")}</h3>
         {ov.data?.by_state.map((s: any) => <div key={s.state} className="small">{s.state}: {s.count} · {s.stars} ⭐</div>)}
         <h3 className="mt16">{t("Tekshiruv kerak bo'lgan to'lovlar")}</h3>
@@ -303,6 +304,32 @@ function Billing() {
         {ov.data?.open_refunds.map((r: any) => <div key={r.id} className="small">#{r.id} → {t("to'lov")} #{r.payment_id}: <span className="pill">{r.state}</span> {r.error}</div>)}
         <p className="tiny dim">{ov.data?.note}</p>
       </div>
+    </div>
+  );
+}
+
+function RoyaltyAdmin() {
+  const t = useT();
+  const act = useAct();
+  const { can } = useAuth();
+  const q = useQuery({ queryKey: ["admin-royalties"], queryFn: () => get("/admin/royalties") });
+  const items: any[] = q.data?.items || [];
+  const payout = (a: any) => {
+    const note = window.prompt(t("Qanday to'landi? (masalan: karta, sana)"));
+    if (!note || note.trim().length < 3) return;
+    act(() => post(`/admin/royalties/${a.author_id}/payout`, { note }), t("To'lov qayd etildi"), q.refetch);
+  };
+  return (
+    <div className="panel stack">
+      <b>{t("Mualliflar ulushi (royalti)")}</b>
+      <span className="tiny dim">{t("Ulush foizi .env da: HIKOYA_ROYALTY_SHARE_PERCENT. To'lov ilovadan tashqarida qilinadi va shu yerda qayd etiladi.")}</span>
+      {!items.length && <span className="small muted">{t("Hozircha yozuv yo'q")}</span>}
+      {items.map((a) => (
+        <div key={a.author_id} className="row small">
+          <span className="grow">{a.pen_name}<div className="tiny dim">{t("kutilmoqda")} {a.pending} · {t("tayyor")} {a.available} · {t("to'langan")} {a.paid} · {t("qaytarilgan")} {a.reversed} ⭐</div></span>
+          {can("billing.refund") && a.available > 0 && <button className="btn" style={{ minHeight: 34 }} onClick={() => payout(a)}>{t("To'landi")}</button>}
+        </div>
+      ))}
     </div>
   );
 }

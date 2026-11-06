@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { IStar } from "../components/icons";
-import { Spinner, TopBar, useToast } from "../components/ui";
+import { Sheet, Spinner, TopBar, useToast } from "../components/ui";
 import { ApiError, api, get, post, uuid } from "../lib/api";
 import { fmtDate, useT } from "../lib/i18n";
 import { confirmDialog, haptic, openInvoice } from "../lib/tg";
@@ -18,17 +18,20 @@ export default function Premium() {
   const workId = sp.get("work");
   const [busy, setBusy] = useState<number | null>(null);
   const [status, setStatus] = useState<string | null>(null);
+  const [gift, setGift] = useState<Product | null>(null);
+  const [giftTo, setGiftTo] = useState("");
   const products = useQuery({ queryKey: ["products"], queryFn: () => get<Product[]>("/billing/products") });
   const workProducts = useQuery({ queryKey: ["products", workId], enabled: !!workId, queryFn: () => get<Product[]>("/billing/products", { work_id: workId }) });
   const subs = useQuery({ queryKey: ["subs"], queryFn: () => get("/billing/subscriptions") });
 
-  const buy = async (p: Product) => {
+  const buy = async (p: Product, giftTelegramId?: number) => {
     setBusy(p.id);
     setStatus(null);
-    const key = sessionStorage.getItem(`hk_idem_${p.id}`) || uuid();
-    sessionStorage.setItem(`hk_idem_${p.id}`, key);
+    const idemKey = `hk_idem_${p.id}${giftTelegramId ? `_g${giftTelegramId}` : ""}`;
+    const key = sessionStorage.getItem(idemKey) || uuid();
+    sessionStorage.setItem(idemKey, key);
     try {
-      const order = await api("/billing/orders", { method: "POST", body: { product_id: p.id }, idem: key });
+      const order = await api("/billing/orders", { method: "POST", body: { product_id: p.id, gift_to_telegram_id: giftTelegramId ?? null }, idem: key });
       const res = await openInvoice(order.invoice_link);
       if (res === "cancelled") { setStatus(t("To'lov bekor qilindi")); return; }
       if (res === "failed") { setStatus(t("To'lov amalga oshmadi")); haptic.err(); return; }
@@ -38,9 +41,9 @@ export default function Premium() {
         await new Promise((r) => setTimeout(r, 1500));
         const o = await get(`/billing/orders/${order.id}`);
         if (o.status === "paid") {
-          setStatus(t("Premium faol"));
+          setStatus(giftTelegramId ? t("Sovg'a yuborildi! Do'stingizga xabar boradi.") : t("Premium faol"));
           haptic.ok();
-          sessionStorage.removeItem(`hk_idem_${p.id}`);
+          sessionStorage.removeItem(idemKey);
           qc.invalidateQueries();
           return;
         }
@@ -49,6 +52,7 @@ export default function Premium() {
       setStatus(t("To'lov hali tasdiqlanmadi. Bir necha daqiqadan keyin bu sahifani yangilang yoki /paysupport ga yozing."));
     } catch (e) {
       if (e instanceof ApiError && e.code === "already_subscribed") setStatus(t("Sizda faol obuna bor"));
+      else if (e instanceof ApiError && e.code === "already_purchased" && giftTelegramId) setStatus(t("Bu do'stingizda allaqachon ochiq"));
       else toast(e instanceof Error ? e.message : t("Xatolik"), true);
     } finally {
       setBusy(null);
@@ -97,8 +101,19 @@ export default function Premium() {
           </div>
         ))}
 
-        {workProducts.data?.map((p) => <ProductCard key={p.id} p={p} busy={busy === p.id} onBuy={() => buy(p)} note={t("Premium katalogdan tashqari, alohida xarid")} />)}
-        {products.isLoading ? <Spinner /> : products.data?.filter((p) => !(premium && p.pricing_type === "subscription" && activeSubs.length)).map((p) => <ProductCard key={p.id} p={p} busy={busy === p.id} onBuy={() => buy(p)} />)}
+        {workProducts.data?.map((p) => <ProductCard key={p.id} p={p} busy={busy === p.id} onBuy={() => buy(p)} onGift={() => setGift(p)} note={t("Premium katalogdan tashqari, alohida xarid")} />)}
+        {products.isLoading ? <Spinner /> : products.data?.filter((p) => !(premium && p.pricing_type === "subscription" && activeSubs.length)).map((p) => <ProductCard key={p.id} p={p} busy={busy === p.id} onBuy={() => buy(p)} onGift={p.pricing_type === "one_time" ? () => setGift(p) : undefined} />)}
+
+        <Sheet open={!!gift} onClose={() => setGift(null)} label={t("Sovg'a qilish")}>
+          <h2>🎁 {t("Sovg'a qilish")}</h2>
+          <p className="small muted">{gift?.title} · {gift?.amount} ⭐</p>
+          <div className="field mt8">
+            <label>{t("Do'stingizning Telegram ID raqami")}</label>
+            <input className="input" inputMode="numeric" value={giftTo} onChange={(e) => setGiftTo(e.target.value.replace(/\D/g, ""))} placeholder="123456789" />
+            <span className="tiny dim">{t("Do'stingiz ilovani kamida bir marta ochgan bo'lishi kerak. ID'ni u Profil sahifasidan ko'chirib beradi.")}</span>
+          </div>
+          <button className="btn premium block mt16" disabled={!giftTo || busy !== null} onClick={() => { const p = gift!; setGift(null); buy(p, Number(giftTo)); }}>{t("To'lash va sovg'a qilish")}</button>
+        </Sheet>
 
         {!!subs.data?.orders?.length && (
           <div className="mt16">
@@ -116,7 +131,7 @@ export default function Premium() {
   );
 }
 
-function ProductCard({ p, busy, onBuy, note }: { p: Product; busy: boolean; onBuy: () => void; note?: string }) {
+function ProductCard({ p, busy, onBuy, onGift, note }: { p: Product; busy: boolean; onBuy: () => void; onGift?: () => void; note?: string }) {
   const t = useT();
   return (
     <div className="panel stack" style={{ gap: 6 }}>
@@ -126,7 +141,10 @@ function ProductCard({ p, busy, onBuy, note }: { p: Product; busy: boolean; onBu
       {p.pricing_type === "subscription" && <span className="tiny dim">{t("Har 30 kunda avtomatik yangilanadi, istalgan vaqtda o'chirish mumkin.")}</span>}
       {p.pricing_type === "one_time" && p.access_scope === "premium" && <span className="tiny dim">{t("Bir martalik paket, avtomatik yangilanmaydi.")}</span>}
       {p.purchasable ? (
-        <button className="btn premium block mt8" disabled={busy} onClick={onBuy}>{busy ? t("Kuting...") : t("Sotib olish")}</button>
+        <>
+          <button className="btn premium block mt8" disabled={busy} onClick={onBuy}>{busy ? t("Kuting...") : t("Sotib olish")}</button>
+          {onGift && <button className="btn ghost block" disabled={busy} onClick={onGift}>🎁 {t("Do'stga sovg'a qilish")}</button>}
+        </>
       ) : (
         <span className="pill warn mt8" style={{ alignSelf: "flex-start" }}>{p.is_demo ? t("Demo narx — to'lov hali yoqilmagan") : t("Hozircha mavjud emas")}</span>
       )}

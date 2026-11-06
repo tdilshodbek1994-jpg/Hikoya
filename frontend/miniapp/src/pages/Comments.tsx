@@ -14,6 +14,7 @@ export default function Comments() {
   const { code } = useParams();
   const [sp, setSp] = useSearchParams();
   const chapterId = sp.get("chapter");
+  const blockId = sp.get("block");
   const t = useT();
   const toast = useToast();
   const qc = useQueryClient();
@@ -29,9 +30,9 @@ export default function Comments() {
   const [editing, setEditing] = useState<{ id: number; body: string } | null>(null);
   const { data: work } = useQuery({ queryKey: ["work", code], queryFn: () => get(`/works/${code}`) });
   const q = useInfiniteQuery({
-    queryKey: ["comments", work?.id, chapterId, sort],
+    queryKey: ["comments", work?.id, chapterId, sort, blockId],
     enabled: !!work,
-    queryFn: ({ pageParam }) => get(`/works/${work.id}/comments`, { chapter_id: chapterId, sort, cursor: pageParam }),
+    queryFn: ({ pageParam }) => get(`/works/${work.id}/comments`, { chapter_id: chapterId, sort, cursor: pageParam, block_id: blockId ?? undefined }),
     initialPageParam: 0,
     getNextPageParam: (l: any) => l.next_cursor ?? undefined,
   });
@@ -108,7 +109,10 @@ export default function Comments() {
       ) : c.spoiler_hidden && !revealed[c.id] ? (
         <button className="spoiler" onClick={() => reveal(c.id)}>⚠️ {c.spoiler ? t("Spoiler. Ko'rish uchun bosing") : t("Siz hali o'qimagan bob haqida. Ko'rish uchun bosing")}</button>
       ) : (
-        <div className="body">{revealed[c.id] || c.body}</div>
+        <>
+          {c.quote && <blockquote className="tiny muted" style={{ margin: "4px 0", borderLeft: "2px solid var(--accent)", paddingLeft: 8 }}>{c.quote}</blockquote>}
+          <div className="body">{revealed[c.id] || c.body}</div>
+        </>
       )}
       <div className="row mt8" style={{ gap: 14 }}>
         {!isReply && !closed && <button className="tiny muted" style={{ minHeight: 32 }} onClick={() => setReplyTo(c)}>{t("Javob")}</button>}
@@ -126,7 +130,8 @@ export default function Comments() {
       <TopBar title={chapterId ? t("Bob muhokamasi") : t("Sharhlar")} />
       <div className="pad row between">
         <Seg value={sort} onChange={setSort} options={[["new", t("Yangi")], ["helpful", t("Foydali")]]} />
-        {chapterId && <button className="link small" onClick={() => setSp({}, { replace: true })}>{t("Umumiy muhokama")}</button>}
+        {blockId && <button className="link small" onClick={() => setSp({ chapter: chapterId! }, { replace: true })}>{t("Bobdagi barcha izohlar")}</button>}
+        {chapterId && !blockId && <button className="link small" onClick={() => setSp({}, { replace: true })}>{t("Umumiy muhokama")}</button>}
       </div>
       {accessErr ? (
         <Empty icon="🔒" title={t("Bu bob muhokamasi bob ochilgandan keyin ko'rinadi")}>

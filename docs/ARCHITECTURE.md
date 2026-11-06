@@ -67,7 +67,7 @@ Mini App / Bot → identity + permissions → services (domain) → PostgreSQL t
 
 ## Ma'lumot modeli (asosiy jadvallar)
 
-Asosiy jadvallar soni 71 ta (`migrations/versions/0001_initial_schema.py`):
+Asosiy jadvallar soni 76 ta (`migrations/versions/0001_initial_schema.py`, `0002_stage_c_features.py`):
 
 - **identity:** users, sessions, role_grants, audit_log, author_profiles, author_memberships, bot_dialogs, app_settings
 - **katalog:** genres, tags, works, work_genres, work_tags, work_contributors, home_sections, curated_collections, curated_items, ranking_snapshots
@@ -77,6 +77,15 @@ Asosiy jadvallar soni 71 ta (`migrations/versions/0001_initial_schema.py`):
 - **storis:** author_stories, story_frames, story_views, story_actions, story_highlights, story_highlight_items
 - **to'lov:** products, product_versions, orders, purchase_intent_locks, subscriptions, payments, telegram_updates, refunds, refunded_charges, entitlement_grants, support_tickets, support_messages
 - **bildirishnoma:** notification_preferences, notifications, deliveries, outbox_events, telegram_calls
+- **C bosqichi:** characters, beta_reader_grants, royalty_entries, royalty_payouts, ai_requests; yangi ustunlar: `chapters.recap`, `comments.block_id` / `comments.quote`, `orders.recipient_user_id`
+
+### C bosqichi qarorlari
+- **Spoiler qoidasi bitta joyda** (`services/companion.read_chapter_ids`): recap, qahramon kartasi va AI qisqa mazmuni faqat o'quvchi tugatgan boblarga tayanadi. AI uchun qo'shimcha: bob hozir ham ochiq bo'lishi kerak (obuna tugasa yoki refund bo'lsa, matn modelga yuborilmaydi).
+- **AI** — `services/ai.py`, rasmiy `anthropic` SDK (`AsyncAnthropic`), `output_config.format` JSON sxema bilan; `fallbacks="default"` (beta `server-side-fallback-2026-07-01`); rad javobi va uzilish oddiy natija sifatida qaytadi. Imlo takliflari faqat matnda haqiqatan bor bo'laklar uchun ko'rsatiladi va qabul qilinganda oddiy `save_revision` orqali yangi qoralama bo'ladi (eski base → 409).
+- **Sovg'a** — oluvchi buyurtma snapshot'ida muzlatiladi; grant oluvchiga, refund esa o'sha to'lov grantini bekor qiladi. Obuna sovg'a qilinmaydi.
+- **Royalti** — `successful_payment` bilan bir tranzaksiyada `pending` yozuv; worker `royalty_hold_days` dan keyin `available` qiladi; refund `reversed` qiladi; to'langandan keyingi refund keyingi to'lovdan ushlanadi.
+- **Beta-o'quvchi** — qoralama revision'ni o'qiydi, reading session/progress yaratilmaydi; fikr `editor_notes` ga «[Beta]» bilan yoziladi.
+- **WAL** — `archive_command` gzip bilan `walarchive` volume'iga; base backup `pg_basebackup -Ft -z`; eski WAL `pg_archivecleanup -x .gz`.
 
 ## Rollar
 

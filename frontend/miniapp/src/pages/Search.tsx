@@ -1,9 +1,9 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router";
-import { Empty, Grid, Spinner } from "../components/ui";
+import { Link, useNavigate, useSearchParams } from "react-router";
+import { Empty, Grid, Spinner, useToast } from "../components/ui";
 import { ISearch } from "../components/icons";
-import { del, get, type Card } from "../lib/api";
+import { del, get, post, type Card } from "../lib/api";
 import { useT } from "../lib/i18n";
 
 /** E-05: debounced search; Latin/Cyrillic/apostrophe normalisation happens on the server. */
@@ -14,6 +14,26 @@ export default function Search() {
   const [text, setText] = useState(sp.get("q") || "");
   const [q, setQ] = useState(sp.get("q") || "");
   const inText = sp.get("in_text") === "1";
+  const nav = useNavigate();
+  const toast = useToast();
+  const ai = useQuery({ queryKey: ["ai-status"], queryFn: () => get("/ai/status"), staleTime: 600_000 });
+  const [aiBusy, setAiBusy] = useState(false);
+  const aiSearch = async () => {
+    if (text.trim().length < 3) { toast(t("Nima o'qimoqchi ekaningizni bir gap bilan yozing"), true); return; }
+    setAiBusy(true);
+    try {
+      const r = await post("/ai/search", { text });
+      if (r.status !== "ok") { toast(r.message, true); return; }
+      const n = new URLSearchParams();
+      for (const [k, v] of Object.entries(r.filters as Record<string, any>)) {
+        if (Array.isArray(v)) v.forEach((x) => n.append(k, String(x)));
+        else n.set(k, String(v));
+      }
+      if ([...n.keys()].length) nav(`/catalog?${n.toString()}`);
+      else if (r.query) setText(r.query);
+      else toast(t("Filtr topilmadi, oddiy qidiruvni sinab ko'ring"), true);
+    } catch (e: any) { toast(e.message, true); } finally { setAiBusy(false); }
+  };
   useEffect(() => {
     const id = setTimeout(() => {
       setQ(text.trim());
@@ -45,6 +65,7 @@ export default function Search() {
         <button className={`chip ${inText ? "on" : ""}`} onClick={() => { const n = new URLSearchParams(sp); inText ? n.delete("in_text") : n.set("in_text", "1"); setSp(n, { replace: true }); }}>
           {t("Matn ichida ham")}
         </button>
+        {ai.data?.enabled && <button className="chip" disabled={aiBusy} onClick={aiSearch}>{aiBusy ? "…" : "✨ " + t("AI bilan topish")}</button>}
         <Link className="chip" to="/genres">{t("Janrlar")}</Link>
         <Link className="chip" to="/top">TOP</Link>
       </div>

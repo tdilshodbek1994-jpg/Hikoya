@@ -101,7 +101,10 @@ export function MyStories() {
                 <div className="row between"><span className="pill">{s.status}</span><span className="tiny dim">{fmtDate(s.publish_at, true)} → {fmtDate(s.expires_at, true)}</span></div>
                 {s.moderation_note && <div className="small" style={{ color: "var(--danger)" }}>{s.moderation_note}</div>}
                 {st && <div className="meta mt8"><span>👁 {st.unique_views}</span><span>✓ {st.completed_views}</span><span>⏭ {st.skips}</span><span>🔗 {st.link_clicks}</span><span>📖 {st.work_starts}</span>{st.small_sample && <span className="dim">{t("kam namuna")}</span>}</div>}
-                <Link className="link small" to={`/s/${s.id}`}>{t("Ko'rish")}</Link>
+                <div className="row" style={{ gap: 12 }}>
+                  <Link className="link small" to={`/s/${s.id}`}>{t("Ko'rish")}</Link>
+                  {s.status === "draft" && <button className="link small" onClick={() => post(`/studio/storis/${s.id}/submit`).then(() => list.refetch())}>📤 {t("Joylash")}</button>}
+                </div>
               </div>
             );
           })}

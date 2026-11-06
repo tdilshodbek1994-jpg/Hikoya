@@ -86,6 +86,21 @@ make demo-remove   # demo kontentni olib tashlash
 
 Yangilash: `git pull && make up`. Migratsiyalar `migrate` servisida avtomatik qo'llanadi.
 
+Polling bot ishlatilsa, `deploy/.env` ga `COMPOSE_PROFILES=polling` qo'shing: shunda `make up` bot konteynerini ham yangilaydi.
+
+## 5a. C bosqichi sozlamalari (ixtiyoriy)
+
+Hammasi `deploy/.env` da, keyin `make up`:
+
+| Imkoniyat | Sozlama | Izoh |
+|---|---|---|
+| WAL arxivi | `WAL_ARCHIVE_TIMEOUT=300` | Standart yoqilgan. Cron: `deploy/basebackup.sh` ([BACKUP.md](BACKUP.md)) |
+| Antivirus | `COMPOSE_PROFILES=antivirus` (yoki `polling,antivirus`), `HIKOYA_CLAMAV_HOST=clamav` | ~1.2 GB RAM. `HIKOYA_CLAMAV_REQUIRED=true` bo'lsa skaner ishlamay qolganda yuklash rad etiladi |
+| AI yordamchi | `HIKOYA_AI_PROVIDER=anthropic`, `HIKOYA_AI_API_KEY=...` | Kalitni faqat serverdagi `.env` ga yozing. `HIKOYA_AI_DAILY_LIMIT_PER_USER` — kunlik limit. Server `api.anthropic.com` ga chiqa olishi kerak (aks holda `HTTPS_PROXY` kerak bo'ladi) |
+| Muallif ulushi | `HIKOYA_ROYALTY_SHARE_PERCENT=70`, `HIKOYA_ROYALTY_HOLD_DAYS=21` | 0 — o'chiq. To'lovlar admin → «Premium va to'lovlar» → «Mualliflar ulushi» |
+
+Iqtibos kartasi, recap, qahramonlar, beta-o'quvchilar, inline izohlar va sovg'a qo'shimcha sozlamasiz ishlaydi.
+
 ## 6. Obyekt ombori (ixtiyoriy S3)
 
 Standart holatda fayllar Docker volume'da saqlanadi:

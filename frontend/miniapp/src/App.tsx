@@ -22,6 +22,7 @@ import Search from "./pages/Search";
 import StoryViewer from "./pages/StoryViewer";
 import Support from "./pages/Support";
 import Top from "./pages/Top";
+import { BetaHome, BetaReader } from "./pages/Beta";
 import WorkPage from "./pages/WorkPage";
 
 // Studio and admin are loaded only for authorised users (and never block the reader bundle).
@@ -128,6 +129,8 @@ export default function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/support" element={<Support />} />
+          <Route path="/beta/:token" element={<BetaHome />} />
+          <Route path="/beta/:token/c/:chapterId" element={<BetaReader />} />
           <Route path="/studio/*" element={<Studio />} />
           <Route path="/admin/*" element={<Admin />} />
           <Route path="*" element={<Navigate to="/" replace />} />

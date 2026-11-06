@@ -7,7 +7,7 @@ Holatlar:
 - **n/a** — modul birinchi relizda yo'q.
 
 Dalil manbalari:
-- `P:` — pytest testi (`backend/tests`). Natija: **69 passed** (2026-11-06, PostgreSQL 16, Python 3.13, lock fayldagi versiyalar).
+- `P:` — pytest testi (`backend/tests`). Natija: **89 passed** (2026-11-06, PostgreSQL 16, Python 3.13, lock fayldagi versiyalar).
 - `E:` — 360 px telefon emulyatsiyasidagi Playwright smoke testi (`frontend/miniapp/e2e/smoke.cjs`). Natija: **18/18 passed**. Natija va skrinshotlar: `docs/screenshots/`.
 
 Muhim: barcha Telegram chaqiruvlari soxta Bot API bilan sinaldi, chunki bu muhitda bot tokeni ham, Telegram tarmog'i ham yo'q. Haqiqiy qurilmada va haqiqiy Telegram klientida hali sinalmagan. Buni deploydan keyin [STATUS.md](STATUS.md) dagi ro'yxat bo'yicha qilish kerak.
@@ -72,11 +72,11 @@ Muhim: barcha Telegram chaqiruvlari soxta Bot API bilan sinaldi, chunki bu muhit
 | T-56 | 5 asarda bir vaqtda bob | passed | P: `test_five_new_chapters_grouped_digest` |
 | T-57 | Telegram 429 / bot bloklangan | passed | P: `test_telegram_429_and_blocked` |
 | T-58 | Muallif statistika eksporti | passed | P: `test_author_stats_csv_only_aggregates` (CSV'da faqat umumiy raqamlar bor; o'quvchi ID'si, iqtibos va eslatmalar yo'q; begona muallifga 403/404) |
-| T-59 | AI'ga keyingi bobni so'rash | n/a | AI moduli birinchi relizda yo'q (C bosqichi) |
-| T-60 | AI provayderi ishlamaydi | n/a | Hech qaysi funksiya AI'ga bog'liq emas |
+| T-59 | AI'ga keyingi bobni so'rash | passed | P: `test_ai_reader_recap_sees_only_read_and_accessible_chapters` — modelga faqat o'qib tugatilgan va hozir ochiq boblar matni boradi; o'qilmagan bob va kirish huquqi tugagan Premium bob promptga tushmaydi |
+| T-60 | AI provayderi ishlamaydi | passed | P: `test_ai_refusal_and_outage_are_explained`, `test_ai_disabled_by_default` — uzilishda 503 va tushunarli xabar, rad javobida izoh; asar va matn o'zgarmaydi; AI o'chiq bo'lsa tugmalar ko'rinmaydi |
 | T-61 | Katalog bo'sh | passed | E: «T-61» (bo'sh holat va «Filtrlarni tozalash» tugmasi chiqadi, spinner yo'q) |
 | T-62 | 500 faol reader yuklamasi | passed (shartli) | [LOADTEST.md](LOADTEST.md): xato 0%; p95: bosh sahifa 285 ms, katalog 186 ms, bob 136 ms. Bitta 4 vCPU host. Mobil p75 o'lchanmagan |
-| T-63 | Backupdan tiklash | qisman | `deploy/backup.sh` → o'chirish → `restore.sh` sinov stack'ida bajarildi: kichik baza, 16 s. RPO o'lchanmagan, WAL arxivi yo'q ([BACKUP.md](BACKUP.md)) |
+| T-63 | Backupdan tiklash | passed (sinov stack) | Dump: `backup.sh` → o'chirish → `restore.sh`, 16 s. PITR: `basebackup.sh` → yangi yozuv → `DROP TABLE` → `pitr-restore.sh BASE "vaqt"` → base backup'dan keyingi yozuv ham qaytdi, o'chirish qaytmadi. WAL har 5 daqiqada arxivlanadi (RPO ≤ 5 daq, server ichida). Serverdan tashqariga nusxa — cron ([BACKUP.md](BACKUP.md)) |
 | T-64 | Eski Telegram klienti | not_run | Kodda imkoniyatlar oldindan tekshiriladi va fallback bor (`lib/tg.ts`). Haqiqiy eski klientda sinalmagan |
 
-**Jami (64):** 60 passed (T-16 faqat server qismi, T-62 bitta hostda), 1 qisman (T-63), 1 not_run (T-64), 2 n/a.
+**Jami (64):** 63 passed (T-16 faqat server qismi, T-62 bitta hostda, T-63 sinov stack'ida), 1 not_run (T-64).

@@ -15,6 +15,8 @@ bot-setup:     ## set bot commands, menu button and webhook
 	$(COMPOSE) exec api python -m app.bot setup
 backup:
 	sh deploy/backup.sh
+basebackup:    ## base backup for point-in-time recovery + WAL pruning (docs/BACKUP.md)
+	sh deploy/basebackup.sh
 test:          ## backend tests (needs local PostgreSQL, see docs/DEVELOPMENT.md)
 	cd backend && .venv/bin/python -m pytest -q
 web-check:

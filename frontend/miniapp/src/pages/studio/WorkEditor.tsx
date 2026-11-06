@@ -6,6 +6,7 @@ import { ApiError, api, del, get, patch, post } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 import { fmtDate, useT } from "../../lib/i18n";
 import { confirmDialog } from "../../lib/tg";
+import { AiSynopsis, BetaInvites, CharactersManager } from "./Extras";
 import { STATE_LABEL } from "./Studio";
 
 export async function upload(file: File, purpose: string, isPublic = false) {
@@ -164,6 +165,7 @@ export default function WorkEditor() {
         <p className="tiny dim">{t("Matn alohida tahrirlanadi. Bu yerdagi o'zgarish bob matniga tegmaydi.")}</p>
         <div className="field"><label>{t("Sarlavha")}</label><input className="input" value={meta.title} onChange={(e) => set("title", e.target.value)} /></div>
         <div className="field"><label>{t("Annotatsiya")}</label><textarea className="textarea" value={meta.synopsis} onChange={(e) => set("synopsis", e.target.value)} /></div>
+        <AiSynopsis workId={w.id} onPick={(text) => set("synopsis", text)} />
         <div className="field"><label>{t("Asosiy janr")}</label>
           <select className="select" value={meta.primary_genre_id || 0} onChange={(e) => set("primary_genre_id", Number(e.target.value) || null)}>
             <option value={0}>—</option>{genres?.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
@@ -213,7 +215,7 @@ export default function WorkEditor() {
         )}
 
         <div className="row between mt16"><h2>{t("Fayllar")}</h2><button className="btn" style={{ minHeight: 36 }} onClick={() => fileRef.current?.click()}>+ {t("Fayl")}</button></div>
-        <input ref={fileRef} type="file" hidden accept=".pdf,.mp3,.m4a,.mp4,.txt,.md,.docx,image/*" onChange={(e) => onFile(e.target.files?.[0])} />
+        <input ref={fileRef} type="file" hidden accept=".pdf,.mp3,.m4a,.mp4,.txt,.md,.docx,.epub,image/*" onChange={(e) => onFile(e.target.files?.[0])} />
         <p className="tiny dim">{t("«Fayl biriktirish» va «Matnga aylantirish» alohida. PDF avtomatik bobga aylanmaydi.")}</p>
         <div className="list">
           {w.files.map((f: any) => (
@@ -222,6 +224,9 @@ export default function WorkEditor() {
           ))}
           {!w.files.length && <div className="li small muted">{t("Fayl yo'q")}</div>}
         </div>
+
+        <CharactersManager workId={w.id} chapters={w.chapters} />
+        <BetaInvites workId={w.id} chapters={w.chapters} />
 
         {!!w.reviews.length && (
           <>

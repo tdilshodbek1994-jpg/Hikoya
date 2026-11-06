@@ -7,6 +7,7 @@ import { ApiError, api, get, patch, post } from "../../lib/api";
 import { useT } from "../../lib/i18n";
 import { closingConfirmation } from "../../lib/tg";
 import { countWords, fromEditor, kit, newBid, toEditor } from "./editorKit";
+import { AiProofread } from "./Extras";
 import { upload } from "./WorkEditor";
 
 type SaveState = "saved" | "dirty" | "saving" | "offline" | "conflict" | "error";
@@ -153,6 +154,7 @@ export default function ChapterEditor() {
           <EditorContent editor={editor} />
         </div>
         <p className="tiny dim mt8">{t("Avtomatik saqlanadi. Nashr qilingan matn faqat «Nashr» bosilganda yangilanadi.")}</p>
+        <AiProofread chapterId={Number(chapterId)} onApplied={async () => { localStorage.removeItem(LOCAL(chapterId!)); await refetch(); setState("saved"); }} />
       </div>
       <ChapterMeta open={meta} onClose={() => setMeta(false)} data={data} onSaved={refetch} />
       <Sheet open={notes} onClose={() => setNotes(false)} label={t("Izohlar")}>
@@ -168,10 +170,11 @@ function ChapterMeta({ open, onClose, data, onSaved }: { open: boolean; onClose:
   const [title, setTitle] = useState(data.chapter.title);
   const [override, setOverride] = useState(data.chapter.access_override);
   const [preview, setPreview] = useState(data.chapter.preview_blocks);
+  const [recap, setRecap] = useState(data.chapter.recap || "");
   const [audioBusy, setAudioBusy] = useState(false);
   const save = async () => {
     try {
-      await patch(`/studio/chapters/${data.chapter.id}`, { title, access_override: override, preview_blocks: preview });
+      await patch(`/studio/chapters/${data.chapter.id}`, { title, access_override: override, preview_blocks: preview, recap });
       toast(t("Saqlandi"));
       onSaved();
       onClose();
@@ -201,6 +204,10 @@ function ChapterMeta({ open, onClose, data, onSaved }: { open: boolean; onClose:
           </select>
         </div>
         <div className="field"><label>{t("Pulli bobda bepul ko'rinadigan bloklar soni")}</label><input className="input" type="number" min={0} max={30} value={preview} onChange={(e) => setPreview(Number(e.target.value))} /></div>
+        <div className="field"><label>{t("«Qayerda to'xtagandim?» qisqa mazmuni")}</label>
+          <textarea className="textarea" maxLength={1500} value={recap} onChange={(e) => setRecap(e.target.value)} placeholder={t("Shu bobda nima bo'ldi — 2–4 gap")} />
+          <span className="tiny dim">{t("Keyingi bobni ochganda faqat shu bobni o'qib bo'lganlarga ko'rinadi.")}</span>
+        </div>
         <div className="field"><label>{t("Bob audiosi (MP3/M4A)")}</label>
           <input type="file" accept="audio/mpeg,audio/mp4,.m4a,.mp3" disabled={audioBusy} onChange={(e) => addAudio(e.target.files?.[0])} />
           {data.attachments.filter((a: any) => a.purpose === "audio").map((a: any) => <div key={a.link_id} className="tiny dim">🎧 {a.title}</div>)}

@@ -10,6 +10,7 @@ import History from "./History";
 import ImportPage from "./ImportPage";
 import Reviews from "./Reviews";
 import StoryComposer, { MyStories } from "./StoryComposer";
+import { Royalties } from "./Extras";
 import WorkEditor from "./WorkEditor";
 
 export const STATE_LABEL: Record<string, string> = {
@@ -45,6 +46,7 @@ export default function Studio() {
       <Route path="stories" element={<MyStories />} />
       <Route path="stories/new" element={<StoryComposer />} />
       <Route path="calendar" element={<Calendar />} />
+      <Route path="royalties" element={<Royalties />} />
       <Route path="stats" element={<Dashboard />} />
       <Route path="stats/:workId" element={<WorkStats />} />
     </Routes>
@@ -67,6 +69,7 @@ function Dashboard() {
           <Link to="/studio/calendar" className="chip">🗓 {t("Nashr taqvimi")}</Link>
           {me?.author && <Link to="/studio/stories" className="chip">📮 {t("Storislarim")}</Link>}
           {me?.author && <Link to="/studio/stories/new" className="chip">+ {t("Storis")}</Link>}
+          {me?.author && <Link to="/studio/royalties" className="chip">💰 {t("Daromad")}</Link>}
         </div>
         {d && (
           <div className="kpis">

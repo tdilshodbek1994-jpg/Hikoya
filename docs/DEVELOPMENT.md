@@ -27,7 +27,7 @@ EOF
 
 ```bash
 createdb hikoya_test && psql -d hikoya_test -c 'create extension if not exists pg_trgm'
-cd backend && .venv/bin/python -m pytest -q        # 69 ta test
+cd backend && .venv/bin/python -m pytest -q        # 89 ta test
 ```
 
 ## Mini App
@@ -37,7 +37,8 @@ cd frontend/miniapp
 npm ci
 npm run dev        # http://localhost:5173 (API proxy -> :8000)
 npm run build      # typecheck + production build
-node e2e/smoke.cjs http://localhost:5173 ./e2e-shots   # 360 px Playwright smoke testi
+node e2e/smoke.cjs http://localhost:5173 ./e2e-shots     # 360 px Playwright smoke testi
+node e2e/stage_c.cjs http://localhost:5173 ./e2e-shots   # C bosqichi ekranlari (dev auth kerak)
 ```
 
 Brauzerda Telegram tashqarisida dev kirish oynasi chiqadi. U faqat `HIKOYA_DEV_AUTH_ENABLED=true` bo'lsa ishlaydi, production'da bu rejim yoqilmaydi. `1000` egasi, boshqa raqamlar oddiy o'quvchi.

@@ -4,7 +4,7 @@
 - **A bosqichi** (poydevor va vertikal oqim) va **B bosqichi** (birinchi to'liq reliz) kod darajasida tayyor.
 - Tayyorlik avtomatik testlar va 360 px smoke testi bilan tekshirildi.
 - **Hali qilinmagan:** haqiqiy bot tokeni bilan Telegram ichida sinov va haqiqiy Stars to'lovi. Yuklama testi bajarildi ([LOADTEST.md](LOADTEST.md)).
-- C bosqichidan faqat bir qismi bor: audio pleyer, alohida asar xaridi, 90/365 kunlik paketlar. Qolgan C modullari yo'q, ularning tugmalari ham ko'rsatilmaydi (C bosqichi qoidasi).
+- C bosqichi asosan tayyor: AI yordamchi (ixtiyoriy), «Qayerda to'xtagandim?», qahramonlar, beta-o'quvchilar, inline izohlar, iqtibos kartasi, sovg'a, muallif ulushi, EPUB/PDF import, antivirus, WAL arxivi. Qilinmaganlari pastda aniq yozilgan.
 
 ## Bajarilgan
 
@@ -32,23 +32,34 @@
 | O'qish ritmi | haftalik hisobot, kunlik maqsad, ketma-ket kunlar (faqat foydalanuvchiga ko'rinadi) |
 | Import | buzilgan baytlar va Windows-1251 kodlashi ogohlantirish bilan import qilinadi |
 | Muallif statistikasi | ekranda va CSV eksportda, faqat umumlashtirilgan raqamlar |
+| Qayerda to'xtagandim? | muallif bob uchun qisqa mazmun yozadi; keyingi bob ochilganda faqat oldingi bobni o'qib bo'lganlarga ko'rsatiladi |
+| Qahramonlar | rasm va tavsifli kartalar; «shu bob o'qilgandan keyin ochiladi» sozlamasi (spoilersiz) |
+| Beta-o'quvchilar | nashr qilinmagan qoralama uchun shaxsiy havola (`b_` deep link), bitta odamga biriktiriladi, muddatli, bekor qilinadi; xatboshiga bog'langan fikr muallif muharririda «[Beta]» bilan chiqadi; statistikaga kirmaydi |
+| Inline izohlar | o'quvchi matn bo'lagini belgilab «Shu joyga izoh» yozadi; blok yonida 💬 soni; izohlar ro'yxati shu blok bo'yicha filtrlanadi |
+| Iqtibos kartasi | 1080×1920 PNG (Pillow, DejaVu shrifti), faqat nashr qilingan va o'quvchiga ochiq matndan; Telegram `shareToStory` yoki havola; muallif uchun bir bosishda storis qoralamasi |
+| Sovg'a | bir martalik Premium paket yoki asarni do'stga (Telegram ID orqali) sotib olish; huquq oluvchiga beriladi, unga bildirishnoma boradi; obunani sovg'a qilib bo'lmaydi (Stars obunasi to'lovchiniki) |
+| Muallif ulushi | alohida sotilgan asardan foiz (`HIKOYA_ROYALTY_SHARE_PERCENT`); kutilmoqda → tayyor (refund muddati o'tgach) → to'langan; refundda qaytariladi; to'lov ilovadan tashqarida qilinib admin panelda qayd etiladi |
+| AI (ixtiyoriy) | rasmiy `anthropic` SDK, `claude-opus-5-5`, structured output, rad javobida server-side fallback; muallif: annotatsiya variantlari, imlo takliflari (bittalab qabul, yangi qoralama versiya); o'quvchi: o'qiganigacha qisqa mazmun (faqat o'qilgan va ochiq boblar), tabiiy tilda qidiruv; har chaqiruv jurnalda, kunlik limit |
+| Import | TXT, Markdown, DOCX, EPUB (spine tartibi), PDF (matn qatlami; skaner qilingan PDF uchun aniq xabar) |
+| Media | MP4/M4A davomiyligi serverda o'qiladi (storis video chegarasi ishlaydi); ixtiyoriy ClamAV tekshiruvi |
 | Deploy | Docker image'lar, docker-compose, Caddy HTTPS, `.env.example`, Makefile, backup/restore. Bu muhitda build va ishga tushirish sinaldi |
 
 ## Cheklovlar va ochiq savollar
 1. **Telegram'da real sinov yo'q.** Bot tokeni va Telegram tarmog'i bo'lmagani uchun barcha Telegram chaqiruvlari soxta API bilan sinaldi. Deploydan keyingi tekshiruv ro'yxati quyida.
 2. **Skrinshotlar.** Topshiriqdagi 5 ta YANGI.TV skrinshoti paketda yo'q edi. Dizayn matnli tavsif va berilgan ranglar asosida qilindi. Skrinshotlar yuborilsa, solishtirib moslashtiraman.
-3. **RPO 15 daqiqa** uchun WAL arxivi kerak. Hozir faqat kunlik dump bor.
-4. **Antivirus tekshiruvi yo'q.** Hozir fayl turi, hajm va zip limitlari tekshiriladi. ClamAV kabi skaner keyin qo'shiladi.
-5. **Video davomiyligi** faqat botdan yuborilganda Telegram'dan olinadi. Ilova ichidan yuklangan videoda tekshirilmaydi.
+3. **WAL arxivi serverning o'zida.** Server butunlay yo'qolishiga qarshi `rclone` cron'ini yoqish kerak ([BACKUP.md](BACKUP.md)).
+4. **Antivirus ixtiyoriy.** ClamAV ~1.2 GB RAM talab qiladi, shuning uchun standart o'chiq (`--profile antivirus`).
+5. **AI kalit talab qiladi.** `HIKOYA_AI_PROVIDER=anthropic` va `HIKOYA_AI_API_KEY` `.env` da bo'lmasa, AI tugmalari umuman ko'rinmaydi. Haqiqiy API bilan sinalmagan (testlar soxta provayder bilan); so'rov shakli SDK'ga qarshi tekshirilgan.
 6. **Rus tili:** UI matnlari alohida lug'atga ajratilgan. Rus tarjimasi hali qo'shilmagan.
 7. **Redis ishlatilmaydi** (ataylab qilingan qaror, [ARCHITECTURE.md](ARCHITECTURE.md)). Rate limit jarayon ichida ishlaydi. Bir nechta API nusxasi ishga tushirilsa, Redis'ga ko'chirish kerak.
-8. **Telegram storisiga ulashish** faqat imkoniyat mavjudligini aniqlash darajasida. Iqtibos uchun rasm generatsiyasi yo'q.
+8. **Sovg'a qabul qiluvchisi Telegram ID bilan topiladi** (username bilan qidirish spec bo'yicha taqiqlangan). ID Profil sahifasida ko'rsatiladi.
 
-## Bajarilmagan (C bosqichi va kengaytmalar)
-- AI (muallif yordamchisi, tabiiy tilda qidiruv, spoilersiz eslatma).
-- Qahramonlar daftari, «Qayerda to'xtagandim?» eslatmalari (`recap_note` maydoni bor, UI yo'q).
-- Sinov o'quvchilari, tarmoqlanuvchi hikoyalar, sovg'a Premium, muallif daromadi va payout.
-- Matnning aniq joyiga sharh (inline), so'zma-so'z audio yoritish, PDF/EPUB/OCR import.
+## Bajarilmagan (ataylab qoldirilgan)
+- **Tarmoqlanuvchi hikoyalar** (o'quvchi tanlovi bilan boshqa bobga o'tish) — yangi kontent modeli va muharrir kerak; alohida bosqich sifatida rejalashtirish tavsiya etiladi.
+- **So'zma-so'z audio yoritish** — audio va matnni vaqt bo'yicha moslash (alignment) servisi kerak.
+- **OCR** (skaner qilingan PDF/rasm) — og'ir model; hozir aniq xabar bilan rad etiladi.
+- **Rus tili tarjimasi** — lug'at tayyor, tarjima matnlari yo'q.
+- **Royalti avtomatik to'lovi** — Stars'ni muallifga avtomatik o'tkazish API'si yo'q; to'lov qo'lda qilinib qayd etiladi.
 
 ## Deploydan keyingi tekshiruv ro'yxati (real Telegram)
 1. `/start` → menyu, «Ilovani ochish», rozilik so'rovi.
@@ -63,11 +74,11 @@
 ## Keyingi checkpoint
 1. Siz serverga deploy qilasiz ([DEPLOY.md](DEPLOY.md)) va bot tokeni bilan yuqoridagi ro'yxatni o'tamiz.
 2. Topilgan xatolarni tuzataman. Skrinshotlar bo'lsa, dizaynni moslashtiraman.
-3. Keyin C bosqichidan siz tanlagan modullar: masalan audio kengaytmasi va muallif daromadi.
+3. Kerak bo'lsa: AI kalitini ulash, royalti foizini belgilash, ClamAV va WAL nusxasini serverdan tashqariga yoqish.
 
 ## Raqamlar
-- Backend: 71 jadval, 132 API yo'li, 69 avtomatik test (unit + integratsiya, haqiqiy PostgreSQL).
+- Backend: 76 jadval, 153 API yo'li, 89 avtomatik test (unit + integratsiya, haqiqiy PostgreSQL).
 - Frontend: 30+ ekran, o'quvchi bundle'i ~125 KB gzip, studio alohida lazy chunk.
-- Smoke: 360 px, 18/18.
+- Smoke: 360 px, 18/18 (asosiy) + 15/15 (C bosqichi, `e2e/stage_c.cjs`).
 - Yuklama: 500 o'quvchi, ~100 so'rov/s, xato 0%, p95 136–285 ms.
-- Qabul sinovlari: 60 passed, 1 qisman, 1 not_run, 2 n/a.
+- Qabul sinovlari: 63 passed, 1 not_run (T-64, eski Telegram klienti).

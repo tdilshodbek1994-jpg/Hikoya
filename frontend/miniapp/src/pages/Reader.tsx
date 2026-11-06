@@ -3,11 +3,11 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "rea
 import { Link, useNavigate, useParams } from "react-router";
 import { IAa, IAudio, IBack, IBookmark, IChat, IList, ILock, INext, IPause, IPlay, IPrev } from "../components/icons";
 import { Seg, Sheet, Spinner, useToast } from "../components/ui";
-import { ApiError, get, patch, post, type Block, type Inline, type Me, type ReaderSettings } from "../lib/api";
+import { ApiError, get, patch, post, uuid, type Block, type Inline, type Me, type ReaderSettings } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { latToCyr, useT } from "../lib/i18n";
 import { deviceId, flush, queueEvent, queueProgress } from "../lib/offline";
-import { backButton, canShareToStory, haptic, shareLink } from "../lib/tg";
+import { backButton, canShareToStory, haptic, shareLink, shareToStory } from "../lib/tg";
 
 const DEFAULTS: Required<ReaderSettings> = { theme: "dark", font: "serif", font_size: 19, line_height: 1.65, width: "normal", show_progress: true, original_script: false };
 const LS_SETTINGS = "hk_reader_settings";
@@ -45,8 +45,11 @@ function Inlines({ nodes, tr }: { nodes: Inline[]; tr: (s: string) => string }) 
   );
 }
 
-function BlockView({ b, tr, images, marked }: { b: Block; tr: (s: string) => string; images: Record<string, string>; marked: { hl: boolean; bm: boolean } }) {
+function BlockView({ b, tr, images, marked, inline, onInline }: { b: Block; tr: (s: string) => string; images: Record<string, string>; marked: { hl: boolean; bm: boolean }; inline?: number; onInline?: (bid: string) => void }) {
   const cls = `${marked.hl ? "hl" : ""} ${marked.bm ? "bm" : ""}`.trim() || undefined;
+  const badge = inline ? (
+    <button className="inline-badge" aria-label={`${inline} izoh`} onClick={(e) => { e.stopPropagation(); onInline?.(b.attrs.bid); }}>💬 {inline}</button>
+  ) : null;
   const p = { "data-bid": b.attrs.bid, className: cls } as const;
   switch (b.type) {
     case "heading":
@@ -63,7 +66,7 @@ function BlockView({ b, tr, images, marked }: { b: Block; tr: (s: string) => str
         </figure>
       );
     default:
-      return <p {...p} style={{ position: "relative" }}><Inlines nodes={b.content} tr={tr} /></p>;
+      return <p {...p} style={{ position: "relative" }}><Inlines nodes={b.content} tr={tr} />{badge}</p>;
   }
 }
 
@@ -162,6 +165,12 @@ export default function Reader() {
   const cyr = me?.script === "cyrl" && !settings.original_script && d?.work.script === "latn";
   const tr = useCallback((s: string) => (cyr ? latToCyr(s) : s), [cyr]);
   const blocks: Block[] = d?.content.content || [];
+  const inline = useQuery({
+    queryKey: ["inline", d?.chapter.id],
+    enabled: !!d && d.mode === "full" && d.work.comments_policy !== "closed",
+    queryFn: () => get<{ counts: Record<string, number> }>(`/works/${d.work.id}/chapters/${d.chapter.id}/inline-counts`),
+  });
+  const [recapOpen, setRecapOpen] = useState(false);
   const markSets = useMemo(() => ({ hl: new Set((marks.data?.highlights || []).map((h: any) => h.block_id)), bm: new Set((marks.data?.bookmarks || []).map((b: any) => b.block_id)) }), [marks.data]);
 
   // Telegram back button returns to the work page
@@ -337,9 +346,16 @@ export default function Reader() {
       <div className="rtext" ref={textRef} onClick={onTextClick} style={{ fontSize: settings.font_size, lineHeight: settings.line_height }}>
         {d.audio && d.mode === "full" && <AudioPlayer assetId={d.audio.asset_id} />}
         <h1 className="ch-title">{tr(d.chapter.title)}</h1>
+        {d.recap && (
+          <div className="panel recap" onClick={(e) => { e.stopPropagation(); setRecapOpen(!recapOpen); }} style={{ fontFamily: "var(--font-sans)", marginBottom: 18 }}>
+            <div className="row"><b className="grow small">↺ {t("Qayerda to'xtagandim?")}</b><span className="tiny dim">{recapOpen ? "▲" : "▼"}</span></div>
+            {recapOpen && <p className="small mt8" style={{ whiteSpace: "pre-wrap", margin: "8px 0 0" }}><span className="dim">{tr(d.recap.chapter_title)}: </span>{tr(d.recap.text)}</p>}
+          </div>
+        )}
         <div className={d.mode === "preview" ? "fade-out" : ""} style={{ ["--fade-to" as any]: fadeTo }}>
           {blocks.map((b) => (
-            <BlockView key={b.attrs.bid} b={b} tr={tr} images={d.images || {}} marked={{ hl: markSets.hl.has(b.attrs.bid), bm: markSets.bm.has(b.attrs.bid) }} />
+            <BlockView key={b.attrs.bid} b={b} tr={tr} images={d.images || {}} marked={{ hl: markSets.hl.has(b.attrs.bid), bm: markSets.bm.has(b.attrs.bid) }}
+              inline={inline.data?.counts?.[b.attrs.bid]} onInline={(bid) => nav(`/w/${d.work.code}/comments?chapter=${d.chapter.id}&block=${bid}`)} />
           ))}
         </div>
         {d.mode === "preview" && (
@@ -421,20 +437,48 @@ export default function Reader() {
         )}
       </Sheet>
 
-      <SelectionSheet open={sheet === "select"} selection={selection} onClose={() => { setSheet(null); setSelection(null); }} onHighlight={saveHighlight} onIssue={reportIssue} canSave={d.mode === "full"} work={d.work} />
+      <SelectionSheet open={sheet === "select"} selection={selection} onClose={() => { setSheet(null); setSelection(null); }} onHighlight={saveHighlight} onIssue={reportIssue} canSave={d.mode === "full"} work={d.work} chapterId={d.chapter.id} isAuthor={!!me?.author || !!me?.is_staff} onCommented={() => inline.refetch()} />
     </div>
   );
 }
 
-function SelectionSheet({ open, selection, onClose, onHighlight, onIssue, canSave, work }: { open: boolean; selection: { bid: string; quote: string } | null; onClose: () => void; onHighlight: (note?: string) => void; onIssue: (note: string) => void; canSave: boolean; work: any }) {
+function SelectionSheet({ open, selection, onClose, onHighlight, onIssue, canSave, work, chapterId, isAuthor, onCommented }: { open: boolean; selection: { bid: string; quote: string } | null; onClose: () => void; onHighlight: (note?: string) => void; onIssue: (note: string) => void; canSave: boolean; work: any; chapterId: number; isAuthor: boolean; onCommented: () => void }) {
   const t = useT();
-  const [mode, setMode] = useState<"" | "note" | "issue">("");
+  const toast = useToast();
+  const [mode, setMode] = useState<"" | "note" | "issue" | "comment">("");
   const [text, setText] = useState("");
+  const [busy, setBusy] = useState(false);
   useEffect(() => { if (!open) { setMode(""); setText(""); } }, [open]);
   if (!selection) return null;
+  const q = selection.quote.trim().slice(0, 200);
   const shareQuote = () => {
-    const q = selection.quote.slice(0, 200);
     shareLink(`https://t.me/share/url`, `«${q}» — ${work.title}`);
+  };
+  const quoteCard = async () => {
+    setBusy(true);
+    try {
+      const r = await post<{ image_url: string; link: string; text: string }>("/share/quote-card", { chapter_id: chapterId, block_id: selection.bid, text: q, theme: "paper" });
+      if (canShareToStory()) shareToStory(r.image_url, r.text, r.link);
+      else shareLink(r.link, `${r.text}\n${r.image_url}`);
+      onClose();
+    } catch (e: any) { toast(e.message, true); } finally { setBusy(false); }
+  };
+  const storyDraft = async () => {
+    setBusy(true);
+    try {
+      await post("/studio/storis/quote-draft", { chapter_id: chapterId, block_id: selection.bid, text: q, theme: "night" });
+      toast(t("Storis qoralamasi yaratildi: Ijod ustaxonasi → Storis"));
+      onClose();
+    } catch (e: any) { toast(e.message, true); } finally { setBusy(false); }
+  };
+  const sendComment = async () => {
+    setBusy(true);
+    try {
+      await post(`/works/${work.id}/comments`, { body: text, chapter_id: chapterId, block_id: selection.bid, quote: q, client_key: uuid() });
+      toast(t("Izoh qo'shildi"));
+      onCommented();
+      onClose();
+    } catch (e: any) { toast(e.message, true); } finally { setBusy(false); }
   };
   return (
     <Sheet open={open} onClose={onClose} label={t("Belgilangan matn")}>
@@ -443,14 +487,17 @@ function SelectionSheet({ open, selection, onClose, onHighlight, onIssue, canSav
         <div className="stack mt16">
           {canSave && <button className="btn block" onClick={() => onHighlight()}>✨ {t("Iqtibosni saqlash")}</button>}
           {canSave && <button className="btn block" onClick={() => setMode("note")}>📝 {t("Shaxsiy eslatma")}</button>}
+          {canSave && work.comments_policy !== "closed" && <button className="btn block" onClick={() => setMode("comment")}>💬 {t("Shu joyga izoh")}</button>}
           <button className="btn block" onClick={() => setMode("issue")}>🛠 {t("Xato haqida xabar")}</button>
+          {canSave && <button className="btn block" disabled={busy} onClick={quoteCard}>🖼 {canShareToStory() ? t("Iqtibos kartasi → storis") : t("Iqtibos kartasi")}</button>}
+          {canSave && isAuthor && <button className="btn ghost block" disabled={busy} onClick={storyDraft}>✍️ {t("Muallif storisi qoralamasi")}</button>}
           <button className="btn ghost block" onClick={shareQuote}>{t("Ulashish (200 belgigacha)")}</button>
           {canShareToStory() && <p className="tiny dim">{t("Telegram storisiga ulashish ixtiyoriy alohida amal.")}</p>}
         </div>
       ) : (
         <div className="stack mt16">
-          <textarea className="textarea" autoFocus maxLength={mode === "note" ? 2000 : 1000} value={text} onChange={(e) => setText(e.target.value)} placeholder={mode === "note" ? t("Faqat sizga ko'rinadi") : t("Qanday xato? (imlo, mantiq...)")} />
-          <button className="btn primary block" disabled={!text.trim()} onClick={() => (mode === "note" ? onHighlight(text) : onIssue(text))}>{t("Saqlash")}</button>
+          <textarea className="textarea" autoFocus maxLength={mode === "note" || mode === "comment" ? 2000 : 1000} value={text} onChange={(e) => setText(e.target.value)} placeholder={mode === "note" ? t("Faqat sizga ko'rinadi") : mode === "comment" ? t("Boshqa o'quvchilar ham ko'radi. Spoiler yozmang.") : t("Qanday xato? (imlo, mantiq...)")} />
+          <button className="btn primary block" disabled={!text.trim() || busy} onClick={() => (mode === "note" ? onHighlight(text) : mode === "comment" ? sendComment() : onIssue(text))}>{mode === "comment" ? t("Yuborish") : t("Saqlash")}</button>
         </div>
       )}
     </Sheet>

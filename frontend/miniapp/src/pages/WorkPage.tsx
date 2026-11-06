@@ -173,6 +173,9 @@ export default function WorkPage() {
         <div className="pad mt8"><button className="link small" onClick={notifyComplete}>{st.notify_on_complete ? "🔔 " + t("Tugaganda xabar beriladi") : "🔕 " + t("Tugaganda menga ayting")}</button></div>
       )}
 
+      <AiRecap workId={w.id} hasProgress={!!progress} />
+      <Characters workId={w.id} />
+
       <section className="section">
         <div className="section-h"><h2>{t("Mundarija")}</h2><span className="small dim">{toc.length} {t("bob")}</span></div>
         <div className="toc">
@@ -266,5 +269,58 @@ export function ReportSheet({ open, onClose, targetType, targetId }: { open: boo
         ))}
       </div>
     </Sheet>
+  );
+}
+
+
+/** Character cards: only those revealed by chapters this reader has finished (no spoilers). */
+function Characters({ workId }: { workId: number }) {
+  const t = useT();
+  const q = useQuery({ queryKey: ["characters", workId], queryFn: () => get(`/works/${workId}/characters`) });
+  const items: any[] = q.data?.items || [];
+  if (!items.length && !q.data?.hidden_count) return null;
+  return (
+    <section className="section">
+      <div className="section-h"><h2>{t("Qahramonlar")}</h2></div>
+      <div className="pad stack">
+        {items.map((c) => (
+          <div key={c.id} className="char-card">
+            {c.avatar_url ? <img src={c.avatar_url} alt="" /> : <div className="ph">{c.name[0]}</div>}
+            <div className="grow"><b>{c.name}</b>{c.description && <div className="small muted" style={{ whiteSpace: "pre-wrap" }}>{c.description}</div>}</div>
+          </div>
+        ))}
+        {q.data?.hidden_count > 0 && <p className="tiny dim">🔒 {q.data.hidden_count} {t("ta qahramon keyingi boblarni o'qiganingizda ochiladi")}</p>}
+      </div>
+    </section>
+  );
+}
+
+/** Optional AI recap of what the reader has already read (server sends only read + accessible chapters). */
+function AiRecap({ workId, hasProgress }: { workId: number; hasProgress: boolean }) {
+  const t = useT();
+  const toast = useToast();
+  const status = useQuery({ queryKey: ["ai-status"], queryFn: () => get("/ai/status"), staleTime: 600_000 });
+  const [busy, setBusy] = useState(false);
+  const [res, setRes] = useState<any>(null);
+  if (!status.data?.enabled || !hasProgress) return null;
+  const run = async () => {
+    setBusy(true);
+    try { setRes(await post(`/ai/works/${workId}/recap`)); } catch (e: any) { toast(e.message, true); } finally { setBusy(false); }
+  };
+  return (
+    <div className="pad mt16">
+      {!res ? (
+        <button className="btn ghost block" disabled={busy} onClick={run}>{busy ? t("Tayyorlanmoqda…") : "✨ " + t("Shu joygacha nima bo'lgan edi? (AI)")}</button>
+      ) : res.status !== "ok" ? (
+        <div className="panel small muted">{res.message}</div>
+      ) : (
+        <div className="panel">
+          <div className="tiny dim">{t("«{x}» bobigacha").replace("{x}", res.up_to_chapter.title)}</div>
+          <p className="small mt8" style={{ whiteSpace: "pre-wrap" }}>{res.recap}</p>
+          {!!res.characters?.length && <ul className="small" style={{ paddingLeft: 18 }}>{res.characters.map((c: any) => <li key={c.name}><b>{c.name}</b> — {c.note}</li>)}</ul>}
+          <p className="tiny dim">{res.note}</p>
+        </div>
+      )}
+    </div>
   );
 }
