@@ -7,8 +7,7 @@ from datetime import date, timedelta
 from sqlalchemy import select
 
 from app.config import get_settings
-from app.core.timeutil import utcnow
-from app.models import Notification, QualifiedRead, Referral, User
+from app.models import Notification, QualifiedRead, Referral
 from app.services.growth import reward_referrals
 from app.services.notify import process_outbox
 from tests.conftest import H, init_data_for, login
