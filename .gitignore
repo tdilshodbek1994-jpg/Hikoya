@@ -218,3 +218,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# HIKOYA PRO
+backend/var/
+node_modules/
+frontend/miniapp/dist/
+*.local

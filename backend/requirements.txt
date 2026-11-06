@@ -1,0 +1,11 @@
+fastapi==0.162.0
+uvicorn[standard]==0.54.0
+sqlalchemy[asyncio]==2.1.8
+alembic==1.20.1
+aiosqlite
+asyncpg
+pydantic-settings==2.16.2
+aiogram==3.31.0
+httpx
+python-multipart
+python-docx
