@@ -59,17 +59,18 @@ async def seed_reference(db: AsyncSession) -> None:
     if not await db.scalar(select(CuratedCollection.id).limit(1)):
         db.add(CuratedCollection(slug="editors-choice", title="Muharrir tavsiyasi", description="Tahririyat qo'lda tanlagan asarlar"))
     if not await db.scalar(select(Product.id).limit(1)):
-        # Demo prices only. Real payments stay off until the owner sets and activates a price.
-        p1 = Product(sku="premium_30d", title="HIKOYA PRO Premium — 30 kun", description="Premium katalogdagi barcha asarlar. Har 30 kunda yangilanadi.", access_scope="premium", pricing_type="subscription", active=False, sort_order=0)
+        # Demo prices are shown as «demo» and can never be paid (is_demo). The owner sets a real price
+        # with /price or the admin API; that creates a new non-demo version. 90/365-day packages stay off.
+        p1 = Product(sku="premium_30d", title="HIKOYA PRO Premium — 30 kun", description="Premium katalogdagi barcha asarlar. Har 30 kunda yangilanadi.", access_scope="premium", pricing_type="subscription", active=True, sort_order=0)
         p2 = Product(sku="premium_90d", title="Premium — 90 kun (bir martalik)", description="90 kunlik bir martalik paket, avtomatik yangilanmaydi.", access_scope="premium", pricing_type="one_time", active=False, sort_order=1)
         p3 = Product(sku="premium_365d", title="Premium — 365 kun (bir martalik)", description="365 kunlik bir martalik paket, avtomatik yangilanmaydi.", access_scope="premium", pricing_type="one_time", active=False, sort_order=2)
         db.add_all([p1, p2, p3])
         await db.flush()
         db.add_all(
             [
-                ProductVersion(product_id=p1.id, version=1, amount=150, duration_days=30, active=False, is_demo=True),
-                ProductVersion(product_id=p2.id, version=1, amount=400, duration_days=90, active=False, is_demo=True),
-                ProductVersion(product_id=p3.id, version=1, amount=1400, duration_days=365, active=False, is_demo=True),
+                ProductVersion(product_id=p1.id, version=1, amount=150, duration_days=30, active=True, is_demo=True),
+                ProductVersion(product_id=p2.id, version=1, amount=400, duration_days=90, active=True, is_demo=True),
+                ProductVersion(product_id=p3.id, version=1, amount=1400, duration_days=365, active=True, is_demo=True),
             ]
         )
     await db.flush()

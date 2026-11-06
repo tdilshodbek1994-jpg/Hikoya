@@ -46,6 +46,12 @@ async def db(_schema):
     from app.services.seed import seed_reference
 
     invalidate_cache()
+    from app.api.deps import limiter
+    from app.integrations.telegram import get_telegram
+
+    limiter._hits.clear()
+    get_telegram().fake_hook = None
+    get_telegram().calls.clear()
     async with sessionmaker()() as s:
         await seed_reference(s)
         await s.commit()

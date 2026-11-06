@@ -5,7 +5,7 @@ alembic==1.20.1
 aiosqlite
 asyncpg
 pydantic-settings==2.16.2
-aiogram==3.31.0
 httpx
 python-multipart
 python-docx
+boto3
