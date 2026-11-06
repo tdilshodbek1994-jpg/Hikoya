@@ -69,11 +69,30 @@ def _split_chapters(blocks: list[tuple[str, str]], warnings: list[str]) -> list[
     return out
 
 
+def decode_text(data: bytes, warnings: list[str]) -> str:
+    """UTF-8 first; a mostly-undecodable file is retried as Windows-1251 (common for Cyrillic texts)."""
+    if data.startswith(b"\xef\xbb\xbf"):
+        data = data[3:]
+    raw = data.decode("utf-8", errors="replace")
+    bad = raw.count("\ufffd")
+    if bad and bad > max(3, len(raw) // 50):
+        try:
+            alt = data.decode("cp1251")
+        except UnicodeDecodeError:
+            alt = ""
+        # only a real Cyrillic text is accepted as cp1251; random damage stays UTF-8 with a warning
+        cyr = sum(1 for ch in alt if "\u0400" <= ch <= "\u04ff")
+        if alt and cyr >= 20 and cyr >= 0.6 * sum(1 for ch in alt if ord(ch) > 127):
+            warnings.append("Fayl Windows-1251 kodlashida deb o'qildi. Matnni tekshirib chiqing.")
+            return alt
+    if bad:
+        warnings.append(f"{bad} ta belgi tanilmadi (buzilgan joy yoki boshqa kodlash), ular belgi bilan almashtirildi.")
+    return raw
+
+
 def parse_text(data: bytes, markdown: bool) -> tuple[list[dict], dict]:
     warnings: list[str] = []
-    raw = data.decode("utf-8", errors="replace")
-    if "�" in raw:
-        warnings.append("Ba'zi belgilar tanilmadi (kodlash UTF-8 emas bo'lishi mumkin)")
+    raw = decode_text(data, warnings)
     raw = clean_plain(raw)
     blocks: list[tuple[str, str]] = []
     for para in re.split(r"\n\s*\n", raw):

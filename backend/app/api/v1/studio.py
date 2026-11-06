@@ -679,6 +679,29 @@ async def work_stats(work_id: int, db: DB, actor: CurActor):
     }
 
 
+@router.get("/works/{work_id}/stats.csv")
+async def work_stats_csv(work_id: int, db: DB, actor: CurActor):
+    """T-58: export of the author's own aggregated numbers only (no reader ids, notes or purchases)."""
+    import csv
+    import io
+
+    from fastapi.responses import Response
+
+    data = await work_stats(work_id, db, actor)
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    w.writerow(["metric", "value"])
+    for k in ("unique_qualified_readers", "started", "finished", "start_to_finish", "likes", "thanks", "comments", "followers", "reads_from_storis"):
+        w.writerow([k, "" if data[k] is None else data[k]])
+    w.writerow([])
+    w.writerow(["chapter_id", "chapter_title", "completed", "next_transition"])
+    for c in data["chapters"]:
+        w.writerow([c["chapter_id"], c["title"], "" if c["completed"] is None else c["completed"], "" if c["next_transition"] is None else c["next_transition"]])
+    w.writerow([])
+    w.writerow(["note", data["note"]])
+    return Response(buf.getvalue(), media_type="text/csv; charset=utf-8", headers={"Content-Disposition": f'attachment; filename="work-{work_id}-stats.csv"'})
+
+
 @router.get("/audit")
 async def audit_log(db: DB, actor: CurActor, target_type: str | None = None, target_id: str | None = None, limit: int = 100):
     if not actor.has("audit.view"):

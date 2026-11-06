@@ -270,6 +270,11 @@ function WorkStats() {
           <tbody>{data.chapters.map((c: any) => <tr key={c.chapter_id}><td>{c.title}</td><td>{k(c.completed)}</td><td>{c.next_transition === null ? "—" : `${Math.round(c.next_transition * 100)}%`}</td></tr>)}</tbody>
         </table>
         <p className="tiny dim">{data.note}</p>
+        <button className="btn ghost" onClick={async () => {
+          const r = await fetch(`/api/v1/studio/works/${workId}/stats.csv`, { headers: { Authorization: `Bearer ${sessionStorage.getItem("hk_token")}` } });
+          const url = URL.createObjectURL(await r.blob());
+          const a = document.createElement("a"); a.href = url; a.download = `asar-${workId}-statistika.csv`; a.click();
+        }}>⬇️ {t("CSV yuklab olish")}</button>
       </div>
     </div>
   );

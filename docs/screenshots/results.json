@@ -65,6 +65,16 @@
     "info": ""
   },
   {
+    "name": "T-61 empty catalogue shows empty state",
+    "ok": true,
+    "info": ""
+  },
+  {
+    "name": "T-21 comment text kept after server error (and reload)",
+    "ok": true,
+    "info": "Juda ta'sirli hikoya ekan|Juda ta'sirli hikoya ekan"
+  },
+  {
     "name": "no JS errors (reader)",
     "ok": true,
     "info": ""

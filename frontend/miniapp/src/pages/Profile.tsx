@@ -12,6 +12,7 @@ export default function Profile() {
   const t = useT();
   const toast = useToast();
   const { data: ent } = useQuery({ queryKey: ["ent"], queryFn: () => get("/me/entitlements") });
+  const { data: rep } = useQuery({ queryKey: ["reading-report"], queryFn: () => get("/me/reading-report") });
   if (!me) return null;
   const save = async (body: Record<string, unknown>) => {
     try {
@@ -39,6 +40,28 @@ export default function Profile() {
         </div>
         {studio && <Link to="/studio" className="btn primary block">✍️ {t("Ijod ustaxonasi")}</Link>}
         {admin && <Link to="/admin" className="btn block">🛠 {t("Boshqaruv")}</Link>}
+
+        {rep && (
+          <div className="panel stack" style={{ gap: 8 }}>
+            <div className="row between"><b>{t("O'qish ritmi")}</b><span className="small muted">🔥 {rep.streak_days} {t("kun")}</span></div>
+            <div className="row" style={{ alignItems: "flex-end", gap: 6, height: 64 }} aria-label={t("Oxirgi 7 kun")}>
+              {rep.week.map((d: any) => {
+                const max = Math.max(10, ...rep.week.map((x: any) => x.minutes), rep.daily_goal_minutes || 0);
+                return (
+                  <div key={d.date} className="grow center" title={`${d.date}: ${d.minutes} daq`}>
+                    <div style={{ height: Math.max(3, (d.minutes / max) * 48), background: rep.daily_goal_minutes && d.minutes >= rep.daily_goal_minutes ? "var(--ok)" : "var(--accent)", borderRadius: 4 }} />
+                    <div className="tiny dim">{new Date(d.date).getDate()}</div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="small muted">
+              {t("Haftada")}: {rep.total_minutes} {t("daq")} · {rep.chapters_completed} {t("bob")}
+              {rep.daily_goal_minutes ? ` · ${t("Bugun")}: ${rep.today_minutes}/${rep.daily_goal_minutes} ${t("daq")}${rep.goal_reached_today ? " ✓" : ""}` : ""}
+            </div>
+            <span className="tiny dim">{t(rep.note)}</span>
+          </div>
+        )}
 
         <h3 className="mt16">{t("Ko'rinish")}</h3>
         <div className="panel stack">

@@ -40,10 +40,15 @@ def sniff(data: bytes, filename: str = "") -> tuple[str, str]:
         return "video", "video/mp4"
     if head.startswith(b"PK\x03\x04") and name.endswith(".docx"):
         return "docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    is_text_name = name.endswith((".txt", ".md", ".markdown")) or not name
+    sample = data[:200_000]
+    if is_text_name and b"\x00" not in sample:
+        # damaged bytes or a legacy encoding (cp1251) are reported by the importer, not rejected here
+        return "text", "text/markdown" if name.endswith((".md", ".markdown")) else "text/plain"
     try:
-        data[:200_000].decode("utf-8")
-        if name.endswith((".txt", ".md", ".markdown")) or not name:
-            return "text", "text/markdown" if name.endswith((".md", ".markdown")) else "text/plain"
+        sample.decode("utf-8")
+        if is_text_name:
+            return "text", "text/plain"
     except UnicodeDecodeError:
         pass
     raise Invalid("Fayl turi qo'llab-quvvatlanmaydi (TXT, DOCX, MD, PDF, JPG/PNG/WebP, MP3/M4A, MP4)", code="unsupported_file")

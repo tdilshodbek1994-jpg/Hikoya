@@ -327,3 +327,44 @@ async def dismiss(body: DismissIn, db: DB, actor: CurActor):
 async def undismiss(target_type: str, target_id: int, db: DB, actor: CurActor):
     await db.execute(delete(Dismissal).where(Dismissal.user_id == actor.id, Dismissal.target_type == target_type, Dismissal.target_id == target_id))
     return {"ok": True}
+
+
+@router.get("/me/reading-report")
+async def reading_report(db: DB, actor: CurActor):
+    """Optional reading rhythm (spec 23.10): last 7 days of active minutes, goal and streak.
+
+    Private to the user; not connected to money, TOP or forced messages.
+    """
+    from datetime import timedelta
+
+    from app.core.timeutil import local_date, tz, utcnow
+    from app.models import ChapterCompletion, ReadingSession
+
+    today = local_date()
+    since = utcnow() - timedelta(days=60)
+    rows = (await db.execute(select(ReadingSession.started_at, ReadingSession.active_seconds).where(ReadingSession.user_id == actor.id, ReadingSession.started_at >= since))).all()
+    per_day: dict = {}
+    for started, secs in rows:
+        d = started.astimezone(tz()).date()
+        per_day[d] = per_day.get(d, 0.0) + float(secs or 0)
+    days = [today - timedelta(days=i) for i in range(6, -1, -1)]
+    week = [{"date": d.isoformat(), "minutes": round(per_day.get(d, 0) / 60)} for d in days]
+    streak = 0
+    d = today if per_day.get(today, 0) >= 60 else today - timedelta(days=1)
+    while per_day.get(d, 0) >= 60:  # a day counts with at least one active minute
+        streak += 1
+        d -= timedelta(days=1)
+    week_start = utcnow() - timedelta(days=7)
+    chapters = await db.scalar(select(func.count()).select_from(ChapterCompletion).where(ChapterCompletion.user_id == actor.id, ChapterCompletion.completed_at >= week_start)) or 0
+    goal = actor.user.daily_goal_minutes
+    today_min = week[-1]["minutes"]
+    return {
+        "week": week,
+        "total_minutes": sum(x["minutes"] for x in week),
+        "chapters_completed": chapters,
+        "streak_days": streak,
+        "daily_goal_minutes": goal,
+        "today_minutes": today_min,
+        "goal_reached_today": bool(goal and today_min >= goal),
+        "note": "Faqat sizga ko'rinadi. TOP yoki to'lovga ta'sir qilmaydi.",
+    }

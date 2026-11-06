@@ -112,6 +112,26 @@ const noOverflow = (p) => p.evaluate(() => document.documentElement.scrollWidth 
   await p.waitForTimeout(500);
   await p.screenshot({ path: `${out}/10-storis.png` });
   check("storis viewer opens", true);
+  // T-61: empty catalogue result → clear empty state, no endless spinner
+  await p.goto(base + "/catalog?genre=triller&access=purchase&status=paused");
+  await p.waitForSelector(".empty", { timeout: 8000 });
+  check("T-61 empty catalogue shows empty state", (await p.locator(".spin").count()) === 0 && (await p.locator(".empty .btn").count()) === 1);
+  // T-21: server error while posting a comment → text stays, no false success
+  await p.goto(base + "/catalog?genre=oilaviy");
+  await p.locator(".grid .card").first().click();
+  await p.waitForSelector(".hero");
+  await p.locator("a.counter-btn").click();
+  await p.waitForSelector(".composer textarea");
+  await p.route(/\/api\/v1\/works\/\d+\/comments$/, (r) => (r.request().method() === "POST" ? r.fulfill({ status: 500, contentType: "application/json", body: JSON.stringify({ error_code: "error", message: "Server xatosi" }) }) : r.continue()));
+  await p.fill(".composer textarea", "Juda ta'sirli hikoya ekan");
+  await p.click(".composer .btn.primary");
+  await p.waitForSelector(".toast.err", { timeout: 5000 });
+  const kept = await p.inputValue(".composer textarea");
+  await p.reload();
+  await p.waitForSelector(".composer textarea");
+  const afterReload = await p.inputValue(".composer textarea");
+  check("T-21 comment text kept after server error (and reload)", kept === "Juda ta'sirli hikoya ekan" && afterReload === kept, `${kept}|${afterReload}`);
+  await p.unroute(/\/api\/v1\/works\/\d+\/comments$/);
   check("no JS errors (reader)", errors.length === 0, errors.join(" | ").slice(0, 300));
 
   // studio as owner
