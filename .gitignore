@@ -224,3 +224,4 @@ backend/var/
 node_modules/
 frontend/miniapp/dist/
 *.local
+backend/.env

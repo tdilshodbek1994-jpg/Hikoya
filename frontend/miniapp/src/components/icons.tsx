@@ -1,0 +1,28 @@
+const s = { width: 24, height: 24, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, "aria-hidden": true };
+
+export const IHome = () => (<svg {...s}><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" /></svg>);
+export const ISearch = () => (<svg {...s}><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>);
+export const ILib = () => (<svg {...s}><path d="M4 4h4v16H4zM10 4h4v16h-4zM16.5 4.5l3.5 1-4 14.5-3.5-1z" /></svg>);
+export const IPen = () => (<svg {...s}><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4z" /></svg>);
+export const IUser = () => (<svg {...s}><circle cx="12" cy="8" r="4" /><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" /></svg>);
+export const IBell = () => (<svg {...s}><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8" /><path d="M10 20a2 2 0 0 0 4 0" /></svg>);
+export const IBack = () => (<svg {...s}><path d="m15 18-6-6 6-6" /></svg>);
+export const IClose = () => (<svg {...s}><path d="M18 6 6 18M6 6l12 12" /></svg>);
+export const IHeart = ({ on }: { on?: boolean }) => (<svg {...s} fill={on ? "currentColor" : "none"}><path d="M12 20s-7-4.4-9-9a5 5 0 0 1 9-3 5 5 0 0 1 9 3c-2 4.6-9 9-9 9z" /></svg>);
+export const IThanks = () => (<svg {...s}><path d="M7 11v9H4v-9zM7 11l4-8a2 2 0 0 1 2 2v4h5a2 2 0 0 1 2 2.3l-1.2 7A2 2 0 0 1 16.8 20H7" /></svg>);
+export const IChat = () => (<svg {...s}><path d="M21 12a8 8 0 0 1-11.6 7.2L4 20l1-4.6A8 8 0 1 1 21 12z" /></svg>);
+export const IBookmark = ({ on }: { on?: boolean }) => (<svg {...s} fill={on ? "currentColor" : "none"}><path d="M6 3h12v18l-6-4-6 4z" /></svg>);
+export const IShare = () => (<svg {...s}><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v14" /></svg>);
+export const IList = () => (<svg {...s}><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg>);
+export const IAa = () => (<svg {...s}><path d="M3 19 8 5l5 14M4.8 14h6.4M15 19l3-8 3 8M16 16.5h4" /></svg>);
+export const IPrev = () => (<svg {...s}><path d="m11 17-5-5 5-5M18 17l-5-5 5-5" /></svg>);
+export const INext = () => (<svg {...s}><path d="m13 17 5-5-5-5M6 17l5-5-5-5" /></svg>);
+export const IStar = () => (<svg {...s} fill="currentColor" stroke="none"><path d="m12 2.5 2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" /></svg>);
+export const ILock = () => (<svg {...s} width={14} height={14}><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>);
+export const IPlay = () => (<svg {...s}><path d="M7 4v16l13-8z" /></svg>);
+export const IPause = () => (<svg {...s}><path d="M7 4h4v16H7zM13 4h4v16h-4z" /></svg>);
+export const IFile = () => (<svg {...s}><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z" /><path d="M14 3v5h5" /></svg>);
+export const IFlag = () => (<svg {...s}><path d="M5 21V4M5 4h11l-2 4 2 4H5" /></svg>);
+export const IMore = () => (<svg {...s}><circle cx="5" cy="12" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /></svg>);
+export const IPlus = () => (<svg {...s}><path d="M12 5v14M5 12h14" /></svg>);
+export const IAudio = () => (<svg {...s}><path d="M3 14v-2a9 9 0 0 1 18 0v2" /><rect x="3" y="14" width="4" height="6" rx="1" /><rect x="17" y="14" width="4" height="6" rx="1" /></svg>);

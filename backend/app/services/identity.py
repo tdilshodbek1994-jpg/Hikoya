@@ -125,21 +125,35 @@ async def can_review_work(db: AsyncSession, actor: Actor, work: Work) -> bool:
 
 
 async def upsert_user(db: AsyncSession, ident: TelegramIdentity) -> User:
-    user = await db.scalar(select(User).where(User.telegram_user_id == ident.telegram_user_id))
+    from sqlalchemy.dialects.postgresql import insert as pg_insert
+
     name = (ident.first_name + " " + ident.last_name).strip() or "O'quvchi"
     s = get_settings()
-    if user is None:
-        user = User(
+    # concurrent first logins (two tabs, StrictMode, retries) must not fail on the unique key
+    res = await db.execute(
+        pg_insert(User)
+        .values(
             telegram_user_id=ident.telegram_user_id,
             display_name=name,
             language="uz",
             script="cyrl" if ident.language_code in ("ru", "uz-cyrl") else "latn",
             is_test=ident.telegram_user_id in s.test_telegram_ids,
+            favorite_genre_ids=[],
+            reader_settings={},
         )
-        db.add(user)
-        await db.flush()
-        db.add(NotificationPreference(user_id=user.id, quiet_start=s.quiet_hours_start, quiet_end=s.quiet_hours_end))
-    else:
+        .on_conflict_do_nothing(index_elements=["telegram_user_id"])
+        .returning(User.id)
+    )
+    new_id = res.scalar()
+    if new_id is not None:
+        await db.execute(
+            pg_insert(NotificationPreference)
+            .values(user_id=new_id, quiet_start=s.quiet_hours_start, quiet_end=s.quiet_hours_end, disabled_types=[])
+            .on_conflict_do_nothing()
+        )
+    user = await db.scalar(select(User).where(User.telegram_user_id == ident.telegram_user_id).execution_options(populate_existing=True))
+    assert user is not None
+    if new_id is None:
         user.display_name = name
     if user.status == "blocked":
         raise Unauthorized("Hisob bloklangan", code="account_blocked")
