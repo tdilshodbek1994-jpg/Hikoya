@@ -75,13 +75,20 @@ def decode_cursor(cursor: str | None) -> int:
         return 0
 
 
-async def asset_urls(db: AsyncSession, ids: set[int]) -> dict[int, str]:
+async def asset_urls(db: AsyncSession, ids: set[int], width: int | None = None) -> dict[int, str]:
+    """Public URLs; with ``width`` the matching WebP variant is used when it exists."""
     ids = {i for i in ids if i}
     if not ids:
         return {}
     st = get_storage()
-    rows = (await db.execute(select(Asset.id, Asset.storage_key, Asset.visibility, Asset.processing_state).where(Asset.id.in_(ids)))).all()
-    return {r[0]: st.public_url(r[1]) for r in rows if r[2] == "public" and r[3] == "ready"}
+    rows = (await db.execute(select(Asset.id, Asset.storage_key, Asset.visibility, Asset.processing_state, Asset.meta).where(Asset.id.in_(ids)))).all()
+    out = {}
+    for aid, key, vis, state, meta in rows:
+        if vis != "public" or state != "ready":
+            continue
+        variant = ((meta or {}).get("variants") or {}).get(str(width)) if width else None
+        out[aid] = st.public_url(variant or key)
+    return out
 
 
 class CardBuilder:
@@ -96,7 +103,7 @@ class CardBuilder:
             return []
         author_ids = {w.primary_author_id for w in works}
         authors = {a.id: a for a in (await self.db.scalars(select(AuthorProfile).where(AuthorProfile.id.in_(author_ids)))).all()}
-        covers = await asset_urls(self.db, {w.cover_asset_id for w in works if w.cover_asset_id})
+        covers = await asset_urls(self.db, {w.cover_asset_id for w in works if w.cover_asset_id}, width=240)
         genres = {g.id: g for g in (await self.db.scalars(select(Genre).where(Genre.id.in_({w.primary_genre_id for w in works if w.primary_genre_id})))).all()}
         progress: dict[int, ReadingProgress] = {}
         if self.user and with_progress:

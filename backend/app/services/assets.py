@@ -68,6 +68,52 @@ def limit_for(kind: str, source: str) -> int:
     }[kind] * MIB
 
 
+VARIANT_WIDTHS = (240, 640)
+MAX_PIXELS = 40_000_000  # decompression-bomb guard
+
+
+def _image_variants(data: bytes) -> tuple[dict, dict[str, bytes]]:
+    """Validate an image and build WebP variants without EXIF (GPS etc. is dropped)."""
+    import io
+
+    from PIL import Image, ImageOps
+
+    Image.MAX_IMAGE_PIXELS = MAX_PIXELS
+    try:
+        with Image.open(io.BytesIO(data)) as probe:
+            probe.verify()
+        img = Image.open(io.BytesIO(data))
+        img = ImageOps.exif_transpose(img)
+    except (Image.DecompressionBombError, Image.DecompressionBombWarning) as e:
+        raise Invalid("Rasm o'lchami juda katta", code="image_too_large") from e
+    except Exception as e:
+        raise Invalid("Rasm buzilgan yoki o'qib bo'lmadi", code="image_invalid") from e
+    meta = {"width": img.width, "height": img.height}
+    out: dict[str, bytes] = {}
+    fmt = (Image.open(io.BytesIO(data)).format or "PNG").upper()
+    if img.mode not in ("RGB", "RGBA"):
+        img = img.convert("RGBA" if "A" in img.getbands() else "RGB")
+    # the stored original is re-encoded too, so no camera/GPS metadata is ever published
+    clean = io.BytesIO()
+    if fmt == "JPEG":
+        img.convert("RGB").save(clean, "JPEG", quality=92, optimize=True)
+    elif fmt == "WEBP":
+        img.save(clean, "WEBP", quality=90)
+    else:
+        img.save(clean, "PNG", optimize=True)
+    out["original"] = clean.getvalue()
+    for w in VARIANT_WIDTHS:
+        if img.width <= w and w != VARIANT_WIDTHS[0]:
+            continue
+        v = img.copy()
+        if v.width > w:
+            v.thumbnail((w, w * 4))
+        buf = io.BytesIO()
+        v.save(buf, "WEBP", quality=82, method=4)
+        out[str(w)] = buf.getvalue()
+    return meta, out
+
+
 def _media_meta(kind: str, data: bytes) -> dict:
     meta: dict = {}
     if kind == "image":
@@ -89,6 +135,15 @@ async def store_upload(db: AsyncSession, owner_id: int | None, data: bytes, file
     key = f"{kind}/{checksum[:2]}/{checksum}-{secrets.token_hex(4)}"
     # public only for cover/avatar images; originals are private by default
     public = public and kind == "image"
+    variant_keys: dict[str, str] = {}
+    img_meta: dict = {}
+    if kind == "image":
+        img_meta, variants = _image_variants(data)
+        data = variants.pop("original")
+        for w, vdata in variants.items():
+            vkey = f"{key}-w{w}.webp"
+            await get_storage().put(vkey, vdata, "image/webp", public)
+            variant_keys[w] = vkey
     await get_storage().put(key, data, mime, public)
     asset = Asset(
         owner_id=owner_id,
@@ -100,7 +155,7 @@ async def store_upload(db: AsyncSession, owner_id: int | None, data: bytes, file
         storage_key=key,
         visibility="public" if public else "private",
         processing_state="ready",
-        meta={**_media_meta(kind, data), **(meta or {})},
+        meta={**_media_meta(kind, data), **img_meta, **(meta or {}), **({"variants": variant_keys} if variant_keys else {})},
     )
     db.add(asset)
     await db.flush()
@@ -112,6 +167,8 @@ async def make_public(db: AsyncSession, asset: Asset) -> None:
         raise Invalid("Faqat rasm ochiq bo'lishi mumkin", code="not_image")
     if asset.visibility != "public":
         await get_storage().make_public(asset.storage_key, asset.mime)
+        for vkey in (asset.meta or {}).get("variants", {}).values():
+            await get_storage().make_public(vkey, "image/webp")
         asset.visibility = "public"
 
 

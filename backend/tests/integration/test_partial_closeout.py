@@ -92,3 +92,40 @@ async def test_reading_report(client, db):
     await db.commit()
     r = (await client.get("/api/v1/me/reading-report", headers=hdr)).json()
     assert len(r["week"]) == 7 and r["today_minutes"] == 12 and r["goal_reached_today"] is True and r["streak_days"] == 1
+
+
+async def test_image_variants_strip_exif_and_reject_bombs(client, db):
+    import io
+
+    from PIL import Image
+
+    from app.models import Asset
+    from app.services.assets import store_upload
+
+    img = Image.new("RGB", (1200, 1800), (120, 90, 200))
+    exif = Image.Exif()
+    exif[0x010F] = "SecretCam"  # Make
+    exif[0x0110] = "Model-X"
+    buf = io.BytesIO()
+    img.save(buf, "JPEG", exif=exif)
+    w, _, owner = await make_work(db)
+    a = await store_upload(db, owner.id, buf.getvalue(), "muqova.jpg", public=True)
+    assert a.meta["width"] == 1200 and set(a.meta["variants"]) == {"240", "640"}
+    from app.integrations.storage import get_storage
+
+    small = await get_storage().get(a.meta["variants"]["240"], True)
+    v = Image.open(io.BytesIO(small))
+    assert v.width == 240 and v.format == "WEBP" and not v.getexif().get(0x010F) and b"SecretCam" not in small
+    orig = await get_storage().get(a.storage_key, True)
+    assert b"SecretCam" not in orig
+    w.cover_asset_id = a.id
+    await db.commit()
+    card = (await client.get("/api/v1/works")).json()["items"][0]
+    assert card["cover_url"].endswith("-w240.webp")
+    import pytest
+
+    from app.core.errors import Invalid
+
+    with pytest.raises(Invalid):
+        await store_upload(db, owner.id, b"\x89PNG\r\n\x1a\n" + b"\x00" * 64, "buzuq.png")
+    assert await db.get(Asset, a.id)

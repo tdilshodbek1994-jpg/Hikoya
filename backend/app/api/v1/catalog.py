@@ -337,7 +337,7 @@ async def _chapter_payload(db, actor, ent, chapter_id: int, *, device_id: str = 
         if full:
             sess = await start_session(db, user, work, chapter, rev.id, device_id, False, len(rev.block_ids or []))
             session_id = sess.public_id
-    images = await asset_urls(db, set(cs.asset_ids(doc)))
+    images = await asset_urls(db, set(cs.asset_ids(doc)), width=640)
     audio = None
     if full and chapter.has_audio:
         link = await db.scalar(select(AssetLink).where(AssetLink.target_type == "chapter", AssetLink.target_id == chapter.id, AssetLink.purpose == "audio"))

@@ -8,3 +8,4 @@ httpx
 python-multipart
 python-docx
 boto3
+pillow==13.0.0
