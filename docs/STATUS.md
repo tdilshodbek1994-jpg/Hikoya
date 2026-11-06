@@ -41,6 +41,9 @@
 | Muallif ulushi | alohida sotilgan asardan foiz (`HIKOYA_ROYALTY_SHARE_PERCENT`); kutilmoqda → tayyor (refund muddati o'tgach) → to'langan; refundda qaytariladi; to'lov ilovadan tashqarida qilinib admin panelda qayd etiladi |
 | AI (ixtiyoriy) | rasmiy `anthropic` SDK, `claude-opus-5-5`, structured output, rad javobida server-side fallback; muallif: annotatsiya variantlari, imlo takliflari (bittalab qabul, yangi qoralama versiya); o'quvchi: o'qiganigacha qisqa mazmun (faqat o'qilgan va ochiq boblar), tabiiy tilda qidiruv; har chaqiruv jurnalda, kunlik limit |
 | Import | TXT, Markdown, DOCX, EPUB (spine tartibi), PDF (matn qatlami; skaner qilingan PDF uchun aniq xabar) |
+| Tarmoqlanuvchi hikoyalar | bob oxirida 4 tagacha tanlov (matn + qaysi bobga); o'quvchiga «Keyingi bob» o'rniga tanlov tugmalari; qulflangan yo'l belgilanadi, ochilmaydi; tanlovni o'zgartirish mumkin; boshqa o'quvchilar foizi faqat tanlagandan keyin ko'rinadi; spoiler qoidasi tarmoqli asarda faqat tugatilgan boblarga tayanadi |
+| Audio va matn | muallif audioni tinglab, har xatboshi boshlanganda unga bosadi; o'quvchida o'qilayotgan xatboshi yoritiladi va ekran unga suriladi; xatboshiga bosilsa audio o'sha joydan davom etadi (xatboshi darajasida, so'z darajasida emas) |
+| Rus tili | interfeys tarjimasi (Profil → «Ilova tili»); asarlar matni tarjima qilinmaydi; lug'atda yo'q matn o'zbekcha qoladi |
 | Media | MP4/M4A davomiyligi serverda o'qiladi (storis video chegarasi ishlaydi); ixtiyoriy ClamAV tekshiruvi |
 | Deploy | Docker image'lar, docker-compose, Caddy HTTPS, `.env.example`, Makefile, backup/restore. Bu muhitda build va ishga tushirish sinaldi |
 
@@ -55,10 +58,9 @@
 8. **Sovg'a qabul qiluvchisi Telegram ID bilan topiladi** (username bilan qidirish spec bo'yicha taqiqlangan). ID Profil sahifasida ko'rsatiladi.
 
 ## Bajarilmagan (ataylab qoldirilgan)
-- **Tarmoqlanuvchi hikoyalar** (o'quvchi tanlovi bilan boshqa bobga o'tish) — yangi kontent modeli va muharrir kerak; alohida bosqich sifatida rejalashtirish tavsiya etiladi.
-- **So'zma-so'z audio yoritish** — audio va matnni vaqt bo'yicha moslash (alignment) servisi kerak.
+- **So'zma-so'z audio yoritish** — nutqni aniqlash modeli kerak; hozir xatboshi darajasida sinxron bor.
 - **OCR** (skaner qilingan PDF/rasm) — og'ir model; hozir aniq xabar bilan rad etiladi.
-- **Rus tili tarjimasi** — lug'at tayyor, tarjima matnlari yo'q.
+- **Bot xabarlari rus tilida** — bot matnlari hozircha faqat o'zbekcha (Mini App interfeysi ruscha bo'la oladi).
 - **Royalti avtomatik to'lovi** — Stars'ni muallifga avtomatik o'tkazish API'si yo'q; to'lov qo'lda qilinib qayd etiladi.
 
 ## Deploydan keyingi tekshiruv ro'yxati (real Telegram)
@@ -77,8 +79,8 @@
 3. Kerak bo'lsa: AI kalitini ulash, royalti foizini belgilash, ClamAV va WAL nusxasini serverdan tashqariga yoqish.
 
 ## Raqamlar
-- Backend: 76 jadval, 153 API yo'li, 89 avtomatik test (unit + integratsiya, haqiqiy PostgreSQL).
+- Backend: 78 jadval, 156 API yo'li, 93 avtomatik test (unit + integratsiya, haqiqiy PostgreSQL).
 - Frontend: 30+ ekran, o'quvchi bundle'i ~125 KB gzip, studio alohida lazy chunk.
-- Smoke: 360 px, 18/18 (asosiy) + 15/15 (C bosqichi, `e2e/stage_c.cjs`).
+- Smoke: 360 px, 18/18 (asosiy) + 15/15 (C bosqichi, `e2e/stage_c.cjs`) + D bosqichi (`e2e/stage_d.cjs`).
 - Yuklama: 500 o'quvchi, ~100 so'rov/s, xato 0%, p95 136–285 ms.
 - Qabul sinovlari: 63 passed, 1 not_run (T-64, eski Telegram klienti).

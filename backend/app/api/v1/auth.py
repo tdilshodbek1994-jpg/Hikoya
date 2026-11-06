@@ -87,6 +87,7 @@ async def get_me(db: DB, actor: CurActor):
 
 class PrefsIn(BaseModel):
     script: str | None = None
+    language: str | None = None  # interface language: uz | ru (content stays in its own language)
     favorite_genre_ids: list[int] | None = None
     onboarding_done: bool | None = None
     reader_settings: dict | None = None
@@ -109,6 +110,10 @@ async def patch_prefs(body: PrefsIn, db: DB, actor: CurActor):
         if body.script not in ("latn", "cyrl"):
             raise Invalid("Noto'g'ri yozuv")
         u.script = body.script
+    if body.language is not None:
+        if body.language not in ("uz", "ru"):
+            raise Invalid("Noto'g'ri til")
+        u.language = body.language
     if body.favorite_genre_ids is not None:
         ids = list(dict.fromkeys(body.favorite_genre_ids))[:3]
         if ids and len((await db.scalars(select(Genre.id).where(Genre.id.in_(ids)))).all()) != len(ids):

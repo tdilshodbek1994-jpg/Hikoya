@@ -36,6 +36,11 @@ async def read_chapter_ids(db: AsyncSession, user_id: int | None, work_id: int) 
     if not user_id:
         return set()
     done = set((await db.scalars(select(ChapterCompletion.chapter_id).join(Chapter, Chapter.id == ChapterCompletion.chapter_id).where(ChapterCompletion.user_id == user_id, Chapter.work_id == work_id))).all())
+    from app.services.branching import work_is_branching
+
+    if await work_is_branching(db, work_id):
+        # branches are not read in sort order: only chapters actually finished count
+        return done
     prog = await db.get(ReadingProgress, (user_id, work_id))
     if prog and prog.furthest_sort_key:
         done |= set((await db.scalars(select(Chapter.id).where(Chapter.work_id == work_id, Chapter.sort_key < prog.furthest_sort_key))).all())

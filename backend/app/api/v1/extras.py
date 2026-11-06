@@ -256,3 +256,83 @@ class ApplyIn(BaseModel):
 async def ai_apply(request_id: int, body: ApplyIn, db: DB, actor: CurActor):
     return await ai.apply_proofread(db, actor, request_id, body.accepted)
 
+
+
+# ------------------------------------------------------------ branching stories
+
+class ChoiceItem(BaseModel):
+    label: str = Field(max_length=120)
+    target_chapter_id: int
+
+
+class ChoicesIn(BaseModel):
+    items: list[ChoiceItem] = Field(default_factory=list, max_length=4)
+
+
+async def _chapter(db, chapter_id: int) -> Chapter:
+    ch = await db.get(Chapter, chapter_id)
+    if ch is None or ch.is_deleted:
+        raise NotFound("Bob topilmadi")
+    return ch
+
+
+@router.get("/studio/chapters/{chapter_id}/choices")
+async def studio_choices(chapter_id: int, db: DB, actor: CurActor):
+    from app.services import branching
+
+    return {"items": await branching.studio_choices(db, actor, await _chapter(db, chapter_id))}
+
+
+@router.put("/studio/chapters/{chapter_id}/choices")
+async def put_choices(chapter_id: int, body: ChoicesIn, db: DB, actor: CurActor):
+    from app.services import branching
+
+    ch = await _chapter(db, chapter_id)
+    await branching.set_choices(db, actor, ch, [i.model_dump() for i in body.items])
+    return {"items": await branching.studio_choices(db, actor, ch)}
+
+
+@router.post("/chapters/{chapter_id}/choices/{choice_id}")
+async def make_choice(chapter_id: int, choice_id: int, db: DB, actor: CurActor, ent: Ents):
+    from app.services import branching
+
+    return await branching.choose(db, actor.user, ent, chapter_id, choice_id)
+
+
+# ------------------------------------------------------------ audio ↔ text sync
+
+class SyncMark(BaseModel):
+    bid: str = Field(max_length=32)
+    t: float
+
+
+class SyncIn(BaseModel):
+    marks: list[SyncMark] = Field(default_factory=list, max_length=2000)
+
+
+@router.get("/studio/chapters/{chapter_id}/audio-sync")
+async def get_audio_sync(chapter_id: int, db: DB, actor: CurActor):
+    from app.models import AssetLink, ChapterRevision
+    from app.core import content_schema as cs
+    from app.services.assets import signed_media_url
+
+    ch = await _chapter(db, chapter_id)
+    await _editable_work(db, actor, ch.work_id)
+    head = ch.published_revision_id or ch.draft_revision_id
+    rev = await db.get(ChapterRevision, head) if head else None
+    link = await db.scalar(select(AssetLink).where(AssetLink.target_type == "chapter", AssetLink.target_id == ch.id, AssetLink.purpose == "audio"))
+    blocks = [{"bid": b["attrs"]["bid"], "text": cs.block_text(b)[:200]} for b in (rev.content_json.get("content", []) if rev else []) if cs.block_text(b).strip()]
+    return {
+        "chapter": {"id": ch.id, "title": ch.title, "work_id": ch.work_id},
+        "audio_url": await signed_media_url(db, link.asset_id, ttl=3600) if link else None,
+        "blocks": blocks,
+        "marks": ch.audio_sync or [],
+    }
+
+
+@router.put("/studio/chapters/{chapter_id}/audio-sync")
+async def put_audio_sync(chapter_id: int, body: SyncIn, db: DB, actor: CurActor):
+    from app.services.audiosync import set_audio_sync
+
+    ch = await _chapter(db, chapter_id)
+    return {"marks": await set_audio_sync(db, actor, ch, [m.model_dump() for m in body.marks])}

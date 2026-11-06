@@ -178,3 +178,14 @@ class Dismissal(Base, Timestamped):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     target_type: Mapped[str] = mapped_column(String(16))  # work | genre | tag
     target_id: Mapped[int]
+
+
+class ReaderChoice(Base):
+    """The reader's latest pick at a branching point (one row per user and chapter; can be changed)."""
+
+    __tablename__ = "reader_choices"
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    chapter_id: Mapped[int] = mapped_column(ForeignKey("chapters.id", ondelete="CASCADE"), primary_key=True)
+    choice_id: Mapped[int] = mapped_column(ForeignKey("chapter_choices.id", ondelete="CASCADE"), index=True)
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now(), default=utcnow, onupdate=utcnow)

@@ -32,6 +32,7 @@ from app.models import (
 from app.services import catalog as cat
 from app.services.access import can_see_work_page, chapter_policy, decide_chapter_access
 from app.services.catalog import CardBuilder, asset_urls
+from app.services.branching import reader_choices
 from app.services.companion import recap_before
 from app.services.content import get_work_by_code
 from app.services.reading import get_progress, progress_dto, resolve_position, start_session
@@ -343,7 +344,9 @@ async def _chapter_payload(db, actor, ent, chapter_id: int, *, device_id: str = 
     if full and chapter.has_audio:
         link = await db.scalar(select(AssetLink).where(AssetLink.target_type == "chapter", AssetLink.target_id == chapter.id, AssetLink.purpose == "audio"))
         if link:
-            audio = {"asset_id": link.asset_id}
+            live = set(rev.block_ids or [])
+            # block-level audio ↔ text sync; marks for blocks removed by later edits are skipped
+            audio = {"asset_id": link.asset_id, "sync": [m for m in (chapter.audio_sync or []) if m.get("bid") in live]}
     return {
         "work": {"id": work.id, "code": work.short_code, "title": work.title, "script": work.script, "access_policy": work.access_policy, "comments_policy": work.comments_policy},
         "chapter": {"id": chapter.id, "title": chapter.title, "index": idx + 1, "total": len(ids), "minutes": minutes_for_words(chapter.words), "words": chapter.words},
@@ -361,6 +364,8 @@ async def _chapter_payload(db, actor, ent, chapter_id: int, *, device_id: str = 
         "session_id": session_id,
         # «Qayerda to'xtagandim?» — only the recap of a chapter this reader already finished
         "recap": await recap_before(db, user, chapter) if full else None,
+        # branching story: choices replace the linear «next chapter» button
+        "choices": await reader_choices(db, user, work, chapter, ent) if full else None,
     }
 
 

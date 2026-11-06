@@ -127,6 +127,8 @@ class Chapter(Base, Timestamped):
     preview_blocks: Mapped[int] = mapped_column(default=3)
     # «Qayerda to'xtagandim?» — author-written recap, shown only to readers who finished this chapter
     recap: Mapped[str] = mapped_column(Text, default="")
+    # audio ↔ text sync at block level: [{"bid": "...", "t": seconds}, ...] sorted by t
+    audio_sync: Mapped[list] = mapped_column(default=list)
     published_at: Mapped[datetime | None] = mapped_column(nullable=True)
     words: Mapped[int] = mapped_column(default=0)
     has_audio: Mapped[bool] = mapped_column(default=False)
@@ -344,3 +346,16 @@ class BetaReaderGrant(Base, Timestamped):
     expires_at: Mapped[datetime]
     redeemed_at: Mapped[datetime | None] = mapped_column(nullable=True)
     revoked_at: Mapped[datetime | None] = mapped_column(nullable=True)
+
+
+class ChapterChoice(Base, Timestamped):
+    """Branching story: a choice at the end of a chapter that leads to another chapter of the same work."""
+
+    __tablename__ = "chapter_choices"
+    __table_args__ = (UniqueConstraint("chapter_id", "target_chapter_id"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    chapter_id: Mapped[int] = mapped_column(ForeignKey("chapters.id", ondelete="CASCADE"), index=True)
+    target_chapter_id: Mapped[int] = mapped_column(ForeignKey("chapters.id", ondelete="CASCADE"))
+    label: Mapped[str] = mapped_column(String(120))
+    sort_order: Mapped[int] = mapped_column(default=0)

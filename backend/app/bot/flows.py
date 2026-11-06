@@ -87,6 +87,9 @@ async def cmd_start(db: AsyncSession, actor: Actor, payload: str) -> list[Reply]
     out: list[Reply] = []
     if payload.startswith(("w_", "c_", "a_", "st_")):
         out.append(Reply("Havola bo'yicha ochish:", [[webapp("📖 Ochish", payload)]]))
+    elif payload.startswith("b_"):
+        # beta-reader invite: the link itself is checked (and bound to this user) inside the app
+        out.append(Reply("Muallif sizni qoralamasini o'qishga taklif qildi. Matnni boshqalarga tarqatmang.", [[webapp("📝 Qoralamani ochish", payload[:60])]]))
     elif payload == "author_apply":
         t = SupportTicket(user_id=user.id, category="other", subject="Muallif bo'lish arizasi", status="open")
         db.add(t)

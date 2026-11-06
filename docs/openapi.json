@@ -9312,6 +9312,311 @@
     }
    }
   },
+  "/api/v1/studio/chapters/{chapter_id}/choices": {
+   "get": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Studio Choices",
+    "operationId": "studio_choices_api_v1_studio_chapters__chapter_id__choices_get",
+    "parameters": [
+     {
+      "name": "chapter_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Chapter Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "put": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Put Choices",
+    "operationId": "put_choices_api_v1_studio_chapters__chapter_id__choices_put",
+    "parameters": [
+     {
+      "name": "chapter_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Chapter Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ChoicesIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/chapters/{chapter_id}/choices/{choice_id}": {
+   "post": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Make Choice",
+    "operationId": "make_choice_api_v1_chapters__chapter_id__choices__choice_id__post",
+    "parameters": [
+     {
+      "name": "chapter_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Chapter Id"
+      }
+     },
+     {
+      "name": "choice_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Choice Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/studio/chapters/{chapter_id}/audio-sync": {
+   "get": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Get Audio Sync",
+    "operationId": "get_audio_sync_api_v1_studio_chapters__chapter_id__audio_sync_get",
+    "parameters": [
+     {
+      "name": "chapter_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Chapter Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "put": {
+    "tags": [
+     "extras"
+    ],
+    "summary": "Put Audio Sync",
+    "operationId": "put_audio_sync_api_v1_studio_chapters__chapter_id__audio_sync_put",
+    "parameters": [
+     {
+      "name": "chapter_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Chapter Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SyncIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/admin/genres": {
    "get": {
     "tags": [
@@ -11487,6 +11792,39 @@
     "type": "object",
     "title": "CharacterIn"
    },
+   "ChoiceItem": {
+    "properties": {
+     "label": {
+      "type": "string",
+      "maxLength": 120,
+      "title": "Label"
+     },
+     "target_chapter_id": {
+      "type": "integer",
+      "title": "Target Chapter Id"
+     }
+    },
+    "type": "object",
+    "required": [
+     "label",
+     "target_chapter_id"
+    ],
+    "title": "ChoiceItem"
+   },
+   "ChoicesIn": {
+    "properties": {
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/ChoiceItem"
+      },
+      "type": "array",
+      "maxItems": 4,
+      "title": "Items"
+     }
+    },
+    "type": "object",
+    "title": "ChoicesIn"
+   },
    "CollectionIn": {
     "properties": {
      "title": {
@@ -12095,6 +12433,17 @@
        }
       ],
       "title": "Script"
+     },
+     "language": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Language"
      },
      "favorite_genre_ids": {
       "anyOf": [
@@ -12777,6 +13126,39 @@
      "body"
     ],
     "title": "SupportIn"
+   },
+   "SyncIn": {
+    "properties": {
+     "marks": {
+      "items": {
+       "$ref": "#/components/schemas/SyncMark"
+      },
+      "type": "array",
+      "maxItems": 2000,
+      "title": "Marks"
+     }
+    },
+    "type": "object",
+    "title": "SyncIn"
+   },
+   "SyncMark": {
+    "properties": {
+     "bid": {
+      "type": "string",
+      "maxLength": 32,
+      "title": "Bid"
+     },
+     "t": {
+      "type": "number",
+      "title": "T"
+     }
+    },
+    "type": "object",
+    "required": [
+     "bid",
+     "t"
+    ],
+    "title": "SyncMark"
    },
    "TagIn": {
     "properties": {
