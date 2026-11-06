@@ -291,6 +291,7 @@ function Billing() {
           </div>
         ))}
         <p className="tiny dim">{t("Demo narx real to'lovni yoqmaydi. Narx o'rnatilgach yangi versiya yaratiladi.")}</p>
+        {can("billing.manage_products") && <WorkPrice />}
         <h3 className="mt16">{t("Holatlar")}</h3>
         {ov.data?.by_state.map((s: any) => <div key={s.state} className="small">{s.state}: {s.count} · {s.stars} ⭐</div>)}
         <h3 className="mt16">{t("Tekshiruv kerak bo'lgan to'lovlar")}</h3>
@@ -302,6 +303,21 @@ function Billing() {
         {ov.data?.open_refunds.map((r: any) => <div key={r.id} className="small">#{r.id} → {t("to'lov")} #{r.payment_id}: <span className="pill">{r.state}</span> {r.error}</div>)}
         <p className="tiny dim">{ov.data?.note}</p>
       </div>
+    </div>
+  );
+}
+
+function WorkPrice() {
+  const t = useT();
+  const act = useAct();
+  const [workId, setWorkId] = useState("");
+  const [amount, setAmount] = useState("");
+  return (
+    <div className="panel stack">
+      <b>{t("Alohida asarni sotish")}</b>
+      <span className="tiny dim">{t("Asar kirish siyosati «Alohida xarid» yoki «Premium yoki xarid» bo'lishi kerak. Xarid shu asarning mavjud va kelajakdagi boblarini ochadi.")}</span>
+      <div className="row"><input className="input" placeholder={t("Asar ID")} value={workId} onChange={(e) => setWorkId(e.target.value.replace(/\D/g, ""))} /><input className="input" placeholder="⭐" value={amount} onChange={(e) => setAmount(e.target.value.replace(/\D/g, ""))} /></div>
+      <button className="btn" disabled={!workId || !amount} onClick={() => act(() => post(`/admin/billing/works/${workId}/product`, { amount: Number(amount) }), t("Narx belgilandi"))}>{t("Saqlash")}</button>
     </div>
   );
 }

@@ -121,3 +121,21 @@ class PriceIn(BaseModel):
 async def set_price(product_id: int, body: PriceIn, db: DB, actor: CurActor):
     v = await billing.set_price(db, actor, product_id, body.amount, body.duration_days, body.activate)
     return {"version": v.version, "amount": v.amount}
+
+
+class WorkPriceIn(BaseModel):
+    amount: int
+
+
+@router.post("/admin/billing/works/{work_id}/product")
+async def work_product(work_id: int, body: WorkPriceIn, db: DB, actor: CurActor):
+    """Sell one work separately (PURCHASE / PREMIUM_OR_PURCHASE). Creates or re-prices its product."""
+    from app.models import Work
+
+    work = await db.get(Work, work_id)
+    if work is None:
+        from app.core.errors import NotFound
+
+        raise NotFound("Asar topilmadi")
+    p = await billing.create_work_product(db, actor, work, body.amount)
+    return {"product_id": p.id, "sku": p.sku}

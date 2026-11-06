@@ -31,6 +31,8 @@ class Settings(BaseSettings):
     owner_telegram_ids: list[int] = Field(default_factory=list)
     test_telegram_ids: list[int] = Field(default_factory=list)
     telegram_api_base: str = "https://api.telegram.org"
+    # Telegram test environment: requests go to /bot<token>/test/<method>
+    telegram_test_env: bool = False
     # When False the bot never calls Telegram (dev/test); outgoing calls are recorded.
     telegram_enabled: bool = False
 

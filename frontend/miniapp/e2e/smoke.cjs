@@ -83,6 +83,7 @@ const noOverflow = (p) => p.evaluate(() => document.documentElement.scrollWidth 
   await p.click(".r-top [aria-label='Sozlamalar']").catch(async () => { await p.click(".rtext"); await p.click(".r-top [aria-label='Sozlamalar']"); });
   await p.getByRole("radio", { name: "Sepia" }).click();
   await p.keyboard.press("Escape");
+  await p.waitForTimeout(400);
   await p.screenshot({ path: `${out}/06-reader-sepia.png` });
   await p.goto(base + "/");
   await p.goto(url);

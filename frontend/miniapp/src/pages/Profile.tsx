@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { Seg, Switch, useToast } from "../components/ui";
-import { get, patch, type Me } from "../lib/api";
+import { get, patch, post, type Me } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { useT } from "../lib/i18n";
 import { requestWriteAccess } from "../lib/tg";
@@ -73,6 +73,10 @@ export default function Profile() {
           <Link to="/notifications" className="li">🔔 {t("Bildirishnomalar markazi")}</Link>
           <Link to="/support" className="li">💬 {t("Yordam va murojaatlar")}</Link>
           <Link to="/library?tab=purchased" className="li">🧾 {t("Sotib olinganlar")}</Link>
+        </div>
+        <div className="list mt16">
+          <button onClick={async () => { const d = await get("/me/export"); const url = URL.createObjectURL(new Blob([JSON.stringify(d, null, 2)], { type: "application/json" })); const a = document.createElement("a"); a.href = url; a.download = "hikoya-mening-malumotlarim.json"; a.click(); }}>⬇️ {t("Ma'lumotlarimni yuklab olish")}</button>
+          <button onClick={async () => { if (window.confirm(t("Hisobni o'chirish so'rovi yuborilsinmi?"))) { const r = await post("/me/delete-request"); toast(r.note); } }}>🗑 {t("Hisobni o'chirishni so'rash")}</button>
         </div>
         <p className="tiny dim center mt16">HIKOYA PRO · v1.0</p>
       </div>

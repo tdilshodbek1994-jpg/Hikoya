@@ -1,0 +1,82 @@
+[
+  {
+    "name": "T-01 onboarding skip opens catalog",
+    "ok": true,
+    "info": ""
+  },
+  {
+    "name": "T-02 no horizontal overflow on home",
+    "ok": true,
+    "info": ""
+  },
+  {
+    "name": "T-02 stories and genre row at top",
+    "ok": true,
+    "info": "header|stories|chips|section"
+  },
+  {
+    "name": "T-02 bottom padding ≥ nav height",
+    "ok": true,
+    "info": "88"
+  },
+  {
+    "name": "tap targets ≥ 44px (nav/buttons)",
+    "ok": true,
+    "info": "small=0"
+  },
+  {
+    "name": "T-03 Premium+Detektiv+Ongoing filter",
+    "ok": true,
+    "info": "Yettinchi qavatdagi chiroq"
+  },
+  {
+    "name": "T-05 Cyrillic search finds work",
+    "ok": true,
+    "info": "Karvonsaroy siri"
+  },
+  {
+    "name": "work page no overflow",
+    "ok": true,
+    "info": ""
+  },
+  {
+    "name": "T-52 locked chapter shows preview + paywall only",
+    "ok": true,
+    "info": "blocks=3"
+  },
+  {
+    "name": "T-12 reopening restores position",
+    "ok": true,
+    "info": "scrollY=872"
+  },
+  {
+    "name": "reader no overflow",
+    "ok": true,
+    "info": ""
+  },
+  {
+    "name": "demo price is not payable",
+    "ok": true,
+    "info": ""
+  },
+  {
+    "name": "storis viewer opens",
+    "ok": true,
+    "info": ""
+  },
+  {
+    "name": "no JS errors (reader)",
+    "ok": true,
+    "info": ""
+  },
+  {
+    "name": "editor autosave",
+    "ok": true,
+    "info": "✓ Saqlandi"
+  },
+  {
+    "name": "no JS errors (studio)",
+    "ok": true,
+    "info": ""
+  }
+]

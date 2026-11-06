@@ -192,3 +192,11 @@ async def test_edit_after_publish_keeps_old_revision_for_readers(client, db):
     r = (await client.get(f"/api/v1/chapters/{ch.id}/content", headers=hdr)).json()
     assert r["revision_id"] == published
     assert date.today()  # keep import used
+
+
+async def test_personal_data_export_and_delete_request(client, db):
+    hdr = H(await login(client, 5010))
+    r = await client.get("/api/v1/me/export", headers=hdr)
+    assert r.status_code == 200 and r.json()["user"]["telegram_user_id"] == 5010
+    r = await client.post("/api/v1/me/delete-request", headers=hdr)
+    assert r.status_code == 200 and r.json()["ticket_id"]

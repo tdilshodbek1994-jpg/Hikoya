@@ -135,7 +135,8 @@ async def _download(file_id: str, size: int | None) -> bytes:
     import httpx
 
     async with httpx.AsyncClient(timeout=60) as c:
-        r = await c.get(f"{s.telegram_api_base}/file/bot{s.bot_token}/{path}")
+        test = "/test" if s.telegram_test_env else ""
+        r = await c.get(f"{s.telegram_api_base}/file/bot{s.bot_token}{test}/{path}")
         r.raise_for_status()
         return r.content
 

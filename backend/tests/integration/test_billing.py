@@ -321,3 +321,14 @@ async def test_signed_link_expires(client, db):
     tok = sign_payload({"a": 1, "exp": int(time.time()) - 1, "d": 0}, get_settings().signing_key)
     assert (await client.get("/api/v1/assets/file", params={"t": tok})).status_code == 401
     assert init_data_for  # keep import used
+
+
+async def test_work_product_endpoint(client, db):
+    w, chs, _ = await make_work(db, policy="PURCHASE")
+    owner = H(await login(client, 1000))
+    r = await client.post(f"/api/v1/admin/billing/works/{w.id}/product", json={"amount": 55}, headers=owner)
+    assert r.status_code == 200
+    prods = (await client.get("/api/v1/billing/products", params={"work_id": w.id})).json()
+    assert prods[0]["amount"] == 55 and prods[0]["purchasable"] is True
+    reader = H(await login(client, 8100))
+    assert (await client.post(f"/api/v1/admin/billing/works/{w.id}/product", json={"amount": 1}, headers=reader)).status_code == 403

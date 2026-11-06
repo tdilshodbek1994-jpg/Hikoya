@@ -185,3 +185,39 @@ async def revoke_session(session_id: int, db: DB, actor: CurActor):
         raise Forbidden()
     s.revoked_at = utcnow()
     return {"ok": True}
+
+
+@router.get("/me/export")
+async def export_my_data(db: DB, actor: CurActor):
+    """Personal data export (spec 29). Only the user's own records."""
+    from app.models import Bookmark, Comment, LibraryItem, Payment, PrivateNote, ReaderHighlight, ReadingProgress, Thanks
+
+    uid = actor.id
+    u = actor.user
+
+    async def rows(model, *cols):
+        return [{c: (getattr(r, c).isoformat() if hasattr(getattr(r, c), "isoformat") else getattr(r, c)) for c in cols} for r in (await db.scalars(select(model).where(model.user_id == uid))).all()]
+
+    return {
+        "user": {"id": u.id, "telegram_user_id": u.telegram_user_id, "display_name": u.display_name, "script": u.script, "created_at": u.created_at.isoformat()},
+        "reading_progress": await rows(ReadingProgress, "work_id", "chapter_id", "current_ratio", "updated_at"),
+        "library": await rows(LibraryItem, "work_id", "added_at"),
+        "bookmarks": await rows(Bookmark, "work_id", "chapter_id", "quote", "created_at"),
+        "highlights": await rows(ReaderHighlight, "work_id", "chapter_id", "quote", "created_at"),
+        "notes": await rows(PrivateNote, "work_id", "chapter_id", "text", "created_at"),
+        "comments": await rows(Comment, "work_id", "chapter_id", "body", "status", "created_at"),
+        "thanks": await rows(Thanks, "work_id", "reason", "active"),
+        "payments": await rows(Payment, "id", "amount", "currency", "state", "created_at"),
+    }
+
+
+@router.post("/me/delete-request")
+async def request_deletion(db: DB, actor: CurActor):
+    """Account deletion is a reviewed request: financial records follow the retention policy."""
+    from app.models import SupportMessage, SupportTicket
+
+    t = SupportTicket(user_id=actor.id, category="account", subject="Hisobni o'chirish so'rovi", status="open")
+    db.add(t)
+    await db.flush()
+    db.add(SupportMessage(ticket_id=t.id, author_user_id=actor.id, body="Shaxsiy ma'lumotlarimni o'chirishni so'rayman."))
+    return {"ticket_id": t.id, "note": "So'rov qabul qilindi. Moliyaviy yozuvlar qonuniy saqlash muddati bo'yicha saqlanadi."}

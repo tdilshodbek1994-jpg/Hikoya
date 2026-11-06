@@ -20,6 +20,8 @@ export default function WorkPage() {
   const [thanksOpen, setThanksOpen] = useState(false);
   const [moreSyn, setMoreSyn] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [collOpen, setCollOpen] = useState(false);
+  const lib = useQuery({ queryKey: ["library"], enabled: collOpen, queryFn: () => get("/library") });
 
   if (isLoading) return (<div className="page no-nav"><TopBar /><Spinner /></div>);
   if (error || !w) return (<div className="page no-nav"><TopBar /><ErrorBox error={error} retry={refetch} /></div>);
@@ -211,6 +213,7 @@ export default function WorkPage() {
       )}
 
       <div className="pad mt24 row" style={{ gap: 8 }}>
+        <button className="btn ghost" onClick={() => setCollOpen(true)}>🗂 {t("To'plamga")}</button>
         <button className="btn ghost" onClick={() => setReportOpen(true)}><IFlag /> {t("Xato yoki shikoyat")}</button>
       </div>
 
@@ -223,6 +226,16 @@ export default function WorkPage() {
           ))}
           {st.thanked && <button className="btn ghost block" onClick={() => giveThanks(null)}>{t("Rahmatni olib tashlash")}</button>}
         </div>
+      </Sheet>
+      <Sheet open={collOpen} onClose={() => setCollOpen(false)} label={t("To'plamga qo'shish")}>
+        <h2>{t("To'plamga qo'shish")}</h2>
+        {!lib.data ? <Spinner /> : !lib.data.collections.length ? <p className="muted small">{t("Avval «Kutubxonam» bo'limida to'plam yarating.")}</p> : (
+          <div className="list mt16">
+            {lib.data.collections.map((c: any) => (
+              <button key={c.id} onClick={async () => { try { await put(`/collections/${c.id}/items/${w.id}`); toast(t("Qo'shildi")); setCollOpen(false); } catch (e: any) { toast(e.message, true); } }}>{c.title}<span className="dim small" style={{ marginLeft: "auto" }}>{c.count}</span></button>
+            ))}
+          </div>
+        )}
       </Sheet>
       <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} targetType="work" targetId={w.id} />
     </div>

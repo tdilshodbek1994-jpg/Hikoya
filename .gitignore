@@ -225,3 +225,6 @@ node_modules/
 frontend/miniapp/dist/
 *.local
 backend/.env
+!frontend/miniapp/src/lib/
+deploy/.env
+backups/

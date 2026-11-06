@@ -38,7 +38,7 @@ class TelegramAPI:
     def __init__(self):
         s = get_settings()
         self.enabled = s.telegram_enabled
-        self.base = f"{s.telegram_api_base}/bot{s.bot_token}"
+        self.base = f"{s.telegram_api_base}/bot{s.bot_token}" + ("/test" if s.telegram_test_env else "")
         self.fake_hook: FakeHook | None = None
         self.calls: list[tuple[str, dict]] = []
         self._client: httpx.AsyncClient | None = None

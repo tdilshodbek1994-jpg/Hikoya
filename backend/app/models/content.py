@@ -38,6 +38,8 @@ class Work(Base, Timestamped):
     __tablename__ = "works"
     __table_args__ = (
         Index("ix_works_catalog", "editorial_state", "visibility", "published_at"),
+        # trigram index for normalised search (ILIKE / similarity / word_similarity)
+        Index("ix_works_search_trgm", "search_text", postgresql_using="gin", postgresql_ops={"search_text": "gin_trgm_ops"}),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
