@@ -10,7 +10,7 @@ import History from "./History";
 import ImportPage from "./ImportPage";
 import Reviews from "./Reviews";
 import StoryComposer, { MyStories } from "./StoryComposer";
-import { Royalties } from "./Extras";
+import { AudioSyncPage, Royalties } from "./Extras";
 import WorkEditor from "./WorkEditor";
 
 export const STATE_LABEL: Record<string, string> = {
@@ -47,6 +47,7 @@ export default function Studio() {
       <Route path="stories/new" element={<StoryComposer />} />
       <Route path="calendar" element={<Calendar />} />
       <Route path="royalties" element={<Royalties />} />
+      <Route path="sync/:chapterId" element={<AudioSyncPage />} />
       <Route path="stats" element={<Dashboard />} />
       <Route path="stats/:workId" element={<WorkStats />} />
     </Routes>

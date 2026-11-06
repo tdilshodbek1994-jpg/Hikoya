@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Link, useParams } from "react-router";
 import { ErrorBox, Sheet, Spinner, TopBar, useToast } from "../components/ui";
 import { get, post, type Block } from "../lib/api";
-import { fmtDate, useT } from "../lib/i18n";
+import { untilDate, useT } from "../lib/i18n";
 
 /** Beta-reader landing: an unpublished draft shared personally by the author (b_<token> link). */
 export function BetaHome() {
@@ -22,7 +22,7 @@ export function BetaHome() {
           <h2 className="mt8">{d.work.title}</h2>
           {d.work.synopsis && <p className="small muted">{d.work.synopsis}</p>}
           {d.note && <p className="small">✉️ {d.note}</p>}
-          <p className="tiny dim">{t("Muallif sizni shaxsan taklif qildi. Matn hali nashr qilinmagan: uni boshqalarga tarqatmang.")} {t("Havola")}: {fmtDate(d.expires_at)} {t("gacha")}</p>
+          <p className="tiny dim">{t("Muallif sizni shaxsan taklif qildi. Matn hali nashr qilinmagan: uni boshqalarga tarqatmang.")} {t("Havola")}: {untilDate(d.expires_at)}</p>
         </div>
         <div className="list">
           {d.chapters.map((c: any) => (

@@ -2,9 +2,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { IStar } from "../components/icons";
+import { PromoRedeem } from "../components/growth";
 import { Sheet, Spinner, TopBar, useToast } from "../components/ui";
 import { ApiError, api, get, post, uuid } from "../lib/api";
-import { fmtDate, useT } from "../lib/i18n";
+import { fmtDate, untilDate, useT } from "../lib/i18n";
 import { confirmDialog, haptic, openInvoice } from "../lib/tg";
 
 type Product = { id: number; sku: string; title: string; description: string; pricing_type: string; access_scope: string; amount: number; duration_days: number | null; is_demo: boolean; purchasable: boolean; covers: string };
@@ -76,7 +77,7 @@ export default function Premium() {
         <div className="panel" style={{ background: "linear-gradient(150deg, rgba(214,182,106,.22), var(--surface) 70%)", borderColor: "rgba(214,182,106,.5)" }}>
           <div className="row"><span style={{ color: "var(--premium)" }}><IStar /></span><h2>{premium ? t("Premium faol") : t("Premium hikoyalarni oching")}</h2></div>
           {premium ? (
-            <p className="small muted mt8">{subs.data?.premium_until ? `${t("Amal qiladi")}: ${fmtDate(subs.data.premium_until)} ${t("gacha")}` : t("Muddatsiz")}</p>
+            <p className="small muted mt8">{subs.data?.premium_until ? `${t("Amal qiladi")}: ${untilDate(subs.data.premium_until)}` : t("Muddatsiz")}</p>
           ) : (
             <ul className="small muted" style={{ paddingLeft: 18, marginBottom: 0 }}>
               <li>{t("Premium katalogdagi barcha asarlar va yangi boblar")}</li>
@@ -88,6 +89,7 @@ export default function Premium() {
         </div>
 
         {status && <div className="panel center" role="status">{status}</div>}
+        <PromoRedeem />
 
         {activeSubs.map((s: any) => (
           <div key={s.id} className="panel stack" style={{ gap: 8 }}>

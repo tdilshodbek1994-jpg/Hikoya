@@ -64,6 +64,9 @@ async def expire_orders() -> int:
     async with sessionmaker()() as db:
         n = await expire_stale_orders(db)
         await mature_royalties(db)  # royalty entries leave "pending" after the refund hold period
+        from app.services.growth import reward_referrals
+
+        await reward_referrals(db)
         await db.commit()
     return n
 

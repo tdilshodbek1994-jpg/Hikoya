@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useParams } from "react-router";
 import { Empty, Spinner, TopBar, useToast } from "../../components/ui";
-import { del, get, patch, post } from "../../lib/api";
+import { api, del, get, patch, post } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
-import { fmtDate, useT } from "../../lib/i18n";
+import { afterDate, fmtDate, untilDate, useT } from "../../lib/i18n";
 import { confirmDialog, shareLink } from "../../lib/tg";
 import { upload } from "./WorkEditor";
 
@@ -103,7 +104,7 @@ export function BetaInvites({ workId, chapters }: { workId: number; chapters: { 
       <div className="list mt8">
         {(q.data?.items || []).map((i: any) => (
           <div key={i.id} className="li">
-            <div className="grow small">{i.reader || t("Hali ochilmagan")} <span className="tiny dim">· {i.active ? `${fmtDate(i.expires_at)} ${t("gacha")}` : t("faol emas")}</span></div>
+            <div className="grow small">{i.reader || t("Hali ochilmagan")} <span className="tiny dim">· {i.active ? untilDate(i.expires_at) : t("faol emas")}</span></div>
             {i.active && <button className="tiny link" onClick={() => navigator.clipboard?.writeText(i.link).then(() => toast(t("Nusxalandi")))}>⧉</button>}
             {i.active && <button className="tiny link" onClick={() => revoke(i.id)}>{t("Bekor")}</button>}
           </div>
@@ -216,12 +217,109 @@ export function Royalties() {
           <h3>{t("Yozuvlar")}</h3>
           <div className="list">
             {d.entries.map((e: any) => (
-              <div key={e.id} className="li"><div className="grow small">#{e.payment_id} · {e.gross} ⭐ → <b>{e.amount} ⭐</b><div className="tiny dim">{fmtDate(e.created_at)}{e.state === "pending" ? ` · ${fmtDate(e.available_at)} ${t("dan keyin")}` : ""}</div></div><span className="pill">{STATE[e.state]}</span></div>
+              <div key={e.id} className="li"><div className="grow small">#{e.payment_id} · {e.gross} ⭐ → <b>{e.amount} ⭐</b><div className="tiny dim">{fmtDate(e.created_at)}{e.state === "pending" ? ` · ${afterDate(e.available_at)}` : ""}</div></div><span className="pill">{STATE[e.state]}</span></div>
             ))}
           </div>
           {!!d.payouts.length && (<><h3>{t("To'lovlar")}</h3><div className="list">{d.payouts.map((p: any) => <div key={p.id} className="li small"><span className="grow">{fmtDate(p.created_at)} · {p.note}</span><b>{p.amount} ⭐</b></div>)}</div></>)}
         </div>
       )}
+    </div>
+  );
+}
+
+/** Branching: up to 4 choices at the end of this chapter, each leading to another chapter of the work. */
+export function ChoicesManager({ chapterId, workId }: { chapterId: number; workId: number }) {
+  const t = useT();
+  const toast = useToast();
+  const work = useQuery({ queryKey: ["studio-work", String(workId)], queryFn: () => get(`/studio/works/${workId}`) });
+  const q = useQuery({ queryKey: ["choices", chapterId], queryFn: () => get(`/studio/chapters/${chapterId}/choices`) });
+  const [items, setItems] = useState<{ label: string; target_chapter_id: number; picks?: number }[] | null>(null);
+  type ChoiceRow = { label: string; target_chapter_id: number; picks?: number };
+  const list: ChoiceRow[] = items ?? q.data?.items ?? [];
+  const others = (work.data?.chapters || []).filter((c: any) => c.id !== chapterId);
+  const save = async () => {
+    try {
+      const r = await api(`/studio/chapters/${chapterId}/choices`, { method: "PUT", body: { items: list.map(({ label, target_chapter_id }) => ({ label, target_chapter_id })) } });
+      setItems(null);
+      q.refetch();
+      toast(r.items.length ? t("Tanlovlar saqlandi") : t("Bob yana oddiy (chiziqli) bo'ldi"));
+    } catch (e: any) { toast(e.message, true); }
+  };
+  const upd = (i: number, patch_: any) => setItems(list.map((x, j) => (j === i ? { ...x, ...patch_ } : x)));
+  return (
+    <div className="field">
+      <label>🔀 {t("Bob oxiridagi tanlovlar (tarmoqlanuvchi hikoya)")}</label>
+      {list.map((c, i) => (
+        <div key={i} className="stack" style={{ gap: 4, marginBottom: 8 }}>
+          <input className="input" maxLength={120} placeholder={t("Tanlov matni, masalan: «Eshikni ochish»")} value={c.label} onChange={(e) => upd(i, { label: e.target.value })} />
+          <div className="row">
+            <select className="select grow" value={c.target_chapter_id || 0} onChange={(e) => upd(i, { target_chapter_id: Number(e.target.value) })}>
+              <option value={0}>— {t("qaysi bobga")} —</option>
+              {others.map((o: any) => <option key={o.id} value={o.id}>{o.title}</option>)}
+            </select>
+            <button className="btn ghost" style={{ minHeight: 36 }} onClick={() => setItems(list.filter((_, j) => j !== i))}>✕</button>
+          </div>
+          {c.picks != null && items === null && <span className="tiny dim">{t("Tanlaganlar")}: {c.picks}</span>}
+        </div>
+      ))}
+      <div className="row">
+        {list.length < 4 && <button className="btn ghost" style={{ minHeight: 36 }} onClick={() => setItems([...list, { label: "", target_chapter_id: 0 }])}>+ {t("Tanlov")}</button>}
+        {items !== null && <button className="btn primary" style={{ minHeight: 36 }} disabled={list.some((c) => !c.label.trim() || !c.target_chapter_id)} onClick={save}>{t("Tanlovlarni saqlash")}</button>}
+      </div>
+      <span className="tiny dim">{t("Tanlov bo'lsa, o'quvchiga «Keyingi bob» o'rniga shu tugmalar chiqadi.")}</span>
+    </div>
+  );
+}
+
+/** Audio ↔ text sync: play the chapter audio and tap each paragraph when its narration starts. */
+export function AudioSyncPage() {
+  const { chapterId } = useParams();
+  const t = useT();
+  const toast = useToast();
+  const q = useQuery({ queryKey: ["audio-sync", chapterId], queryFn: () => get(`/studio/chapters/${chapterId}/audio-sync`), staleTime: Infinity });
+  const audio = useRef<HTMLAudioElement>(null);
+  const [marks, setMarks] = useState<Record<string, number> | null>(null);
+  const m = marks ?? Object.fromEntries((q.data?.marks || []).map((x: any) => [x.bid, x.t]));
+  if (!q.data) return <div className="page no-nav"><TopBar /><Spinner /></div>;
+  const d = q.data;
+  const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+  const tap = (bid: string) => {
+    const now = audio.current?.currentTime ?? 0;
+    setMarks({ ...m, [bid]: Math.round(now * 100) / 100 });
+  };
+  const save = async () => {
+    try {
+      const r = await api(`/studio/chapters/${chapterId}/audio-sync`, { method: "PUT", body: { marks: Object.entries(m).map(([bid, tt]) => ({ bid, t: tt })) } });
+      setMarks(null);
+      q.refetch();
+      toast(`${t("Saqlandi")}: ${r.marks.length}`);
+    } catch (e: any) { toast(e.message, true); }
+  };
+  return (
+    <div className="page no-nav">
+      <TopBar title={t("Audio va matn sinxroni")} />
+      <div className="pad stack">
+        {!d.audio_url ? <p className="small muted">{t("Avval bob sozlamalarida audio biriktiring.")}</p> : (
+          <>
+            <audio ref={audio} src={d.audio_url} controls style={{ width: "100%" }} />
+            <p className="tiny dim">{t("Audioni yoqing va har xatboshi o'qila boshlaganda unga bosing. Belgini olib tashlash uchun ✕.")}</p>
+          </>
+        )}
+        <div className="list">
+          {d.blocks.map((b: any) => (
+            <div key={b.bid} className="li" style={{ alignItems: "flex-start" }}>
+              <button className="grow small" style={{ textAlign: "left" }} disabled={!d.audio_url} onClick={() => tap(b.bid)}>{b.text}</button>
+              {m[b.bid] != null ? (
+                <span className="row" style={{ gap: 4 }}>
+                  <button className="pill" onClick={() => { if (audio.current) audio.current.currentTime = m[b.bid]; }}>{fmt(m[b.bid])}</button>
+                  <button className="tiny link" onClick={() => { const n = { ...m }; delete n[b.bid]; setMarks(n); }}>✕</button>
+                </span>
+              ) : <span className="tiny dim">—</span>}
+            </div>
+          ))}
+        </div>
+        <button className="btn primary block" disabled={marks === null} onClick={save}>{t("Saqlash")}</button>
+      </div>
     </div>
   );
 }

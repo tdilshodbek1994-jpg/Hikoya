@@ -212,3 +212,40 @@ class RoyaltyPayout(Base, Timestamped):
     amount_stars: Mapped[int]
     method_note: Mapped[str] = mapped_column(Text, default="")  # how it was paid outside the app
     created_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+
+
+class PromoCode(Base, Timestamped):
+    """Marketing code: N days of Premium. Redeemed once per user; optional total limit and expiry."""
+
+    __tablename__ = "promo_codes"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    code: Mapped[str] = mapped_column(String(32), unique=True)
+    days: Mapped[int]
+    max_uses: Mapped[int | None] = mapped_column(nullable=True)
+    uses: Mapped[int] = mapped_column(default=0)
+    valid_until: Mapped[datetime | None] = mapped_column(nullable=True)
+    new_users_only: Mapped[bool] = mapped_column(default=False)
+    active: Mapped[bool] = mapped_column(default=True)
+    note: Mapped[str] = mapped_column(Text, default="")
+    created_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+
+
+class PromoRedemption(Base):
+    __tablename__ = "promo_redemptions"
+
+    promo_id: Mapped[int] = mapped_column(ForeignKey("promo_codes.id", ondelete="CASCADE"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+
+
+class Referral(Base):
+    """A new user who came through someone's invite link. Rewarded after their first qualified read."""
+
+    __tablename__ = "referrals"
+
+    referred_user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    referrer_user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    rewarded_at: Mapped[datetime | None] = mapped_column(nullable=True)
+    reward_skipped: Mapped[str] = mapped_column(String(32), default="")  # e.g. "monthly_limit"

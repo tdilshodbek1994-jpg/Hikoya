@@ -336,3 +336,62 @@ async def put_audio_sync(chapter_id: int, body: SyncIn, db: DB, actor: CurActor)
 
     ch = await _chapter(db, chapter_id)
     return {"marks": await set_audio_sync(db, actor, ch, [m.model_dump() for m in body.marks])}
+
+
+# ------------------------------------------------------------ promo codes and referrals
+
+class PromoRedeemIn(BaseModel):
+    code: str = Field(max_length=40)
+
+
+@router.post("/promo/redeem")
+async def promo_redeem(body: PromoRedeemIn, db: DB, actor: CurActor):
+    from app.services.growth import redeem_promo
+
+    limiter.hit(f"promo:{actor.id}", 5, 300)  # codes cannot be brute-forced
+    return await redeem_promo(db, actor.user, body.code)
+
+
+@router.get("/me/referrals")
+async def my_referrals(db: DB, actor: CurActor):
+    from app.services.growth import referral_summary
+
+    return await referral_summary(db, actor.user)
+
+
+class PromoIn(BaseModel):
+    code: str | None = Field(default=None, max_length=32)
+    days: int
+    max_uses: int | None = None
+    valid_until: str | None = None
+    new_users_only: bool = False
+    note: str = Field(default="", max_length=500)
+
+
+@router.get("/admin/promo-codes")
+async def promo_list(db: DB, actor: CurActor):
+    from app.models import PromoCode
+    from app.services.growth import promo_dto
+
+    actor.require("billing.view")
+    rows = (await db.scalars(select(PromoCode).order_by(PromoCode.id.desc()).limit(200))).all()
+    return {"items": [promo_dto(p) for p in rows]}
+
+
+@router.post("/admin/promo-codes")
+async def promo_create(body: PromoIn, db: DB, actor: CurActor):
+    from datetime import datetime
+
+    from app.services.growth import create_promo, promo_dto
+
+    until = datetime.fromisoformat(body.valid_until.replace("Z", "+00:00")) if body.valid_until else None
+    p = await create_promo(db, actor, code=body.code, days=body.days, max_uses=body.max_uses, valid_until=until, new_users_only=body.new_users_only, note=body.note)
+    return promo_dto(p)
+
+
+@router.delete("/admin/promo-codes/{promo_id}")
+async def promo_deactivate(promo_id: int, db: DB, actor: CurActor):
+    from app.services.growth import deactivate_promo
+
+    await deactivate_promo(db, actor, promo_id)
+    return {"ok": True}

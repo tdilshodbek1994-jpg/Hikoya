@@ -1,7 +1,11 @@
 /* UI strings are written in Uzbek Latin; Cyrillic is produced by transliteration (same language,
-   not translation). Russian can be added later as a separate dictionary. */
+   not translation). Russian is a separate dictionary (lib/ru.ts); a missing entry falls back to Uzbek.
+   Works and chapters are never translated: only the interface. */
 
 import { useAuth } from "./auth";
+import { RU } from "./ru";
+
+let LANG: "uz" | "ru" = "uz";
 
 const MULTI: [string, string][] = [["o'", "ў"], ["g'", "ғ"], ["sh", "ш"], ["ch", "ч"], ["yo", "ё"], ["yu", "ю"], ["ya", "я"], ["ye", "е"]];
 const SINGLE: Record<string, string> = {
@@ -36,7 +40,21 @@ export function latToCyr(input: string): string {
 export function useT() {
   const { me } = useAuth();
   const cyr = me?.script === "cyrl";
+  LANG = me?.language === "ru" ? "ru" : "uz";
+  if (LANG === "ru") return (s: string) => RU[s] ?? (cyr ? latToCyr(s) : s);
   return (s: string) => (cyr ? latToCyr(s) : s);
+}
+
+/** "{date} gacha" in Uzbek, "до {date}" in Russian (word order differs). */
+export function untilDate(iso: string | null | undefined, withTime = false) {
+  const d = fmtDate(iso, withTime);
+  return LANG === "ru" ? `до ${d}` : `${d} gacha`;
+}
+
+/** "{date} dan keyin" / "после {date}". */
+export function afterDate(iso: string | null | undefined, withTime = false) {
+  const d = fmtDate(iso, withTime);
+  return LANG === "ru" ? `после ${d}` : `${d} dan keyin`;
 }
 
 export function plural(n: number, word: string) {
@@ -48,11 +66,18 @@ export function fmtDate(iso: string | null | undefined, withTime = false) {
   const d = new Date(iso);
   const opts: Intl.DateTimeFormatOptions = { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Asia/Tashkent" };
   if (withTime) Object.assign(opts, { hour: "2-digit", minute: "2-digit" });
-  return d.toLocaleString("uz-UZ", opts);
+  return d.toLocaleString(LANG === "ru" ? "ru-RU" : "uz-UZ", opts);
 }
 
 export function relTime(iso: string) {
   const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (LANG === "ru") {
+    if (diff < 60) return "только что";
+    if (diff < 3600) return `${Math.floor(diff / 60)} мин. назад`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} ч. назад`;
+    if (diff < 86400 * 7) return `${Math.floor(diff / 86400)} дн. назад`;
+    return fmtDate(iso);
+  }
   if (diff < 60) return "hozirgina";
   if (diff < 3600) return `${Math.floor(diff / 60)} daq. oldin`;
   if (diff < 86400) return `${Math.floor(diff / 3600)} soat oldin`;

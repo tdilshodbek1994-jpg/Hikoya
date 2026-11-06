@@ -98,6 +98,10 @@ class Settings(BaseSettings):
     ai_max_tokens: int = 4000
     ai_daily_limit_per_user: int = 20
 
+    # Growth: invite a friend → the inviter gets N Premium days after the friend's first real read
+    referral_bonus_days: int = 3  # 0 = referral rewards disabled
+    referral_max_rewards_per_month: int = 10
+
     # Author royalties (model A: share of single-work sales). 0 = disabled.
     royalty_share_percent: int = 0
     royalty_hold_days: int = 21  # Stars refunds are possible for a while; keep revenue pending

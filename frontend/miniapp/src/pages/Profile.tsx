@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
+import { InviteFriends } from "../components/growth";
 import { Seg, Switch, useToast } from "../components/ui";
 import { get, patch, post, type Me } from "../lib/api";
 import { useAuth } from "../lib/auth";
@@ -39,6 +40,7 @@ export default function Profile() {
           <Link to="/premium" className="btn premium" style={{ minHeight: 38 }}>{ent?.premium ? t("Obuna") : "Premium"}</Link>
         </div>
         {studio && <Link to="/studio" className="btn primary block">✍️ {t("Ijod ustaxonasi")}</Link>}
+        <InviteFriends />
         {admin && <Link to="/admin" className="btn block">🛠 {t("Boshqaruv")}</Link>}
 
         {rep && (
@@ -66,6 +68,7 @@ export default function Profile() {
         <h3 className="mt16">{t("Ko'rinish")}</h3>
         <div className="panel stack">
           <div className="row between"><span>{t("Yozuv")}</span><Seg value={me.script} onChange={(v) => save({ script: v })} options={[["latn", "Lotin"], ["cyrl", "Кирилл"]]} /></div>
+          <div className="row between"><span>{t("Ilova tili")}</span><Seg value={me.language || "uz"} onChange={(v) => save({ language: v })} options={[["uz", "O'zbek"], ["ru", "Русский"]]} /></div>
           <p className="tiny dim">{t("Kirill–lotin o'girish tarjima emas: bir xil matn boshqa yozuvda ko'rsatiladi.")}</p>
         </div>
         <div className="list">

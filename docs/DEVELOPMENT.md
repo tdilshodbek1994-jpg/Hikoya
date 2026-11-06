@@ -27,7 +27,7 @@ EOF
 
 ```bash
 createdb hikoya_test && psql -d hikoya_test -c 'create extension if not exists pg_trgm'
-cd backend && .venv/bin/python -m pytest -q        # 93 ta test
+cd backend && .venv/bin/python -m pytest -q        # 97 ta test
 ```
 
 ## Mini App

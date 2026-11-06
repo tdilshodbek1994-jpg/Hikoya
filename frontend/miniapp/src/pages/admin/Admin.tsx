@@ -293,6 +293,7 @@ function Billing() {
         <p className="tiny dim">{t("Demo narx real to'lovni yoqmaydi. Narx o'rnatilgach yangi versiya yaratiladi.")}</p>
         {can("billing.manage_products") && <WorkPrice />}
         <RoyaltyAdmin />
+        <PromoAdmin />
         <h3 className="mt16">{t("Holatlar")}</h3>
         {ov.data?.by_state.map((s: any) => <div key={s.state} className="small">{s.state}: {s.count} · {s.stars} ⭐</div>)}
         <h3 className="mt16">{t("Tekshiruv kerak bo'lgan to'lovlar")}</h3>
@@ -304,6 +305,39 @@ function Billing() {
         {ov.data?.open_refunds.map((r: any) => <div key={r.id} className="small">#{r.id} → {t("to'lov")} #{r.payment_id}: <span className="pill">{r.state}</span> {r.error}</div>)}
         <p className="tiny dim">{ov.data?.note}</p>
       </div>
+    </div>
+  );
+}
+
+function PromoAdmin() {
+  const t = useT();
+  const act = useAct();
+  const { can } = useAuth();
+  const q = useQuery({ queryKey: ["admin-promo"], queryFn: () => get("/admin/promo-codes") });
+  const [f, setF] = useState({ code: "", days: "7", max_uses: "", valid_until: "", new_users_only: false, note: "" });
+  const create = () => act(() => post("/admin/promo-codes", {
+    code: f.code || null, days: Number(f.days), max_uses: f.max_uses ? Number(f.max_uses) : null,
+    valid_until: f.valid_until ? new Date(f.valid_until).toISOString() : null, new_users_only: f.new_users_only, note: f.note,
+  }), t("Kod yaratildi"), () => { setF({ ...f, code: "", note: "" }); q.refetch(); });
+  return (
+    <div className="panel stack">
+      <b>🎟 {t("Promo-kodlar")}</b>
+      <span className="tiny dim">{t("Kod N kun Premium beradi. Har foydalanuvchi bir marta ishlatadi. Stars to'loviga aloqasi yo'q.")}</span>
+      {can("billing.manage_products") && (
+        <div className="stack" style={{ gap: 6 }}>
+          <div className="row"><input className="input grow" placeholder={t("Kod (bo'sh = avtomatik)")} value={f.code} onChange={(e) => setF({ ...f, code: e.target.value.toUpperCase() })} /><input className="input" style={{ width: 70 }} inputMode="numeric" value={f.days} onChange={(e) => setF({ ...f, days: e.target.value.replace(/\D/g, "") })} /><span className="small">{t("kun")}</span></div>
+          <div className="row"><input className="input grow" inputMode="numeric" placeholder={t("Limit (ixtiyoriy)")} value={f.max_uses} onChange={(e) => setF({ ...f, max_uses: e.target.value.replace(/\D/g, "") })} /><input className="input grow" type="datetime-local" value={f.valid_until} onChange={(e) => setF({ ...f, valid_until: e.target.value })} /></div>
+          <input className="input" placeholder={t("Izoh (masalan: kanal aksiyasi)")} value={f.note} onChange={(e) => setF({ ...f, note: e.target.value })} />
+          <label className="row small"><input type="checkbox" checked={f.new_users_only} onChange={(e) => setF({ ...f, new_users_only: e.target.checked })} /> {t("Faqat yangi foydalanuvchilar")}</label>
+          <button className="btn" disabled={!f.days} onClick={create}>{t("Kod yaratish")}</button>
+        </div>
+      )}
+      {(q.data?.items || []).map((p: any) => (
+        <div key={p.id} className="row small">
+          <span className="grow"><b>{p.code}</b> · {p.days} {t("kun")} · {p.uses}{p.max_uses ? `/${p.max_uses}` : ""}{p.note ? ` · ${p.note}` : ""}{!p.active && <span className="pill warn"> {t("o'chirilgan")}</span>}</span>
+          {p.active && can("billing.manage_products") && <button className="tiny link" onClick={() => act(() => del(`/admin/promo-codes/${p.id}`), t("O'chirildi"), q.refetch)}>{t("O'chirish")}</button>}
+        </div>
+      ))}
     </div>
   );
 }

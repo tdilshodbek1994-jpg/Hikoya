@@ -45,8 +45,8 @@ function Inlines({ nodes, tr }: { nodes: Inline[]; tr: (s: string) => string }) 
   );
 }
 
-function BlockView({ b, tr, images, marked, inline, onInline }: { b: Block; tr: (s: string) => string; images: Record<string, string>; marked: { hl: boolean; bm: boolean }; inline?: number; onInline?: (bid: string) => void }) {
-  const cls = `${marked.hl ? "hl" : ""} ${marked.bm ? "bm" : ""}`.trim() || undefined;
+function BlockView({ b, tr, images, marked, inline, onInline }: { b: Block; tr: (s: string) => string; images: Record<string, string>; marked: { hl: boolean; bm: boolean; speaking?: boolean }; inline?: number; onInline?: (bid: string) => void }) {
+  const cls = `${marked.hl ? "hl" : ""} ${marked.bm ? "bm" : ""} ${marked.speaking ? "speaking" : ""}`.trim() || undefined;
   const badge = inline ? (
     <button className="inline-badge" aria-label={`${inline} izoh`} onClick={(e) => { e.stopPropagation(); onInline?.(b.attrs.bid); }}>💬 {inline}</button>
   ) : null;
@@ -70,9 +70,29 @@ function BlockView({ b, tr, images, marked, inline, onInline }: { b: Block; tr: 
   }
 }
 
-function AudioPlayer({ assetId }: { assetId: number }) {
+type SyncMark = { bid: string; t: number };
+
+function AudioPlayer({ assetId, sync, onActive, seekRef }: { assetId: number; sync?: SyncMark[]; onActive?: (bid: string | null) => void; seekRef?: React.MutableRefObject<((bid: string) => boolean) | null> }) {
   const t = useT();
   const ref = useRef<HTMLAudioElement>(null);
+  const lastBid = useRef<string | null>(null);
+  useEffect(() => {
+    if (!seekRef) return;
+    seekRef.current = (bid) => {
+      const m = sync?.find((x) => x.bid === bid);
+      if (!m || !ref.current) return false;
+      ref.current.currentTime = m.t;
+      ref.current.play().catch(() => {});
+      return true;
+    };
+    return () => { seekRef.current = null; };
+  }, [sync, seekRef]);
+  const follow = (time: number) => {
+    if (!sync?.length || !onActive) return;
+    let cur: string | null = null;
+    for (const m of sync) { if (m.t <= time + 0.05) cur = m.bid; else break; }
+    if (cur !== lastBid.current) { lastBid.current = cur; onActive(cur); }
+  };
   const [url, setUrl] = useState<string | null>(null);
   const [playing, setPlaying] = useState(false);
   const [rate, setRate] = useState(1);
@@ -94,12 +114,12 @@ function AudioPlayer({ assetId }: { assetId: number }) {
         src={url}
         preload="metadata"
         onLoadedMetadata={(e) => { const p = Number(localStorage.getItem(key) || 0); if (p) e.currentTarget.currentTime = p; }}
-        onTimeUpdate={(e) => localStorage.setItem(key, String(Math.floor(e.currentTarget.currentTime)))}
+        onTimeUpdate={(e) => { localStorage.setItem(key, String(Math.floor(e.currentTarget.currentTime))); follow(e.currentTarget.currentTime); }}
         onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
+        onPause={() => { setPlaying(false); onActive?.(null); lastBid.current = null; }}
       />
       <button className="icon-btn" aria-label={playing ? t("Pauza") : t("Tinglash")} onClick={() => (playing ? ref.current?.pause() : ref.current?.play())}>{playing ? <IPause /> : <IPlay />}</button>
-      <span className="grow small"><IAudio /> {t("Audio")}</span>
+      <span className="grow small"><IAudio /> {t("Audio")}{sync?.length ? <span className="tiny dim"> · {t("matn bilan")}</span> : null}</span>
       <select className="select" style={{ width: 76, minHeight: 36 }} value={rate} aria-label={t("Tezlik")} onChange={(e) => { const r = Number(e.target.value); setRate(r); if (ref.current) ref.current.playbackRate = r; }}>
         {[0.75, 1, 1.25, 1.5, 2].map((r) => <option key={r} value={r}>{r}×</option>)}
       </select>
@@ -171,6 +191,15 @@ export default function Reader() {
     queryFn: () => get<{ counts: Record<string, number> }>(`/works/${d.work.id}/chapters/${d.chapter.id}/inline-counts`),
   });
   const [recapOpen, setRecapOpen] = useState(false);
+  const [speaking, setSpeaking] = useState<string | null>(null);
+  const seekRef = useRef<((bid: string) => boolean) | null>(null);
+  useEffect(() => {
+    if (!speaking) return;
+    const el = document.querySelector(`[data-bid="${speaking}"]`);
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    if (r.top < 80 || r.bottom > window.innerHeight - 90) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [speaking]);
   const markSets = useMemo(() => ({ hl: new Set((marks.data?.highlights || []).map((h: any) => h.block_id)), bm: new Set((marks.data?.bookmarks || []).map((b: any) => b.block_id)) }), [marks.data]);
 
   // Telegram back button returns to the work page
@@ -275,9 +304,14 @@ export default function Reader() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ratio > 0.98]);
 
-  const onTextClick = () => {
+  const onTextClick = (e?: React.MouseEvent) => {
     const sel = window.getSelection();
     const quote = sel?.toString().trim();
+    // while narration plays, tapping a paragraph jumps the audio there
+    if (!quote && speaking && seekRef.current && e) {
+      const el = (e.target as HTMLElement).closest<HTMLElement>("[data-bid]");
+      if (el && seekRef.current(el.dataset.bid!)) return;
+    }
     if (quote && sel?.anchorNode) {
       const el = (sel.anchorNode.nodeType === 1 ? (sel.anchorNode as HTMLElement) : sel.anchorNode.parentElement)?.closest<HTMLElement>("[data-bid]");
       if (el) {
@@ -344,7 +378,7 @@ export default function Reader() {
       </div>
 
       <div className="rtext" ref={textRef} onClick={onTextClick} style={{ fontSize: settings.font_size, lineHeight: settings.line_height }}>
-        {d.audio && d.mode === "full" && <AudioPlayer assetId={d.audio.asset_id} />}
+        {d.audio && d.mode === "full" && <AudioPlayer assetId={d.audio.asset_id} sync={d.audio.sync} onActive={setSpeaking} seekRef={seekRef} />}
         <h1 className="ch-title">{tr(d.chapter.title)}</h1>
         {d.recap && (
           <div className="panel recap" onClick={(e) => { e.stopPropagation(); setRecapOpen(!recapOpen); }} style={{ fontFamily: "var(--font-sans)", marginBottom: 18 }}>
@@ -354,7 +388,7 @@ export default function Reader() {
         )}
         <div className={d.mode === "preview" ? "fade-out" : ""} style={{ ["--fade-to" as any]: fadeTo }}>
           {blocks.map((b) => (
-            <BlockView key={b.attrs.bid} b={b} tr={tr} images={d.images || {}} marked={{ hl: markSets.hl.has(b.attrs.bid), bm: markSets.bm.has(b.attrs.bid) }}
+            <BlockView key={b.attrs.bid} b={b} tr={tr} images={d.images || {}} marked={{ hl: markSets.hl.has(b.attrs.bid), bm: markSets.bm.has(b.attrs.bid), speaking: speaking === b.attrs.bid }}
               inline={inline.data?.counts?.[b.attrs.bid]} onInline={(bid) => nav(`/w/${d.work.code}/comments?chapter=${d.chapter.id}&block=${bid}`)} />
           ))}
         </div>
@@ -371,7 +405,9 @@ export default function Reader() {
         )}
         {d.mode === "full" && (
           <div className="stack mt24" style={{ fontFamily: "var(--font-sans)" }} onClick={(e) => e.stopPropagation()}>
-            {d.next_chapter ? (
+            {d.choices?.length ? (
+              <Choices chapterId={d.chapter.id} choices={d.choices} onGo={(id) => nav(`/read/${id}`)} />
+            ) : d.next_chapter ? (
               <button className="btn primary big block" onClick={() => nav(`/read/${d.next_chapter.id}`)}>
                 {d.next_chapter.locked && <ILock />} {t("Keyingi bob")}: {tr(d.next_chapter.title)}
               </button>
@@ -501,5 +537,33 @@ function SelectionSheet({ open, selection, onClose, onHighlight, onIssue, canSav
         </div>
       )}
     </Sheet>
+  );
+}
+
+
+/** Branching point: the reader decides where the story goes. Crowd percentages appear only after choosing. */
+function Choices({ chapterId, choices, onGo }: { chapterId: number; choices: any[]; onGo: (id: number) => void }) {
+  const t = useT();
+  const toast = useToast();
+  const [busy, setBusy] = useState(false);
+  const pick = async (c: any) => {
+    setBusy(true);
+    haptic.tap();
+    try {
+      await post(`/chapters/${chapterId}/choices/${c.id}`);
+      onGo(c.target_chapter_id);
+    } catch (e: any) { toast(e.message, true); } finally { setBusy(false); }
+  };
+  return (
+    <div className="panel stack" style={{ color: "var(--text)" }}>
+      <b>🔀 {t("Hikoya qayoqqa ketadi?")}</b>
+      {choices.map((c) => (
+        <button key={c.id} className={`btn block choice ${c.chosen ? "primary" : ""}`} disabled={busy} onClick={() => pick(c)}>
+          {c.locked && <ILock />} {c.label}
+          {c.percent != null && <span className="tiny" style={{ marginLeft: "auto", opacity: 0.8 }}>{c.percent}%</span>}
+        </button>
+      ))}
+      {choices.some((c) => c.chosen) && <span className="tiny dim">{t("Tanlovni istalgan vaqtda o'zgartirishingiz mumkin. Foizlar boshqa o'quvchilar tanlovi.")}</span>}
+    </div>
   );
 }

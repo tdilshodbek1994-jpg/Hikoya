@@ -111,6 +111,7 @@ export interface Card {
 export interface Me {
   id: number;
   telegram_user_id?: number;
+  language?: "uz" | "ru";
   display_name: string;
   script: "latn" | "cyrl";
   onboarding_done: boolean;

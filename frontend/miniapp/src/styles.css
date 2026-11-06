@@ -299,3 +299,5 @@ table.t td, table.t th { padding: 8px 6px; border-bottom: 1px solid var(--line);
 .char-card img, .char-card .ph { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex: none; background: var(--surface-2, rgba(127,127,127,.18)); display: grid; place-items: center; font-weight: 700; }
 .diff-del { background: rgba(230, 80, 80, .22); text-decoration: line-through; }
 .diff-ins { background: rgba(80, 200, 120, .22); }
+.reader .speaking { background: rgba(140, 120, 255, .16); border-radius: 6px; box-shadow: 0 0 0 4px rgba(140, 120, 255, .16); transition: background .3s; }
+.btn.choice { justify-content: flex-start; text-align: left; gap: 8px; }

@@ -37,6 +37,10 @@ async def auth_telegram(body: TelegramAuthIn, db: DB):
     s = get_settings()
     ident = validate_init_data(body.init_data, s.bot_token, s.init_data_max_age_seconds)
     user = await upsert_user(db, ident)
+    if ident.start_param:
+        from app.services.growth import bind_referral
+
+        await bind_referral(db, user, ident.start_param)
     return await _session_response(db, user, ident.start_param, body.device_label)
 
 

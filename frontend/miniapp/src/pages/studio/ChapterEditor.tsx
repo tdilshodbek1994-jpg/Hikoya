@@ -7,7 +7,7 @@ import { ApiError, api, get, patch, post } from "../../lib/api";
 import { useT } from "../../lib/i18n";
 import { closingConfirmation } from "../../lib/tg";
 import { countWords, fromEditor, kit, newBid, toEditor } from "./editorKit";
-import { AiProofread } from "./Extras";
+import { AiProofread, ChoicesManager } from "./Extras";
 import { upload } from "./WorkEditor";
 
 type SaveState = "saved" | "dirty" | "saving" | "offline" | "conflict" | "error";
@@ -211,9 +211,11 @@ function ChapterMeta({ open, onClose, data, onSaved }: { open: boolean; onClose:
         <div className="field"><label>{t("Bob audiosi (MP3/M4A)")}</label>
           <input type="file" accept="audio/mpeg,audio/mp4,.m4a,.mp3" disabled={audioBusy} onChange={(e) => addAudio(e.target.files?.[0])} />
           {data.attachments.filter((a: any) => a.purpose === "audio").map((a: any) => <div key={a.link_id} className="tiny dim">🎧 {a.title}</div>)}
+          {data.attachments.some((a: any) => a.purpose === "audio") && <Link className="link small" to={`/studio/sync/${data.chapter.id}`}>🎯 {t("Audio va matnni moslash")}</Link>}
           <span className="tiny dim">{t("Audio ham shu bobning Premium huquqiga bo'ysunadi.")}</span>
         </div>
         <button className="btn primary block" onClick={save}>{t("Saqlash")}</button>
+        <ChoicesManager chapterId={data.chapter.id} workId={data.work.id} />
       </div>
     </Sheet>
   );
