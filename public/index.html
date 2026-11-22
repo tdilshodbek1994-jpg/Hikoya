@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <title>Sado — ingliz tilida gaplashish</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <button class="icon-btn" id="backBtn" aria-label="Orqaga" hidden>
+      <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" /></svg>
+    </button>
+    <div class="brand">
+      <span class="brand-face"><i></i><i></i></span>
+      <span class="brand-name">Sado</span>
+      <span class="brand-tag">Speaking</span>
+    </div>
+  </header>
+
+  <!-- 1. Darslar ro'yxati -->
+  <main id="home" class="screen active">
+    <section class="hero">
+      <div class="hero-mascot" id="heroMascot"></div>
+      <div>
+        <h1>Ingliz tilida gaplashamiz!</h1>
+        <p>Vaziyatni tanlang. Sado bilan ovoz chiqarib gaplashing, 6 ta iborani ishlating.</p>
+      </div>
+    </section>
+    <div class="lesson-list" id="lessonList">
+      <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+    </div>
+    <p class="note" id="homeNote"></p>
+  </main>
+
+  <!-- 2. Dars (suhbat) -->
+  <main id="lesson" class="screen">
+    <div class="lesson-head">
+      <div><b>Sado AI</b> <span class="muted" id="lessonTitle"></span></div>
+      <div class="timer" id="timer">
+        <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" class="t-bg"/><circle cx="10" cy="10" r="8" class="t-fg" id="timerRing"/></svg>
+        <span id="timerText">10:00</span>
+      </div>
+    </div>
+
+    <div class="phrase-card" id="phraseCard">
+      <div class="progress-row">
+        <div class="segments" id="segments"></div>
+        <span class="count" id="countText">6 tadan 0 ta ibora</span>
+      </div>
+      <div class="phrase-nav">
+        <button class="nav-btn" id="prevPhrase" aria-label="Oldingi ibora">‹</button>
+        <div class="phrase-body">
+          <div class="label" id="phraseLabel">Ovoz chiqarib ayting</div>
+          <div class="phrase-en" id="phraseEn"></div>
+          <div class="phrase-uz" id="phraseUz"></div>
+        </div>
+        <button class="nav-btn" id="nextPhrase" aria-label="Keyingi ibora">›</button>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="mascot" id="mascot" data-state="idle"></div>
+      <div class="status" id="status"><span class="status-ico" id="statusIco"></span><span id="statusText">Tayyorlanmoqda...</span></div>
+      <div class="hint" id="hint">Shunchaki gapiring — Sado tinglayapti.</div>
+    </div>
+
+    <div class="subs" id="subs" hidden>
+      <div class="sub sub-ai"><b>Sado:</b> <span id="subAi"></span><div class="sub-uz" id="subAiUz"></div></div>
+      <div class="sub sub-me" id="subMeWrap" hidden><b>Siz:</b> <span id="subMe"></span></div>
+      <div class="sub sub-fix" id="subFixWrap" hidden>💡 <span id="subFix"></span></div>
+    </div>
+
+    <form class="text-reply" id="textForm" hidden>
+      <input id="textInput" autocomplete="off" placeholder="Inglizcha yozing..." />
+      <button type="submit">Yuborish</button>
+    </form>
+
+    <div class="mode-toggle" id="modeToggle" role="tablist">
+      <button class="mode active" data-mode="auto" role="tab">
+        <svg viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+        Bosmasdan gapirish
+      </button>
+      <button class="mode" data-mode="hold" role="tab">
+        <svg viewBox="0 0 24 24"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12m0-6.5v-1a1.5 1.5 0 0 1 3 0V12m0-5.5a1.5 1.5 0 0 1 3 0V12m0-3.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-1.5a6 6 0 0 1-4.9-2.6L5 15.5a1.6 1.6 0 0 1 2.6-1.8L8 14"/></svg>
+        Bosib gapirish
+      </button>
+    </div>
+
+    <button class="hold-btn" id="holdBtn" hidden>
+      <svg viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+      <span>Bosib turing va gapiring</span>
+    </button>
+
+    <div class="bottom-row">
+      <button class="btn ghost" id="subsBtn">Subtitrlar</button>
+      <button class="btn danger" id="endBtn">✕ Tugatish</button>
+    </div>
+  </main>
+
+  <!-- 3. Natija -->
+  <main id="result" class="screen">
+    <div class="result-card">
+      <div class="result-mascot" id="resultMascot"></div>
+      <h2 id="resultTitle">Barakalla!</h2>
+      <p class="muted" id="resultSub"></p>
+      <ul class="result-list" id="resultList"></ul>
+      <button class="btn primary wide" id="againBtn">Qaytadan mashq qilish</button>
+      <button class="btn ghost wide" id="homeBtn">Boshqa mavzu tanlash</button>
+    </div>
+  </main>
+
+  <!-- Boshlash oynasi (mikrofon ruxsati foydalanuvchi bosishi bilan so'raladi) -->
+  <div class="sheet" id="startSheet" hidden>
+    <div class="sheet-card">
+      <div class="sheet-emoji" id="sheetEmoji">☕</div>
+      <h3 id="sheetTitle"></h3>
+      <p class="muted">Sado sizga savol beradi, siz ovoz chiqarib javob berasiz. Mikrofonga ruxsat bering.</p>
+      <ul class="sheet-phrases" id="sheetPhrases"></ul>
+      <button class="btn primary wide" id="startBtn">🎤 Boshlash</button>
+      <button class="btn ghost wide" id="cancelBtn">Bekor qilish</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

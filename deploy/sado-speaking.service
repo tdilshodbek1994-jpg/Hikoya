@@ -1,0 +1,16 @@
+# /etc/systemd/system/sado-speaking.service
+[Unit]
+Description=Sado speaking (Telegram Mini App)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/sado-speaking
+ExecStart=/usr/bin/node server.js
+Restart=always
+RestartSec=3
+Environment=NODE_ENV=production
+User=www-data
+
+[Install]
+WantedBy=multi-user.target
