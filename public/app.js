@@ -619,6 +619,7 @@ function afterReply() {
 async function playReply(parts, fallbackText) {
   if (state.phase === "ended") return;
   if (!Array.isArray(parts) || !parts.length) parts = [{ lang: "en", text: fallbackText, audio: null }];
+  if (!parts.some((p) => p.audio)) toast("⚠️ Ovoz serverdan kelmadi (TTS)", 4000);
   setPhase("speaking");
   for (const p of parts) {
     if (state.phase !== "speaking") break; // dars tugatilgan bo'lsa
@@ -628,6 +629,7 @@ async function playReply(parts, fallbackText) {
       else await speakBrowser(p.text, p.lang);
     } catch (e) {
       console.warn("Ijro:", e);
+      toast("⚠️ Ijro xatosi: " + (e?.message || e), 5000);
     }
   }
   mascot.setLevel(0);
@@ -647,7 +649,10 @@ async function playMp3(b64) {
   } catch {
     return playViaElement(b64);
   }
-  if (audio.ctx.state !== "running") return playViaElement(b64);
+  if (audio.ctx.state !== "running") {
+    toast("ℹ️ Audio holati: " + audio.ctx.state, 3000);
+    return playViaElement(b64);
+  }
   return new Promise((resolve) => {
     let raf = 0;
     let finished = false;
@@ -689,7 +694,12 @@ function playViaElement(b64) {
     };
     el.onended = done;
     el.onerror = done;
-    el.play().then(() => (raf = requestAnimationFrame(fake))).catch(done);
+    el.play()
+      .then(() => (raf = requestAnimationFrame(fake)))
+      .catch((e) => {
+        toast("⚠️ Telefon ovozni ijro etmadi: " + (e?.name || e), 5000);
+        done();
+      });
     setTimeout(done, 30000);
   });
 }

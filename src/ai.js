@@ -173,6 +173,13 @@ export async function speak(text, lang = "en") {
 // Qaytaradi: [{ lang, text, audio }] - audio null bo'lsa brauzer o'zi o'qiydi.
 export async function speakParts(parts) {
   const list = parts.filter((p) => p.text && p.text.trim());
-  const audios = await Promise.all(list.map((p) => speak(p.text, p.lang).catch(() => null)));
+  const audios = await Promise.all(
+    list.map((p) =>
+      speak(p.text, p.lang).catch((err) => {
+        console.error("TTS xatosi:", err?.message || err);
+        return null;
+      }),
+    ),
+  );
   return list.map((p, i) => ({ lang: p.lang, text: p.text, audio: audios[i] }));
 }
