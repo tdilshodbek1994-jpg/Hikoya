@@ -404,14 +404,20 @@ function renderChips() {
 // IELTS/CEFR kursidagi birinchi o'tilmagan dars
 function nextLesson() {
   const done = state.progress?.lessons || {};
-  for (const cat of ["IELTS kursi", "CEFR kursi"]) {
+  for (const cat of ["IELTS kursi", "CEFR kursi", "Grammatika gapirib"]) {
     const list = state.lessons.filter((l) => l.category === cat);
     if (list.some((l) => done[l.id])) {
       const n = list.find((l) => !done[l.id]);
       if (n) return n;
     }
   }
-  return state.lessons.find((l) => l.category === "IELTS kursi" && !done[l.id]) || null;
+  // Boshlovchiga (tanishuvda tanlangan) — kundalik mavzular, keyin grammatika
+  const start = localStorage.getItem("sado-level") === "beg" ? ["Kundalik hayot", "Grammatika gapirib"] : ["IELTS kursi"];
+  for (const cat of start) {
+    const n = state.lessons.find((l) => l.category === cat && !done[l.id]);
+    if (n) return n;
+  }
+  return null;
 }
 
 function renderNext() {
@@ -843,8 +849,10 @@ function openSheet(lesson) {
   const avg = recent.length ? recent.reduce((s, r) => s + (r.score || 0), 0) / recent.length : null;
   const lvl = String(lesson.level || "");
   let rec = "chat";
-  if (/^A1|^A2$|^A1-|Har/.test(lvl) || (avg !== null && avg < 50)) rec = "tutor";
-  else if (state.liveEnabled && (/B2|C1/.test(lvl) || (avg !== null && avg >= 70))) rec = "live";
+  // Hali natija yo'q bo'lsa — tanishuvda tanlangan daraja hisobga olinadi
+  const self = avg === null ? localStorage.getItem("sado-level") : null;
+  if (self === "beg" || /^A1|^A2$|^A1-|Har/.test(lvl) || (avg !== null && avg < 50)) rec = "tutor";
+  else if (state.liveEnabled && (self === "adv" || /B2|C1/.test(lvl) || (avg !== null && avg >= 70))) rec = "live";
   for (const [id, m] of [["startLiveBtn", "live"], ["startTutorBtn", "tutor"], ["startChatBtn", "chat"]]) $(id).classList.toggle("rec", m === rec);
   // ✏️ Grammatika qoidasi
   $("sheetRule").hidden = !lesson.rule;
@@ -2704,12 +2712,37 @@ function showOnboarding() {
     const box = $("onbSlides");
     box.innerHTML = "";
     box.append(el("h2", "", t), el("p", "", d));
+    // 🎚 Oxirgi slayd: o'z darajasini tanlash (tavsiyalar shunga moslanadi)
+    if (i === ONB.length - 1) {
+      const lv = el("div", "onb-level");
+      lv.append(el("small", "", "Ingliz tilingiz qanday?"));
+      const row = el("div", "onb-lv-row");
+      for (const [k, label] of [["beg", "🌱 Endi boshlayapman"], ["mid", "🌿 O'rtacha"], ["adv", "🌳 Yaxshi"]]) {
+        const b = el("button", "chip-f" + (localStorage.getItem("sado-level") === k ? " on" : ""), label);
+        b.addEventListener("click", () => {
+          haptic();
+          localStorage.setItem("sado-level", k);
+          for (const x of row.children) x.classList.toggle("on", x === b);
+        });
+        row.append(b);
+      }
+      lv.append(row);
+      box.append(lv);
+    }
     $("onbDots").innerHTML = ONB.map((_, k) => `<i class="${k === i ? "on" : ""}"></i>`).join("");
     $("onbNext").textContent = i === ONB.length - 1 ? "🚀 Boshladik!" : "Keyingisi ›";
   };
   const close = () => {
     localStorage.setItem("sado-onb", "1");
     $("onb").hidden = true;
+    // Daraja tanlangan bo'lsa — mos birinchi darsni darhol taklif qilamiz
+    const lvl = localStorage.getItem("sado-level");
+    renderNext(); // "Shu yerdan boshlang" darajaga moslanadi
+    const first = lvl === "beg" ? state.lessons.find((l) => l.id === "cafe")
+      : lvl === "mid" ? state.lessons.find((l) => l.id === "meet")
+      : lvl === "adv" ? state.lessons.find((l) => l.liveOnly) || state.lessons.find((l) => l.id === "ielts")
+      : null;
+    if (first && !state.progress?.recent?.length) setTimeout(() => openSheet(first), 300);
   };
   $("onbNext").onclick = () => {
     haptic();

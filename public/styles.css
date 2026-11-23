@@ -791,3 +791,9 @@ body:has(#lesson.active) .toast { top: calc(40vh + var(--safe-t)); }
 /* 🪜 Yengilroq rejim taklifi */
 .rep-easier { margin-top: 10px; padding: 10px 12px; border-radius: 14px; background: color-mix(in srgb, var(--primary) 8%, var(--bg)); font-size: 13.5px; line-height: 1.45; }
 .rep-easier .btn { margin-top: 8px; font-size: 14px; }
+
+/* 🎚 Tanishuvda daraja tanlash */
+.onb-level { margin-top: 12px; }
+.onb-level small { display: block; font-weight: 700; margin-bottom: 6px; color: var(--muted); }
+.onb-lv-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.onb-lv-row .chip-f { font-size: 13px; }
