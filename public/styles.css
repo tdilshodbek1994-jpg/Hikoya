@@ -460,3 +460,9 @@ body.dark .daily-go { color: #a5b4fc; }
 .hint-btn.retry, body.dark .hint-btn.retry { color: #fff; background: var(--danger); }
 .chip-f.rnd { background: linear-gradient(135deg, #f59e0b, #f97316); color: #fff; }
 .btn.next { background: linear-gradient(135deg, #16a34a, #14b8a6); color: #fff; box-shadow: 0 8px 20px rgba(22, 163, 74, 0.28); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 14px; }
+
+/* ---------- Matn o'lchami ---------- */
+body { zoom: var(--zoom, 1); }
+.font-btn { margin-left: auto; font-weight: 800; font-size: 15px; width: auto; padding: 0 10px; background: var(--card); box-shadow: var(--shadow); }
+.cat-title { padding-right: 44px; }
+html, body { overflow-x: clip; }

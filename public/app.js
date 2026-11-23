@@ -70,6 +70,15 @@ applyTheme();
 tg?.onEvent?.("themeChanged", applyTheme);
 matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", applyTheme);
 
+// Aa: matn o'lchami (oddiy → katta → juda katta)
+const FONT_STEPS = [1, 1.12, 1.25];
+function applyFont() {
+  const i = Number(localStorage.getItem("sado-font")) || 0;
+  document.documentElement.style.setProperty("--zoom", FONT_STEPS[i % FONT_STEPS.length]);
+  return i;
+}
+applyFont();
+
 function haptic(type = "light") {
   try {
     if (type === "success" || type === "error") tg?.HapticFeedback?.notificationOccurred(type);
@@ -113,6 +122,13 @@ function show(id) {
 }
 
 $("backBtn").addEventListener("click", () => onBack());
+$("fontBtn").addEventListener("click", () => {
+  const i = ((Number(localStorage.getItem("sado-font")) || 0) + 1) % FONT_STEPS.length;
+  localStorage.setItem("sado-font", String(i));
+  applyFont();
+  haptic();
+  toast(["Matn: oddiy", "Matn: katta", "Matn: juda katta"][i], 1500);
+});
 
 function onBack() {
   if ($("lesson").classList.contains("active")) {
