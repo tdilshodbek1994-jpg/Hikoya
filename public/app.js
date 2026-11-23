@@ -1392,7 +1392,10 @@ function renderSettings() {
   box.innerHTML = "";
   for (const [title, opts, get, set] of rows) {
     const r = el("div", "set-row");
-    r.append(el("div", "set-title", title));
+    const tt = el("div", "set-title", title);
+    // Hali tanlanmagan sozlama — kichik eslatma
+    if (!opts.some(([v]) => v === get())) tt.append(el("em", "", " · tanlanmagan"));
+    r.append(tt);
     const seg = el("div", "seg");
     for (const [v, label] of opts) {
       const b = el("button", "seg-b" + (get() === v ? " on" : ""), label);
