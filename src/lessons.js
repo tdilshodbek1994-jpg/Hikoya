@@ -2438,6 +2438,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-wouldlike",
+    category: "Grammatika gapirib",
+    title: "Would like yoki like?",
+    emoji: "🍽️",
+    level: "A1-A2",
+    added: "2026-11-23",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on the difference between like (enjoy in general: I like coffee) and would like / I'd like (want now, polite: I'd like a coffee, please), plus Would you like ...? for offers (Would you like some tea? — Yes, please. / No, thank you.) and would like to + verb (I'd like to visit London). Play a café and restaurant game and talk about plans and wishes. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Welcome to my café! What would you like to drink?",
+    openerUz: "Kafeimga xush kelibsiz! Nima ichishni xohlaysiz?",
+    phrases: [
+      { en: "I like coffee, but I'd like tea now.", uz: "Qahvani yoqtiraman, lekin hozir choy ichmoqchiman." },
+      { en: "I'd like a sandwich, please.", uz: "Bitta sendvich bering, iltimos." },
+      { en: "Would you like some water?", uz: "Biroz suv ichasizmi?" },
+      { en: "Yes, please. / No, thank you.", uz: "Ha, iltimos. / Yo'q, rahmat." },
+      { en: "I'd like to visit London one day.", uz: "Bir kun Londonga borishni xohlardim." },
+      { en: "What would you like to do this weekend?", uz: "Shu dam olish kunlari nima qilishni xohlaysiz?" },
+    ],
+  },
+  {
+    id: "gr-might",
+    category: "Grammatika gapirib",
+    title: "May, might, could — balki",
+    emoji: "🎲",
+    level: "B1",
+    added: "2026-11-23",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on may / might / could + base verb for possibility in the present and future (It might rain later. She may be at home. We could go to the park if it's sunny), may not / might not (not could not for possibility), and contrast with will (sure) and must (very sure). Talk about weekend plans, the weather, guessing where people are and what the future might bring. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "What are your plans for this weekend? Are you sure, or is it just a maybe?",
+    openerUz: "Shu dam olish kunlari rejangiz qanday? Aniqmi yoki shunchaki balki?",
+    phrases: [
+      { en: "It might rain later.", uz: "Keyinroq yomg'ir yog'ishi mumkin." },
+      { en: "I may go to the cinema on Saturday.", uz: "Shanba kuni kinoga borsam kerak." },
+      { en: "She might not come to the party.", uz: "U ziyofatga kelmasligi mumkin." },
+      { en: "We could go to the park if it's sunny.", uz: "Havo ochiq bo'lsa, parkka borishimiz mumkin." },
+      { en: "He may be at home now.", uz: "U hozir uyda bo'lishi mumkin." },
+      { en: "I'm not sure. I might stay at home.", uz: "Aniq emas. Balki uyda qolarman." },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -3561,7 +3601,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-can", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-mine", "gr-reflexive", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adjorder", "gr-adverbs", "gr-tooenough", "gr-sosuch", "gr-modals", "gr-better", "gr-usedto", "gr-perfect", "gr-forsince", "gr-ppvsps", "gr-pastperf", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-tags", "gr-sotoo", "gr-both", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused", "gr-unless", "gr-inversion"];
+const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-can", "gr-wouldlike", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-mine", "gr-reflexive", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adjorder", "gr-adverbs", "gr-tooenough", "gr-sosuch", "gr-modals", "gr-might", "gr-better", "gr-usedto", "gr-perfect", "gr-forsince", "gr-ppvsps", "gr-pastperf", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-tags", "gr-sotoo", "gr-both", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused", "gr-unless", "gr-inversion"];
 // Avval daraja guruhi (A1–A2 → B1 → B2), guruh ichida — GR_ORDER tartibi
 const grGroup = (lv) => (/B2/.test(lv || "") ? 2 : /A2-B1|^B1$/.test(lv || "") ? 1 : 0);
 const grRank = (l) => grGroup(l.level) * 100 + (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
@@ -3614,6 +3654,8 @@ const QUIZ = {
   "gr-adjorder": ["I have a ___ table.|beautiful old wooden|wooden old beautiful|old beautiful wooden", "She bought a ___ bag.|small black leather|black small leather|leather small black", "It's a ___ house.|lovely big|big lovely|big and lovely a", "He wears a ___ coat.|long blue winter|blue long winter|winter blue long", "We have a ___ vase.|round Italian glass|glass round Italian|Italian glass round", "I want a ___ car.|nice new red|red new nice|new red nice", "They live in a ___ flat.|small modern|modern small|small and modern a", "My grandma has a ___ cat.|fat old grey|grey old fat|old grey fat", "He gave me a ___ watch.|beautiful Swiss|Swiss beautiful|beautifully Swiss", "There's a ___ box on the table.|small square|square small|squarely small", "She has ___ hair.|long black|black long|longly black", "It was a ___ day.|lovely sunny|sunny lovely|lovely sunnily"],
   "gr-reflexive": ["I taught ___ to play the guitar.|myself|me|mine", "She lives by ___.|herself|her|hers", "He hurt ___ playing football.|himself|hisself|him", "We enjoyed ___ at the party.|ourselves|us|ourself", "They help ___ with homework.|each other|themselves|theirselves", "Help ___ to some tea, everyone!|yourselves|yourself|you", "The cat is washing ___.|itself|it|its", "Did you make this cake by ___?|yourself|you|your", "They built the house ___.|themselves|theirselves|them", "My brother and I talk to ___ every day.|each other|ourselves|us", "I looked at ___ in the mirror.|myself|me|my", "She bought ___ a new dress.|herself|her|hers"],
   "gr-both": ["I like ___ tea and coffee.|both|either|neither", "You can have ___ tea or coffee.|either|both|neither", "___ my brother nor my sister smokes.|Neither|Either|Both", "___ of them are doctors.|Both|Either|Neither", "Neither of us ___ late.|was|wasn't|weren't", "I don't like ___ of these films.|either|neither|both", "Both Aziz ___ Laylo speak English.|and|or|nor", "Either you ___ I will call her.|or|and|nor", "Neither the bus ___ the train was on time.|nor|or|and", "We can meet ___ on Monday or on Tuesday.|either|both|neither", "___ answer is correct — they're both wrong.|Neither|Either|Both", "Both of my parents ___ teachers.|are|is|be"],
+  "gr-wouldlike": ["I ___ a coffee, please.|'d like|like|likes", "I ___ coffee. I drink it every morning.|like|'d like|would like", "Would you like some tea? — Yes, ___.|please|I like|I would", "I'd like ___ London one day.|to visit|visit|visiting", "___ you like some water?|Would|Do|Are", "She ___ chocolate. It's her favourite.|likes|'d like|would like", "What would you like ___ this weekend?|to do|do|doing", "Would you like a sandwich? — No, ___.|thank you|I don't like|I wouldn't", "We'd like ___ a table for two.|to book|book|booking", "Do you ___ football?|like|would like|'d like", "I'd like ___ water, please.|some|any|a", "My brother ___ to be a pilot.|would like|like|likes"],
+  "gr-might": ["It ___ rain later. Take an umbrella.|might|must|will to", "She ___ be at home now. I'm not sure.|may|can|must to", "He ___ not come to the party.|might|could|can", "We ___ go to the park if it's sunny.|could|must|should to", "I might ___ at home tonight.|stay|to stay|staying", "Take a coat. It ___ get cold.|may|can|must to", "They ___ be late — there's a lot of traffic.|might|can|will to", "I'm not sure. I ___ go to the cinema.|may|will|must", "She may ___ the answer.|know|to know|knows", "It might ___ sunny tomorrow.|be|is|being", "You ___ want to bring some water.|might|must to|can to", "Don't wait for me. I ___ be very late.|might|can|should"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink", "My sister ___ English very well.|speaks|speak|speaking", "They ___ live in Tashkent.|don't|doesn't|aren't", "Where ___ he work?|does|do|is", "The shop ___ at nine o'clock.|opens|open|opening", "Water ___ at 100 degrees.|boils|boil|is boil", "My friends ___ like rap music.|don't|doesn't|isn't", "___ your brother study at university?|Does|Do|Is", "He usually ___ his homework in the evening.|does|do|doing"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on", "I was born ___ 2008.|in|on|at", "We have a party ___ Friday evening.|on|in|at", "I usually sleep ___ night.|at|in|on", "The keys are ___ the table.|on|at|in", "The meeting is ___ 3 pm.|at|in|on", "I'll see you ___ the weekend.|at|in|on", "She lives ___ Samarkand.|in|at|on", "My birthday is ___ 5th March.|on|in|at"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do", "Listen! The baby ___ crying.|is|are|be", "We ___ waiting for the bus now.|are|is|am", "What ___ you doing?|are|do|is", "She isn't ___ TV at the moment.|watching|watch|watches", "I ___ working from home this week.|am|is|are", "Why ___ you laughing?|are|is|do", "They ___ playing football right now.|are|is|be", "Be quiet! Grandma ___ sleeping.|is|are|am"],
@@ -3667,6 +3709,8 @@ const KEYWORDS = {
   "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
 };
 const RULES = {
+  "gr-wouldlike": "like — umuman yoqtiraman: I like coffee. She likes music.\nwould like ('d like) — hozir xohlayman (muloyim): I'd like a coffee, please.\nTaklif: Would you like some tea? — Yes, please. / No, thank you.\nwould like to + fe'l: I'd like to visit London. (✗ I'd like visit)",
+  "gr-might": "may / might / could + fe'lning o'zi — balki, ehtimol: It might rain later. She may be at home.\nInkor: may not / might not: He might not come. (✗ could not — bu \"qila olmadi\" ma'nosida)\nTaklif sifatida: We could go to the park.\nAniq bo'lsa — will: It will rain. (✗ It might to rain)",
   "gr-reflexive": "O'zlik olmoshlari: myself, yourself, himself, herself, itself, ourselves, yourselves, themselves.\nIsh egasining o'ziga qaytsa: I cut myself. She taught herself English.\nby myself = yolg'iz, yordamsiz: I live by myself.\nIkki kishi bir-biriga: They love each other. (✗ hisself) (✗ theirselves)",
   "gr-both": "both ... and (ikkalasi ham): Both Aziz and Laylo speak English.\neither ... or — u yoki bu: You can have either tea or coffee.\nneither ... nor — na u, na bu (inkor allaqachon bor, not qo'shilmaydi): Neither my brother nor my sister lives here.\nof bilan: Both of them are teachers. Neither of us was late. (✗ Neither of us wasn't late)",
   "gr-forsince": "for + davr (qancha vaqt): for ten years, for two weeks, for a long time.\nsince + boshlanish nuqtasi (qachondan beri): since 2020, since last week, since childhood.\nIkkalasi ham Present Perfect bilan: I've lived here for ten years. (✗ I live here for ten years)\nSavol: How long have you studied English?",
