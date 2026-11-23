@@ -394,8 +394,28 @@ $("ruleBtn").addEventListener("click", () => {
 function renderVisual(lesson) {
   const box = $("visual");
   const v = lesson?.visual;
-  box.hidden = !v && !lesson?.questions;
+  box.hidden = !v && !lesson?.questions && !lesson?.plan;
   box.innerHTML = "";
+  // 📋 CEFR: javob rejasi — har bir bandni bosib belgilash mumkin
+  if (!v && lesson?.plan) {
+    const d = document.createElement("details");
+    d.className = "vis-q";
+    d.open = true;
+    const sm = document.createElement("summary");
+    sm.textContent = "📋 Javob rejasi — imtihonda shu qismlar baholanadi";
+    const ul = el("ul", "plan-list");
+    for (const step of lesson.plan) {
+      const li = el("li", "", step);
+      li.addEventListener("click", () => {
+        haptic();
+        li.classList.toggle("done");
+      });
+      ul.append(li);
+    }
+    d.append(sm, ul, el("small", "", "👆 Gapirib bo'lgan qismingizni bosib belgilang"));
+    box.append(d);
+    return;
+  }
   // ❓ IELTS Part 3 savollari — yig'iladigan ro'yxat
   if (!v && lesson?.questions) {
     const d = document.createElement("details");

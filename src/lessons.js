@@ -2396,6 +2396,15 @@ const IELTS_STAGES = [{ key: "1", label: "Part 1" }, { key: "2", label: "Part 2"
 const CEFR_STAGES = [{ key: "1.1", label: "1.1" }, { key: "1.2", label: "1.2" }, { key: "2", label: "Part 2" }, { key: "3", label: "Part 3" }];
 const STAGES = { ielts: IELTS_STAGES, cefr: CEFR_STAGES, "cefr-8": CEFR_STAGES };
 
+// 📋 CEFR topshiriqlari: javob rejasi (imtihonda baholanadigan qismlar)
+const PLANS = {
+  "cefr-1": ["Savolga to'g'ridan-to'g'ri javob bering", "Sababini ayting: because ...", "Kichik misol yoki tafsilot qo'shing", "2–3 gap — juda qisqa ham, juda uzun ham emas"],
+  "cefr-3": ["Qachon va qayerda bo'lgan (When / Where)", "Nima bo'ldi — ketma-ket: First, Then, After that", "Nimani his qildingiz (I felt ...)", "Nimani o'rgandingiz (It taught me ...)"],
+  "cefr-4": ["Mavzuni o'z so'zingiz bilan ayting", "Bir tomondan: 2 ta dalil (On the one hand ...)", "Boshqa tomondan: 1–2 dalil (On the other hand ...)", "Xulosa — o'z fikringiz (Overall, I believe ...)"],
+  "cefr-5": ["Muammoni tasvirlang", "Sabablari (It is mainly caused by ...)", "Oqibatlari (As a result ...)", "Kamida 2 ta yechim (One solution would be ...)"],
+  "cefr-6": ["Reja: be going to / I'm planning to ...", "Taxmin: I think I will ...", "Faraz: If I ..., I would ...", "Sababini ayting: because ..."],
+};
+
 // ❓ IELTS Part 3: muhokama savollari (o'quvchi oldindan ko'rib, o'ylab oladi)
 function p3Questions(l) {
   if (!/^ielts-p[13]/.test(l.id)) return null;
@@ -2416,6 +2425,7 @@ export function publicLesson(l) {
     visual: VISUALS[l.id] || null,
     stages: STAGES[l.id] || null,
     questions: p3Questions(l),
+    plan: PLANS[l.id] || null,
     category: l.category || "",
     phrases: l.phrases,
   };

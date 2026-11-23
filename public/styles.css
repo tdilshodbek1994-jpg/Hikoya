@@ -854,3 +854,11 @@ body.dark .pill.warn { color: #fbbf24; }
 .vis-q[open] summary::after { content: " ▴"; }
 .vis-q ol { margin: 8px 0 6px; padding-left: 20px; font-size: 14px; line-height: 1.5; }
 .vis-q small { display: block; font-size: 12px; color: var(--muted); }
+
+/* 📋 CEFR javob rejasi */
+.plan-list { list-style: none; margin: 8px 0 6px; padding: 0; display: grid; gap: 5px; }
+.plan-list li { font-size: 14px; padding: 6px 10px 6px 32px; border-radius: 10px; background: var(--bg); position: relative; cursor: pointer; }
+.plan-list li::before { content: ""; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; border-radius: 4px; border: 2px solid var(--muted); }
+.plan-list li.done { color: var(--muted); text-decoration: line-through; }
+.plan-list li.done::before { border-color: var(--ok); background: var(--ok); }
+.plan-list li.done::before { content: "✓"; color: #fff; font-size: 11px; font-weight: 800; display: grid; place-items: center; line-height: 1; }
