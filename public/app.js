@@ -562,6 +562,8 @@ function renderTrend() {
   );
   box.append(head);
   const bars = el("div", "trend-bars");
+  const info = el("div", "trend-info", "");
+  info.hidden = true;
   for (const r of recent) {
     const l = state.lessons.find((x) => x.id === r.lessonId);
     const col = el("div", "tb");
@@ -570,9 +572,18 @@ function renderTrend() {
     col.append(el("em", "", String(r.score)), el("span", "tb-track", ""), el("small", "", l?.emoji || "📘"));
     col.querySelector(".tb-track").append(bar);
     col.title = `${l?.title || ""} · ${r.level || ""}`;
+    // Ustunni bosish — qaysi dars, qachon va qanday natija
+    col.addEventListener("click", () => {
+      haptic();
+      for (const c of bars.children) c.classList.toggle("sel", c === col);
+      const d = new Date(r.at);
+      const when = isNaN(d) ? "" : ` · ${d.getDate()}.${String(d.getMonth() + 1).padStart(2, "0")}`;
+      info.textContent = `${l?.emoji || "📘"} ${l?.title || "Dars"} — ${r.score} ball${r.level ? ` (${r.level})` : ""}${when}`;
+      info.hidden = false;
+    });
     bars.append(col);
   }
-  box.append(bars);
+  box.append(bars, info);
 }
 
 // 🏅 Yutuqlar: progressdan hisoblanadi

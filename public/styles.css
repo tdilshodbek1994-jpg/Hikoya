@@ -744,3 +744,11 @@ body:has(#lesson.active) .toast { top: calc(40vh + var(--safe-t)); }
 @keyframes shadowbar { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 .shadow-btns { display: flex; justify-content: center; gap: 8px; margin-top: 6px; }
 .shadow-btns .shadow-stop { margin-top: 0; }
+
+/* 🏅 Yutuqlar: hammasi ko'rinsin (yon tomonga yashirinmasin) */
+.badge-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px 4px; overflow: visible; }
+.badge { width: auto; }
+/* 📈 Ustunni bosish */
+.tb { cursor: pointer; }
+.tb.sel .tb-track { box-shadow: 0 0 0 2px var(--primary); }
+.trend-info { margin-top: 8px; font-size: 13px; font-weight: 600; background: var(--bg); border-radius: 10px; padding: 7px 10px; }
