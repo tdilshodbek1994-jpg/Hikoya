@@ -1838,6 +1838,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-tobe",
+    category: "Grammatika gapirib",
+    title: "To be: am, is, are",
+    emoji: "🙋",
+    level: "A1",
+    added: "2026-11-26",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice for complete beginners focused on the verb to be: I am, you/we/they are, he/she/it is; negatives (I'm not, isn't, aren't) and questions (Are you...? Is she...?). Talk about the student's name, age, city, job or studies, family members and how they feel. Have a natural, very simple conversation that makes the student use this grammar a lot. Speak slowly with short sentences. Whenever the student makes a mistake with this grammar, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Hello! I am Sado. What is your name? Are you a student?",
+    openerUz: "Salom! Men Sadoman. Ismingiz nima? Talabamisiz?",
+    phrases: [
+      { en: "I am from Uzbekistan.", uz: "Men O'zbekistondanman." },
+      { en: "My sister is a doctor.", uz: "Opam shifokor." },
+      { en: "We are happy today.", uz: "Bugun biz xursandmiz." },
+      { en: "He isn't at home.", uz: "U uyda emas." },
+      { en: "Are you tired?", uz: "Charchadingizmi?" },
+      { en: "They're my best friends.", uz: "Ular mening eng yaqin do'stlarim." },
+    ],
+  },
+  {
+    id: "gr-this",
+    category: "Grammatika gapirib",
+    title: "This, that, these, those + ko'plik",
+    emoji: "👉",
+    level: "A1",
+    added: "2026-11-26",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice for beginners focused on this / that (one thing) and these / those (many things), near and far, plus regular and irregular plurals (book → books, box → boxes, child → children, man → men, person → people). Role-play a shop or a market where the student points at things and asks prices. Have a natural, simple conversation that makes the student use this grammar a lot. Whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Welcome to my shop! Do you like this hat or that hat over there?",
+    openerUz: "Do'konimga xush kelibsiz! Mana bu shlyapa yoqadimi yoki ana u yerdagisimi?",
+    phrases: [
+      { en: "How much is this bag?", uz: "Bu sumka qancha turadi?" },
+      { en: "I like those shoes.", uz: "Anavi tuflilar menga yoqdi." },
+      { en: "These apples are fresh.", uz: "Bu olmalar yangi." },
+      { en: "That man is my teacher.", uz: "Anavi kishi mening o'qituvchim." },
+      { en: "There are three children in the park.", uz: "Parkda uchta bola bor." },
+      { en: "Many people live in this city.", uz: "Bu shaharda ko'p odam yashaydi." },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -2741,7 +2781,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-simple", "gr-there", "gr-possessive", "gr-frequency", "gr-continuous", "gr-past", "gr-pastcont", "gr-questions", "gr-quantity", "gr-articles", "gr-prepositions", "gr-future", "gr-compare", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-relative", "gr-reported", "gr-passive", "gr-phrasal", "gr-tags", "gr-perfcont", "gr-wish"];
+const GR_ORDER = ["gr-tobe", "gr-this", "gr-simple", "gr-there", "gr-possessive", "gr-frequency", "gr-continuous", "gr-past", "gr-pastcont", "gr-questions", "gr-quantity", "gr-articles", "gr-prepositions", "gr-future", "gr-compare", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-relative", "gr-reported", "gr-passive", "gr-phrasal", "gr-tags", "gr-perfcont", "gr-wish"];
 const grRank = (l) => (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
 LESSONS.sort((a, b) => ORDER.indexOf(a.category) - ORDER.indexOf(b.category) || partRank(a) - partRank(b) || (a.category === "Grammatika gapirib" ? grRank(a) - grRank(b) : 0));
 // Kurs darslarini tartib raqami bilan nomlaymiz
@@ -2762,6 +2802,8 @@ const QUIZ = {
   "gr-phrasal": ["I'm looking ___ my keys.|for|at|after", "Could you turn ___ the light? I want to sleep.|off|on|up", "She looks ___ her little brother after school.|after|for|at", "I gave ___ sugar last year.|up|out|off", "Put ___ your coat, it's cold.|on|off|in", "We've run ___ of milk.|out|off|away", "What time do you get ___ in the morning?|up|on|off", "Please take ___ your shoes.|off|out|up", "I need to find ___ the train times.|out|up|off", "Can you pick me ___ from the station?|up|on|off", "Turn ___ the TV, the match is starting!|on|off|out", "When will you come ___ from Tashkent?|back|up|off"],
   "gr-tooenough": ["This bag is ___ heavy. I can't carry it.|too|enough|very enough", "Is the water warm ___ to swim?|enough|too|enough too", "I don't have ___ money for a taxi.|enough|too|too much", "There are too ___ cars in the city centre.|many|much|enough", "He isn't old ___ to drive.|enough|too|so", "It's ___ cold to go out today.|too|enough|too much", "I drank too ___ coffee and couldn't sleep.|much|many|enough", "These jeans aren't big ___ for me.|enough|too|so", "We have ___ time. Let's not hurry.|enough|too|too many", "The test was ___ difficult for most students.|too|enough|too much", "She speaks clearly ___ for everyone to understand.|enough|too|so much", "You're ___ young to watch this film.|too|enough|too much"],
   "gr-tags": ["It's hot today, ___ it?|isn't|is|doesn't", "You like coffee, ___ you?|don't|do|aren't", "She isn't here, ___ she?|is|isn't|does", "They can swim, ___ they?|can't|can|don't", "You didn't call me, ___ you?|did|didn't|do", "He will come, ___ he?|won't|will|doesn't", "We've met before, ___ we?|haven't|have|didn't", "It was a great film, ___ it?|wasn't|was|didn't", "I'm late, ___ I?|aren't|am not|isn't", "Let's go, ___ we?|shall|will|don't", "Your brother lives in Tashkent, ___ he?|doesn't|does|isn't", "You won't tell anyone, ___ you?|will|won't|do"],
+  "gr-tobe": ["I ___ a student.|am|is|are", "She ___ my sister.|is|am|are", "We ___ from Tashkent.|are|is|am", "___ you hungry?|Are|Is|Am", "He ___ at home now. He's at work.|isn't|aren't|am not", "It ___ very cold today.|is|are|am", "They ___ my classmates.|are|is|be", "I ___ not tired.|am|is|are", "___ your brother a doctor?|Is|Are|Am", "My parents ___ teachers.|are|is|am", "The weather ___ nice today.|is|are|be", "You ___ late! It's 9 o'clock.|are|is|am"],
+  "gr-this": ["___ apples are very sweet.|These|This|That", "Look at ___ bird over there!|that|these|those", "I like ___ shoes in the window.|those|that|this", "How much is ___ bag?|this|these|those", "There are three ___ in the park.|children|childs|childrens", "Many ___ live in Tashkent.|people|peoples|persons", "I have two ___.|boxes|boxs|box", "Two ___ are talking outside.|men|mans|man", "Are ___ your keys on the table?|these|this|that", "___ is my friend Aziz.|This|These|Those", "She has three ___.|brothers|brother|brotheres", "Those ___ are from Samarkand.|women|woman|womans"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink", "My sister ___ English very well.|speaks|speak|speaking", "They ___ live in Tashkent.|don't|doesn't|aren't", "Where ___ he work?|does|do|is", "The shop ___ at nine o'clock.|opens|open|opening", "Water ___ at 100 degrees.|boils|boil|is boil", "My friends ___ like rap music.|don't|doesn't|isn't", "___ your brother study at university?|Does|Do|Is", "He usually ___ his homework in the evening.|does|do|doing"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on", "I was born ___ 2008.|in|on|at", "We have a party ___ Friday evening.|on|in|at", "I usually sleep ___ night.|at|in|on", "The keys are ___ the table.|on|at|in", "The meeting is ___ 3 pm.|at|in|on", "I'll see you ___ the weekend.|at|in|on", "She lives ___ Samarkand.|in|at|on", "My birthday is ___ 5th March.|on|in|at"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do", "Listen! The baby ___ crying.|is|are|be", "We ___ waiting for the bus now.|are|is|am", "What ___ you doing?|are|do|is", "She isn't ___ TV at the moment.|watching|watch|watches", "I ___ working from home this week.|am|is|are", "Why ___ you laughing?|are|is|do", "They ___ playing football right now.|are|is|be", "Be quiet! Grandma ___ sleeping.|is|are|am"],
@@ -2812,6 +2854,8 @@ const KEYWORDS = {
   "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
 };
 const RULES = {
+  "gr-tobe": "I + am: I am a student. (I'm)\nhe / she / it + is: She is a doctor. It is cold. (she's, it's)\nyou / we / they + are: We are friends. (we're, they're)\nInkor: I'm not, isn't, aren't. Savol: Are you OK? Is he at home?",
+  "gr-this": "Bitta narsa: this (yaqin — mana bu), that (uzoq — anavi): this book, that car.\nKo'p narsa: these (yaqin), those (uzoq): these books, those cars.\nKo'plik: -s (books), -es (boxes, buses), noto'g'ri: child → children, man → men, woman → women, person → people.\nThese apples are fresh. Those people are tourists.",
   "gr-tooenough": "too + sifat — kerakligidan ortiq (yomon ma'noda): It's too expensive. It's too cold.\nsifat + enough — yetarli: big enough, old enough. Inkor: not tall enough.\nenough + ot: enough money, enough time.\ntoo many + sanaladigan, too much + sanalmaydigan: too many cars, too much sugar.",
   "gr-tags": "Gap ijobiy bo'lsa — qo'shimcha inkor: It's hot, isn't it? You like tea, don't you?\nGap inkor bo'lsa — qo'shimcha ijobiy: She isn't here, is she? You didn't call, did you?\nYordamchi fe'l takrorlanadi: can → can't she?, will → won't they?, have → haven't we?\nI am → aren't I? Let's → shall we?",
   "gr-frequency": "Tezlik so'zlari: always (doim), usually (odatda), often (tez-tez), sometimes (ba'zan), rarely (kamdan-kam), never (hech qachon).\nAsosiy fe'ldan oldin: I usually walk to school. He never drinks coffee.\nbe fe'lidan keyin: She is always late. We are often tired.\nSavol: How often do you...? — once / twice / three times a week.",
