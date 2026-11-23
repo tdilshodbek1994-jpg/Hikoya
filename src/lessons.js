@@ -2398,6 +2398,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-reflexive",
+    category: "Grammatika gapirib",
+    title: "Myself, yourself, by myself",
+    emoji: "🪞",
+    level: "A2-B1",
+    added: "2026-11-23",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on reflexive pronouns: myself, yourself, himself, herself, itself, ourselves, yourselves, themselves (I cut myself. She taught herself English. Enjoy yourselves!), by myself = alone (I live by myself), and each other for two people doing the same to one another (They love each other). Common mistakes: hisself, theirselves, I enjoyed (without an object). Talk about things the student learned on their own, did alone and gifts they bought for themselves. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "What is something you taught yourself to do?",
+    openerUz: "O'zingiz mustaqil o'rgangan biror narsa bormi?",
+    phrases: [
+      { en: "I taught myself to play the guitar.", uz: "Men gitara chalishni o'zim o'rgandim." },
+      { en: "She lives by herself.", uz: "U yolg'iz yashaydi." },
+      { en: "Help yourself to some tea!", uz: "Choydan oling, tortinmang!" },
+      { en: "We enjoyed ourselves at the party.", uz: "Ziyofatda maza qildik." },
+      { en: "He hurt himself playing football.", uz: "U futbol o'ynab o'zini jarohatladi." },
+      { en: "They help each other with homework.", uz: "Ular uy vazifasida bir-biriga yordam berishadi." },
+    ],
+  },
+  {
+    id: "gr-both",
+    category: "Grammatika gapirib",
+    title: "Both, either, neither",
+    emoji: "✌️",
+    level: "B1",
+    added: "2026-11-23",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on both ... and (Both Aziz and Laylo speak English), either ... or (You can have either tea or coffee), neither ... nor (Neither my brother nor my sister lives here), and both / either / neither of + plural (Both of them are teachers. Neither of us was late). Explain that neither already has a negative meaning, so do not add not. Play 'compare two things': two cities, two phones, two friends, two jobs. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Tea or coffee — which do you prefer? Or do you like both?",
+    openerUz: "Choymi yoki qahva — qaysi biri yoqadi? Yoki ikkalasi hammi?",
+    phrases: [
+      { en: "I like both tea and coffee.", uz: "Men choyni ham, qahvani ham yoqtiraman." },
+      { en: "You can choose either the red one or the blue one.", uz: "Qizilini yoki ko'kini tanlashingiz mumkin." },
+      { en: "Neither my brother nor my sister smokes.", uz: "Na akam, na opam chekadi." },
+      { en: "Both of them are doctors.", uz: "Ikkalasi ham shifokor." },
+      { en: "Neither of us was late.", uz: "Ikkalamiz ham kechikmadik." },
+      { en: "I don't like either of these films.", uz: "Bu filmlarning hech biri menga yoqmaydi." },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -3441,7 +3481,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-can", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-mine", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adjorder", "gr-adverbs", "gr-tooenough", "gr-sosuch", "gr-modals", "gr-better", "gr-usedto", "gr-perfect", "gr-forsince", "gr-ppvsps", "gr-pastperf", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-tags", "gr-sotoo", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused", "gr-unless", "gr-inversion"];
+const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-can", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-mine", "gr-reflexive", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adjorder", "gr-adverbs", "gr-tooenough", "gr-sosuch", "gr-modals", "gr-better", "gr-usedto", "gr-perfect", "gr-forsince", "gr-ppvsps", "gr-pastperf", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-tags", "gr-sotoo", "gr-both", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused", "gr-unless", "gr-inversion"];
 // Avval daraja guruhi (A1–A2 → B1 → B2), guruh ichida — GR_ORDER tartibi
 const grGroup = (lv) => (/B2/.test(lv || "") ? 2 : /A2-B1|^B1$/.test(lv || "") ? 1 : 0);
 const grRank = (l) => grGroup(l.level) * 100 + (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
@@ -3492,6 +3532,8 @@ const QUIZ = {
   "gr-better": ["You'd better ___.|hurry|to hurry|hurrying", "You'd better ___ be late.|not|don't|no", "I'd rather ___ at home tonight.|stay|to stay|staying", "I'd rather walk ___ take the bus.|than|that|then", "I'd rather ___ talk about it.|not|don't|no", "We'd ___ take an umbrella. It's going to rain.|better|rather|best", "It's late. We ___ better go home.|had|have|would", "Would you rather ___ tea or coffee?|have|to have|having", "She'd rather ___ alone.|work|works|to work", "You ___ better see a doctor.|'d|'re|'ve", "I'd rather you ___ smoke here.|didn't|don't|not", "He'd better ___ his homework before dinner.|finish|to finish|finishes"],
   "gr-forsince": ["I've lived here ___ ten years.|for|since|from", "I've known him ___ school.|since|for|from", "How long ___ you studied English?|have|do|did", "She's worked there ___ 2021.|since|for|from", "We haven't seen each other ___ ages.|for|since|during", "I've had this phone ___ two years.|for|since|ago", "They've been married ___ last summer.|since|for|from", "___ long have you known Aziz?|How|What|When", "I ___ here since Monday.|have been|am|was", "He hasn't called me ___ a week.|for|since|ago", "It's rained ___ this morning.|since|for|from", "I've studied English ___ I was ten.|since|for|when"],
   "gr-adjorder": ["I have a ___ table.|beautiful old wooden|wooden old beautiful|old beautiful wooden", "She bought a ___ bag.|small black leather|black small leather|leather small black", "It's a ___ house.|lovely big|big lovely|big and lovely a", "He wears a ___ coat.|long blue winter|blue long winter|winter blue long", "We have a ___ vase.|round Italian glass|glass round Italian|Italian glass round", "I want a ___ car.|nice new red|red new nice|new red nice", "They live in a ___ flat.|small modern|modern small|small and modern a", "My grandma has a ___ cat.|fat old grey|grey old fat|old grey fat", "He gave me a ___ watch.|beautiful Swiss|Swiss beautiful|beautifully Swiss", "There's a ___ box on the table.|small square|square small|squarely small", "She has ___ hair.|long black|black long|longly black", "It was a ___ day.|lovely sunny|sunny lovely|lovely sunnily"],
+  "gr-reflexive": ["I taught ___ to play the guitar.|myself|me|mine", "She lives by ___.|herself|her|hers", "He hurt ___ playing football.|himself|hisself|him", "We enjoyed ___ at the party.|ourselves|us|ourself", "They help ___ with homework.|each other|themselves|theirselves", "Help ___ to some tea, everyone!|yourselves|yourself|you", "The cat is washing ___.|itself|it|its", "Did you make this cake by ___?|yourself|you|your", "They built the house ___.|themselves|theirselves|them", "My brother and I talk to ___ every day.|each other|ourselves|us", "I looked at ___ in the mirror.|myself|me|my", "She bought ___ a new dress.|herself|her|hers"],
+  "gr-both": ["I like ___ tea and coffee.|both|either|neither", "You can have ___ tea or coffee.|either|both|neither", "___ my brother nor my sister smokes.|Neither|Either|Both", "___ of them are doctors.|Both|Either|Neither", "Neither of us ___ late.|was|wasn't|weren't", "I don't like ___ of these films.|either|neither|both", "Both Aziz ___ Laylo speak English.|and|or|nor", "Either you ___ I will call her.|or|and|nor", "Neither the bus ___ the train was on time.|nor|or|and", "We can meet ___ on Monday or on Tuesday.|either|both|neither", "___ answer is correct — they're both wrong.|Neither|Either|Both", "Both of my parents ___ teachers.|are|is|be"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink", "My sister ___ English very well.|speaks|speak|speaking", "They ___ live in Tashkent.|don't|doesn't|aren't", "Where ___ he work?|does|do|is", "The shop ___ at nine o'clock.|opens|open|opening", "Water ___ at 100 degrees.|boils|boil|is boil", "My friends ___ like rap music.|don't|doesn't|isn't", "___ your brother study at university?|Does|Do|Is", "He usually ___ his homework in the evening.|does|do|doing"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on", "I was born ___ 2008.|in|on|at", "We have a party ___ Friday evening.|on|in|at", "I usually sleep ___ night.|at|in|on", "The keys are ___ the table.|on|at|in", "The meeting is ___ 3 pm.|at|in|on", "I'll see you ___ the weekend.|at|in|on", "She lives ___ Samarkand.|in|at|on", "My birthday is ___ 5th March.|on|in|at"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do", "Listen! The baby ___ crying.|is|are|be", "We ___ waiting for the bus now.|are|is|am", "What ___ you doing?|are|do|is", "She isn't ___ TV at the moment.|watching|watch|watches", "I ___ working from home this week.|am|is|are", "Why ___ you laughing?|are|is|do", "They ___ playing football right now.|are|is|be", "Be quiet! Grandma ___ sleeping.|is|are|am"],
@@ -3545,6 +3587,8 @@ const KEYWORDS = {
   "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
 };
 const RULES = {
+  "gr-reflexive": "O'zlik olmoshlari: myself, yourself, himself, herself, itself, ourselves, yourselves, themselves.\nIsh egasining o'ziga qaytsa: I cut myself. She taught herself English.\nby myself = yolg'iz, yordamsiz: I live by myself.\nIkki kishi bir-biriga: They love each other. (✗ hisself) (✗ theirselves)",
+  "gr-both": "both ... and (ikkalasi ham): Both Aziz and Laylo speak English.\neither ... or — u yoki bu: You can have either tea or coffee.\nneither ... nor — na u, na bu (inkor allaqachon bor, not qo'shilmaydi): Neither my brother nor my sister lives here.\nof bilan: Both of them are teachers. Neither of us was late. (✗ Neither of us wasn't late)",
   "gr-forsince": "for + davr (qancha vaqt): for ten years, for two weeks, for a long time.\nsince + boshlanish nuqtasi (qachondan beri): since 2020, since last week, since childhood.\nIkkalasi ham Present Perfect bilan: I've lived here for ten years. (✗ I live here for ten years)\nSavol: How long have you studied English?",
   "gr-adjorder": "Bir nechta sifat tartibi: fikr → o'lcham → yosh → shakl → rang → kelib chiqish → material + ot.\nI have a beautiful old wooden table. She bought a small black leather bag.\n(✗ a wooden old beautiful table) (✗ a black small bag)\nOdatda 2-3 ta sifat yetarli: a lovely big house.",
   "gr-sosuch": "so + sifat yoki ravish: It was so cold. She speaks so fast.\nsuch + a/an + sifat + ot: It was such a good film. (✗ so a good film)\nsuch + sifat + ko'plik yoki sanalmaydigan ot: such nice people, such bad weather.\nNatija: so/such ... that: It was so hot that we stayed inside. Ko'p: so many people, so much money.",

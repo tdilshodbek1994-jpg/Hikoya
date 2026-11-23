@@ -4,7 +4,7 @@
 import { LESSONS, publicLesson } from "../src/lessons.js";
 
 // public/app.js dagi EN_HINT bilan bir xil
-const EN_HINT = /\b(I|I'm|I've|I'd|I'll|you|he|she|it|we|they|is|are|am|do|does|did|will|the|a|an|can|can't|was|were|have|has|had|my|your|his|her|our|their|its|me|him|us|them|to|used|should|must|there|this|that|these|those|any|some|isn't|aren't|wasn't|weren't|don't|doesn't|didn't|won't|let's|please|not|never|ever|been|would|could|might|of|in|on|at|for|with|than|so|such|very|too|what|where|when|who|how|why|if|unless|go|come)\b/i;
+const EN_HINT = /\b(I|I'm|I've|I'd|I'll|you|he|she|it|we|they|is|are|am|do|does|did|will|the|a|an|can|can't|was|were|have|has|had|my|your|his|her|our|their|its|me|him|us|them|to|used|should|must|there|this|that|these|those|any|some|isn't|aren't|wasn't|weren't|don't|doesn't|didn't|won't|let's|please|not|never|ever|been|would|could|might|of|in|on|at|for|with|than|so|such|very|too|what|where|when|who|how|why|if|unless|go|come|and|or|both|either|neither)\b/i;
 const errors = [];
 const warns = [];
 const ids = new Set();
