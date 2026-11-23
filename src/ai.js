@@ -14,7 +14,9 @@ const GEMINI_KEY = process.env.GEMINI_API_KEY || "";
 const GEMINI_TTS_MODEL = process.env.GEMINI_TTS_MODEL || "gemini-3.8-flash-tts";
 const GEMINI_VOICE = process.env.GEMINI_VOICE || "Kore";
 
-const anthropic = new Anthropic(); // ANTHROPIC_API_KEY muhit o'zgaruvchisidan o'qiladi
+// ANTHROPIC_API_KEY muhit o'zgaruvchisidan o'qiladi. ⏱ 40 s chegara: SDK odatda 10 daqiqa kutadi —
+// AI sekinlashsa o'quvchi "Sado o'ylamoqda"da qotib qolmasin (ilova 60 s dan keyin baribir voz kechadi)
+const anthropic = new Anthropic({ timeout: 40_000, maxRetries: 1 });
 
 // Server tomonidagi zaxira model (refusal bo'lsa) faqat shu modellarda bor
 const SUPPORTS_FALLBACKS = /^claude-(opus-5|sonnet-5-5|fable-5)/.test(CLAUDE_MODEL);
@@ -258,6 +260,7 @@ export async function transcribe(buffer, mimeType, lesson) {
     method: "POST",
     headers: { Authorization: `Bearer ${OPENAI_KEY}` },
     body: form,
+    signal: AbortSignal.timeout(30_000), // ⏱ ovozni matnga aylantirish
   });
   if (!res.ok) throw new Error(`Transcription xatosi: ${res.status} ${await res.text()}`);
   const json = await res.json();
@@ -302,6 +305,7 @@ export async function geminiTts(text, lang = "uz", slow = false) {
   const res = await fetch(url, {
     method: "POST",
     headers: { "x-goog-api-key": GEMINI_KEY, "Content-Type": "application/json" },
+    signal: AbortSignal.timeout(30_000), // ⏱ ovoz yaratish
     body: JSON.stringify({
       contents: [{ parts: [{ text: `${GEMINI_STYLE[lang] || GEMINI_STYLE.uz}${slow ? SLOW_NOTE : ""}\n\n${text}` }] }],
       generationConfig: {
@@ -323,11 +327,17 @@ export async function geminiTts(text, lang = "uz", slow = false) {
 
 // OpenAI'ga bitta TTS so'rovi. Muvaffaqiyatda base64 mp3, aks holda { error } qaytaradi.
 export async function ttsRequest(body) {
-  const res = await fetch(`${OPENAI_BASE}/v1/audio/speech`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${OPENAI_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ response_format: "mp3", ...body }),
-  });
+  let res;
+  try {
+    res = await fetch(`${OPENAI_BASE}/v1/audio/speech`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${OPENAI_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ response_format: "mp3", ...body }),
+      signal: AbortSignal.timeout(30_000), // ⏱ ovoz yaratish
+    });
+  } catch (e) {
+    return { error: e.name === "TimeoutError" ? "TTS 30 s ichida javob bermadi" : e.message }; // shartnoma: xato qaytaradi, otmaydi
+  }
   if (!res.ok) return { error: `${res.status} ${(await res.text()).slice(0, 300)}` };
   return { audio: Buffer.from(await res.arrayBuffer()).toString("base64") };
 }
