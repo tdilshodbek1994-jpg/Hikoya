@@ -307,7 +307,8 @@ function renderVocabBtn() {
   btn.hidden = !words.length;
   const n = words.filter((w) => w.type !== "fix").length;
   const f = words.length - n;
-  btn.textContent = `📒 Mening lug'atim · ${n} ta so'z · ${f} ta xato  ›`;
+  btn.innerHTML = "";
+  btn.append(el("b", "", "📒 Lug'atim"), el("small", "", `${n} so'z · ${f} xato ›`));
 }
 function renderVocab() {
   const fixes = (state.progress?.words || []).filter((w) => w.type === "fix" && w.en);
@@ -329,6 +330,11 @@ function renderVocab() {
     ul.append(li);
   }
 }
+$("moreBtn").addEventListener("click", () => {
+  haptic();
+  localStorage.setItem("sado-more", localStorage.getItem("sado-more") === "1" ? "0" : "1");
+  renderMoreStats();
+});
 $("vocabBtn").addEventListener("click", () => {
   haptic();
   renderVocab();
@@ -494,18 +500,18 @@ function renderBadges() {
   box.append(row);
 }
 
+// 📊 Natijalar plitkasi: bosilganda grafik va yutuqlar ochiladi
 function renderMoreStats() {
   const p = state.progress;
-  const box = $("moreStats");
-  box.hidden = !p;
-  if (!p) return;
+  const btn = $("moreBtn");
+  btn.hidden = !p;
+  if (!p) return ($("moreStats").hidden = true);
+  const open = localStorage.getItem("sado-more") === "1";
   const got = BADGES.filter((b) => b[3](p)).length;
-  $("moreStatsHint").textContent = `🏅 ${got}/${BADGES.length}`;
-  if (!box.dataset.init) {
-    box.dataset.init = "1";
-    box.open = localStorage.getItem("sado-more") === "1";
-    box.addEventListener("toggle", () => localStorage.setItem("sado-more", box.open ? "1" : "0"));
-  }
+  btn.innerHTML = "";
+  btn.append(el("b", "", "📊 Natijalar"), el("small", "", `🏅 ${got}/${BADGES.length} yutuq ${open ? "▴" : "▾"}`));
+  btn.classList.toggle("on", open);
+  $("moreStats").hidden = !open;
 }
 
 // 🌟 Kun iborasi: sanaga qarab har kuni boshqa ibora (hamma uchun bir xil)
