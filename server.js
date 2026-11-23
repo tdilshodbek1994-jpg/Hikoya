@@ -11,7 +11,7 @@ import { verifyInitData } from "./src/telegram.js";
 import { WebSocketServer } from "ws";
 import { liveEnabled, runLive } from "./src/live.js";
 import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies, sampleAnswer, samplePhrases, ttsStats } from "./src/ai.js";
-import { recordSession, touchDay, summary, adminStats, startedToday, countStart, refundStart, startsTodayTotal, deleteUser, markFixed, setRemind, remindTargets, markReminded } from "./src/store.js";
+import { recordSession, touchDay, summary, adminStats, startedToday, countStart, refundStart, startsTodayTotal, deleteUser, markFixed, addWord, setRemind, remindTargets, markReminded } from "./src/store.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -370,6 +370,15 @@ app.post("/api/hint", express.json(), auth, async (req, res) => {
   } catch (err) {
     sendError(res, err);
   }
+});
+
+// 📒 Dars iborasini shaxsiy lug'atga saqlash (faqat darslardagi iboralar)
+const PHRASE_UZ = new Map(LESSONS.flatMap((l) => l.phrases.map((p) => [p.en, p.uz])));
+app.post("/api/word", express.json(), auth, (req, res) => {
+  const en = String(req.body?.en || "");
+  if (!PHRASE_UZ.has(en)) return res.status(400).json({ error: "Noma'lum ibora" });
+  const added = addWord(req.userId, en, PHRASE_UZ.get(en));
+  res.json({ ok: true, added, progress: summary(req.userId) });
 });
 
 // 📝 IELTS Part 2 namunaviy javobi (faqat kartochkali darslar; natija keshlanadi)

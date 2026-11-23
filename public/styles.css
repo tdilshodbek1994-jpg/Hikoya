@@ -944,3 +944,6 @@ body.dark .rep-ml { color: #5eead4; }
 .sample-box p { margin: 0 0 8px; }
 .sample-box > b { display: block; margin: 6px 0 4px; font-size: 13.5px; }
 .sample-box .rep-list li { background: var(--card); padding: 6px 10px; }
+
+.daily-btns { display: inline-flex; gap: 10px; }
+.daily-go:disabled { opacity: 1; color: var(--ok) !important; }

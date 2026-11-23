@@ -254,6 +254,17 @@ export function startsTodayTotal() {
 }
 
 // 🗑 Foydalanuvchi o'z ma'lumotlarini o'chiradi (kunlik limit hisobi saqlanadi)
+// 📒 O'quvchi o'zi saqlagan ibora (masalan, kun iborasi)
+export function addWord(userId, en, uz) {
+  const u = user(userId);
+  u.words ||= [];
+  if (u.words.some((w) => w.en.toLowerCase() === en.toLowerCase())) return false;
+  u.words.push({ en, uz, type: "word", at: today() });
+  u.words = u.words.slice(-300);
+  save();
+  return true;
+}
+
 // ✅ Takrorlash darsida to'g'ri aytilgan xatolar "tuzatildi" deb belgilanadi
 export function markFixed(userId, ens) {
   const u = user(userId);

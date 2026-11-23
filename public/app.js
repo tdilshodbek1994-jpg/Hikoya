@@ -942,8 +942,27 @@ function renderDaily() {
     state.dailyOff = (state.dailyOff || 0) + 1;
     renderDaily();
   });
+  // 📒 Lug'atga saqlash
+  const saved = (state.progress?.words || []).some((w) => w.en === p.en);
+  const keep = el("button", "daily-go daily-more", saved ? "✅ Lug'atda" : "📒 Saqlash");
+  keep.disabled = saved;
+  keep.addEventListener("click", async () => {
+    haptic();
+    try {
+      const d = await api("api/word", { json: { en: p.en } });
+      if (d.progress) state.progress = { ...state.progress, words: d.progress.words };
+      renderVocabBtn();
+      keep.textContent = "✅ Lug'atda";
+      keep.disabled = true;
+      toast("📒 Lug'atingizga saqlandi — kartochkalarda takrorlanadi");
+    } catch (e) {
+      toast(e.message);
+    }
+  });
   const row = el("div", "daily-row");
-  row.append(go, more);
+  const right = el("span", "daily-btns");
+  right.append(keep, more);
+  row.append(go, right);
   box.append(top, en, el("div", "daily-uz", p.uz), row);
 }
 
