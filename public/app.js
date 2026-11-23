@@ -179,8 +179,11 @@ function trackNewLessons(lessons) {
   addDated(lessons);
 }
 // Serverda qo'shilgan sanasi ko'rsatilgan darslar — 14 kun davomida hammaga "yangi"
+// Faqat foydalanuvchi birinchi kirgan kundan KEYIN qo'shilganlari — yangi o'quvchiga hamma dars "yangi" ko'rinmasin
 function addDated(lessons) {
-  for (const l of lessons) if (l.added && Date.now() - Date.parse(l.added) < 14 * 86400_000) state.newIds.add(l.id);
+  let first = localStorage.getItem("sado-first");
+  if (!first) localStorage.setItem("sado-first", (first = new Date().toISOString().slice(0, 10)));
+  for (const l of lessons) if (l.added && l.added > first && Date.now() - Date.parse(l.added) < 14 * 86400_000) state.newIds.add(l.id);
 }
 
 function applyLessons(data) {

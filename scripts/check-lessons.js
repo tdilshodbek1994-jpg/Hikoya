@@ -26,6 +26,7 @@ for (const l of LESSONS) {
     else seen.set(key, l.id);
   }
   if (l.added && !/^\d{4}-\d{2}-\d{2}$/.test(l.added)) errors.push(`${where}: added "YYYY-MM-DD" ko'rinishida bo'lishi kerak`);
+  else if (l.added && l.added > new Date().toISOString().slice(0, 10)) errors.push(`${where}: added "${l.added}" — kelajakdagi sana (bugungi sanani yozing)`);
   const pub = publicLesson(l);
   if (/^ielts-p2/.test(l.id) && !pub.cue) errors.push(`${where}: Part 2 kartochkasi topilmadi ("Describe ... You should say: ...")`);
   if (/^ielts-p[13]/.test(l.id) && !pub.questions?.length) errors.push(`${where}: savollar topilmadi ("Ask these questions one at a time: ...")`);
