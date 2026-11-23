@@ -1260,6 +1260,9 @@ async function startLive(lesson) {
   let sadoLine = "";
   let userLine = "";
   let lastSpeaker = "";
+  let connected = false;
+  let lastErr = "";
+  clearTimeout(state.liveWait);
   try {
     const data = await api("api/session", { json: { lessonId: lesson.id, mode: "live" } });
     if (data.mode !== "live") throw new Error("Jonli suhbat serverda yoqilmagan.");
@@ -1279,6 +1282,8 @@ async function startLive(lesson) {
       },
       onEvent: (m) => {
         if (m.type === "ready") {
+          connected = true;
+          clearTimeout(state.liveWait);
           startTimer();
           setPhase("speaking", "Sado gapirmoqda...");
         } else if (m.type === "sado" || m.type === "user") {
@@ -1291,14 +1296,22 @@ async function startLive(lesson) {
         } else if (m.type === "used") {
           markUsed(m.found || []);
         } else if (m.type === "error") {
+          lastErr = m.message || "";
           toast("⚠️ " + m.message, 4000);
         } else if (m.type === "closed") {
-          if (state.phase !== "ended") finish();
+          if (state.phase === "ended") return;
+          // Suhbat umuman boshlanmagan bo'lsa — "Ajoyib suhbat" emas, ulanish xatosi ko'rsatiladi
+          if (!connected) liveFailed(lastErr);
+          else finish();
         }
       },
     });
     state.live = call;
     await call.start(data.session, tg?.initData || "", state.voice, lesson.liveOnly ? state.topic : "");
+    // 20 soniyada ulanmasa — kutib qolmaymiz
+    state.liveWait = setTimeout(() => {
+      if (!connected && state.live === call && state.phase !== "ended") liveFailed("Sado javob bermadi (internet sekin bo'lishi mumkin).");
+    }, 20000);
   } catch (e) {
     console.warn("Jonli:", e);
     state.live?.stop();
@@ -1308,6 +1321,26 @@ async function startLive(lesson) {
     else toast(e.message || "Jonli suhbatni boshlab bo'lmadi.", 4000);
     show("home");
   }
+}
+
+// 📵 Jonli suhbatga ulanib bo'lmadi: aniq xabar va qayta urinish
+function liveFailed(msg) {
+  clearTimeout(state.liveWait);
+  state.phase = "ended";
+  stopAll();
+  releaseMic();
+  state.session = null;
+  showResult();
+  $("resultTitle").textContent = "😕 Sado bilan ulanib bo'lmadi";
+  const tip = state.lesson?.liveOnly
+    ? "Internetni tekshirib, bir ozdan keyin qayta urinib ko'ring."
+    : "Internetni tekshirib, qayta urinib ko'ring. Agar takrorlansa, darsni «🇬🇧 Inglizcha suhbat» yoki «🇺🇿 Ustoz» rejimida o'ting.";
+  $("resultSub").textContent = (msg ? msg + " " : "") + tip;
+  $("resultList").hidden = true;
+  $("nextBtn").hidden = true;
+  $("againBtn").textContent = "🔄 Qayta urinish";
+  mascot.setMood?.("surprised");
+  haptic("error");
 }
 
 // 💡 Javob namunalari
