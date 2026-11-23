@@ -2678,6 +2678,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-howq",
+    category: "Grammatika gapirib",
+    title: "How much, how long, how far…?",
+    emoji: "📐",
+    level: "A2",
+    added: "2026-11-23",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on questions with How + word: How much (price, uncountable: How much is it? How much water?), How many (countable: How many brothers?), How long (time: How long does it take?), How far (distance: How far is the station?), How often (frequency: How often do you go to the gym?), How old, How tall. Let the student ask the teacher many questions about their city, travel and daily life; then swap. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Ask me some questions with 'How'! For example: How far is your school from your home?",
+    openerUz: "Menga «How» bilan savollar bering! Masalan: Maktabingiz uyingizdan qancha uzoqda?",
+    phrases: [
+      { en: "How much is this jacket?", uz: "Bu kurtka qancha turadi?" },
+      { en: "How many people live in your city?", uz: "Shahringizda qancha odam yashaydi?" },
+      { en: "How long does it take to get there?", uz: "U yerga borish qancha vaqt oladi?" },
+      { en: "How far is the nearest bus stop?", uz: "Eng yaqin bekat qancha uzoqda?" },
+      { en: "How often do you play football?", uz: "Qanchalik tez-tez futbol o'ynaysiz?" },
+      { en: "How old is your brother?", uz: "Akangiz necha yoshda?" },
+    ],
+  },
+  {
+    id: "gr-timeclause",
+    category: "Grammatika gapirib",
+    title: "When I arrive… (kelajak vaqt gaplari)",
+    emoji: "⌛",
+    level: "B1",
+    added: "2026-11-23",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on future time clauses: after when, as soon as, before, after, until and if we use the present simple, not will, even though we talk about the future (When I arrive, I'll call you. As soon as I finish, I'll help you. I'll wait until you come.). Uzbek speakers often say 'When I will arrive' — correct it. Talk about plans after exams, after graduation and for the next holiday. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "What will you do as soon as your exams finish?",
+    openerUz: "Imtihonlaringiz tugashi bilan nima qilasiz?",
+    phrases: [
+      { en: "When I arrive, I'll call you.", uz: "Yetib borganimda sizga qo'ng'iroq qilaman." },
+      { en: "As soon as I finish, I'll help you.", uz: "Tugatishim bilan sizga yordam beraman." },
+      { en: "I'll wait until you come back.", uz: "Qaytib kelguningizcha kutaman." },
+      { en: "Before I go to bed, I'll check my email.", uz: "Uxlashdan oldin pochtamni tekshiraman." },
+      { en: "After I graduate, I'll look for a job.", uz: "O'qishni bitirgach, ish qidiraman." },
+      { en: "We'll start when everyone is here.", uz: "Hamma kelganda boshlaymiz." },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -4021,7 +4061,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-can", "gr-wouldlike", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-mine", "gr-reflexive", "gr-frequency", "gr-continuous", "gr-simcon", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adjorder", "gr-adverbs", "gr-tooenough", "gr-sosuch", "gr-modals", "gr-might", "gr-better", "gr-usedto", "gr-perfect", "gr-stative", "gr-forsince", "gr-ppvsps", "gr-pastperf", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-saytell", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-verbprep", "gr-tags", "gr-sotoo", "gr-both", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused", "gr-unless", "gr-inversion"];
+const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-can", "gr-wouldlike", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-mine", "gr-reflexive", "gr-frequency", "gr-continuous", "gr-simcon", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-howq", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-timeclause", "gr-compare", "gr-adjorder", "gr-adverbs", "gr-tooenough", "gr-sosuch", "gr-modals", "gr-might", "gr-better", "gr-usedto", "gr-perfect", "gr-stative", "gr-forsince", "gr-ppvsps", "gr-pastperf", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-saytell", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-verbprep", "gr-tags", "gr-sotoo", "gr-both", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused", "gr-unless", "gr-inversion"];
 // Avval daraja guruhi (A1–A2 → B1 → B2), guruh ichida — GR_ORDER tartibi
 const grGroup = (lv) => (/B2/.test(lv || "") ? 2 : /A2-B1|^B1$/.test(lv || "") ? 1 : 0);
 const grRank = (l) => grGroup(l.level) * 100 + (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
@@ -4080,6 +4120,8 @@ const QUIZ = {
   "gr-verbprep": ["I listen ___ music every day.|to|—|at", "I'm waiting ___ the bus.|for|—|to", "It depends ___ the weather.|on|of|from", "I agree ___ you.|with|to|on", "Don't worry ___ the exam.|about|for|on", "Who does this bag belong ___?|to|for|with", "Look ___ this photo!|at|to|on", "I'm looking ___ my keys. Have you seen them?|for|at|to", "I need to talk ___ my teacher.|to|at|for", "We arrived ___ the airport at six.|at|to|in to", "How much did you pay ___ the tickets?|for|to|on", "What are you thinking ___?|about|on|for"],
   "gr-simcon": ["I usually ___ to school.|walk|am walking|walks", "Today I ___ a taxi because it's raining.|'m taking|take|takes", "She ___ in a bank.|works|is working|work", "Look! It ___.|'s raining|rains|rain", "We ___ English every Monday.|have|are having|has", "At the moment he ___ from home.|'s working|works|work", "The sun ___ in the east.|rises|is rising|rise", "Be quiet! The baby ___.|'s sleeping|sleeps|sleep", "How often ___ you go to the gym?|do|are|does", "I ___ a great book these days.|'m reading|read|reads", "It rarely ___ here in winter.|snows|is snowing|snow", "What ___ you doing right now?|are|do|does"],
   "gr-stative": ["I ___ what you mean.|know|'m knowing|knowing", "I ___ a new laptop for my studies.|want|'m wanting|wanting", "___ you understand this word?|Do|Are|Is", "This phone ___ to my brother.|belongs|is belonging|belong", "I ___ it's a good idea.|think|'m thinking|thinking", "I ___ about my future these days.|'m thinking|think|thinks", "She ___ chocolate.|loves|is loving|love", "We ___ more time to finish.|need|are needing|needing", "He ___ a big house in the city.|has|is having|have", "They ___ lunch right now.|'re having|have|has", "I ___ your name. Sorry!|don't remember|'m not remembering|not remember", "This soup ___ delicious.|tastes|is tasting|taste"],
+  "gr-howq": ["How ___ is this jacket?|much|many|long", "How ___ people live in your city?|many|much|often", "How ___ does it take to get there?|long|far|much", "How ___ is the nearest bus stop?|far|long|many", "How ___ do you play football?|often|much|long", "How ___ is your brother? — He's twelve.|old|long|much", "How ___ sugar do you want?|much|many|often", "How ___ brothers and sisters have you got?|many|much|long", "How ___ have you lived here?|long|far|often", "How ___ is it from Tashkent to Samarkand?|far|long|much", "How ___ are you? — I'm 1.75 metres.|tall|long|high", "How ___ do you visit your grandparents?|often|many|much"],
+  "gr-timeclause": ["When I ___, I'll call you.|arrive|will arrive|arrived", "As soon as I ___, I'll help you.|finish|will finish|finished", "I'll wait until you ___ back.|come|will come|came", "Before I ___ to bed, I'll check my email.|go|will go|went", "After I ___, I'll look for a job.|graduate|will graduate|graduated", "We'll start when everyone ___ here.|is|will be|was", "I ___ you as soon as I get home.|'ll text|text|texted", "If it ___ tomorrow, we'll stay at home.|rains|will rain|rained", "Don't leave until I ___ you.|tell|will tell|told", "When she ___ the news, she'll be happy.|hears|will hear|heard", "I'll buy a car after I ___ enough money.|save|will save|saved", "What will you do when you ___ school?|finish|will finish|finished"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink", "My sister ___ English very well.|speaks|speak|speaking", "They ___ live in Tashkent.|don't|doesn't|aren't", "Where ___ he work?|does|do|is", "The shop ___ at nine o'clock.|opens|open|opening", "Water ___ at 100 degrees.|boils|boil|is boil", "My friends ___ like rap music.|don't|doesn't|isn't", "___ your brother study at university?|Does|Do|Is", "He usually ___ his homework in the evening.|does|do|doing"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on", "I was born ___ 2008.|in|on|at", "We have a party ___ Friday evening.|on|in|at", "I usually sleep ___ night.|at|in|on", "The keys are ___ the table.|on|at|in", "The meeting is ___ 3 pm.|at|in|on", "I'll see you ___ the weekend.|at|in|on", "She lives ___ Samarkand.|in|at|on", "My birthday is ___ 5th March.|on|in|at"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do", "Listen! The baby ___ crying.|is|are|be", "We ___ waiting for the bus now.|are|is|am", "What ___ you doing?|are|do|is", "She isn't ___ TV at the moment.|watching|watch|watches", "I ___ working from home this week.|am|is|are", "Why ___ you laughing?|are|is|do", "They ___ playing football right now.|are|is|be", "Be quiet! Grandma ___ sleeping.|is|are|am"],
@@ -4134,6 +4176,8 @@ const KEYWORDS = {
   "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
 };
 const RULES = {
+  "gr-howq": "How much — narx yoki sanalmaydigan: How much is it? How much water do you drink?\nHow many — sanaladigan: How many brothers do you have?\nHow long — vaqt: How long does it take? How far — masofa: How far is the station?\nHow often — qanchalik tez-tez: How often do you go to the gym? (✗ How much often)",
+  "gr-timeclause": "when, as soon as, before, after, until dan keyin kelajak uchun ham hozirgi zamon:\nWhen I arrive, I'll call you. (✗ When I will arrive)\nAs soon as I finish, I'll help you. I'll wait until you come.\nGapning ikkinchi qismida will bo'ladi: After I graduate, I'll look for a job.",
   "gr-simcon": "Present Simple — odat, doimiy holat, fakt: I usually walk to school. She works in a bank.\nPresent Continuous — hozir yoki vaqtincha: Today I'm taking a taxi. She's working from home this week.\nBelgi so'zlar: usually, every day, often — now, at the moment, today, these days.\n(✗ I'm usually walking) (✗ Look! It rains)",
   "gr-stative": "Holat fe'llari odatda -ing bilan kelmaydi: know, understand, want, need, like, love, believe, belong.\nI know him. I want a coffee. (✗ I'm knowing) (✗ I'm wanting)\nthink — fikr: I think it's a good idea. Jarayon: I'm thinking about it.\nhave — egalik: I have a car. Harakat: I'm having lunch.",
   "gr-saytell": "say + nima: She said hello. He said that he was tired.\nsay ... to + kimga: He said goodbye to me.\ntell + kimga + nima: She told me a secret. Tell me your name. (✗ He said me)\nIboralar: tell a story, tell the truth, tell a joke — say sorry, say thank you.",
