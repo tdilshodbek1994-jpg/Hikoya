@@ -1304,3 +1304,7 @@ body.dark .acc-tag.hi { color: #4ade80; } body.dark .acc-tag.mid { color: #fbbf2
 
 /* 📊 Daraja testi natijasi: keyingi daraja testi tugmasi */
 .lv-go { margin-top: 10px; padding: 11px 14px; font-size: 14.5px; }
+
+/* 🔁 Xatolarim: ro'yxat qanchaga qisqardi */
+.miss-left { margin: 6px 0 4px; font-weight: 700; color: var(--ok); }
+.miss-left.done { font-size: 14px; }

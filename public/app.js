@@ -925,6 +925,11 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
       const doneLine = (el("p", "qz-done", right === items.length ? `🎉 ${right}/${items.length} — a'lo! Endi gapirib mustahkamlaymiz.` : right * 2 >= items.length ? `👍 ${right}/${items.length} — yaxshi! To'g'ri shakllarini eshitib takrorlang.` : `💪 ${right}/${items.length} — qoidani yana bir o'qing va qayta urinib ko'ring.`));
       body.append(doneLine);
       if (lesson.id === "gr-daily" && state.dailyShareBtn) body.append(state.dailyShareBtn), (state.dailyShareBtn = null);
+      // 🔁 Xatolarim: ro'yxat qanchaga qisqardi
+      if (lesson.id === "gr-miss") {
+        const leftN = quizMisses().length;
+        body.append(el("p", "qz-n miss-left" + (leftN ? "" : " done"), leftN ? `✅ ${right} ta savol ro'yxatdan o'chdi · 🔁 ${leftN} ta qoldi` : "🎉 Xatolar ro'yxati bo'sh — hammasini tuzatdingiz!"));
+      }
       // ❌ Xato qilingan gaplarning to'g'ri shakli — eshitish mumkin
       if (missed.length) {
         const ul = el("div", "qz-missed");
@@ -950,7 +955,8 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
         }
         body.append(tl);
       }
-      const again = el("button", "qz-again", pool.length > QN || lesson.id === "gr-level" ? "🔄 Yangi savollar" : "🔄 Qayta");
+      const again = el("button", "qz-again", lesson.id === "gr-miss" ? "🔁 Qolganlarini ishlash" : pool.length > QN || lesson.id === "gr-level" ? "🔄 Yangi savollar" : "🔄 Qayta");
+      if (lesson.id === "gr-miss" && !quizMisses().length) again.hidden = true; // tuzatadigan xato qolmadi
       again.addEventListener("click", () => {
         if (lesson.id === "gr-miss") return openMissTest(); // ro'yxat yangilangan — qolgan xatolar bilan qayta
         if (lesson.id === "gr-level") return openLevelTest(); // yangi 20 savol
