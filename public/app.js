@@ -1149,6 +1149,18 @@ function renderLessons() {
   const canFold = !state.filter.q && !state.filter.cat;
   let folded;
   try { folded = new Set(JSON.parse(localStorage.getItem("sado-folded") || "[]")); } catch { folded = new Set(); }
+  // 📂 Hammasini yig'ish / ochish
+  if (canFold && items.length > 10) {
+    const cats = [...new Set(items.map((l) => l.category).filter(Boolean))];
+    const allFolded = cats.every((c) => folded.has(c));
+    const t = el("button", "fold-all", allFolded ? "▾ Hammasini ochish" : "▸ Hammasini yig'ish (faqat bo'lim nomlari)");
+    t.addEventListener("click", () => {
+      haptic();
+      localStorage.setItem("sado-folded", JSON.stringify(allFolded ? [] : cats));
+      renderLessons();
+    });
+    list.append(t);
+  }
   for (const l of items) {
     if (l.category && l.category !== lastCat) {
       lastCat = l.category;

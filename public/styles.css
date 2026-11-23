@@ -998,3 +998,6 @@ body.dark .rep-ml { color: #5eead4; }
 .cat-title.foldable { cursor: pointer; user-select: none; }
 .fold-ico { display: inline-block; width: 14px; margin-right: 2px; font-size: 11px; color: var(--muted); }
 .cat-title.folded { opacity: 0.85; margin-bottom: 4px; }
+
+.fold-all { display: block; margin: 0 0 4px auto; font-size: 12.5px; font-weight: 600; color: var(--primary); padding: 4px 2px; }
+body.dark .fold-all { color: #a5b4fc; }
