@@ -349,6 +349,73 @@ function lessonButton(l) {
   return b;
 }
 
+// 🧩 Tez mashq: qoida misollaridan bo'sh joyni to'ldirish (chalkash so'zlar guruhlari)
+// Faqat bitta javob to'g'ri bo'ladigan guruhlar (moslashish: was/were, am/is/are, do/does, a/an ...)
+const QZ_GROUPS = [["was", "were"], ["am", "is", "are"], ["do", "does"], ["a", "an"], ["much", "many"], ["some", "any"], ["have", "has"], ["to", "for"], ["by", "from"]];
+function quizItems(rule) {
+  // ✗ belgili noto'g'ri misollar mashqqa kirmaydi
+  const sents = rule.split("\n").flatMap((line) => [...line.matchAll(/[A-Z][A-Za-z0-9' ,]*[A-Za-z0-9][.?!]/g)].filter((m) => !/✗\s*$/.test(line.slice(0, m.index)) && !/[a-z]\s*$/.test(line.slice(0, m.index)) && !line.startsWith("..", m.index + m[0].length)).map((m) => m[0]))
+    .filter((t, i, a) => t.split(" ").length >= 3 && EN_HINT.test(t) && a.indexOf(t) === i);
+  const items = [];
+  for (const t of sents) {
+    const words = t.split(" ");
+    for (let i = 0; i < words.length; i++) {
+      const w = words[i].replace(/[.,?!]/g, "");
+      const g = QZ_GROUPS.find((gr) => gr.includes(w.toLowerCase()));
+      if (!g) continue;
+      const cap = (x) => (i === 0 ? x[0].toUpperCase() + x.slice(1) : x);
+      items.push({ text: t, before: words.slice(0, i).join(" "), after: words[i].slice(w.length) + " " + words.slice(i + 1).join(" "), answer: cap(w.toLowerCase()), options: g.map(cap) });
+      break;
+    }
+  }
+  return items.slice(0, 4);
+}
+function renderQuiz(lesson) {
+  const box = $("sheetQuiz");
+  box.innerHTML = "";
+  const items = lesson.rule ? quizItems(lesson.rule) : [];
+  box.hidden = items.length < 2;
+  if (box.hidden) return;
+  let i = 0, right = 0;
+  const head = el("b", "", "🧩 Tez mashq");
+  const body = el("div", "qz-body");
+  box.append(head, body);
+  const show = () => {
+    body.innerHTML = "";
+    if (i >= items.length) {
+      body.append(el("p", "qz-done", right === items.length ? `🎉 ${right}/${items.length} — a'lo! Endi gapirib mustahkamlaymiz.` : `✅ ${right}/${items.length} — qoidani yana bir ko'rib chiqing va darsni boshlang.`));
+      const again = el("button", "qz-again", "🔄 Qayta");
+      again.addEventListener("click", () => { i = 0; right = 0; show(); });
+      body.append(again);
+      return;
+    }
+    const it = items[i];
+    body.append(el("small", "qz-n", `${i + 1}/${items.length}`));
+    const q = el("p", "qz-q");
+    q.append(document.createTextNode(it.before + " "), el("span", "qz-gap", "____"), document.createTextNode(it.after));
+    body.append(q);
+    const opts = el("div", "qz-opts");
+    for (const o of [...it.options].sort(() => Math.random() - 0.5)) {
+      const btn = el("button", "qz-opt", o);
+      btn.addEventListener("click", () => {
+        if (opts.dataset.done) return;
+        opts.dataset.done = "1";
+        haptic();
+        const ok = o === it.answer;
+        if (ok) right++;
+        btn.classList.add(ok ? "ok" : "bad");
+        if (!ok) [...opts.children].find((b) => b.textContent === it.answer)?.classList.add("ok");
+        q.querySelector(".qz-gap").textContent = it.answer;
+        q.querySelector(".qz-gap").classList.add("ok");
+        setTimeout(() => { i++; show(); }, ok ? 700 : 1500);
+      });
+      opts.append(btn);
+    }
+    body.append(opts);
+  };
+  show();
+}
+
 // Bo'lim filtrlari (gorizontal chiplar)
 // 📖 Qoidadagi inglizcha misollarni ajratib, bosilganda eshittiramiz
 const EN_HINT = /\b(I|I'm|you|he|she|it|we|they|is|are|am|do|does|did|will|the|a|an|can|was|were|have|has|my|your|to|used|should|must|there|this|that|any|some|isn't|aren't|wasn't|weren't|don't|doesn't|didn't)\b/i;
@@ -1278,6 +1345,7 @@ function openSheet(lesson) {
     $("sheetRule").innerHTML = "";
     $("sheetRule").append(el("b", "", "📖 Qoida"), ruleBody(lesson.rule));
   }
+  renderQuiz(lesson);
   // Daraja, iboralar soni va oldingi natija
   const meta = $("sheetMeta");
   meta.innerHTML = "";

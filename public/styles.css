@@ -1012,3 +1012,16 @@ body.dark .fold-tag.new { color: #fb7185; } body.dark .fold-tag.rep { color: #fb
 
 /* Tor ekranda dars sarlavhasi chiplari faqat belgi bilan (taymer kesilmasin) */
 @media (max-width: 360px) { .lesson-head .chip-txt { display: none; } .lesson-head { gap: 6px; } }
+/* 🧩 Grammatika: tez mashq */
+.quiz { text-align: left; margin-top: 10px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; font-size: 14px; }
+.qz-body { margin-top: 6px; }
+.qz-n { color: var(--muted); font-size: 12px; }
+.qz-q { margin: 4px 0 8px; font-size: 15px; line-height: 1.5; }
+.qz-gap { display: inline-block; min-width: 44px; text-align: center; border-bottom: 2px dashed var(--primary); color: var(--primary); font-weight: 700; }
+.qz-gap.ok { color: var(--ok); border-color: var(--ok); }
+
+.qz-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.qz-opt, .qz-again { font: inherit; font-weight: 600; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--text); cursor: pointer; min-height: 40px; }
+.qz-opt.ok { background: color-mix(in srgb, var(--ok) 18%, var(--bg)); border-color: var(--ok); }
+.qz-opt.bad { background: color-mix(in srgb, var(--danger) 18%, var(--bg)); border-color: var(--danger); }
+.qz-done { margin: 2px 0 8px; font-weight: 600; }
