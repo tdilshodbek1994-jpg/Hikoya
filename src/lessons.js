@@ -1866,6 +1866,24 @@ for (const cat of ["IELTS kursi", "CEFR kursi", "Grammatika gapirib"]) {
   });
 }
 
+// ✏️ Grammatika darslari uchun qisqa qoida (o'zbekcha)
+const RULES = {
+  "gr-continuous": "Hozir bo'layotgan ish: am/is/are + fe'l-ing.\nI am reading. She is working. Are you studying?\nInkor: I'm not watching TV.",
+  "gr-past": "O'tgan ish: fe'l + -ed (worked, played) yoki noto'g'ri fe'llar (go → went, see → saw, eat → ate).\nSavol/inkor: did + fe'l: Did you go? I didn't go.",
+  "gr-questions": "Savolda yordamchi fe'l oldinga chiqadi: Do/Does/Did + ega + fe'l.\nWhere do you live? (✗ Where you live?)\nWhat does she do? Why did you choose it?",
+  "gr-articles": "a/an — bitta, noma'lum narsa: a cat, an apple (unli tovush oldidan an).\nthe — ma'lum, aytilgan narsa: The cat is black.\nUmumiy ko'plikda artikl yo'q: Cats are cute.",
+  "gr-future": "Reja: am/is/are going to + fe'l: I'm going to visit Samarkand.\nTaxmin/darhol qaror: will + fe'l: It will rain. I'll help you.\nKelishilgan uchrashuv: Present Continuous: I'm meeting him at six.",
+  "gr-compare": "Qisqa sifat: -er / the -est: big → bigger → the biggest.\nUzun sifat: more / the most: more interesting, the most beautiful.\nNoto'g'ri: good → better → the best; bad → worse → the worst.",
+  "gr-modals": "can — qila olish: I can swim.\nshould — maslahat: You should practise.\nmust / have to — majburiyat: I have to get up early.\nmight — ehtimol: It might rain. Modal fe'ldan keyin fe'l -s/-ing olmaydi.",
+  "gr-perfect": "have/has + 3-shakl (been, done, seen).\nTajriba: Have you ever been abroad? I've never seen snow.\nHozirgacha davom: I've lived here for 10 years / since 2015.",
+  "gr-conditional": "1-tur (haqiqiy): If + hozirgi, will + fe'l: If it rains, I'll stay home.\n2-tur (xayoliy): If + o'tgan, would + fe'l: If I had money, I would travel.\nIf I were you... (were — barcha shaxslar uchun).",
+  "gr-passive": "Ish kim tomonidan emas, ishning o'zi muhim: be + 3-shakl.\nHozirgi: English is spoken here.\nO'tgan: It was built in 1420. Kim qilgani: by: invented by Bell."
+};
+for (const [id, rule] of Object.entries(RULES)) {
+  const l = LESSONS.find((x) => x.id === id);
+  if (l) l.rule = rule;
+}
+
 // To'liq imtihon mashqlari uzoqroq davom etadi
 for (const id of ["ielts", "cefr", "cefr-8"]) {
   const l = LESSONS.find((x) => x.id === id);
@@ -1895,6 +1913,7 @@ export function publicLesson(l) {
     liveOnly: Boolean(l.liveOnly),
     minutes: l.minutes || 0,
     cue: cueCard(l),
+    rule: l.rule || "",
     category: l.category || "",
     phrases: l.phrases,
   };

@@ -609,6 +609,12 @@ function openSheet(lesson) {
   $("sheetEmoji").textContent = lesson.emoji;
   renderFavBtn(lesson);
   $("sheetTitle").textContent = lesson.title;
+  // ✏️ Grammatika qoidasi
+  $("sheetRule").hidden = !lesson.rule;
+  if (lesson.rule) {
+    $("sheetRule").innerHTML = "";
+    $("sheetRule").append(el("b", "", "📖 Qoida"), el("div", "", lesson.rule));
+  }
   // Daraja, iboralar soni va oldingi natija
   const meta = $("sheetMeta");
   meta.innerHTML = "";
