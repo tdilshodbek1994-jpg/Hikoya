@@ -1229,3 +1229,8 @@ body.dark .daily-test.done { color: #4ade80; }
 .acc-tag.lo { color: #b91c1c; background: color-mix(in srgb, #ef4444 15%, transparent); }
 body.dark .acc-tag.hi { color: #4ade80; } body.dark .acc-tag.mid { color: #fbbf24; } body.dark .acc-tag.lo { color: #f87171; }
 .lesson.mastered .lesson-emoji { box-shadow: 0 0 0 2px #22c55e inset; }
+/* 📊 Daraja testi natijasi */
+.lv-result { margin: 6px 0 10px; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, var(--primary) 8%, var(--bg)); display: grid; gap: 6px; }
+.lv-result > b { font-size: 16px; }
+.lv-row { display: grid; grid-template-columns: 70px 1fr 38px; align-items: center; gap: 8px; font-size: 13px; }
+.lv-row b { text-align: right; }

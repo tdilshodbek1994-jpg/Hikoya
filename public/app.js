@@ -446,6 +446,48 @@ function keepScroll(fn) {
   window.scrollTo(0, y);
 }
 
+// 📊 Daraja testi: 20 savol (7 boshlang'ich, 7 o'rta, 6 yuqori) → taxminiy grammatika darajasi
+function openLevelTest() {
+  state.speedRun = (state.speedRun || 0) + 1;
+  const gr = state.lessons.filter((l) => l.category === "Grammatika gapirib");
+  const take = (lv, n) => gr.filter((l) => mixLevelOf(l.level) === lv)
+    .flatMap((l) => (l.quiz || []).map((q) => ({ ...q, from: l.id })))
+    .sort(() => Math.random() - 0.5).slice(0, n);
+  // Osondan qiyinga: avval boshlang'ich, keyin o'rta, keyin yuqori
+  const quiz = [...take("beg", 7), ...take("mid", 7), ...take("adv", 6)];
+  if (quiz.length < 10) return;
+  state.mixWeak = new Map();
+  $("mixSheet").hidden = false;
+  $("mixLevels").innerHTML = "";
+  renderQuiz({ id: "gr-level", quiz, ordered: true }, $("mixQuiz"), "📊 Daraja testi · 20 savol", quiz.length);
+}
+function levelTestResult(items, marks, body) {
+  const by = { beg: [0, 0], mid: [0, 0], adv: [0, 0] };
+  items.forEach((it, k) => {
+    const l = state.lessons.find((x) => x.id === it.from);
+    const lv = mixLevelOf(l?.level || "");
+    by[lv][1]++;
+    if (marks[k] === "🟩") by[lv][0]++;
+  });
+  const p = (lv) => (by[lv][1] ? by[lv][0] / by[lv][1] : 0);
+  const level = p("beg") >= 0.7 && p("mid") >= 0.7 && p("adv") >= 0.6 ? "B2" : p("beg") >= 0.7 && p("mid") >= 0.6 ? "B1" : p("beg") >= 0.6 ? "A2" : "A1";
+  localStorage.setItem("sado-gr-level", level);
+  const box = el("div", "lv-result");
+  box.append(el("b", "", `🎓 Grammatika darajangiz: ~${level}`));
+  for (const [lv, name] of [["beg", "🌱 A1–A2"], ["mid", "🌿 B1"], ["adv", "🌳 B2"]]) {
+    const row = el("div", "lv-row");
+    const bar = el("span", "ts-bar");
+    const pc = Math.round(p(lv) * 100);
+    const fill = el("i", pc >= 70 ? "hi" : pc >= 50 ? "mid" : "lo");
+    fill.style.width = `${Math.max(4, pc)}%`;
+    bar.append(fill);
+    row.append(el("span", "", name), bar, el("b", "", `${by[lv][0]}/${by[lv][1]}`));
+    box.append(row);
+  }
+  box.append(el("small", "qz-n", level === "B2" ? "Zo'r! Endi IELTS/CEFR kurslarida gapirib mustahkamlang." : `Keyingi daraja uchun ${level === "A1" ? "🌱 A1–A2" : level === "A2" ? "🌿 B1" : "🌳 B2"} mavzularidagi testlarni ishlang (Aralash test → daraja tanlang).`));
+  body.append(box);
+}
+
 // 📅 Bugungi test: har kuni 5 ta savol (sana bo'yicha, hamma uchun bir xil), 🔥 seriya
 const dayNum = () => Math.floor((Date.now() + 5 * 3600_000) / 86400_000);
 const dailyTest = () => { try { return JSON.parse(localStorage.getItem("sado-daily-test")) || {}; } catch { return {}; } };
@@ -645,7 +687,7 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
     for (let t = 0; t < 5 && mixed.join(" ") === full; t++) mixed = [...words].sort(() => Math.random() - 0.5);
     return { ...it, mode: "order", words, mixed, right: full };
   };
-  const pick = () => (pool.length > QN ? [...pool].sort(() => Math.random() - 0.5).slice(0, QN) : [...pool])
+  const pick = () => (pool.length > QN ? [...pool].sort(() => Math.random() - 0.5).slice(0, QN) : lesson.ordered ? [...pool] : [...pool].sort(() => Math.random() - 0.5))
     .map((it, k) => (pool.length > QN && k % 3 === 2 ? asPick(it) : pool.length > QN && k % 3 === 1 ? asOrder(it) : it)); // 2-savol — so'z tartibi, 3-savol — gap tanlash
   let items = pick();
   box.hidden = items.length < (lesson.id === "gr-miss" ? 1 : 2);
@@ -657,6 +699,7 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
   const show = () => {
     body.innerHTML = "";
     if (i >= items.length) {
+      if (lesson.id === "gr-level") levelTestResult(items, marks, body);
       if (lesson.id === "gr-daily") {
         dailyTestDone(right, items.length);
         // 📤 Natijani kvadratchalar bilan ulashish (javoblar oshkor qilinmaydi)
@@ -683,11 +726,12 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
       if (missed.length) {
         const ul = el("div", "qz-missed");
         ul.append(el("small", "", "To'g'ri shakli:"));
-        for (const t of missed) {
+        for (const t of missed.slice(0, 5)) {
           const bt = el("button", "rule-ex", t);
           bt.addEventListener("click", () => { haptic(); sayPhrase(t).then(() => mascot.setLevel(0)); });
           ul.append(bt);
         }
+        if (missed.length > 5) ul.append(el("small", "", `…va yana ${missed.length - 5} ta — «🔁 Xatolarim»da takrorlang`));
         body.append(ul);
       }
       // 📝 Aralash test: xato qilingan mavzular — mos darsga o'tish
@@ -703,9 +747,10 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
         }
         body.append(tl);
       }
-      const again = el("button", "qz-again", pool.length > QN ? "🔄 Yangi savollar" : "🔄 Qayta");
+      const again = el("button", "qz-again", pool.length > QN || lesson.id === "gr-level" ? "🔄 Yangi savollar" : "🔄 Qayta");
       again.addEventListener("click", () => {
         if (lesson.id === "gr-miss") return openMissTest(); // ro'yxat yangilangan — qolgan xatolar bilan qayta
+        if (lesson.id === "gr-level") return openLevelTest(); // yangi 20 savol
         i = 0; right = 0; missed = []; marks = []; state.mixWeak = new Map(); items = pick(); show();
       });
       body.append(again);
@@ -1877,7 +1922,11 @@ function renderLessons() {
           const sp = el("button", "", "⚡ 60 soniya");
           if (spBest) sp.append(el("small", "", `🏆 ${spBest} ta`));
           sp.addEventListener("click", () => { haptic(); openSpeedTest(); });
-          btns.append(mix, sp, go);
+          const lvSaved = localStorage.getItem("sado-gr-level");
+          const lvb = el("button", "", "📊 Daraja testi");
+          lvb.append(el("small", "", lvSaved ? `🎓 ~${lvSaved}` : "20 savol"));
+          lvb.addEventListener("click", () => { haptic(); openLevelTest(); });
+          btns.append(mix, sp, lvb, go);
           const nMiss = quizMisses().length;
           if (nMiss) {
             const mb = el("button", "gr-miss", "🔁 Xatolarim");
