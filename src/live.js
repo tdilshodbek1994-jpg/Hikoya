@@ -102,7 +102,10 @@ function detectUsed(lesson, text, used) {
 }
 
 // ---- Bitta jonli suhbat ----
-export async function runLive(client, session, lesson, { maxMs }) {
+// Foydalanuvchi tanlaydigan ovozlar
+const VOICES = { f: process.env.GEMINI_LIVE_VOICE_F || "Kore", m: process.env.GEMINI_LIVE_VOICE_M || "Puck" };
+
+export async function runLive(client, session, lesson, { maxMs, voice }) {
   const send = (obj) => client.readyState === WebSocket.OPEN && client.send(JSON.stringify(obj));
   let upstream;
   let closed = false;
@@ -142,7 +145,7 @@ export async function runLive(client, session, lesson, { maxMs }) {
           model: `models/${model}`,
           generationConfig: {
             responseModalities: ["AUDIO"],
-            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: LIVE_VOICE } } },
+            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: VOICES[voice] || LIVE_VOICE } } },
           },
           systemInstruction: { parts: [{ text: livePrompt(lesson) }] },
           inputAudioTranscription: {},

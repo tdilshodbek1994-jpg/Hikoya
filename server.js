@@ -316,7 +316,7 @@ server.on("upgrade", (req, socket, head) => {
   }
   s.liveStarted = true; // bitta sessiya - bitta ulanish
   wss.handleUpgrade(req, socket, head, (ws) => {
-    runLive(ws, s, getLesson(s.lessonId), { maxMs: s.expiresAt - Date.now() }).catch((e) => {
+    runLive(ws, s, getLesson(s.lessonId), { maxMs: s.expiresAt - Date.now(), voice: url.searchParams.get("voice") }).catch((e) => {
       console.error("Jonli suhbat xatosi:", e);
       try { ws.close(); } catch {}
     });

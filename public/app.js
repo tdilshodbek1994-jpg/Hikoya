@@ -1,5 +1,5 @@
 import { Mascot } from "./mascot.js";
-import { LiveCall } from "./live.js?v=2";
+import { LiveCall } from "./live.js?v=3";
 
 const tg = window.Telegram?.WebApp;
 const inTelegram = Boolean(tg && tg.initData);
@@ -433,6 +433,26 @@ $("searchInput").addEventListener("input", (e) => {
   }, 150);
 });
 
+// 🗣 Jonli suhbat ovozi: ayol yoki erkak
+state.voice = localStorage.getItem("sado-voice") || "f";
+function renderVoicePick() {
+  const box = $("voicePick");
+  box.innerHTML = "";
+  box.append(el("span", "vp-label", "Sado ovozi:"));
+  for (const [v, label] of [["f", "👩 Ayol"], ["m", "👨 Erkak"]]) {
+    const b = el("span", "vp" + (state.voice === v ? " on" : ""), label);
+    b.addEventListener("click", (e) => {
+      e.stopPropagation(); // bannerni bosgandek qo'ng'iroq boshlanmasin
+      haptic();
+      state.voice = v;
+      localStorage.setItem("sado-voice", v);
+      renderVoicePick();
+    });
+    box.append(b);
+  }
+}
+renderVoicePick();
+
 $("freeHero").addEventListener("click", () => {
   const free = state.lessons.find((l) => l.liveOnly);
   if (!free) return;
@@ -638,7 +658,7 @@ async function startLive(lesson) {
       },
     });
     state.live = call;
-    await call.start(data.session, tg?.initData || "");
+    await call.start(data.session, tg?.initData || "", state.voice);
   } catch (e) {
     console.warn("Jonli:", e);
     state.live?.stop();

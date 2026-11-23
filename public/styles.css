@@ -383,3 +383,9 @@ body.dark .hint-btn { color: #a5b4fc; background: rgba(165, 180, 252, 0.13); }
 .goal-text b { display: block; font-size: 15px; }
 .goal-text small { display: block; font-size: 12.5px; color: var(--muted); margin-top: 2px; }
 .goal.done { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--ok) 45%, transparent), var(--shadow); }
+
+/* ---------- Ovoz tanlash ---------- */
+.voice-pick { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 10px; font-size: 13px; }
+.vp-label { opacity: 0.85; font-weight: 600; }
+.vp { padding: 5px 11px; border-radius: 99px; background: rgba(255, 255, 255, 0.18); font-weight: 700; cursor: pointer; }
+.vp.on { background: #fff; color: #4f46e5; }
