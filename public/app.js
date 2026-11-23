@@ -129,7 +129,7 @@ async function loadLessons() {
 function renderLessons() {
   const list = $("lessonList");
   list.innerHTML = "";
-  const CAT_ICONS = { "Erkin suhbat": "💬", Imtihonlar: "🏆", "IELTS kursi": "📘", "Kundalik hayot": "🏠", Sayohat: "✈️", "O'qish va ish": "🎓" };
+  const CAT_ICONS = { "Erkin suhbat": "💬", Imtihonlar: "🏆", "IELTS kursi": "📘", "CEFR kursi": "📗", "Grammatika gapirib": "✏️", "Kundalik hayot": "🏠", Sayohat: "✈️", "O'qish va ish": "🎓" };
   let lastCat = null;
   for (const l of state.lessons) {
     if (l.liveOnly) continue; // Erkin suhbat tepadagi katta bannerda turadi
