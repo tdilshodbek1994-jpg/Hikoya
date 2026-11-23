@@ -3504,6 +3504,10 @@ function showResult() {
   resultMascot.setMood(k >= n / 2 ? "happy" : "neutral");
   const ul = $("resultList");
   ul.innerHTML = "";
+  // 🗂️ Sarlavha: nechta ibora ishlatildi; har bir iborani bosib eshitish mumkin
+  const head = el("li", "res-title", `🗂️ Dars iboralari — ${k}/${n} ishlatildi`);
+  if (k < n) head.append(el("small", "", "Ishlatilmaganlarini bosib eshiting va keyingi safar ayting"));
+  ul.append(head);
   lesson.phrases.forEach((p, i) => {
     const li = document.createElement("li");
     if (used.has(i)) li.className = "ok";
@@ -3517,7 +3521,12 @@ function showResult() {
     s.className = "muted";
     s.textContent = p.uz;
     div.append(b, s);
-    li.append(mark, div);
+    li.append(mark, div, el("span", "res-say", "🔊"));
+    li.addEventListener("click", () => {
+      haptic();
+      li.classList.add("busy");
+      sayPhrase(p.en).finally(() => li.classList.remove("busy"));
+    });
     ul.appendChild(li);
   });
   $("report").hidden = true;
