@@ -557,3 +557,5 @@ body.dark .onb-card { box-shadow: 0 0 0 1px var(--line), 0 20px 50px rgba(0,0,0,
   .listen-btn { margin-top: 5px; padding: 4px 10px; }
   .btn { height: 46px; }
 }
+.news-list { text-align: left; margin: 10px 0 4px; padding: 0; list-style: none; display: grid; gap: 6px; }
+.news-list li { background: var(--bg); border-radius: 12px; padding: 9px 11px; font-size: 14px; line-height: 1.4; }

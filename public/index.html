@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
   <title>Sado — ingliz tilida gaplashish</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="styles.css?v=55" />
+  <link rel="stylesheet" href="styles.css?v=56" />
 </head>
 <body>
   <header class="topbar">
@@ -232,8 +232,17 @@
     </div>
   </div>
 
+  <div class="sheet" id="newsSheet" hidden>
+    <div class="sheet-card news-card">
+      <div class="sheet-emoji">🆕</div>
+      <h3>Sado'da nima yangi?</h3>
+      <ul class="news-list" id="newsList"></ul>
+      <button class="btn primary wide" id="newsClose">Zo'r, ko'rdim!</button>
+    </div>
+  </div>
+
   <div class="toast" id="toast" hidden></div>
 
-  <script type="module" src="app.js?v=54"></script>
+  <script type="module" src="app.js?v=55"></script>
 </body>
 </html>

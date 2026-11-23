@@ -3,12 +3,14 @@
 DTM botingiz ichida ochiladigan ovozli AI suhbatdosh. O'quvchi vaziyatni (kafe, tanishuv, aeroport va h.k.) tanlaydi, maskot **Sado** bilan ovoz chiqarib inglizcha gaplashadi va har bir darsda 6 ta iborani ishlatishga harakat qiladi.
 
 **Imkoniyatlar**
-- 🎙️ Ikki rejim: **Bosmasdan gapirish** (ovozni o'zi aniqlaydi) va **Bosib gapirish**.
-- 🤖 Jonli maskot: tinglayotganda yashil, o'ylayotganda sariq, gapirayotganda binafsha rangda bo'ladi. Og'zi ovozga mos harakatlanadi.
-- 📋 Ibora kartasi va progress ("6 tadan N ta ibora"), 10 daqiqalik taymer.
-- 💬 Subtitrlar: AI javobi, o'zbekcha tarjimasi, siz aytgan gap va qisqa grammatik maslahat.
-- ✍️ Mikrofon bo'lmasa, yozib javob berish rejimi.
-- 🔒 Har bir so'rov Telegram imzosi (`initData`) orqali tekshiriladi va kunlik limit qo'yilgan.
+- 📞 **Jonli suhbat** (Gemini Live): xuddi telefonda gaplashgandek, gapni bo'lish mumkin; 👩/👨 ovoz tanlash; oxirgi daqiqada Sado suhbatni o'zi yakunlaydi.
+- 🇺🇿 **Ustoz** (o'zbekcha tushuntiradi) va 🇬🇧 **Inglizcha suhbat** rejimlari; 🐢 sekin gapirish, 🇺🇿 tarjima, 🔁 qayta eshitish, 💡 javob namunalari.
+- 📚 **100+ mavzu**: 💬 Erkin suhbat, 🏆 Imtihonlar, 📘 IELTS kursi (39 dars, Part 2 kartochka + 1 daqiqa tayyorlanish), 📗 CEFR kursi (8 dars), ✏️ Grammatika (10 dars, qoidalar bilan), 🧒 Bolalar uchun, 🏠 Kundalik hayot, ✈️ Sayohat, 🎓 O'qish va ish, 💼 Biznes va IT.
+- 📝 **Hisobot**: ball, CEFR/IELTS daraja (IELTS'da 4 mezon), xatolar, maslahatlar, yangi so'zlar, avvalgi rekord bilan solishtirish, suhbat matni, ulashish.
+- 📈 **Progress**: kunlik maqsad, seriya, natijalar grafigi, 🏅 yutuqlar, 🎓 kurs sertifikati, ⭐ sevimlilar, 🔍 qidiruv.
+- 📒 **Lug'at**: yangi so'zlar va xatolar, 🃏 kartochka mashqi, 🔁 xatolar ustida shaxsiy dars.
+- ♿ Tun/kunduz mavzusi, "Aa" matn o'lchami, kichik ekranlar, internet uzilsa qayta yuborish, mikrofon yo'riqnomasi, ❓ yordam.
+- 📊 **Admin statistikasi**: `/admin.html?key=ADMIN_KEY` (kalit `update-sado.sh` chiqaradi).
 
 ## Qanday ishlaydi
 
@@ -103,3 +105,10 @@ npm run dev            # http://localhost:3000 (ALLOW_DEV=1 bilan)
 
 - Sessiyalar server xotirasida saqlanadi. Server qayta ishga tushsa, davom etayotgan darslar to'xtaydi.
 - Har bir gap 3 ta API chaqiruvini ishlatadi (STT, Claude, TTS). Xarajatni `DAILY_SESSIONS` va `SESSION_MINUTES` bilan cheklang.
+
+## Yangilash
+
+```bash
+bash /opt/sado-speaking/deploy/update-sado.sh
+```
+Skript kodni yangilaydi, paketlarni o'rnatadi, `ADMIN_KEY` va `SHARE_URL` ni (bo'lmasa) qo'shadi, xizmatni qayta ishga tushiradi va statistika havolasini chiqaradi.

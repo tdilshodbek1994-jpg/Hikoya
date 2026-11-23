@@ -1957,6 +1957,31 @@ function showOnboarding() {
 }
 showOnboarding();
 
+// 🆕 Nima yangi: versiya o'zgarganda bir marta ko'rsatiladi (yangi foydalanuvchiga emas)
+const NEWS_VERSION = "2026-11-23";
+const NEWS = [
+  "📘 IELTS kursi: 39 ta dars, Part 2 kartochka va 1 daqiqa tayyorlanish",
+  "📗 CEFR kursi: 8 ta dars, to'liq sinov imtihoni",
+  "🧒 Bolalar uchun va 💼 Biznes va IT bo'limlari",
+  "📒 Lug'at, 🃏 kartochka mashqi va 🔁 xatolar ustida shaxsiy dars",
+  "🏅 Yutuqlar, 🎯 kunlik maqsad va 🎓 kurs sertifikati",
+  "💡 «Nima deyishni bilmayapman» va 🐢 sekin gapirish",
+];
+function showNews() {
+  const seen = localStorage.getItem("sado-news");
+  if (seen === NEWS_VERSION) return;
+  $("newsList").innerHTML = "";
+  for (const n of NEWS) $("newsList").append(el("li", "", n));
+  $("newsSheet").hidden = false;
+}
+$("newsClose").addEventListener("click", () => {
+  localStorage.setItem("sado-news", NEWS_VERSION);
+  $("newsSheet").hidden = true;
+});
+// Yangi foydalanuvchi tanishuvni ko'radi, "nima yangi" unga kerak emas
+if (!$("onb").hidden) localStorage.setItem("sado-news", NEWS_VERSION);
+else showNews();
+
 // ❓ Yordam: ko'p beriladigan savollar
 const FAQ = [
   ["Qaysi rejimni tanlay?", "Boshlovchi bo'lsangiz — 🇺🇿 Ustoz. O'rta darajada — 🇬🇧 Inglizcha suhbat. Erkin gaplashmoqchi bo'lsangiz — 📞 Jonli suhbat. Dars oynasidagi ⭐ Tavsiya belgisiga qarang."],
