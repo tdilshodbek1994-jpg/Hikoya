@@ -3,7 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 const CLAUDE_MODEL = process.env.CLAUDE_MODEL || "claude-opus-5-5";
 const CLAUDE_EFFORT = process.env.CLAUDE_EFFORT || "low"; // suhbat uchun tez javob
 const OPENAI_KEY = process.env.OPENAI_API_KEY || "";
-const STT_MODEL = process.env.STT_MODEL || "gpt-4o-mini-transcribe";
+const STT_MODEL = process.env.STT_MODEL || "gpt-4o-transcribe"; // o'zbekchani yaxshiroq taniydi
 const TTS_MODEL = process.env.TTS_MODEL || "gpt-4o-mini-tts";
 const TTS_VOICE = process.env.TTS_VOICE || "coral";
 

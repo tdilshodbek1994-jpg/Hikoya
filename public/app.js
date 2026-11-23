@@ -634,28 +634,63 @@ async function playReply(parts, fallbackText) {
 }
 
 async function playMp3(b64) {
+  // Android WebView'da AudioContext o'zi to'xtab qolishi mumkin - har safar qayta yoqamiz
+  try {
+    if (audio.ctx.state !== "running") await audio.ctx.resume();
+  } catch {}
   const bin = atob(b64);
   const bytes = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  const buffer = await audio.ctx.decodeAudioData(bytes.buffer);
+  let buffer;
+  try {
+    buffer = await audio.ctx.decodeAudioData(bytes.buffer);
+  } catch {
+    return playViaElement(b64);
+  }
+  if (audio.ctx.state !== "running") return playViaElement(b64);
   return new Promise((resolve) => {
+    let raf = 0;
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      cancelAnimationFrame(raf);
+      audio.source = null;
+      resolve();
+    };
     const src = audio.ctx.createBufferSource();
     src.buffer = buffer;
     src.connect(audio.outAnalyser);
     audio.source = src;
     const buf = new Float32Array(audio.outAnalyser.fftSize);
-    let raf = 0;
     const meter = () => {
       mascot.setLevel(Math.min(1, rms(audio.outAnalyser, buf) * 6));
       raf = requestAnimationFrame(meter);
     };
-    src.onended = () => {
-      cancelAnimationFrame(raf);
-      audio.source = null;
-      resolve();
-    };
+    src.onended = finish;
     src.start();
     meter();
+    setTimeout(finish, (buffer.duration + 1.5) * 1000); // onended kelmasa ham davom etamiz
+  });
+}
+
+// Zaxira usul: oddiy <audio> elementi orqali ijro
+function playViaElement(b64) {
+  return new Promise((resolve) => {
+    const el = new Audio("data:audio/mpeg;base64," + b64);
+    let raf = 0;
+    const fake = (t) => {
+      mascot.setLevel(0.35 + Math.abs(Math.sin(t / 90)) * 0.5);
+      raf = requestAnimationFrame(fake);
+    };
+    const done = () => {
+      cancelAnimationFrame(raf);
+      resolve();
+    };
+    el.onended = done;
+    el.onerror = done;
+    el.play().then(() => (raf = requestAnimationFrame(fake))).catch(done);
+    setTimeout(done, 30000);
   });
 }
 
