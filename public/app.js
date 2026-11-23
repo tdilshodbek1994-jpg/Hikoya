@@ -1548,6 +1548,12 @@ function renderTimer() {
   const frac = state.seconds ? l / state.seconds : 1;
   $("timerRing").style.strokeDashoffset = String(50.27 * (1 - frac));
   $("timer").classList.toggle("low", l <= 60);
+  // ⏳ 1 daqiqa qolganda ogohlantiramiz (jonli suhbatda Sado o'zi yakunlaydi)
+  if (l === 60 && state.lessonMode !== "live" && state.seconds > 120) {
+    const left = state.lesson ? state.lesson.phrases.length - state.used.size : 0;
+    haptic("medium");
+    toast(left > 0 ? `⏳ 1 daqiqa qoldi — yana ${left} ta ibora ishlatib ulgurasizmi?` : "⏳ 1 daqiqa qoldi — barcha iboralar bajarildi, zo'r! 🎉", 4000);
+  }
 }
 
 function renderPhrase() {

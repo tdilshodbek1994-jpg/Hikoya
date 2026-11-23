@@ -797,3 +797,7 @@ body:has(#lesson.active) .toast { top: calc(40vh + var(--safe-t)); }
 .onb-level small { display: block; font-weight: 700; margin-bottom: 6px; color: var(--muted); }
 .onb-lv-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
 .onb-lv-row .chip-f { font-size: 13px; }
+
+/* ⏳ Oxirgi daqiqada taymer yengil "urib" turadi */
+.timer.low { animation: timerPulse 1s ease-in-out infinite; }
+@keyframes timerPulse { 50% { transform: scale(1.06); } }
