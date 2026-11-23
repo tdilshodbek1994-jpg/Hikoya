@@ -3154,15 +3154,16 @@ function showOnboarding() {
 showOnboarding();
 
 // 🆕 Nima yangi: versiya o'zgarganda bir marta ko'rsatiladi (yangi foydalanuvchiga emas)
-const NEWS_VERSION = "2026-11-24";
+const NEWS_VERSION = "2026-11-25";
 const NEWS = [
-  "✏️ Erkin suhbatda o'z mavzuingizni yozing — Sado shu haqida gaplashadi",
-  "✍️ «Yozish» rejimi: ovoz chiqarib bo'lmaydigan joyda yozib javob bering",
-  "📝 IELTS Part 2: qaydlar maydoni va gapirish sekundomeri",
-  "🖼 CEFR: rasm va jadval topshiriqlari endi ekranda ko'rinadi",
-  "📖 Grammatika: qoidani dars davomida ochish, misollarni tinglash",
-  "🎯 IELTS hisobotida eng zaif tomon va bir bosishda mashq",
-  "🔊 Sozlamalarda ovozni tekshirish, 📋 lug'at va suhbatni nusxalash",
+  "🆕 117 ta dars: Dorixona, Kvartira ijarasi, Kutubxona, Amaliyot suhbati, IELTS Part 2 va grammatika",
+  "🔁 «Takrorlash» filtri: past ballli va 7 kundan beri o'tilmagan darslar",
+  "✅ Xatolar ustida ishlash: tuzatilgan xatolar belgilanadi, 🏅 yangi yutuqlar",
+  "🃏 Aqlli kartochkalar: bilmagan so'zlaringiz oldinroq chiqadi",
+  "🎯 Taxminiy IELTS band va 📗 CEFR daraja zinapoyasi, 🗓 haftalik kalendar",
+  "🧒 Bolalar uchun: ⭐ yulduzlar, katta yozuv, iliq ustoz",
+  "❓ IELTS savollari va 📋 CEFR javob rejasi dars ekranida",
+  "⚡ Ilova ancha tezroq ochiladi",
 ];
 function showNews() {
   const seen = localStorage.getItem("sado-news");
@@ -3186,6 +3187,8 @@ const FAQ = [
   ["Sado ovozi eshitilmayapti", "Telefon ovozini balandlating va «ovozsiz» rejimni o'chiring. «🔁 Qayta eshitish» tugmasi yoki Sado (maskot)ning o'zini bosib, oxirgi gapni yana tinglashingiz mumkin.", "🔊 Ovozni hozir tekshirish", () => { $("helpSheet").hidden = true; $("setBtn").click(); setTimeout(() => $("soundTest").click(), 150); }],
   ["Ovoz chiqarib gapira olmayman (avtobusda, kutubxonada)", "Dars ekranining pastidagi «✍️ Yozish» tugmasini bosing — javobni yozib yuborasiz. Yozma rejimda ibora kartasini bossangiz, u javob maydoniga o'zi tushadi."],
   ["O'zim xohlagan mavzuda gaplashsam bo'ladimi?", "Ha! Bosh sahifadagi Erkin suhbat bannerida «✏️ O'z mavzuim» tugmasini bosing va istalgan mavzuni yozing — Sado shu mavzuda gaplashadi.", "✏️ Mavzu yozish", () => { $("helpSheet").hidden = true; openTopicSheet(state.topic.startsWith("custom:") ? state.topic.slice(7) : ""); }],
+  ["«🔁 Takrorlash» nima?", "Toifalar qatoridagi bu filtr 60 balldan past olingan va 7 kundan beri o'tilmagan darslarni ko'rsatadi. Ularni qayta o'tsangiz, iboralar uzoq muddat esda qoladi."],
+  ["Xatolarim qayerda saqlanadi?", "📒 Lug'atim → «✏️ Xatolarim». «🔁 Xatolarim ustida Sado bilan ishlash» darsida to'g'ri aytgan xatoingiz «✅ tuzatildi» bo'ladi.", "📒 Lug'atni ochish", () => { $("helpSheet").hidden = true; $("vocabBtn").hidden ? toast("Lug'at birinchi darsdan keyin paydo bo'ladi") : $("vocabBtn").click(); }],
   ["O'zbekcha gapirsam bo'ladimi?", "Ha! Sado o'zbekcha tushunadi, o'zbekcha tushuntiradi va buni inglizcha qanday aytishni o'rgatadi."],
   ["Ball qanday qo'yiladi?", "Dars oxirida AI gaplaringizni tahlil qilib 0–100 ball, daraja (CEFR yoki IELTS band), xatolar va maslahatlar beradi."],
   ["Kuniga nechta dars?", "Kunlik limit bor — qolgan darslar soni bosh sahifadagi «Bugungi maqsad» blokida ko'rinadi. Limit har kuni yangilanadi."],
