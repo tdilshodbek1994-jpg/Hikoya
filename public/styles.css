@@ -974,3 +974,7 @@ body.dark .rep-ml { color: #5eead4; }
 
 .speak-stats span.rec { background: linear-gradient(135deg, #fde68a, #f59e0b); color: #78350f; }
 .speak-stats span.rec-old { color: var(--muted); }
+
+/* 12 ta yutuq — 4 ustun, 3 qator */
+.badge-row { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 360px) { .badge-row { grid-template-columns: repeat(4, 1fr); } .badge small { font-size: 10px; } }

@@ -378,6 +378,17 @@ function ruleBody(rule) {
 
 // Ochilmagan yutuqlar uchun [hozirgi, kerakli]
 const BADGE_PROGRESS = {
+  Gapdon: (p) => [Math.min(50, p.maxWords || 0), 50],
+  "Kurs bitiruvchisi": (p) => {
+    // Eng ko'p o'tilgan kurs bo'yicha progress
+    let best = [0, 1];
+    for (const c of ["IELTS kursi", "CEFR kursi", "Grammatika gapirib"]) {
+      const all = state.lessons.filter((l) => l.category === c);
+      const d = all.filter((l) => p.lessons?.[l.id]).length;
+      if (all.length && d / all.length > best[0] / best[1]) best = [d, all.length];
+    }
+    return best;
+  },
   "3 kun ketma-ket": (p) => [Math.min(3, p.streak || 0), 3],
   "10 ta dars": (p) => [Math.min(10, p.done || 0), 10],
   "A'lochi": (p) => [Math.min(90, p.best || 0), 90],
@@ -898,6 +909,8 @@ const BADGES = [
   ["⚡", "Hafta qahramoni", "7 kun ketma-ket mashq qiling", (p) => (p.bestStreak || p.streak) >= 7],
   ["🛠", "Xato tuzatuvchi", "5 ta xatoingizni tuzating", (p) => (p.words || []).filter((w) => w.fixed).length >= 5],
   ["🃏", "Kartochka ustasi", "Kartochkalarda 10 ta so'zni yodlang", () => Object.values(flashBoxes()).filter((n) => n >= 3).length >= 10],
+  ["🗣", "Gapdon", "Bitta darsda 50 ta inglizcha so'z ayting", (p) => (p.maxWords || 0) >= 50],
+  ["🎓", "Kurs bitiruvchisi", "IELTS, CEFR yoki Grammatika kursini to'liq tugating", (p) => ["IELTS kursi", "CEFR kursi", "Grammatika gapirib"].some((c) => { const all = state.lessons.filter((l) => l.category === c); return all.length && all.every((l) => p.lessons?.[l.id]); })],
   ["🌍", "Har tomonlama", "5 xil bo'limdan dars o'ting", (p) => new Set(Object.keys(p.lessons || {}).map((id) => state.lessons.find((l) => l.id === id)?.category).filter(Boolean)).size >= 5],
 ];
 function renderBadges() {
