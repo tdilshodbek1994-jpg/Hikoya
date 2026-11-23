@@ -271,6 +271,37 @@ function ruleBody(rule) {
   return box;
 }
 
+// 🖼 Rasm/jadval topshiriqlari: o'quvchi ko'rib turib gapiradi
+function renderVisual(lesson) {
+  const box = $("visual");
+  const v = lesson?.visual;
+  box.hidden = !v;
+  box.innerHTML = "";
+  if (!v) return;
+  if (v.type === "pictures") {
+    box.append(el("div", "vis-title", "🖼 Rasmlar"));
+    const row = el("div", "vis-pics");
+    v.items.forEach((it, i) => {
+      const c = el("div", "vis-pic");
+      c.append(el("small", "", `${i + 1}-rasm`), el("div", "vis-emoji", it.emoji), el("b", "", it.en), el("span", "", it.uz));
+      row.append(c);
+    });
+    box.append(row);
+  } else if (v.type === "chart") {
+    box.append(el("div", "vis-title", "📊 " + v.title));
+    const max = Math.max(...v.items.map((x) => x.value));
+    for (const it of v.items) {
+      const r = el("div", "vis-bar");
+      const bar = el("span", "vis-track");
+      const fill = el("i", "");
+      fill.style.width = `${(it.value / max) * 100}%`;
+      bar.append(fill);
+      r.append(el("span", "vis-label", it.label), bar, el("b", "", it.value + "%"));
+      box.append(r);
+    }
+  }
+}
+
 function renderChips() {
   const box = $("chips");
   if (!box) return;
@@ -1007,6 +1038,7 @@ async function startLesson(lesson, lessonMode = "tutor") {
   show("lesson");
   $("lessonTitle").textContent = lesson.title;
   renderPhrase();
+  renderVisual(lesson);
   applyMode();
   applySubs();
   applyTr();
@@ -1054,6 +1086,7 @@ async function startLive(lesson) {
   show("lesson");
   $("lessonTitle").textContent = lesson.title + " · jonli";
   renderPhrase();
+  renderVisual(lesson);
   // Jonli rejimda tugmalar kerak emas: shunchaki gaplashiladi
   $("modeToggle").hidden = true;
   $("holdBtn").hidden = true;
@@ -1258,7 +1291,7 @@ function renderPhrase() {
   });
   $("countText").textContent = `${lesson.phrases.length} tadan ${used.size} ta ibora`;
   const p = lesson.phrases[state.phraseIdx];
-  $("phraseEn").textContent = p.en;
+  $("phraseEn").textContent = p.en.replace(/ (\.\.\.)/g, "\u00a0$1"); // "..." yolg'iz keyingi qatorga tushmasin
   $("phraseUz").textContent = p.uz;
   const done = used.has(state.phraseIdx);
   $("phraseCard").classList.toggle("done", done);

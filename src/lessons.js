@@ -2177,6 +2177,27 @@ export function getLesson(id) {
 }
 
 // Frontendga yuboriladigan qisqa ko'rinish (AI rol tavsifisiz)
+// 🖼 CEFR: o'quvchi ko'rib turishi uchun rasm va jadval (Sado ochilishda aytgan ma'lumot bilan bir xil)
+const VISUALS = {
+  "cefr-2": {
+    type: "pictures",
+    items: [
+      { emoji: "📚🤫🧑‍🎓", en: "Students studying in a quiet library", uz: "Jim kutubxonada o'qiyotgan talabalar" },
+      { emoji: "🛋️📱🧑", en: "A student studying at home on the sofa", uz: "Uyda divanda o'qiyotgan talaba" },
+    ],
+  },
+  "cefr-7": {
+    type: "chart",
+    title: "How students travel to school",
+    items: [
+      { label: "🚌 Bus", value: 45 },
+      { label: "🚶 On foot", value: 30 },
+      { label: "🚗 Car", value: 15 },
+      { label: "🚲 Bike", value: 10 },
+    ],
+  },
+};
+
 export function publicLesson(l) {
   return {
     id: l.id,
@@ -2187,6 +2208,7 @@ export function publicLesson(l) {
     minutes: l.minutes || 0,
     cue: cueCard(l),
     rule: l.rule || "",
+    visual: VISUALS[l.id] || null,
     category: l.category || "",
     phrases: l.phrases,
   };
