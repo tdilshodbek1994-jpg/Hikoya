@@ -625,3 +625,7 @@ body.dark .shadow-btn { color: #5eead4; }
 #lesson.is-live .help-row { margin-top: 2px; }
 #lesson.is-live .hint-item b::after { content: none; }
 #lesson.is-live .hint-item { cursor: default; }
+
+.rep-mistake.rep-word::after { content: none; }
+.rep-mistake.rep-word .rep-right::after { content: " 🔊"; font-size: 12px; opacity: 0.7; }
+.rep-fixbtn { margin-top: 10px; font-size: 14.5px; }

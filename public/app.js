@@ -1778,7 +1778,9 @@ function playViaElement(b64, mime = "audio/mpeg") {
     el.play()
       .then(() => (raf = requestAnimationFrame(fake)))
       .catch((e) => {
-        toast("⚠️ Telefon ovozni ijro etmadi: " + (e?.name || e), 5000);
+        // Faqat dars ekranida ogohlantiramiz (hisobot sahifasida ortiqcha xabar chiqmasin)
+        if ($("lesson").classList.contains("active"))
+          toast(e?.name === "NotAllowedError" ? "🔇 Ovozni yoqish uchun ekranga bir marta bosing" : "⚠️ Ovoz ijro etilmadi — Sado gapini subtitrdan o'qing", 4000);
         done();
       });
     setTimeout(done, 30000);
@@ -2015,17 +2017,28 @@ function renderReport(r, score) {
     const line = el("div", "");
     line.append(el("s", "rep-wrong", m.wrong), document.createTextNode(" → "), el("b", "rep-right", m.right));
     li.append(line, el("div", "rep-why", m.why_uz || ""));
+    li.classList.add("rep-word"); // bosilganda to'g'ri variant eshittiriladi
+    li.addEventListener("click", () => speakBrowser(m.right, "en"));
     return li;
   });
+  // 🔁 Xatolar 2 tadan ko'p bo'lsa — darhol shular ustida qisqa mashq
+  if ((r.mistakes || []).length >= 2 && state.lesson?.id !== "review") {
+    const b = el("button", "btn ghost wide rep-fixbtn", "🔁 Shu xatolarni hoziroq mashq qilish");
+    b.addEventListener("click", () => {
+      haptic();
+      $("reviewBtn").click();
+    });
+    box.append(b);
+  }
   section("💡 Keyingi safar", r.tips_uz, (t) => el("li", "", t));
-  if ((r.new_words || []).length || (r.mistakes || []).length)
-    box.append(el("div", "rep-saved", "📒 Yangi so'zlar va xatolar lug'atingizga saqlandi"));
   section("📚 Yangi so'zlar", r.new_words, (w) => {
     const li = el("li", "rep-word");
     li.append(el("b", "", w.en), el("span", "muted", " — " + (w.uz || "")));
     li.addEventListener("click", () => speakBrowser(w.en, "en"));
     return li;
   });
+  if ((r.new_words || []).length || (r.mistakes || []).length)
+    box.append(el("div", "rep-saved", "📒 Yangi so'zlar va xatolar lug'atingizga saqlandi"));
 }
 
 function showResult() {
