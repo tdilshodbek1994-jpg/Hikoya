@@ -3684,6 +3684,18 @@ function renderReport(r, score) {
     const line = el("div", "");
     line.append(el("s", "rep-wrong", m.wrong), document.createTextNode(" → "), el("b", "rep-right", m.right));
     li.append(line, el("div", "rep-why", m.why_uz || ""));
+    // ✏️ Shu xatoga mos grammatika darsi (hozirgi dars bo'lmasa)
+    const gl = grammarLessonFor([m]);
+    if (gl && gl.id !== state.lesson?.id) {
+      const go = el("button", "rep-grlink", `✏️ Dars: ${gl.title.replace(/^\d+\.\s*/, "").replace(/\s*\([^)]*\)$/, "")} ›`);
+      go.addEventListener("click", (e) => {
+        e.stopPropagation();
+        haptic();
+        show("home");
+        openSheet(gl);
+      });
+      li.append(go);
+    }
     li.classList.add("rep-word"); // bosilganda to'g'ri variant eshittiriladi
     li.addEventListener("click", () => sayPhrase(m.right).then(() => mascot.setLevel(0)));
     return li;
