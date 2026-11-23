@@ -758,6 +758,12 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
     }
     const it = items[i];
     body.append(el("small", "qz-n", `${i + 1}/${items.length}${pool.length > QN ? ` · to'plamda ${pool.length} ta savol` : ""}`));
+    // ●●○○ Yo'l chizig'i: javob berilganlar yashil/qizil, joriy — ajratilgan
+    if (items.length > 1) {
+      const dots = el("div", "qz-dots");
+      items.forEach((_, k) => dots.append(el("i", k < marks.length ? (marks[k] === "🟩" ? "ok" : "bad") : k === i ? "cur" : "")));
+      body.append(dots);
+    }
     if (it.mode === "order") {
       body.append(el("p", "qz-q", ""));
       body.lastChild.append(el("b", "qz-pick", "🧱 So'zlarni tartibga soling"));
