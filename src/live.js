@@ -146,8 +146,11 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
   const send = (obj) => client.readyState === WebSocket.OPEN && client.send(JSON.stringify(obj));
   let upstream;
   let closed = false;
+  // 📝 Javobi kelmay qolgan oxirgi gaplar ham hisobotga tushsin (aks holda "Hali hech narsa demadingiz" chiqardi)
+  let flushTurns = () => {};
   const close = (reason) => {
     if (closed) return;
+    flushTurns();
     closed = true;
     send({ type: "closed", reason });
     try { upstream?.close(); } catch {}
@@ -173,6 +176,7 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
   client.on("close", () => {
     clearTimeout(timer);
     clearTimeout(wrapTimer);
+    if (!closed) flushTurns();
     closed = true;
     try { upstream?.close(); } catch {}
   });
@@ -192,6 +196,14 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
   let userTurn = "";
   let sadoTurn = "";
   let userRaw = "", sadoRaw = ""; // asl (kirill) matn — bo'laklar orasidagi so'z chegarasi uchun
+  flushTurns = () => {
+    if (sadoTurn.trim()) session.transcript?.push({ who: "sado", text: sadoTurn });
+    if (userTurn.trim()) {
+      session.transcript?.push({ who: "student", text: userTurn });
+      for (const i of detectUsed(lesson, userTurn, session.used)) session.used.add(i);
+    }
+    userTurn = sadoTurn = "";
+  };
 
   upstream.on("open", () => {
     upstream.send(
