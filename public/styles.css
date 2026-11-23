@@ -1308,3 +1308,8 @@ body.dark .acc-tag.hi { color: #4ade80; } body.dark .acc-tag.mid { color: #fbbf2
 /* 🔁 Xatolarim: ro'yxat qanchaga qisqardi */
 .miss-left { margin: 6px 0 4px; font-weight: 700; color: var(--ok); }
 .miss-left.done { font-size: 14px; }
+
+/* ▶ Qoidadagi misollarni ketma-ket tinglash */
+.rule-all { display: inline-block; margin-top: 8px; font: inherit; font-size: 13px; font-weight: 700; color: var(--primary); background: color-mix(in srgb, var(--primary) 12%, transparent); border: 0; border-radius: 99px; padding: 6px 12px; }
+.rule-all.on { color: #fff; background: var(--primary); }
+.rule-ex.now { outline: 2px solid var(--primary); outline-offset: 1px; }

@@ -1107,7 +1107,8 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
 
 // Bo'lim filtrlari (gorizontal chiplar)
 // 📖 Qoidadagi inglizcha misollarni ajratib, bosilganda eshittiramiz
-const EN_HINT = /\b(I|I'm|you|he|she|it|we|they|is|are|am|do|does|did|will|the|a|an|can|was|were|have|has|my|your|to|used|should|must|there|this|that|any|some|isn't|aren't|wasn't|weren't|don't|doesn't|didn't)\b/i;
+// (please, let's, how, me ... ham — "Sit down, please.", "Let's go!", "How much?", "Me too." misollari ham bosiladigan bo'lsin)
+const EN_HINT = /\b(I|I'm|I've|I'd|I'll|you|he|she|it|we|they|is|are|am|do|does|did|will|the|a|an|can|can't|was|were|have|has|had|my|your|his|her|our|their|its|me|him|us|them|to|used|should|must|there|this|that|these|those|any|some|isn't|aren't|wasn't|weren't|don't|doesn't|didn't|won't|let's|please|not|never|ever|been|would|could|might|of|in|on|at|for|with|than|so|such|very|too|what|where|when|who|how|why|if|unless|go|come)\b/i;
 function ruleBody(rule) {
   const box = el("div", "rule-body");
   for (const line of rule.split("\n")) {
@@ -1131,6 +1132,29 @@ function ruleBody(rule) {
     box.append(row);
   }
   if (box.querySelector(".rule-ex")) box.append(el("small", "rule-tip", "🔊 Misolni bosing — talaffuzini eshitasiz"));
+  // ▶ Barcha misollarni ketma-ket tinglash (aytilayotgani ajratib ko'rsatiladi; yana bosilsa — to'xtaydi)
+  const exs = [...box.querySelectorAll(".rule-ex")];
+  if (exs.length >= 2) {
+    const all = el("button", "rule-all", "▶ Misollarni ketma-ket tinglash");
+    let run = 0;
+    all.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      haptic();
+      const my = ++run;
+      if (all.classList.contains("on")) { all.classList.remove("on"); all.textContent = "▶ Misollarni ketma-ket tinglash"; exs.forEach((x) => x.classList.remove("now")); return; }
+      all.classList.add("on");
+      all.textContent = "⏹ To'xtatish";
+      for (const x of exs) {
+        if (my !== run || !box.isConnected) break;
+        exs.forEach((y) => y.classList.toggle("now", y === x));
+        await sayPhrase(x.textContent).catch(() => {});
+        await new Promise((r) => setTimeout(r, 350));
+      }
+      if (my === run) { all.classList.remove("on"); all.textContent = "▶ Misollarni ketma-ket tinglash"; exs.forEach((y) => y.classList.remove("now")); }
+      mascot.setLevel(0);
+    });
+    box.append(all);
+  }
   return box;
 }
 
