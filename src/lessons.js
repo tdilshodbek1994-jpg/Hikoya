@@ -2198,6 +2198,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-mine",
+    category: "Grammatika gapirib",
+    title: "Mine, yours, his, hers — kimniki?",
+    emoji: "🔑",
+    level: "A2",
+    added: "2026-11-27",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on possessive pronouns: mine, yours, his, hers, ours, theirs (used without a noun) vs possessive adjectives my, your, her, our, their (used before a noun): This is my bag — it's mine. Is this yours? Whose is it? — It's hers. Play a lost-and-found game: things are on a table and the student decides whose they are. Have a natural, simple conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake (It's my, It's her's, This is mine bag), explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "I found a blue umbrella and a black phone. Is this umbrella yours?",
+    openerUz: "Ko'k soyabon va qora telefon topdim. Bu soyabon sizningmi?",
+    phrases: [
+      { en: "This umbrella is mine.", uz: "Bu soyabon meniki." },
+      { en: "Is this phone yours?", uz: "Bu telefon sizningmi?" },
+      { en: "That bag isn't his, it's hers.", uz: "U sumka uniki (erkakniki) emas, uniki (ayolniki)." },
+      { en: "Whose keys are these?", uz: "Bu kimning kalitlari?" },
+      { en: "Our house is small, but theirs is big.", uz: "Bizning uyimiz kichik, ularniki esa katta." },
+      { en: "The idea was ours.", uz: "G'oya bizniki edi." },
+    ],
+  },
+  {
+    id: "gr-unless",
+    category: "Grammatika gapirib",
+    title: "Unless, as long as, in case",
+    emoji: "🚦",
+    level: "B2",
+    added: "2026-11-27",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on conditional linkers: unless (= if not: I won't go unless you come), as long as / provided that (= only if: You can borrow it as long as you return it), in case (as a precaution: Take an umbrella in case it rains), and even if. After these words use the present tense for the future (unless it rains — not unless it will rain). Talk about rules at home or work, travel preparations and promises. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "You're going on a trip tomorrow. What will you pack, just in case?",
+    openerUz: "Ertaga safarga ketyapsiz. Har ehtimolga qarshi nimalarni olasiz?",
+    phrases: [
+      { en: "I won't go unless you come with me.", uz: "Siz men bilan bormasangiz, men bormayman." },
+      { en: "Take an umbrella in case it rains.", uz: "Yomg'ir yog'ib qolsa deb soyabon oling." },
+      { en: "You can borrow my car as long as you drive carefully.", uz: "Ehtiyot bo'lib haydasangiz, mashinamni olishingiz mumkin." },
+      { en: "Even if it's expensive, I'll buy it.", uz: "Qimmat bo'lsa ham, sotib olaman." },
+      { en: "Unless we hurry, we'll miss the train.", uz: "Shoshilmasak, poyezddan qolamiz." },
+      { en: "I'll take some snacks in case we get hungry.", uz: "Qornimiz ochib qolsa deb biroz yegulik olaman." },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -3101,7 +3141,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adverbs", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-ppvsps", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-tags", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused"];
+const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-mine", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adverbs", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-ppvsps", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-tags", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused", "gr-unless"];
 // Avval daraja guruhi (A1–A2 → B1 → B2), guruh ichida — GR_ORDER tartibi
 const grGroup = (lv) => (/B2/.test(lv || "") ? 2 : /A2-B1|^B1$/.test(lv || "") ? 1 : 0);
 const grRank = (l) => grGroup(l.level) * 100 + (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
@@ -3142,6 +3182,8 @@ const QUIZ = {
   "gr-futureadv": ["This time tomorrow I'll be ___ to Istanbul.|flying|fly|flown", "By 2030 I will have ___.|graduated|graduate|graduating", "She will have finished ___ Friday.|by|until|since", "Don't call at 8. I'll ___ having dinner.|be|have|being", "Will you ___ using your laptop tonight?|be|have|being", "By the time you arrive, we'll have ___ dinner.|eaten|eat|eating", "At midnight I'll ___ sleeping.|be|have|been", "He will ___ worked here for ten years next month.|have|be|has", "I'll be ___ for you at the station.|waiting|wait|waited", "By next year they will have ___ a new house.|built|build|building", "In ten years I'll ___ living in London.|be|have|being", "Will she have ___ the report by tomorrow?|finished|finish|finishing"],
   "gr-imperative": ["___ the window, please.|Open|Opens|To open", "___ be late for class!|Don't|Not|No", "Let's ___ to the park.|go|to go|going", "___ down and listen, please.|Sit|Sits|Sitting", "___ touch that! It's hot.|Don't|Doesn't|Not", "Let's ___ wait for the bus.|not|don't|no", "Please ___ quiet in the library.|be|are|is", "___ the door when you leave.|Close|Closing|Closes", "Let's ___ a pizza tonight!|order|ordering|to order", "Don't ___ your phone in class.|use|using|uses", "___ me your name, please.|Tell|Tells|To tell", "Let's ___ a photo together!|take|took|taking"],
   "gr-beused": ["I'm used to ___ up early.|getting|get|got", "I'm getting used to the cold ___.|weather|weathers|whether", "She isn't used to ___ on the left.|driving|drive|drove", "You'll soon ___ used to it.|get|be getting to|getting", "When I was a child, I used to ___ milk every day.|drink|drinking|drank", "It took me a month to ___ used to the food.|get|be|getting", "Are you used to ___ alone?|living|live|lived", "He ___ used to working at night. He's done it for years.|is|does|has", "We're slowly getting used ___ the new system.|to|for|with", "My dad ___ to smoke, but he stopped.|used|is used|gets used", "She can't ___ used to the noise.|get|be getting|getting", "They aren't used to ___ English all day.|speaking|speak|spoke"],
+  "gr-mine": ["This umbrella is ___.|mine|my|me", "Is this phone ___?|yours|your|you", "That bag isn't his, it's ___.|hers|her|her's", "___ keys are these?|Whose|Who's|Who", "Our house is small, but ___ is big.|theirs|their|their's", "The idea was ___.|ours|our|us", "This isn't my pen. ___ is blue.|Mine|My|Me", "Is that ___ car outside?|your|yours|you", "These books are ___. He bought them yesterday.|his|him|he's", "Can I use your phone? ___ is broken.|Mine|My|I", "The red bike is ___. She rides it every day.|hers|her|she", "Whose coat is this? — It's ___.|my brother's|my brother|mine brother"],
+  "gr-unless": ["I won't go ___ you come with me.|unless|if|in case", "Take an umbrella ___ it rains.|in case|unless|as long as", "You can borrow my car ___ you drive carefully.|as long as|unless|in case", "___ it's expensive, I'll buy it.|Even if|Unless|In case", "Unless we ___, we'll miss the train.|hurry|will hurry|hurried", "I'll take some snacks in case we ___ hungry.|get|will get|got", "You can't come in ___ you have a ticket.|unless|as long as|in case", "We'll go to the beach ___ the weather is good.|as long as|unless|in case not", "Write down my number ___ you forget it.|in case|unless|as long as", "I'll be there by six ___ the traffic is bad.|unless|as long as|in case of", "Unless you ___ harder, you won't pass.|study|will study|studied", "You'll be fine ___ you follow the instructions.|as long as|unless|in case"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink", "My sister ___ English very well.|speaks|speak|speaking", "They ___ live in Tashkent.|don't|doesn't|aren't", "Where ___ he work?|does|do|is", "The shop ___ at nine o'clock.|opens|open|opening", "Water ___ at 100 degrees.|boils|boil|is boil", "My friends ___ like rap music.|don't|doesn't|isn't", "___ your brother study at university?|Does|Do|Is", "He usually ___ his homework in the evening.|does|do|doing"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on", "I was born ___ 2008.|in|on|at", "We have a party ___ Friday evening.|on|in|at", "I usually sleep ___ night.|at|in|on", "The keys are ___ the table.|on|at|in", "The meeting is ___ 3 pm.|at|in|on", "I'll see you ___ the weekend.|at|in|on", "She lives ___ Samarkand.|in|at|on", "My birthday is ___ 5th March.|on|in|at"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do", "Listen! The baby ___ crying.|is|are|be", "We ___ waiting for the bus now.|are|is|am", "What ___ you doing?|are|do|is", "She isn't ___ TV at the moment.|watching|watch|watches", "I ___ working from home this week.|am|is|are", "Why ___ you laughing?|are|is|do", "They ___ playing football right now.|are|is|be", "Be quiet! Grandma ___ sleeping.|is|are|am"],
@@ -3192,6 +3234,8 @@ const KEYWORDS = {
   "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
 };
 const RULES = {
+  "gr-mine": "Ot oldidan: my, your, his, her, our, their: This is my bag.\nOtsiz (kimniki?): mine, yours, his, hers, ours, theirs: It's mine. Is this yours?\nher's yoki your's deb yozilmaydi! (✗ It's her's) (✗ This is mine bag)\nSavol: Whose is this? — It's hers.",
+  "gr-unless": "unless = if not: I won't go unless you come. (= if you don't come)\nas long as / provided that = faqat shu shart bilan: You can go as long as you're back by ten.\nin case = ehtiyot uchun: Take an umbrella in case it rains.\nUlardan keyin kelasi zamon uchun ham hozirgi zamon: unless it rains (✗ unless it will rain)",
   "gr-imperative": "Buyruq — fe'lning o'zi bilan boshlanadi: Open the door. Sit down, please.\nTaqiq — Don't + fe'l: Don't run! Don't be late. (✗ Not run!)\nTaklif — Let's + fe'l: Let's go! Let's not wait. (✗ Let's to go)\nMuloyimroq: please qo'shing: Close the window, please.",
   "gr-beused": "be used to + ot yoki -ing — o'rganganman (odatiy): I'm used to getting up early. (✗ used to get up)\nget used to + ot yoki -ing — ko'nikib boryapman: I'm getting used to the weather. You'll get used to it.\nused to + fe'l — ilgari shunday edi (endi emas): I used to live in a village.\nShe isn't used to driving on the left.",
   "gr-havegot": "Egalik: I / you / we / they + have got, he / she / it + has got.\nI've got a brother. She's got long hair.\nInkor: haven't got / hasn't got. He hasn't got a car.\nSavol: Have you got a pet? — Yes, I have. / No, I haven't. (✗ Yes, I got)",
