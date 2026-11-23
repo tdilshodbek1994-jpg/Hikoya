@@ -4921,8 +4921,9 @@ const FAQ = [
   ["Xatolarim qayerda saqlanadi?", "📒 Lug'atim → «✏️ Xatolarim». «🔁 Xatolarim ustida Sado bilan ishlash» darsida to'g'ri aytgan xatoingiz «✅ tuzatildi» bo'ladi.", "📒 Lug'atni ochish", () => { $("helpSheet").hidden = true; $("vocabBtn").hidden ? toast("Lug'at birinchi darsdan keyin paydo bo'ladi") : $("vocabBtn").click(); }],
   ["IELTS/CEFR uchun namunaviy javob bormi?", "Ha! IELTS va CEFR kurslaridagi dars tugagach, hisobot ostida «📝 Namunaviy javob» tugmasi chiqadi: o'sha savol yoki kartochkaga Band 7 / B2 darajadagi javob va foydali iboralar. O'z javobingizni u bilan solishtiring."],
   ["Jonli suhbatda Sado gapini tushunmadim", "Sado gapi yozilgan pufakchani bosing — ostida o'zbekcha tarjimasi chiqadi. Erkin suhbatda mavzu yoqmasa, «🔀 Boshqa mavzu» tugmasini bosing."],
-  ["Iboralarni qanday tez yodlayman?", "Dars oynasida «🎧 Tinglab takrorlash» (🐢 sekin tezlik bilan), dars ekranida «🙈 Yoddan» rejimi (inglizchasi yashirinadi), 📒 Lug'atda «🃏 Kartochkalar» va «🎧 Tinglash»."],
-  ["Grammatikani qanday mustahkamlayman?", "Grammatika bo'limidagi «🧪 Testlar» panelida: 📅 Bugungi test (har kuni 5 savol), 📝 Aralash test (daraja tanlab), ⚡ 60 soniya, 📊 Daraja testi va 🔁 Xatolarim. «🎯 %» ni bosing — qaysi mavzu zaif ekanini ko'rasiz. Har bir darsda ham «🧩 Tez mashq» bor.", "✏️ Grammatika darslari", () => { $("helpSheet").hidden = true; state.filter.cat = "Grammatika gapirib"; renderChips(); renderLessons(); scrollToList(true); }],
+  ["Jonli suhbatda Sado gapini qanday to'xtataman?", "Sado gapirayotganda maskotni (yoki «✋ to'xtatish» yozuvini) bosing — Sado darhol jim bo'ladi va siz gapirasiz. Sado o'z ovozini eshitib chalkashmasligi uchun u gapirayotganda mikrofon vaqtincha eshitmaydi. Javob topa olmay 15 soniya jim qolsangiz, Sado o'zi yordam beradi."],
+  ["Iboralarni qanday tez yodlayman?", "Dars oynasida «🎧 Tinglab takrorlash» (🐢 sekin tezlik bilan), dars ekranida «🙈 Yoddan» rejimi (inglizchasi yashirinadi), 📒 Lug'atda «🃏 Kartochkalar», «🎧 Tinglash» va «🧩 Test» (o'zbekchasidan inglizchasini topish)."],
+  ["Grammatikani qanday mustahkamlayman?", "Grammatika bo'limidagi «🧪 Testlar» panelida: 📅 Bugungi test (har kuni 5 savol), 📝 Aralash test (daraja yoki «🎯 Tanlash» bilan o'zingiz tanlagan mavzular), ⚡ 60 soniya, 📊 Daraja testi, 📖 Qoidalar (misollarni tinglash bilan) va 🔁 Xatolarim. «🎯 %» ni bosing — qaysi mavzu zaif ekanini ko'rasiz. Har bir darsda ham «🧩 Tez mashq» bor.", "✏️ Grammatika darslari", () => { $("helpSheet").hidden = true; state.filter.cat = "Grammatika gapirib"; renderChips(); renderLessons(); scrollToList(true); }],
   ["O'zbekcha gapirsam bo'ladimi?", "Ha! Sado o'zbekcha tushunadi, o'zbekcha tushuntiradi va buni inglizcha qanday aytishni o'rgatadi."],
   ["Ball qanday qo'yiladi?", "Dars oxirida AI gaplaringizni tahlil qilib 0–100 ball, daraja (CEFR yoki IELTS band), xatolar va maslahatlar beradi."],
   ["Kuniga nechta dars?", "Cheklov yo'q — xohlaganingizcha mashq qiling! Kunlik maqsadni (1–3 dars) bosh sahifadagi «🎯 Bugungi maqsad» blokida yoki ⚙️ Sozlamalarda tanlaysiz."],
@@ -4931,6 +4932,25 @@ const FAQ = [
 function renderFaq() {
   const box = $("faq");
   box.innerHTML = "";
+  // 🔍 Savollar ichidan qidirish
+  const norm = (t) => t.toLowerCase().replace(/[‘’`ʻʼ]/g, "'");
+  const search = el("input", "faq-search");
+  search.type = "search";
+  search.placeholder = "🔍 Savol qidirish: mikrofon, ball, lug'at...";
+  const none = el("p", "muted faq-none", "Topilmadi — boshqa so'z bilan qidirib ko'ring.");
+  none.hidden = true;
+  search.addEventListener("input", () => {
+    const q = norm(search.value.trim());
+    let n = 0;
+    for (const d of box.querySelectorAll(".faq-item")) {
+      const hit = !q || norm(d.textContent).includes(q);
+      d.hidden = !hit;
+      if (hit) n++;
+      d.open = Boolean(q) && hit && n === 1; // birinchi topilgani ochiq
+    }
+    none.hidden = n > 0;
+  });
+  box.append(search, none);
   for (const [q, a, label, fn] of FAQ) {
     const d = document.createElement("details");
     d.className = "faq-item";

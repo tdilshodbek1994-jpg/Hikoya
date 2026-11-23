@@ -1320,3 +1320,7 @@ body.dark .acc-tag.hi { color: #4ade80; } body.dark .acc-tag.mid { color: #fbbf2
 
 /* 📋 Part 2 reja andozasi */
 .cue-tpl { display: inline-block; margin: 8px 0 6px; font: inherit; font-size: 13px; font-weight: 700; color: var(--primary); background: color-mix(in srgb, var(--primary) 12%, transparent); border: 0; border-radius: 99px; padding: 6px 12px; }
+
+/* 🔍 Yordam: savol qidirish */
+.faq-search { width: 100%; box-sizing: border-box; font: inherit; font-size: 15px; padding: 10px 12px; margin: 0 0 8px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--text); }
+.faq-none { margin: 4px 2px 8px; }
