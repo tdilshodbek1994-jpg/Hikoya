@@ -1,5 +1,5 @@
 import { Mascot } from "./mascot.js";
-import { LiveCall } from "./live.js?v=3";
+import { LiveCall } from "./live.js?v=4";
 
 const tg = window.Telegram?.WebApp;
 const inTelegram = Boolean(tg && tg.initData);
@@ -686,6 +686,26 @@ function renderVoicePick() {
 }
 renderVoicePick();
 
+// 🗂 Erkin suhbat mavzusi (ixtiyoriy)
+const TOPICS = [["", "🎲 Istalgan"], ["football", "⚽ Futbol"], ["movies", "🎬 Kino"], ["games", "🎮 O'yinlar"], ["future", "🎓 Kelajak"], ["travel", "✈️ Sayohat"], ["music", "🎵 Musiqa"], ["food", "🍲 Taomlar"], ["ielts", "📘 IELTS"]];
+state.topic = localStorage.getItem("sado-topic") || "";
+function renderTopicPick() {
+  const box = $("topicPick");
+  box.innerHTML = "";
+  for (const [t, label] of TOPICS) {
+    const b = el("span", "tp" + (state.topic === t ? " on" : ""), label);
+    b.addEventListener("click", (e) => {
+      e.stopPropagation();
+      haptic();
+      state.topic = t;
+      localStorage.setItem("sado-topic", t);
+      renderTopicPick();
+    });
+    box.append(b);
+  }
+}
+renderTopicPick();
+
 $("freeHero").addEventListener("click", () => {
   const free = state.lessons.find((l) => l.liveOnly);
   if (!free) return;
@@ -945,7 +965,7 @@ async function startLive(lesson) {
       },
     });
     state.live = call;
-    await call.start(data.session, tg?.initData || "", state.voice);
+    await call.start(data.session, tg?.initData || "", state.voice, lesson.liveOnly ? state.topic : "");
   } catch (e) {
     console.warn("Jonli:", e);
     state.live?.stop();

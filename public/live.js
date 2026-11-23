@@ -10,7 +10,7 @@ export class LiveCall {
     this.stopped = false;
   }
 
-  async start(sessionId, initData, voice = "") {
+  async start(sessionId, initData, voice = "", topic = "") {
     const ctx = this.ctx;
     this.stream = await navigator.mediaDevices.getUserMedia({
       audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 },
@@ -51,7 +51,7 @@ export class LiveCall {
     this.node.connect(this.sink);
 
     const url = new URL(
-      `api/live?session=${encodeURIComponent(sessionId)}&init=${encodeURIComponent(initData || "")}&voice=${encodeURIComponent(voice)}`,
+      `api/live?session=${encodeURIComponent(sessionId)}&init=${encodeURIComponent(initData || "")}&voice=${encodeURIComponent(voice)}&topic=${encodeURIComponent(topic)}`,
       location.href,
     );
     url.protocol = url.protocol === "https:" ? "wss:" : "ws:";

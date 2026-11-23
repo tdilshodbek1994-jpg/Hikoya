@@ -45,7 +45,19 @@ export async function pickLiveModel() {
 }
 
 // ---- Sado'ning xulqi ----
-function freePrompt(lesson) {
+// Erkin suhbat mavzulari (foydalanuvchi tanlaydi)
+export const FREE_TOPICS = {
+  football: "football and sport",
+  movies: "films, series and cartoons",
+  games: "video games and technology",
+  future: "dreams, future studies and career",
+  travel: "travelling and places to visit",
+  music: "music and singers",
+  food: "food and cooking",
+  ielts: "preparing for IELTS / CEFR exams",
+};
+
+function freePrompt(lesson, topic) {
   return `You are Sado, a smart, warm and funny bilingual (Uzbek and English) companion and English teacher inside a Telegram app for Uzbek students. This is a LIVE VOICE conversation: talk naturally, like a real friend on the phone.
 
 Language:
@@ -58,11 +70,11 @@ What you do:
 - Every few turns, gently encourage some English practice (for example: "Endi buni inglizcha aytib ko'ring!"), but never force it.
 - When the student speaks English with a clear mistake, briefly give the correct version (explain in Uzbek if they are a beginner), then continue.
 - Keep each turn short: 1-3 sentences, then let the student talk. Ask questions to keep the conversation going.
-- Start the conversation yourself now with: "${lesson.opener}"`;
+- Start the conversation yourself now with: "${topic ? `Assalomu alaykum! Men Sado. Bugun ${topic} haqida gaplashamizmi? (then ask one short, fun question about it)` : lesson.opener}"${topic ? `\n- The student chose the topic: ${topic}. Begin with it, but follow the student if they change the subject.` : ""}`;
 }
 
-function livePrompt(lesson) {
-  if (lesson.free) return freePrompt(lesson);
+function livePrompt(lesson, topic) {
+  if (lesson.free) return freePrompt(lesson, topic);
   const phrases = lesson.phrases.map((p) => `"${p.en}" (${p.uz})`).join("; ");
   return `You are Sado, a warm, friendly English speaking partner for Uzbek students preparing for exams. This is a LIVE VOICE conversation on the phone: speak naturally, like a real person.
 
@@ -105,7 +117,8 @@ function detectUsed(lesson, text, used) {
 // Foydalanuvchi tanlaydigan ovozlar
 const VOICES = { f: process.env.GEMINI_LIVE_VOICE_F || "Kore", m: process.env.GEMINI_LIVE_VOICE_M || "Puck" };
 
-export async function runLive(client, session, lesson, { maxMs, voice }) {
+export async function runLive(client, session, lesson, { maxMs, voice, topic }) {
+  topic = FREE_TOPICS[topic] || "";
   const send = (obj) => client.readyState === WebSocket.OPEN && client.send(JSON.stringify(obj));
   let upstream;
   let closed = false;
@@ -162,7 +175,7 @@ export async function runLive(client, session, lesson, { maxMs, voice }) {
             responseModalities: ["AUDIO"],
             speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: VOICES[voice] || LIVE_VOICE } } },
           },
-          systemInstruction: { parts: [{ text: livePrompt(lesson) }] },
+          systemInstruction: { parts: [{ text: livePrompt(lesson, topic) }] },
           inputAudioTranscription: {},
           outputAudioTranscription: {},
         },
