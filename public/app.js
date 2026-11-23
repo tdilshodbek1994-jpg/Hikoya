@@ -2516,6 +2516,8 @@ function renderReport(r, score) {
   const top = el("div", "rep-score-row");
   const ring = el("div", "rep-score", String(r.score));
   ring.style.setProperty("--p", r.score);
+  // Ballga qarab rang: past — to'q sariq, o'rta — ko'k, yuqori — yashil
+  ring.style.setProperty("--ring", r.score >= 75 ? "#16a34a" : r.score >= 50 ? "var(--primary)" : "#f59e0b");
   const right = el("div", "rep-top-text");
   right.append(el("div", "rep-level", r.level || ""), el("div", "rep-summary", r.summary_uz || ""));
   // 📈 Avvalgi natija bilan solishtirish
@@ -2527,6 +2529,18 @@ function renderReport(r, score) {
   }
   top.append(ring, right);
   box.append(top);
+  // 🪜 Past ball: yengilroq rejimni taklif qilamiz (inglizcha suhbat/jonli → ustoz)
+  if (r.score < 50 && state.lessonMode !== "tutor" && !state.lesson?.liveOnly && state.lesson?.id !== "review") {
+    const tip = el("div", "rep-easier");
+    tip.append(el("span", "", "🪜 Bu dars hozircha qiyinroq bo'ldi. Ustoz rejimida Sado har bir iborani o'zbekcha tushuntirib, birma-bir takrorlatadi."));
+    const b = el("button", "btn ghost wide", "🇺🇿 Ustoz bilan qayta o'tish");
+    b.addEventListener("click", () => {
+      haptic();
+      startLesson(state.lesson, "tutor");
+    });
+    tip.append(b);
+    box.append(tip);
+  }
 
   const section = (title, items, render) => {
     if (!items || !items.length) return;
