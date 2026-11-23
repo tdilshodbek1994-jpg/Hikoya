@@ -2038,6 +2038,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-adverbs",
+    category: "Grammatika gapirib",
+    title: "Ravishlar: quickly, well, hard",
+    emoji: "🏃",
+    level: "A2-B1",
+    added: "2026-11-27",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on adjectives vs adverbs of manner: adjective describes a noun (a quick runner, a good cook), adverb describes a verb (he runs quickly, she cooks well). Regular -ly (slow → slowly, careful → carefully, easy → easily) and irregular adverbs (good → well, fast → fast, hard → hard, late → late). Talk about how the student and their family do things: drive, cook, speak English, work, sing. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake (She sings good, He drives careful), explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Who is the best cook in your family? Does she cook well?",
+    openerUz: "Oilangizda kim eng yaxshi ovqat pishiradi? U yaxshi pishiradimi?",
+    phrases: [
+      { en: "My mother cooks very well.", uz: "Onam juda yaxshi ovqat pishiradi." },
+      { en: "Please speak slowly.", uz: "Iltimos, sekin gapiring." },
+      { en: "He drives carefully.", uz: "U ehtiyotkorlik bilan mashina haydaydi." },
+      { en: "She works very hard.", uz: "U juda tirishqoqlik bilan ishlaydi." },
+      { en: "I answered the questions easily.", uz: "Savollarga oson javob berdim." },
+      { en: "They arrived late.", uz: "Ular kech kelishdi." },
+    ],
+  },
+  {
+    id: "gr-causative",
+    category: "Grammatika gapirib",
+    title: "Have something done (ish buyurtma qilish)",
+    emoji: "✂️",
+    level: "B2",
+    added: "2026-11-27",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on the causative: have/get + object + past participle for services that other people do for us (I had my hair cut. We're having the house painted. I need to get my phone repaired. She got her car washed). Contrast with doing it yourself (I cut my hair = I did it myself). Talk about haircuts, repairs, deliveries, photos, cleaning and services the student uses. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake (I cut my hair at the barber), explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Your hair looks great! Did you have it cut recently?",
+    openerUz: "Sochingiz ajoyib ko'rinyapti! Yaqinda sochingizni oldirdingizmi?",
+    phrases: [
+      { en: "I had my hair cut yesterday.", uz: "Kecha sochimni oldirdim." },
+      { en: "I need to get my phone repaired.", uz: "Telefonimni tuzattirishim kerak." },
+      { en: "We're having our flat painted.", uz: "Kvartiramizni bo'yatyapmiz." },
+      { en: "She got her car washed.", uz: "U mashinasini yuvdirdi." },
+      { en: "Where can I have my photo taken?", uz: "Qayerda suratga tushsam bo'ladi?" },
+      { en: "I'll have the pizza delivered.", uz: "Pitsani yetkazib berishlarini buyuraman." },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -2941,7 +2981,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-tobe", "gr-this", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-future", "gr-compare", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-ppvsps", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-passive", "gr-phrasal", "gr-tags", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking"];
+const GR_ORDER = ["gr-tobe", "gr-this", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-future", "gr-compare", "gr-adverbs", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-ppvsps", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-passive", "gr-phrasal", "gr-tags", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative"];
 // Avval daraja guruhi (A1–A2 → B1 → B2), guruh ichida — GR_ORDER tartibi
 const grGroup = (lv) => (/B2/.test(lv || "") ? 2 : /A2-B1|^B1$/.test(lv || "") ? 1 : 0);
 const grRank = (l) => grGroup(l.level) * 100 + (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
@@ -2974,6 +3014,8 @@ const QUIZ = {
   "gr-edking": ["The film was so ___ that I fell asleep.|boring|bored|bore", "I'm ___ in learning Korean.|interested|interesting|interest", "The trip was long and ___.|tiring|tired|tire", "We were very ___ about the concert.|excited|exciting|excite", "This grammar rule is ___.|confusing|confused|confuse", "She was ___ when she heard the news.|surprised|surprising|surprise", "History is a very ___ subject.|interesting|interested|interest", "I'm ___ after work. I need to rest.|tired|tiring|tire", "The match was really ___!|exciting|excited|excite", "Are you ___? Let's go for a walk.|bored|boring|bore", "His story was ___. Nobody believed it.|amazing|amazed|amaze", "I was ___ because I didn't understand the task.|confused|confusing|confuse"],
   "gr-irregular": ["Yesterday I ___ to the cinema.|went|goed|gone", "We ___ a lot of plov at the wedding.|ate|eated|eaten", "She ___ a new phone last week.|bought|buyed|buy", "I ___ a funny video this morning.|saw|seed|seen", "He ___ me a nice present.|gave|gived|given", "They ___ the bus to Samarkand.|took|taked|taken", "I ___ a letter to my grandma.|wrote|writed|written", "We ___ home very late.|came|comed|come", "I ___ my keys under the sofa.|found|finded|find", "She ___ it was a good idea.|thought|thinked|thinks", "He ___ two cups of tea.|drank|drinked|drunk", "Have you ever ___ a famous person?|met|meeted|meet"],
   "gr-ppvsps": ["I ___ to Bukhara last summer.|went|have gone|have been", "___ you ever eaten sushi?|Have|Did|Do", "She ___ her homework yet.|hasn't finished|didn't finish yesterday|not finished", "I ___ him two days ago.|saw|have seen|seen", "When ___ you start learning English?|did|have|has", "We ___ here since 2018.|have lived|lived|live", "He ___ me yesterday evening.|called|has called|have called", "I've never ___ to London.|been|went|go", "They ___ married in 2020.|got|have got|get", "I ___ just eaten. I'm not hungry.|have|did|was", "Did you ___ the match last night?|watch|watched|watching", "How long ___ you known her?|have|did|do"],
+  "gr-adverbs": ["My mother cooks very ___.|well|good|goodly", "Please speak ___. I don't understand.|slowly|slow|slowlier", "He drives very ___.|carefully|careful|carefuly", "She is a ___ driver.|careful|carefully|care", "I passed the exam ___.|easily|easy|easyly", "He works ___ every day.|hard|hardly|hardy", "This car is very ___.|fast|fastly|fastful", "They arrived ___ for the meeting.|late|lately|latly", "She speaks English ___.|fluently|fluent|fluently good", "He is a ___ singer.|good|well|goodly", "Walk ___! The floor is wet.|carefully|careful|carefull", "The children played ___ in the garden.|happily|happy|happyly"],
+  "gr-causative": ["I had my hair ___ yesterday.|cut|cutting|to cut", "I need to get my phone ___.|repaired|repair|repairing", "We're having our flat ___.|painted|paint|to paint", "She ___ her car washed every week.|has|makes|does", "Where can I have my photo ___?|taken|take|took", "I'll have the pizza ___ to my office.|delivered|deliver|delivering", "He got his watch ___ at the market.|fixed|fix|fixing", "They had a new kitchen ___ last year.|installed|install|installing", "Have you ___ your eyes tested recently?|had|got to|made", "I must get my suit ___ before the wedding.|cleaned|clean|cleaning", "We had the documents ___ into English.|translated|translate|translating", "She is going to have her nails ___.|done|do|did"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink", "My sister ___ English very well.|speaks|speak|speaking", "They ___ live in Tashkent.|don't|doesn't|aren't", "Where ___ he work?|does|do|is", "The shop ___ at nine o'clock.|opens|open|opening", "Water ___ at 100 degrees.|boils|boil|is boil", "My friends ___ like rap music.|don't|doesn't|isn't", "___ your brother study at university?|Does|Do|Is", "He usually ___ his homework in the evening.|does|do|doing"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on", "I was born ___ 2008.|in|on|at", "We have a party ___ Friday evening.|on|in|at", "I usually sleep ___ night.|at|in|on", "The keys are ___ the table.|on|at|in", "The meeting is ___ 3 pm.|at|in|on", "I'll see you ___ the weekend.|at|in|on", "She lives ___ Samarkand.|in|at|on", "My birthday is ___ 5th March.|on|in|at"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do", "Listen! The baby ___ crying.|is|are|be", "We ___ waiting for the bus now.|are|is|am", "What ___ you doing?|are|do|is", "She isn't ___ TV at the moment.|watching|watch|watches", "I ___ working from home this week.|am|is|are", "Why ___ you laughing?|are|is|do", "They ___ playing football right now.|are|is|be", "Be quiet! Grandma ___ sleeping.|is|are|am"],
@@ -3024,6 +3066,8 @@ const KEYWORDS = {
   "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
 };
 const RULES = {
+  "gr-adverbs": "Sifat — narsani tasvirlaydi: a quick runner, a careful driver.\nRavish — fe'lni tasvirlaydi (qanday?): he runs quickly, she drives carefully.\nKo'pincha sifat + -ly: slow → slowly, easy → easily, careful → carefully.\nNoto'g'ri: good → well, fast → fast, hard → hard, late → late. She sings well. (✗ She sings good)",
+  "gr-causative": "Ishni o'zimiz emas, boshqa odam qiladi: have / get + narsa + 3-shakl.\nI had my hair cut. (sartarosh qirqdi) I cut my hair. (o'zim qirqdim)\nI need to get my phone repaired. We're having the house painted.\nZamon have da o'zgaradi: I'll have it delivered. She has had her car washed.",
   "gr-irregular": "Ko'p fe'llar o'tgan zamonda -ed olmaydi, yod olish kerak:\ngo → went → gone, see → saw → seen, eat → ate → eaten, buy → bought → bought.\ntake → took → taken, write → wrote → written, think → thought → thought, come → came → come.\nI went home. (✗ I goed home) She bought a car. (✗ She buyed)",
   "gr-ppvsps": "Aniq o'tgan vaqt bo'lsa — Past Simple: I went there last year. She called me yesterday.\nVaqt aytilmagan tajriba — Present Perfect: I have been to Bukhara. Have you ever tried sushi?\nyesterday, last week, ago, in 2020, When...? — Past Simple.\never, never, already, yet, just, for, since — Present Perfect. (✗ I have been there last year)",
   "gr-makedo": "do — ish, vazifa, faoliyat: do homework, do the shopping, do exercise, do your best, do a favour.\nmake — yangi narsa yaratish/natija: make a mistake, make a decision, make money, make friends, make a plan, make breakfast.\nI made a mistake. (✗ I did a mistake)\nCan you do me a favour? I'll do my best.",
