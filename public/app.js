@@ -2082,11 +2082,31 @@ $("muteBtn").addEventListener("click", () => {
   setMuteUi(m);
 });
 
+// 🇺🇿 Sado pufakchasini bosish — o'zbekcha tarjimasi ostida chiqadi (yana bosilsa yashiriladi)
+async function translateBubble(b) {
+  const old = b.querySelector(".b-tr");
+  if (old) return void (old.hidden = !old.hidden);
+  const text = b.querySelector("span").textContent.trim();
+  if (!text || b.dataset.busy || !state.session) return;
+  haptic();
+  b.dataset.busy = "1";
+  const tr = el("div", "b-tr", "⏳ Tarjima qilinmoqda...");
+  b.append(tr);
+  const r = await api("api/translate", { json: { session: state.session, text } }).catch((e) => ({ error: e.message }));
+  delete b.dataset.busy;
+  if (r?.uz) tr.textContent = "🇺🇿 " + r.uz;
+  else tr.remove(), toast("⚠️ " + (r?.error || "Tarjima qilib bo'lmadi"), 2500);
+}
+
 // Jonli suhbat tarixi: Sado va o'quvchi gaplari pufakchalarda
 function addBubble(who) {
   const log = $("chatlog");
   const b = el("div", "bubble " + (who === "sado" ? "b-sado" : "b-me"));
   b.append(el("small", "", who === "sado" ? "Sado" : "Siz"), el("span", "", ""));
+  if (who === "sado") {
+    b.querySelector("small").append(el("i", "b-tr-ico", " · 🇺🇿 tarjima"));
+    b.addEventListener("click", () => translateBubble(b));
+  }
   log.append(b);
   if (who !== "sado" && state.live) clearHints(); // o'quvchi javob berdi — namunalar yopiladi
   while (log.children.length > 40) log.firstChild.remove();

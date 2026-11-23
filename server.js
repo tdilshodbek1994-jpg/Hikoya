@@ -10,7 +10,7 @@ import { LESSONS, getLesson, publicLesson } from "./src/lessons.js";
 import { verifyInitData } from "./src/telegram.js";
 import { WebSocketServer } from "ws";
 import { liveEnabled, runLive } from "./src/live.js";
-import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies, sampleAnswer, samplePhrases, sampleStats, sampleCount, ttsStats } from "./src/ai.js";
+import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies, translateUz, sampleAnswer, samplePhrases, sampleStats, sampleCount, ttsStats } from "./src/ai.js";
 import { recordSession, touchDay, summary, adminStats, startedToday, countStart, refundStart, startsTodayTotal, deleteUser, markFixed, addWord, removeWord, setRemind, remindTargets, markReminded } from "./src/store.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -370,6 +370,23 @@ app.post("/api/hint", express.json(), auth, async (req, res) => {
     s.sayable ||= new Set();
     for (const h of hints || []) if (h?.en) s.sayable.add(String(h.en).slice(0, 200));
     res.json({ hints });
+  } catch (err) {
+    sendError(res, err);
+  }
+});
+
+// 🇺🇿 Sado aytgan gapning tarjimasi — faqat shu sessiyada Sado aytgan gaplar uchun (bepul tarjimon bo'lib qolmasin)
+const normTr = (t) => String(t || "").toLowerCase().replace(/\s+/g, " ").trim();
+app.post("/api/translate", express.json(), auth, async (req, res) => {
+  const s = getSession(req, res);
+  if (!s) return;
+  const text = String(req.body?.text || "").trim().slice(0, 600);
+  const said = (s.transcript || []).filter((t) => t.who === "sado").map((t) => normTr(t.text));
+  if (!text || !said.some((t) => t.includes(normTr(text)))) return res.status(400).json({ error: "Bu gap darsda aytilmagan" });
+  s.translates = (s.translates || 0) + 1;
+  if (s.translates > 40) return res.status(429).json({ error: "Bu darsda tarjima soni tugadi." });
+  try {
+    res.json({ uz: await translateUz(text) });
   } catch (err) {
     sendError(res, err);
   }

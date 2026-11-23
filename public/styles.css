@@ -1037,3 +1037,7 @@ body.dark .fold-tag.new { color: #fb7185; } body.dark .fold-tag.rep { color: #fb
 .phrase-card.recall:not(.done) .phrase-uz:not(.shown) { color: inherit; text-shadow: none; cursor: default; }
 .phrase-card.recall:not(.done) .phrase-uz:not(.shown)::after { content: none; }
 .phrase-card.recall .phrase-en.shown { animation: fade 0.2s ease; }
+/* 🇺🇿 Jonli suhbat: Sado gapining tarjimasi */
+.b-sado { cursor: pointer; }
+.b-tr-ico { font-style: normal; font-weight: 600; color: var(--primary); opacity: 0.9; }
+.b-tr { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--line); font-size: 13.5px; color: var(--muted); animation: fade 0.2s ease; }

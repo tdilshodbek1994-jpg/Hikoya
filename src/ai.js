@@ -563,3 +563,29 @@ export async function suggestReplies(lesson, lastSado, used) {
     .slice(0, 3)
     .map((h) => ({ en: String(h.en).slice(0, 200), uz: String(h.uz || "").slice(0, 200) }));
 }
+
+// 🇺🇿 Sado gapining o'zbekcha tarjimasi (jonli suhbatda pufakchani bosganda). Kesh — bir xil gap qayta so'ralmaydi
+const trCache = new Map();
+export async function translateUz(text) {
+  const key = text.trim();
+  if (trCache.has(key)) return trCache.get(key);
+  const params = {
+    model: CLAUDE_MODEL,
+    max_tokens: 800,
+    output_config: { effort: "low" },
+    system: 'Translate the English text into natural, simple Uzbek (Latin script) for a learner. Answer with ONLY JSON: {"uz":"..."}',
+    messages: [{ role: "user", content: key }],
+  };
+  if (SUPPORTS_FALLBACKS) {
+    params.betas = ["server-side-fallback-2026-07-01"];
+    params.fallbacks = "default";
+  }
+  const response = await anthropic.beta.messages.create(params);
+  if (response.stop_reason === "refusal") return "";
+  const uz = String(parseJson(response.content.filter((b) => b.type === "text").map((b) => b.text).join(""))?.uz || "").slice(0, 600);
+  if (uz) {
+    if (trCache.size > 2000) trCache.clear();
+    trCache.set(key, uz);
+  }
+  return uz;
+}
