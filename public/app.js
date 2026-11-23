@@ -2855,6 +2855,12 @@ function renderSpeakStats(list) {
     el("span", "", `🔤 ${words} ta inglizcha so'z`),
     el("span", "", `📏 eng uzun gap: ${longest} so'z`),
   );
+  // 🏆 Bir darsda eng ko'p gapirilgan so'zlar rekordi
+  const best = Number(localStorage.getItem("sado-maxwords")) || 0;
+  if (words > best) {
+    localStorage.setItem("sado-maxwords", String(words));
+    if (best > 0) row.append(el("span", "rec", `🏆 Yangi rekord! (avval ${best})`));
+  } else if (best) row.append(el("span", "rec-old", `🏆 Rekord: ${best} so'z`));
   box.firstChild ? box.firstChild.after(row) : box.append(row);
 }
 

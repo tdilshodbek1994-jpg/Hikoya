@@ -971,3 +971,6 @@ body.dark .rep-ml { color: #5eead4; }
 /* 🗣 Jonli so'z hisoblagichi */
 .words-live { font-weight: 700; color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, transparent); white-space: nowrap; }
 .words-live.bump { animation: pop 0.35s ease; }
+
+.speak-stats span.rec { background: linear-gradient(135deg, #fde68a, #f59e0b); color: #78350f; }
+.speak-stats span.rec-old { color: var(--muted); }
