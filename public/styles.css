@@ -76,6 +76,20 @@ svg { display: block; }
 .hero-mascot { flex: 0 0 92px; height: 92px; position: relative; }
 .hero-mascot .mascot-glow { display: none; }
 
+/* 💬 Erkin suhbat tugmasi */
+.free-cta {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; margin: 0 0 14px;
+  background: var(--card); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow);
+  box-shadow: var(--shadow), inset 0 0 0 2px color-mix(in srgb, var(--primary) 35%, transparent);
+  transition: transform 0.12s ease;
+}
+.free-cta:active { transform: scale(0.98); }
+.free-emoji { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; font-size: 26px; background: linear-gradient(135deg, #4f46e5, #14b8a6); }
+.free-info { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.free-info b { font-size: 16px; }
+.free-info small { color: var(--muted); font-size: 13px; }
+.free-go { font-size: 28px; color: var(--primary); font-weight: 700; padding: 0 4px; }
+
 .lesson-list { display: grid; gap: 10px; }
 .lesson {
   display: flex; align-items: center; gap: 12px; text-align: left; width: 100%;

@@ -169,6 +169,9 @@ $("startTutorBtn").addEventListener("click", () => startLesson(state.pendingLess
 $("startChatBtn").addEventListener("click", () => startLesson(state.pendingLesson, "chat"));
 $("againBtn").addEventListener("click", () => startLesson(state.lesson, state.lessonMode));
 $("homeBtn").addEventListener("click", () => show("home"));
+// 💬 Erkin suhbat: iboralarsiz, darhol boshlanadi
+const FREE_LESSON = { id: "free", free: true, title: "Erkin suhbat", emoji: "💬", level: "", phrases: [] };
+$("freeBtn").addEventListener("click", () => startLesson(FREE_LESSON, "free"));
 
 // ---------------- Audio tayyorlash ----------------
 function pickMime() {
@@ -239,6 +242,8 @@ async function startLesson(lesson, lessonMode = "tutor") {
 
   show("lesson");
   $("lessonTitle").textContent = lesson.title;
+  $("trBtn").hidden = Boolean(lesson.free); // erkin suhbatda tarjima tugmasi kerak emas
+  $("textInput").placeholder = lesson.free ? "Yozing..." : "Inglizcha yozing...";
   renderPhrase();
   applyMode();
   applySubs();
@@ -295,6 +300,8 @@ function renderTimer() {
 
 function renderPhrase() {
   const { lesson, used } = state;
+  $("phraseCard").hidden = Boolean(lesson.free);
+  if (lesson.free) return;
   const seg = $("segments");
   seg.innerHTML = "";
   lesson.phrases.forEach((_, i) => {
@@ -323,10 +330,12 @@ function nextUnused(from = 0) {
 
 $("prevPhrase").addEventListener("click", () => {
   const n = state.lesson.phrases.length;
+  if (!n) return;
   state.phraseIdx = (state.phraseIdx - 1 + n) % n;
   renderPhrase();
 });
 $("nextPhrase").addEventListener("click", () => {
+  if (!state.lesson.phrases.length) return;
   state.phraseIdx = (state.phraseIdx + 1) % state.lesson.phrases.length;
   renderPhrase();
 });
@@ -364,7 +373,7 @@ function applyMode() {
   $("holdBtn").hidden = text || state.mode !== "hold";
   if (state.lessonMode === "tutor" && !text) return applyHint();
   $("hint").textContent = text
-    ? "Javobingizni inglizcha yozing."
+    ? (state.lesson?.free ? "O'zbekcha yoki inglizcha yozing." : "Javobingizni inglizcha yozing.")
     : state.mode === "hold"
       ? "Tugmani bosib turing, gapiring va qo'yib yuboring."
       : "Shunchaki gapiring — Sado tinglayapti.";
@@ -601,7 +610,7 @@ function applyHint() {
     return;
   }
   $("hint").textContent = state.textOnly
-    ? "Javobingizni inglizcha yozing."
+    ? (state.lesson?.free ? "O'zbekcha yoki inglizcha yozing." : "Javobingizni inglizcha yozing.")
     : state.mode === "hold"
       ? "Tugmani bosib turing, gapiring va qo'yib yuboring."
       : "Shunchaki gapiring — Sado tinglayapti.";
@@ -625,7 +634,7 @@ function markUsed(list) {
 
 async function afterReply() {
   if (state.phase === "ended") return;
-  if (state.used.size >= state.lesson.phrases.length) {
+  if (!state.lesson.free && state.used.size >= state.lesson.phrases.length) {
     setTimeout(() => finish(), 600);
     return;
   }
@@ -800,6 +809,11 @@ function showResult() {
   $("resultSub").textContent = `${lesson.title}: ${n} tadan ${k} ta iborani ishlatdingiz.`;
   resultMascot.setState(k === n ? "speaking" : "idle");
   resultMascot.setMood(k >= n / 2 ? "happy" : "neutral");
+  if (lesson.free) {
+    $("resultTitle").textContent = "Ajoyib suhbat bo'ldi! 🎉";
+    $("resultSub").textContent = "Sado bilan erkin suhbat yakunlandi.";
+    $("againBtn").textContent = "💬 Yana gaplashish";
+  } else $("againBtn").textContent = "Qaytadan mashq qilish";
   const ul = $("resultList");
   ul.innerHTML = "";
   lesson.phrases.forEach((p, i) => {

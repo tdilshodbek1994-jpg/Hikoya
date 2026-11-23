@@ -113,8 +113,22 @@ export const LESSONS = [
   },
 ];
 
+// 💬 Erkin suhbat: Sado istalgan mavzuda o'zbekcha va inglizcha gaplashadi (iboralar ro'yxatisiz)
+export const FREE_LESSON = {
+  id: "free",
+  free: true,
+  title: "Erkin suhbat",
+  emoji: "💬",
+  level: "A1-C1",
+  role: "a smart, friendly bilingual (Uzbek and English) companion and English teacher",
+  situation: "Free conversation about anything the student wants.",
+  opener: "Assalomu alaykum! Men Sado. Men bilan o'zbekcha ham, inglizcha ham gaplashishingiz mumkin. Bugun nima haqida gaplashamiz?",
+  openerUz: "",
+  phrases: [],
+};
+
 export function getLesson(id) {
-  return LESSONS.find((l) => l.id === id);
+  return id === FREE_LESSON.id ? FREE_LESSON : LESSONS.find((l) => l.id === id);
 }
 
 // Frontendga yuboriladigan qisqa ko'rinish (AI rol tavsifisiz)
@@ -125,5 +139,6 @@ export function publicLesson(l) {
     emoji: l.emoji,
     level: l.level,
     phrases: l.phrases,
+    ...(l.free ? { free: true } : {}),
   };
 }

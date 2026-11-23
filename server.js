@@ -6,7 +6,7 @@ import express from "express";
 import Anthropic from "@anthropic-ai/sdk";
 import { LESSONS, getLesson, publicLesson } from "./src/lessons.js";
 import { verifyInitData } from "./src/telegram.js";
-import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, speak, voiceEnabled } from "./src/ai.js";
+import { chatTurn, tutorTurn, freeTurn, tutorOpener, transcribe, speakParts, speak, voiceEnabled } from "./src/ai.js";
 
 // ⚡ Tez javob: matn darhol qaytadi, ovoz esa bo'laklab (gapma-gap) parallel tayyorlanadi.
 // Telefon birinchi bo'lak tayyor bo'lishi bilan uni ijro etadi, qolganlari shu paytda tayyorlanadi.
@@ -121,8 +121,8 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
   }
   daily.set(key, count + 1);
 
-  // "tutor" - o'zbekcha ustoz (standart), "chat" - inglizcha suhbat
-  const mode = req.body?.mode === "chat" ? "chat" : "tutor";
+  // "tutor" - o'zbekcha ustoz (standart), "chat" - inglizcha suhbat, "free" - erkin suhbat
+  const mode = lesson.free ? "free" : req.body?.mode === "chat" ? "chat" : "tutor";
   const id = crypto.randomUUID();
   sessions.set(id, {
     userId: req.userId,
@@ -136,6 +136,11 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
   });
 
   try {
+    if (mode === "free") {
+      const say = [{ lang: "uz", text: lesson.opener }];
+      const parts = await voiceParts(req, sessions.get(id), say);
+      return res.json({ session: id, mode, lesson: publicLesson(lesson), seconds: SESSION_MINUTES * 60, reply: lesson.opener, reply_uz: "", parts });
+    }
     if (mode === "tutor") {
       const say = tutorOpener(lesson);
       const parts = await voiceParts(req, sessions.get(id), say);
@@ -194,6 +199,11 @@ app.post(
       if (!text) return res.json({ heard: "", empty: true });
 
       s.turns += 1;
+      if (s.mode === "free") {
+        const t = await freeTurn(s, lesson, text);
+        const parts = await voiceParts(req, s, t.say);
+        return res.json({ heard: text, reply: t.say.map((x) => x.text).join(" "), reply_uz: "", uz_say: "", used_phrases: [], mood: t.mood, used: [], parts });
+      }
       if (s.mode === "tutor") {
         const t = await tutorTurn(s, lesson, text);
         for (const i of t.used_phrases) s.used.add(i);
