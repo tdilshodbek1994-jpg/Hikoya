@@ -917,6 +917,11 @@ function clearHints() {
 }
 
 function resetLiveUi() {
+  clearInterval(state.cueTimer);
+  state.cueDone = false;
+  $("cue").hidden = true;
+  $("cue").classList.remove("speaking");
+  $("cueReady").hidden = false;
   $("retryBtn").hidden = true;
   state.pendingTurn = null;
   state.ttsWarned = false;
@@ -1375,7 +1380,41 @@ function markUsed(list) {
   }
 }
 
+// 📝 IELTS Part 2: 1 daqiqa tayyorlanish (mikrofon shu vaqtda yoqilmaydi)
+function startCuePrep() {
+  const c = state.lesson?.cue;
+  if (!c || state.cueDone) return false;
+  state.cueDone = true;
+  $("cue").hidden = false;
+  $("cueTitle").textContent = c.title;
+  const ul = $("cuePoints");
+  ul.innerHTML = "";
+  for (const p of c.points) ul.append(el("li", "", p));
+  let left = 60;
+  $("cueTimer").textContent = "1:00";
+  setPhase("idle", "⏳ Tayyorlanish vaqti");
+  clearInterval(state.cueTimer);
+  state.cueTimer = setInterval(() => {
+    left -= 1;
+    $("cueTimer").textContent = `0:${String(Math.max(0, left)).padStart(2, "0")}`;
+    if (left <= 10) $("cueTimer").classList.add("low");
+    if (left <= 0) endCuePrep();
+  }, 1000);
+  return true;
+}
+function endCuePrep() {
+  clearInterval(state.cueTimer);
+  $("cueTimer").classList.remove("low");
+  $("cue").classList.add("speaking");
+  $("cueReady").hidden = true;
+  haptic("medium");
+  toast("🎤 Gapiring! 1–2 daqiqa to'xtovsiz gapiring", 2500);
+  afterReply();
+}
+$("cueReady").addEventListener("click", endCuePrep);
+
 async function afterReply() {
+  if (state.phase !== "ended" && startCuePrep()) return;
   if (state.phase === "ended") return;
   if (state.used.size >= state.lesson.phrases.length) {
     setTimeout(() => finish(), 600);

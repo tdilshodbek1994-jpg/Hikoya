@@ -1814,6 +1814,15 @@ for (const id of ["ielts", "cefr", "cefr-8"]) {
   if (l) l.minutes = 15;
 }
 
+// IELTS Part 2 kartochkasi: "Describe ... You should say: a, b, c, and explain d."
+function cueCard(l) {
+  if (!/^ielts-p2|^ielts2$/.test(l.id)) return null;
+  const m = (l.situation + " " + l.opener).match(/(Describe [^.]+\.)\s*You should say:\s*([^.]+)\./i);
+  if (!m) return null;
+  const points = m[2].split(/,\s*(?:and\s+)?/).map((x) => x.trim()).filter(Boolean);
+  return { title: m[1], points };
+}
+
 export function getLesson(id) {
   return LESSONS.find((l) => l.id === id);
 }
@@ -1827,6 +1836,7 @@ export function publicLesson(l) {
     level: l.level,
     liveOnly: Boolean(l.liveOnly),
     minutes: l.minutes || 0,
+    cue: cueCard(l),
     category: l.category || "",
     phrases: l.phrases,
   };
