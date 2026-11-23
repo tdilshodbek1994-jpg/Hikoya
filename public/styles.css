@@ -653,7 +653,7 @@ body.dark .shadow-btn { color: #5eead4; }
 /* Uch tugmali rejim tanlagich: "Yozish" ixchamroq */
 .mode[data-mode="text"] { flex: 0 0 auto; padding: 10px 12px; }
 /* Dars ekranida xabarlar sarlavha va taymerni yopmasin — maskot ustida chiqadi */
-body:has(#lesson.active) .toast { top: calc(34vh + var(--safe-t)); }
+body:has(#lesson.active) .toast { top: calc(40vh + var(--safe-t)); }
 
 /* ---------- CEFR: rasm va jadval kartasi ---------- */
 .visual { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 12px 14px; margin-bottom: 10px; }
@@ -708,3 +708,9 @@ body:has(#lesson.active) .toast { top: calc(34vh + var(--safe-t)); }
 #chips { scroll-margin-top: calc(64px + var(--safe-t)); }
 
 .faq-act { margin: 0 12px 12px; padding: 8px 14px; font-size: 13.5px; }
+/* Maskot bargi ibora kartasi ustiga chiqib "Tinglash"ni yopmasin */
+.phrase-card, .visual, .lesson-rule, .cue { position: relative; z-index: 2; }
+/* Barcha rejimlarda "Tugatish" va "Subtitrlar" ekran pastida doim ko'rinib tursin */
+#lesson .bottom-row { position: sticky; bottom: 0; z-index: 5; margin: 8px -14px 0; padding: 10px 14px calc(10px + var(--safe-b)); background: linear-gradient(to top, var(--bg) 70%, transparent); }
+@media (max-width: 360px) { #lesson .bottom-row { margin-left: -10px; margin-right: -10px; padding-left: 10px; padding-right: 10px; } }
+#lesson:not(.is-live) .mascot { cursor: pointer; -webkit-tap-highlight-color: transparent; }

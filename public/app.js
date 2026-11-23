@@ -1496,6 +1496,12 @@ $("soundTest").addEventListener("click", async () => {
   ask.hidden = false;
 });
 
+// 🐣 Maskotni bosish — Sado oxirgi gapini qayta aytadi (jonli suhbatdan tashqari)
+$("mascot").addEventListener("click", () => {
+  if (state.lessonMode === "live" || $("replayBtn").hidden) return;
+  $("replayBtn").click();
+});
+
 $("listenBtn").addEventListener("click", async () => {
   if (state.phase === "thinking" || state.phase === "speaking" || state.listenBusy) return;
   const p = state.lesson.phrases[state.phraseIdx];
@@ -2481,7 +2487,7 @@ else showNews();
 const FAQ = [
   ["Qaysi rejimni tanlay?", "Boshlovchi bo'lsangiz — 🇺🇿 Ustoz. O'rta darajada — 🇬🇧 Inglizcha suhbat. Erkin gaplashmoqchi bo'lsangiz — 📞 Jonli suhbat. Dars oynasidagi ⭐ Tavsiya belgisiga qarang."],
   ["Sado meni eshitmayapti", "Telegram'ga mikrofon ruxsatini bering, telefonni yaqin tuting va tinch joyda gapiring. Shovqinli joyda «Bosib gapirish» rejimini tanlang."],
-  ["Sado ovozi eshitilmayapti", "Telefon ovozini balandlating va «ovozsiz» rejimni o'chiring. «🔁 Qayta eshitish» tugmasi bilan oxirgi gapni yana tinglashingiz mumkin.", "🔊 Ovozni hozir tekshirish", () => { $("helpSheet").hidden = true; $("setBtn").click(); setTimeout(() => $("soundTest").click(), 150); }],
+  ["Sado ovozi eshitilmayapti", "Telefon ovozini balandlating va «ovozsiz» rejimni o'chiring. «🔁 Qayta eshitish» tugmasi yoki Sado (maskot)ning o'zini bosib, oxirgi gapni yana tinglashingiz mumkin.", "🔊 Ovozni hozir tekshirish", () => { $("helpSheet").hidden = true; $("setBtn").click(); setTimeout(() => $("soundTest").click(), 150); }],
   ["Ovoz chiqarib gapira olmayman (avtobusda, kutubxonada)", "Dars ekranining pastidagi «✍️ Yozish» tugmasini bosing — javobni yozib yuborasiz. Yozma rejimda ibora kartasini bossangiz, u javob maydoniga o'zi tushadi."],
   ["O'zim xohlagan mavzuda gaplashsam bo'ladimi?", "Ha! Bosh sahifadagi Erkin suhbat bannerida «✏️ O'z mavzuim» tugmasini bosing va istalgan mavzuni yozing — Sado shu mavzuda gaplashadi.", "✏️ Mavzu yozish", () => { $("helpSheet").hidden = true; openTopicSheet(state.topic.startsWith("custom:") ? state.topic.slice(7) : ""); }],
   ["O'zbekcha gapirsam bo'ladimi?", "Ha! Sado o'zbekcha tushunadi, o'zbekcha tushuntiradi va buni inglizcha qanday aytishni o'rgatadi."],
