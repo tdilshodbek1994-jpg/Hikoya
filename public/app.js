@@ -1,5 +1,5 @@
 import { Mascot } from "./mascot.js";
-import { LiveCall } from "./live.js?v=7";
+import { LiveCall } from "./live.js?v=8";
 
 const tg = window.Telegram?.WebApp;
 const inTelegram = Boolean(tg && tg.initData);
@@ -2852,7 +2852,7 @@ async function startLive(lesson) {
       outAnalyser: audio.outAnalyser,
       onState: (st, level) => {
         if (state.phase === "ended") return;
-        const label = st === "speaking" ? "Sado gapirmoqda..." : st === "muted" ? "🔇 Mikrofon o'chiq" : "Sizni tinglayapti...";
+        const label = st === "speaking" ? "Sado gapirmoqda · ✋ to'xtatish" : st === "muted" ? "🔇 Mikrofon o'chiq" : "Sizni tinglayapti...";
         const phase = st === "muted" ? "idle" : st;
         if (state.phase !== phase || $("statusText").textContent !== label) setPhase(phase, label);
         mascot.setLevel(level);
@@ -3274,9 +3274,17 @@ $("soundTest").addEventListener("click", async () => {
 
 // 🐣 Maskotni bosish — Sado oxirgi gapini qayta aytadi (jonli suhbatdan tashqari)
 $("mascot").addEventListener("click", () => {
+  // ✋ Jonli suhbatda: Sado gapirayotganda bosilsa — to'xtaydi, o'quvchi gapiradi
+  if (state.live?.interrupt?.()) {
+    haptic("medium");
+    toast("✋ Sado to'xtadi — gapiring 🎙️", 1800);
+    return;
+  }
   if (state.lessonMode === "live" || $("replayBtn").hidden) return;
   $("replayBtn").click();
 });
+// Holat yozuvini bosish ham Sado'ni to'xtatadi (yozuvda shunday deyilgan)
+$("status").addEventListener("click", () => { if (state.live?.sources?.size) $("mascot").click(); });
 
 $("myVoiceBtn").addEventListener("click", (e) => {
   e.stopPropagation();

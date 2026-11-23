@@ -72,6 +72,7 @@ export class LiveCall {
         return;
       }
       if (m.type === "interrupted") this.flush();
+      if (m.type === "turn" || m.type === "interrupted") this.dropping = false; // keyingi javob yana eshitiladi
       this.onEvent(m);
     };
     this.ws.onclose = () => {
@@ -84,7 +85,7 @@ export class LiveCall {
 
   // 24 kHz PCM16 bo'lakni navbat bilan, uzilishsiz ijro etadi
   play(ab) {
-    if (this.stopped || !ab.byteLength) return;
+    if (this.stopped || this.dropping || !ab.byteLength) return;
     const ctx = this.ctx;
     if (ctx.state !== "running") ctx.resume().catch(() => {});
     const pcm = new Int16Array(ab);
@@ -114,6 +115,16 @@ export class LiveCall {
     }
     this.sources.clear();
     this.playhead = this.ctx.currentTime;
+  }
+
+  // ✋ O'quvchi Sado'ni to'xtatdi: ovoz darhol o'chadi, shu javobning qolgan qismi tashlanadi,
+  // mikrofon esa darhol ochiladi (exo himoyasi kutmaydi)
+  interrupt() {
+    if (!this.sources.size) return false;
+    this.dropping = true;
+    this.flush();
+    this.playhead = this.ctx.currentTime - 1;
+    return true;
   }
 
   loop() {
