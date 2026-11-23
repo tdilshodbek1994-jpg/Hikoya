@@ -1156,3 +1156,11 @@ body.dark .ml-mark { background: #5eead4; }
 }
 /* 📱 Tor ekranda daraja belgisi ixchamroq — dars nomi 3 qatorga tushmasin */
 @media (max-width: 360px) { .lesson-level { font-size: 11px; padding: 3px 7px; white-space: nowrap; } }
+/* 📝 Aralash grammatika testi */
+.gr-qbtns { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+.mix-quiz { margin-top: 0; border: none; background: none; padding: 4px 2px 10px; }
+.mix-quiz > b { font-size: 16px; }
+.mix-quiz .qz-q { font-size: 17px; }
+.qz-topics { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 10px; }
+.qz-topics small { width: 100%; color: var(--muted); }
+.mix-quiz, .mix-quiz .qz-missed .rule-ex { text-align: left; }

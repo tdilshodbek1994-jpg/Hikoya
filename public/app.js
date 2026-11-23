@@ -406,14 +406,24 @@ function saveQuiz(id, right, total) {
   const prev = Number(String(all[id] || "0").split("/")[0]);
   if (right >= prev) { all[id] = `${right}/${total}`; localStorage.setItem("sado-quiz", JSON.stringify(all)); }
 }
-function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq") {
+// 📝 Aralash grammatika testi (barcha darslar savollaridan)
+function openMixTest() {
+  const quiz = state.lessons.filter((l) => l.category === "Grammatika gapirib").flatMap((l) => (l.quiz || []).map((q) => ({ ...q, from: l.id })));
+  if (quiz.length < 4) return;
+  state.mixWeak = new Map();
+  $("mixSheet").hidden = false;
+  renderQuiz({ id: "gr-mix", quiz }, $("mixQuiz"), `📝 Aralash test · ${quiz.length} ta savoldan 10 tasi`, 10);
+}
+$("mixClose").addEventListener("click", () => ($("mixSheet").hidden = true));
+$("mixSheet").addEventListener("click", (e) => { if (e.target.id === "mixSheet") $("mixSheet").hidden = true; });
+
+function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN = 4) {
   box.innerHTML = "";
   // Darsning o'z mashqi bo'lsa — o'shani, aks holda qoida misollaridan avtomatik
   // 🎲 Savollar to'plamidan har safar tasodifiy 4 tasi (Qayta bosilganda — yangilari)
   const pool = lesson.quiz?.length
-    ? lesson.quiz.map((q) => { const [before, after] = q.text.split("___"); return { before: before.trimEnd(), after, answer: q.answer, options: q.options }; })
+    ? lesson.quiz.map((q) => { const [before, after] = q.text.split("___"); return { before: before.trimEnd(), after, answer: q.answer, options: q.options, from: q.from }; })
     : lesson.rule ? quizItems(lesson.rule) : [];
-  const QN = 4;
   const pick = () => (pool.length > QN ? [...pool].sort(() => Math.random() - 0.5).slice(0, QN) : pool);
   let items = pick();
   box.hidden = items.length < 2;
@@ -426,7 +436,7 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq") {
     body.innerHTML = "";
     if (i >= items.length) {
       saveQuiz(lesson.id, right, items.length);
-      if (state.lessons.length) renderLessons();
+      if (state.lessons.length && lesson.id !== "gr-mix") renderLessons();
       body.append(el("p", "qz-done", right === items.length ? `🎉 ${right}/${items.length} — a'lo! Endi gapirib mustahkamlaymiz.` : right * 2 >= items.length ? `👍 ${right}/${items.length} — yaxshi! To'g'ri shakllarini eshitib takrorlang.` : `💪 ${right}/${items.length} — qoidani yana bir o'qing va qayta urinib ko'ring.`));
       // ❌ Xato qilingan gaplarning to'g'ri shakli — eshitish mumkin
       if (missed.length) {
@@ -439,8 +449,21 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq") {
         }
         body.append(ul);
       }
+      // 📝 Aralash test: xato qilingan mavzular — mos darsga o'tish
+      if (lesson.id === "gr-mix" && state.mixWeak?.size) {
+        const tl = el("div", "qz-topics");
+        tl.append(el("small", "", "Takrorlash kerak bo'lgan mavzular:"));
+        for (const [id, n] of [...state.mixWeak].sort((a, b) => b[1] - a[1])) {
+          const l = state.lessons.find((x) => x.id === id);
+          if (!l) continue;
+          const b = el("button", "rep-grlink", `${l.emoji} ${l.title.replace(/^\d+\.\s*/, "").replace(/\s*\([^)]*\)$/, "")}${n > 1 ? ` · ${n}` : ""} ›`);
+          b.addEventListener("click", () => { haptic(); $("mixSheet").hidden = true; openSheet(l); });
+          tl.append(b);
+        }
+        body.append(tl);
+      }
       const again = el("button", "qz-again", pool.length > QN ? "🔄 Yangi savollar" : "🔄 Qayta");
-      again.addEventListener("click", () => { i = 0; right = 0; missed = []; items = pick(); show(); });
+      again.addEventListener("click", () => { i = 0; right = 0; missed = []; state.mixWeak = new Map(); items = pick(); show(); });
       body.append(again);
       return;
     }
@@ -458,7 +481,8 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq") {
         haptic();
         const ok = o === it.answer;
         if (ok) right++;
-        else missed.push(`${it.before} ${it.answer === "—" ? "" : it.answer}${it.after}`.replace(/\s+/g, " ").replace(/«[^»]*»\s*→\s*/, "").trim());
+        else if (it.from) (state.mixWeak ||= new Map()).set(it.from, (state.mixWeak.get(it.from) || 0) + 1);
+        if (!ok) missed.push(`${it.before} ${it.answer === "—" ? "" : it.answer}${it.after}`.replace(/\s+/g, " ").replace(/«[^»]*»\s*→\s*/, "").trim());
         btn.classList.add(ok ? "ok" : "bad");
         if (!ok) [...opts.children].find((b) => b.textContent === it.answer)?.classList.add("ok");
         q.querySelector(".qz-gap").textContent = it.answer;
@@ -1502,7 +1526,12 @@ function renderLessons() {
             openSheet(pick);
             setTimeout(() => $("sheetQuiz").scrollIntoView({ behavior: "smooth", block: "start" }), 350);
           });
-          row.append(go);
+          // 📝 Aralash test: barcha grammatika mavzularidan 10 ta savol
+          const mix = el("button", "", "📝 Aralash test");
+          mix.addEventListener("click", () => { haptic(); openMixTest(); });
+          const btns = el("span", "gr-qbtns");
+          btns.append(mix, go);
+          row.append(btns);
           list.append(row);
         }
       }
