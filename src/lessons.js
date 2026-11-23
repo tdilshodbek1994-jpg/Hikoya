@@ -1503,14 +1503,94 @@ export const LESSONS = [
       { en: "I look forward to hearing from you.", uz: "Javobingizni kutib qolaman." },
     ],
   },
+  // ======== Grammatika (qo'shimcha) ========
+  {
+    id: "gr-continuous",
+    category: "Grammatika gapirib",
+    title: "Hozirgi davomiy zamon (Present Continuous)",
+    emoji: "🔄",
+    level: "A1-A2",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on grammar: Present Continuous for actions happening now and temporary situations (I'm reading, she is working, are you studying...?). Have a natural conversation that makes the student use this grammar a lot. Ask simple questions, listen, and whenever the student makes a mistake with this grammar, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Hi! What are you doing right now?",
+    openerUz: "Salom! Hozir nima qilyapsiz?",
+    phrases: [
+      { en: "I'm sitting at home.", uz: "Men uyda o'tiribman." },
+      { en: "She is working today.", uz: "U bugun ishlayapti." },
+      { en: "What are you doing?", uz: "Nima qilyapsiz?" },
+      { en: "I'm learning English these days.", uz: "Shu kunlarda ingliz tilini o'rganyapman." },
+      { en: "It's raining outside.", uz: "Tashqarida yomg'ir yog'yapti." },
+      { en: "I'm not watching TV.", uz: "Men televizor ko'rmayapman." },
+    ],
+  },
+  {
+    id: "gr-modals",
+    category: "Grammatika gapirib",
+    title: "Modal fe'llar (can, should, must)",
+    emoji: "💪",
+    level: "A2-B1",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on grammar: modal verbs: can/can't for ability, should for advice, must/have to for obligation, may/might for possibility. Have a natural conversation that makes the student use this grammar a lot. Ask simple questions, listen, and whenever the student makes a mistake with this grammar, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Can you swim? And what should a person do to learn English fast?",
+    openerUz: "Suzishni bilasizmi? Ingliz tilini tez o'rganish uchun odam nima qilishi kerak?",
+    phrases: [
+      { en: "I can speak two languages.", uz: "Men ikki tilda gapira olaman." },
+      { en: "I can't drive yet.", uz: "Men hali mashina hayday olmayman." },
+      { en: "You should practise every day.", uz: "Har kuni mashq qilishingiz kerak." },
+      { en: "Students must wear uniforms.", uz: "O'quvchilar forma kiyishi shart." },
+      { en: "I have to get up early.", uz: "Men erta turishim kerak." },
+      { en: "It might rain tomorrow.", uz: "Ertaga yomg'ir yog'ishi mumkin." },
+    ],
+  },
+  {
+    id: "gr-articles",
+    category: "Grammatika gapirib",
+    title: "Artikllar (a, an, the)",
+    emoji: "🔤",
+    level: "A2",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on grammar: articles: a/an for one non-specific thing, the for specific or known things, no article for general plurals (I have a cat. The cat is black. Cats are cute.). Have a natural conversation that makes the student use this grammar a lot. Ask simple questions, listen, and whenever the student makes a mistake with this grammar, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Tell me about your room. What things are in it?",
+    openerUz: "Xonangiz haqida gapirib bering. Unda qanday narsalar bor?",
+    phrases: [
+      { en: "There is a bed in my room.", uz: "Xonamda karavot bor." },
+      { en: "I have an apple every morning.", uz: "Har ertalab bitta olma yeyman." },
+      { en: "The bed is next to the window.", uz: "Karavot deraza yonida." },
+      { en: "I like books.", uz: "Men kitoblarni yaxshi ko'raman." },
+      { en: "She is an engineer.", uz: "U muhandis." },
+      { en: "The sun is very bright today.", uz: "Bugun quyosh juda yorqin." },
+    ],
+  },
+  {
+    id: "gr-passive",
+    category: "Grammatika gapirib",
+    title: "Majhul nisbat (Passive Voice)",
+    emoji: "🏗️",
+    level: "B1-B2",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on grammar: passive voice in present and past (is made, was built, are spoken, was invented by) - talk about famous places, inventions and products. Have a natural conversation that makes the student use this grammar a lot. Ask simple questions, listen, and whenever the student makes a mistake with this grammar, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Do you know when the Registan in Samarkand was built? Let's talk about famous places and inventions.",
+    openerUz: "Samarqanddagi Registon qachon qurilganini bilasizmi? Mashhur joylar va ixtirolar haqida gaplashamiz.",
+    phrases: [
+      { en: "It was built in the 15th century.", uz: "U XV asrda qurilgan." },
+      { en: "English is spoken all over the world.", uz: "Ingliz tilida butun dunyoda gapiriladi." },
+      { en: "The telephone was invented by Bell.", uz: "Telefonni Bell ixtiro qilgan." },
+      { en: "Plov is made with rice and meat.", uz: "Osh guruch va go'shtdan tayyorlanadi." },
+      { en: "This phone was made in Korea.", uz: "Bu telefon Koreyada ishlab chiqarilgan." },
+      { en: "The book was written in 1990.", uz: "Kitob 1990-yilda yozilgan." },
+    ],
+  },
 ];
 
 const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Grammatika gapirib", "Kundalik hayot", "Sayohat", "O'qish va ish", "Biznes va IT"];
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
-LESSONS.sort((a, b) => ORDER.indexOf(a.category) - ORDER.indexOf(b.category) || partRank(a) - partRank(b));
+// Grammatika: osondan qiyinga
+const GR_ORDER = ["gr-continuous", "gr-past", "gr-questions", "gr-articles", "gr-future", "gr-compare", "gr-modals", "gr-perfect", "gr-conditional", "gr-passive"];
+const grRank = (l) => (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
+LESSONS.sort((a, b) => ORDER.indexOf(a.category) - ORDER.indexOf(b.category) || partRank(a) - partRank(b) || (a.category === "Grammatika gapirib" ? grRank(a) - grRank(b) : 0));
 // Kurs darslarini tartib raqami bilan nomlaymiz
-for (const cat of ["IELTS kursi", "CEFR kursi"]) {
+for (const cat of ["IELTS kursi", "CEFR kursi", "Grammatika gapirib"]) {
   LESSONS.filter((l) => l.category === cat).forEach((l, i) => {
     l.title = `${i + 1}. ${l.title.replace(/^\d+\.\s*/, "")}`;
   });

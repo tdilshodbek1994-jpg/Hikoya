@@ -339,7 +339,7 @@ function renderLessons() {
       lastPart = null;
       const head = el("div", "cat-title", `${CAT_ICONS[l.category] || "📚"} ${l.category}`);
       // Kurslar uchun progress: nechta dars o'tilgani
-      if (/kursi$/.test(l.category)) {
+      if (/kursi$|Grammatika/.test(l.category)) {
         const all = state.lessons.filter((x) => x.category === l.category);
         const n = all.filter((x) => done[x.id]).length;
         const bar = el("span", "cat-progress");
