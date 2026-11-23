@@ -724,9 +724,9 @@ function renderLessons() {
       lastCat = l.category;
       lastPart = null;
       const head = el("div", "cat-title", `${CAT_ICONS[l.category] || "📚"} ${l.category}`);
-      // Kurslar uchun progress: nechta dars o'tilgani
-      if (/kursi$|Grammatika/.test(l.category)) {
-        const all = state.lessons.filter((x) => x.category === l.category);
+      // Har bir bo'lim uchun progress: nechta dars o'tilgani
+      const all = state.lessons.filter((x) => x.category === l.category);
+      if (all.length > 1) {
         const n = all.filter((x) => done[x.id]).length;
         const bar = el("span", "cat-progress");
         bar.append(el("i", ""), el("em", "", `${n}/${all.length}`));
