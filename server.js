@@ -1,6 +1,8 @@
 import "./src/env.js";
 import crypto from "node:crypto";
 import path from "node:path";
+import fs from "node:fs";
+import zlib from "node:zlib";
 import { fileURLToPath } from "node:url";
 import express from "express";
 import Anthropic from "@anthropic-ai/sdk";
@@ -373,6 +375,41 @@ app.delete("/api/progress", auth, (req, res) => {
 app.get("/api/progress", auth, (req, res) => {
   const used = startedToday(req.userId);
   res.json({ ...summary(req.userId), limit: req.userId === "dev" ? 0 : DAILY_SESSIONS, startedToday: used });
+});
+
+// ⚡ Gzip: JS/CSS/HTML ~4 marta kichikroq yuboriladi (sekin mobil internet uchun).
+// "?v=..." versiyali fayllar uzoq keshlanadi — versiya o'zgarsa, telefon yangisini oladi.
+const PUB = path.join(here, "public");
+const gzCache = new Map();
+app.use((req, res, next) => {
+  if (req.method !== "GET" && req.method !== "HEAD") return next();
+  const rel = req.path === "/" ? "/index.html" : req.path;
+  if (!/\.(js|css|html|json|svg)$/.test(rel) || !/\bgzip\b/.test(req.headers["accept-encoding"] || "")) return next();
+  const file = path.join(PUB, path.normalize(rel));
+  if (!file.startsWith(PUB + path.sep)) return next();
+  let st;
+  try {
+    st = fs.statSync(file);
+  } catch {
+    return next();
+  }
+  if (!st.isFile()) return next();
+  const key = file + ":" + st.mtimeMs;
+  let gz = gzCache.get(key);
+  if (!gz) {
+    gz = zlib.gzipSync(fs.readFileSync(file), { level: 9 });
+    for (const k of gzCache.keys()) if (k.startsWith(file + ":")) gzCache.delete(k); // eski versiyani o'chiramiz
+    gzCache.set(key, gz);
+  }
+  const etag = `"gz-${st.size.toString(16)}-${Math.round(st.mtimeMs).toString(16)}"`;
+  res.setHeader("Vary", "Accept-Encoding");
+  res.setHeader("ETag", etag);
+  res.setHeader("Cache-Control", req.query.v ? "public, max-age=31536000, immutable" : "no-cache");
+  if (req.headers["if-none-match"] === etag) return res.status(304).end();
+  res.type(path.extname(file));
+  res.setHeader("Content-Encoding", "gzip");
+  res.setHeader("Content-Length", gz.length);
+  res.end(req.method === "HEAD" ? undefined : gz);
 });
 
 // Telegram WebView eski fayllarni keshda ushlab qolmasligi uchun har safar yangiligini tekshiradi
