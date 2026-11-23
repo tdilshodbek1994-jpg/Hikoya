@@ -1356,3 +1356,6 @@ body.dark .acc-tag.hi { color: #4ade80; } body.dark .acc-tag.mid { color: #fbbf2
 @keyframes pausedBlink { 50% { opacity: 0.6; } }
 body.dark #status.paused { color: #fdba74; }
 #status.paused #statusText { color: inherit; }
+
+/* ⚡ Ekrandan tashqaridagi dars kartalari keyinroq chiziladi (185+ dars — sekin telefonda tezroq) */
+.lesson-list > .lesson { content-visibility: auto; contain-intrinsic-size: auto 84px; }
