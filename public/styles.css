@@ -620,7 +620,6 @@ body.dark .shadow-btn { color: #5eead4; }
 /* ---------- Jonli suhbat: suhbat uzaysa ham boshqaruv ko'rinib tursin ---------- */
 #lesson.is-live:has(#chatlog .bubble) .mascot { width: min(40vw, 150px); transition: width 0.3s ease; }
 #lesson.is-live:has(#chatlog .bubble) .hint { display: none; }
-#lesson.is-live .bottom-row { position: sticky; bottom: 0; z-index: 5; margin: 8px -14px 0; padding: 10px 14px calc(10px + var(--safe-b)); background: linear-gradient(to top, var(--bg) 70%, transparent); }
 #lesson.is-live .mute-btn { margin-top: 4px; }
 #lesson.is-live .help-row { margin-top: 2px; }
 #lesson.is-live .hint-item b::after { content: none; }
@@ -711,10 +710,17 @@ body:has(#lesson.active) .toast { top: calc(40vh + var(--safe-t)); }
 /* Maskot bargi ibora kartasi ustiga chiqib "Tinglash"ni yopmasin */
 .phrase-card, .visual, .lesson-rule, .cue { position: relative; z-index: 2; }
 /* Barcha rejimlarda "Tugatish" va "Subtitrlar" ekran pastida doim ko'rinib tursin */
-#lesson .bottom-row { position: sticky; bottom: 0; z-index: 5; margin: 8px -14px 0; padding: 10px 14px calc(10px + var(--safe-b)); background: linear-gradient(to top, var(--bg) 70%, transparent); }
-@media (max-width: 360px) { #lesson .bottom-row { margin-left: -10px; margin-right: -10px; padding-left: 10px; padding-right: 10px; } }
 #lesson:not(.is-live) .mascot { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 
 /* 🇬🇧 Ustoz gapidagi inglizcha qism */
 .sub-en { display: inline; font: inherit; font-weight: 700; color: color-mix(in srgb, var(--primary) 70%, var(--text)); background: color-mix(in srgb, var(--primary) 10%, transparent); padding: 0 5px; border-radius: 6px; cursor: pointer; }
 .sub-en::after { content: "\00a0🔊"; font-size: 11px; opacity: 0.6; }
+
+/* ▶️ O'z ovozini eshitish */
+.my-voice { display: inline-block; margin-left: 4px; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: color-mix(in srgb, var(--ok) 14%, transparent); color: var(--ok); vertical-align: 1px; }
+.my-voice.busy { opacity: 0.6; }
+
+/* Dars boshqaruvi (yozish, rejim, bosib gapirish, mikrofon, tugatish) ekran pastida birga turadi */
+#lesson .controls { position: sticky; bottom: 0; z-index: 5; margin: 6px -14px 0; padding: 12px 14px calc(10px + var(--safe-b)); background: linear-gradient(to top, var(--bg) 82%, transparent); display: flex; flex-direction: column; gap: 8px; }
+#lesson .controls > * { margin-top: 0 !important; margin-bottom: 0 !important; }
+@media (max-width: 360px) { #lesson .controls { margin-left: -10px; margin-right: -10px; padding-left: 10px; padding-right: 10px; } }

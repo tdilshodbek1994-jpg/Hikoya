@@ -1502,6 +1502,26 @@ $("mascot").addEventListener("click", () => {
   $("replayBtn").click();
 });
 
+$("myVoiceBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (!state.myVoiceUrl || state.phase === "speaking") return;
+  haptic();
+  const wasListening = state.phase === "listening";
+  if (wasListening) cancelRecording();
+  const a = new Audio(state.myVoiceUrl);
+  $("myVoiceBtn").classList.add("busy");
+  const done = () => {
+    $("myVoiceBtn").classList.remove("busy");
+    if (wasListening && state.phase === "listening" && state.mode === "auto") listenAuto();
+  };
+  a.onended = done;
+  a.onerror = done;
+  a.play().catch(() => {
+    done();
+    toast("Yozuvni ijro etib bo'lmadi");
+  });
+});
+
 $("listenBtn").addEventListener("click", async () => {
   if (state.phase === "thinking" || state.phase === "speaking" || state.listenBusy) return;
   const p = state.lesson.phrases[state.phraseIdx];
@@ -1571,6 +1591,8 @@ function setSubs(ai, aiUz, me, fix, say) {
   $("subAiUz").textContent = aiUz || "";
   $("subMe").textContent = me || "";
   $("subMeWrap").hidden = !me;
+  // ▶️ Ovozli javobdan keyin — o'z talaffuzini eshitish tugmasi
+  $("myVoiceBtn").hidden = !(me && state.myVoicePending && state.myVoiceUrl);
   $("subFix").textContent = fix || "";
   $("subFixWrap").hidden = !fix;
 }
@@ -1809,6 +1831,10 @@ async function sendAudio(blob) {
     $("hint").textContent = "Eshitmadim, yana bir bor ayting.";
     return afterReply();
   }
+  // ▶️ O'z ovozini qayta eshitish uchun oxirgi yozuvni saqlab qo'yamiz
+  if (state.myVoiceUrl) URL.revokeObjectURL(state.myVoiceUrl);
+  state.myVoiceUrl = URL.createObjectURL(blob);
+  state.myVoicePending = true;
   await sendTurn({ body: blob, headers: { "Content-Type": blob.type.split(";")[0] || "audio/webm" } });
 }
 
@@ -1817,6 +1843,7 @@ $("textForm").addEventListener("submit", async (e) => {
   const text = $("textInput").value.trim();
   if (!text || state.phase === "thinking" || state.phase === "speaking") return;
   $("textInput").value = "";
+  state.myVoicePending = false;
   await sendTurn({ json: { text } });
 });
 

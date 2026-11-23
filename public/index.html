@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
   <title>Sado — ingliz tilida gaplashish</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="styles.css?v=82" />
+  <link rel="stylesheet" href="styles.css?v=84" />
 </head>
 <body>
   <header class="topbar">
@@ -111,7 +111,7 @@
 
     <div class="subs" id="subs" hidden>
       <div class="sub sub-ai"><b>Sado:</b> <span id="subAi"></span><div class="sub-uz" id="subAiUz"></div></div>
-      <div class="sub sub-me" id="subMeWrap" hidden><b>Siz:</b> <span id="subMe"></span></div>
+      <div class="sub sub-me" id="subMeWrap" hidden><b>Siz:</b> <span id="subMe"></span> <button class="my-voice" id="myVoiceBtn" hidden>▶️ Ovozim</button></div>
       <div class="sub sub-fix" id="subFixWrap" hidden>🇺🇿 <span id="subFix"></span></div>
     </div>
 
@@ -122,6 +122,7 @@
     </div>
     <div class="hint-box" id="hintBox" hidden></div>
 
+    <div class="controls" id="controls">
     <form class="text-reply" id="textForm" hidden>
       <input id="textInput" autocomplete="off" placeholder="Inglizcha yozing..." />
       <button type="submit">Yuborish</button>
@@ -149,6 +150,7 @@
     <div class="bottom-row">
       <button class="btn ghost" id="subsBtn">Subtitrlar</button>
       <button class="btn danger" id="endBtn">✕ Tugatish</button>
+    </div>
     </div>
   </main>
 
@@ -280,6 +282,6 @@
 
   <div class="toast" id="toast" hidden></div>
 
-  <script type="module" src="app.js?v=81"></script>
+  <script type="module" src="app.js?v=82"></script>
 </body>
 </html>
