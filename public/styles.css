@@ -565,3 +565,5 @@ body.dark .onb-card { box-shadow: 0 0 0 1px var(--line), 0 20px 50px rgba(0,0,0,
 .topic-pick::-webkit-scrollbar { display: none; }
 .tp { flex: none; font-size: 13px; font-weight: 700; padding: 6px 11px; border-radius: 99px; background: rgba(255, 255, 255, 0.18); cursor: pointer; white-space: nowrap; }
 .tp.on { background: #fff; color: #4f46e5; }
+.w-ok { color: var(--ok); }
+.w-miss { color: var(--danger); text-decoration: underline wavy; text-underline-offset: 4px; }

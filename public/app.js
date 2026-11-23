@@ -1106,6 +1106,26 @@ function renderPhrase() {
   $("phraseLabel").textContent = done ? "✓ Aytildi" : "Ovoz chiqarib ayting";
 }
 
+// 🟢🔴 So'zma-so'z: joriy iboradagi qaysi so'zlarni aytdi
+const wnorm = (w) => w.toLowerCase().replace(/[’']/g, "'").replace(/[^a-z']/g, "");
+function markWords(heard) {
+  const p = state.lesson?.phrases?.[state.phraseIdx];
+  if (!p || !heard) return;
+  const said = new Set(String(heard).split(/\s+/).map(wnorm).filter(Boolean));
+  const words = p.en.split(/\s+/);
+  const real = words.filter((w) => wnorm(w));
+  const hits = real.filter((w) => said.has(wnorm(w))).length;
+  if (!real.length || hits === 0) return; // umuman boshqa gap aytgan bo'lsa belgilamaymiz
+  const box = $("phraseEn");
+  box.innerHTML = "";
+  words.forEach((w, i) => {
+    const n = wnorm(w);
+    box.append(n ? el("span", said.has(n) ? "w-ok" : "w-miss", w) : document.createTextNode(w));
+    if (i < words.length - 1) box.append(document.createTextNode(" "));
+  });
+  $("phraseLabel").textContent = hits === real.length ? "✓ Hamma so'zlar aytildi" : `${hits}/${real.length} so'z aytildi — qizillarini qo'shing`;
+}
+
 function nextUnused(from = 0) {
   const n = state.lesson.phrases.length;
   for (let k = 0; k < n; k++) {
@@ -1440,6 +1460,7 @@ async function sendTurn(payload) {
     applyHint();
     const tutorCurrent = Number.isInteger(data.current) ? data.current : null;
     setSubs(data.reply, data.reply_uz, data.heard, data.uz_say);
+    markWords(data.heard);
     if (data.uz_say && !state.subs) toast("🇺🇿 " + data.uz_say, 6000);
     markUsed(data.used || []);
     if (tutorCurrent !== null && tutorCurrent !== state.phraseIdx) {
