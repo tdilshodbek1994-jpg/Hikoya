@@ -2434,6 +2434,13 @@ const IELTS_STAGES = [{ key: "1", label: "Part 1" }, { key: "2", label: "Part 2"
 const CEFR_STAGES = [{ key: "1.1", label: "1.1" }, { key: "1.2", label: "1.2" }, { key: "2", label: "Part 2" }, { key: "3", label: "Part 3" }];
 const STAGES = { ielts: IELTS_STAGES, cefr: CEFR_STAGES, "cefr-8": CEFR_STAGES };
 
+// 🆕 Qo'shilgan sana (o'quvchilarga 14 kun "Yangi" bo'lib ko'rinadi). Yangi dars qo'shsangiz, shu yerga yozing
+// yoki darsning o'ziga added: "YYYY-MM-DD" qo'shing.
+const ADDED = Object.fromEntries(
+  ["kid-food", "kid-play", "biz-tech-interview", "biz-complaint", "travel-car", "travel-museum", "gr-pastcont", "gr-quantity",
+   "ielts-p2-person", "ielts-p2-late", "pharmacy", "rent", "library", "internship"].map((id) => [id, "2026-11-23"]),
+);
+
 // 📋 CEFR topshiriqlari: javob rejasi (imtihonda baholanadigan qismlar)
 const PLANS = {
   "cefr-1": ["Savolga to'g'ridan-to'g'ri javob bering", "Sababini ayting: because ...", "Kichik misol yoki tafsilot qo'shing", "2–3 gap — juda qisqa ham, juda uzun ham emas"],
@@ -2464,6 +2471,7 @@ export function publicLesson(l) {
     stages: STAGES[l.id] || null,
     questions: p3Questions(l),
     plan: PLANS[l.id] || null,
+    added: l.added || ADDED[l.id] || "",
     category: l.category || "",
     phrases: l.phrases,
   };

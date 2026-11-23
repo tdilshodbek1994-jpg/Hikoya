@@ -154,6 +154,7 @@ function trackNewLessons(lessons) {
   if (!Array.isArray(known)) {
     localStorage.setItem("sado-known", JSON.stringify(ids));
     state.newIds = new Set();
+    addDated(lessons);
     return;
   }
   const k = new Set(known);
@@ -166,6 +167,11 @@ function trackNewLessons(lessons) {
   localStorage.setItem("sado-fresh", JSON.stringify(fresh));
   localStorage.setItem("sado-known", JSON.stringify(ids));
   state.newIds = new Set(Object.keys(fresh));
+  addDated(lessons);
+}
+// Serverda qo'shilgan sanasi ko'rsatilgan darslar — 14 kun davomida hammaga "yangi"
+function addDated(lessons) {
+  for (const l of lessons) if (l.added && Date.now() - Date.parse(l.added) < 14 * 86400_000) state.newIds.add(l.id);
 }
 
 function applyLessons(data) {
