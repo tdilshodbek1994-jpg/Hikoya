@@ -117,6 +117,9 @@ const canExit = history.length > 1 || /^https?:/.test(document.referrer);
 
 function show(id) {
   for (const s of document.querySelectorAll(".screen")) s.classList.toggle("active", s.id === id);
+  // Oldingi ekrandagi xabar yangi ekranga o'tib qolmasin
+  clearTimeout(toast.t);
+  $("toast").hidden = true;
   const back = id !== "home" || canExit;
   if (inTelegram) back ? tg.BackButton.show() : tg.BackButton.hide();
   else $("backBtn").hidden = !back;
@@ -2288,6 +2291,39 @@ function renderReport(r, score) {
       box2.append(row);
     }
     box.append(el("div", "rep-title", "📊 IELTS mezonlari"), box2);
+    // 🎯 Eng zaif mezon bo'yicha aniq maslahat va bir bosishda mashq
+    const weak = Object.keys(NAMES).filter((k) => Number.isFinite(r.criteria[k])).sort((a, b) => r.criteria[a] - r.criteria[b])[0];
+    const ADVICE = {
+      fluency: ["To'xtovsiz gapirishni mashq qiling: «Well, ...», «Let me think...» kabi to'ldiruvchilar yordam beradi.", "📞 Erkin suhbatda mashq qilish"],
+      vocabulary: ["Bir xil so'zlarni takrorlamang, sinonim ishlating (good → excellent, useful). Lug'atingizni takrorlang.", "📒 Lug'atimni ochish"],
+      grammar: ["Zamonlar va savol tuzishdagi xatolar ballni pasaytiradi. Grammatika darslari aynan shu uchun.", "✏️ Grammatika darslariga o'tish"],
+      pronunciation: ["So'zlarni aniq va sekinroq ayting. «Tinglab takrorlash» mashqi talaffuzni tez yaxshilaydi.", "🔁 Darsni qayta o'tish"],
+    };
+    if (weak && ADVICE[weak]) {
+      const w = el("div", "crit-weak");
+      w.append(el("b", "", `🎯 Eng zaif tomon: ${NAMES[weak]} — ${r.criteria[weak].toFixed(1)}`), el("span", "", ADVICE[weak][0]));
+      const go = el("button", "btn ghost wide", ADVICE[weak][1]);
+      go.addEventListener("click", () => {
+        haptic();
+        const free = state.lessons.find((l) => l.liveOnly);
+        if (weak === "fluency" && free && state.liveEnabled) return startLesson(free, "live");
+        if (weak === "vocabulary") return $("vocabBtn").click();
+        if (weak === "grammar") {
+          show("home");
+          state.filter.cat = "Grammatika gapirib";
+          renderChips();
+          renderLessons();
+          return setTimeout(() => {
+            $("chips").scrollIntoView({ block: "start" });
+            const on = $("chips").querySelector(".chip-f.on");
+            if (on) $("chips").scrollLeft = on.offsetLeft - ($("chips").clientWidth - on.offsetWidth) / 2;
+          }, 50);
+        }
+        $("againBtn").click();
+      });
+      w.append(go);
+      box.append(w);
+    }
   }
   section("👍 Yaxshi chiqdi", r.strengths_uz, (t) => el("li", "", t));
   section("✏️ Xatolar ustida ishlaymiz", r.mistakes, (m) => {

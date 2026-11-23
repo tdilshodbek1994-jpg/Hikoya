@@ -700,3 +700,9 @@ body:has(#lesson.active) .toast { top: calc(34vh + var(--safe-t)); }
 
 .search-free { margin-top: 4px; }
 #lessonList { min-height: 72vh; align-content: start; } /* qidiruvda natija kam bo'lsa ham qidiruv maydoni tepaga chiqa olsin */
+
+/* 🎯 IELTS: eng zaif mezon */
+.crit-weak { margin-top: 10px; padding: 10px 12px; border-radius: 14px; background: color-mix(in srgb, #f59e0b 12%, var(--bg)); border-left: 4px solid #f59e0b; font-size: 13.5px; line-height: 1.45; }
+.crit-weak b { display: block; margin-bottom: 3px; font-size: 14px; }
+.crit-weak .btn { margin-top: 8px; font-size: 14px; }
+#chips { scroll-margin-top: calc(64px + var(--safe-t)); }
