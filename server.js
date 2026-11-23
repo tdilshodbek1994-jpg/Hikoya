@@ -297,7 +297,8 @@ app.get("/api/admin/stats", (req, res) => {
 });
 
 app.get("/api/progress", auth, (req, res) => {
-  res.json(summary(req.userId));
+  const used = daily.get(`${req.userId}:${new Date().toISOString().slice(0, 10)}`) || 0;
+  res.json({ ...summary(req.userId), limit: req.userId === "dev" ? 0 : DAILY_SESSIONS, startedToday: used });
 });
 
 // Telegram WebView eski fayllarni keshda ushlab qolmasligi uchun har safar yangiligini tekshiradi

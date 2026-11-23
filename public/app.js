@@ -193,6 +193,11 @@ function renderGoal() {
     el("small", "", done ? "Ertaga ham davom eting — seriya uzilmasin 🔥" : `Kuniga ${state.goal} ta dars · bosing — maqsadni o'zgartirish`),
   );
   box.append(ring, txt);
+  // Kunlik limit: qancha dars qolgani
+  if (p.limit) {
+    const left = Math.max(0, p.limit - (p.startedToday || 0));
+    box.append(el("span", "goal-left" + (left <= 2 ? " low" : ""), left ? `${left} ta dars qoldi` : "Limit tugadi"));
+  }
 }
 
 function renderStats() {
@@ -773,6 +778,7 @@ async function startLesson(lesson, lessonMode = "tutor") {
       json: { lessonId: lesson.id, translate: state.tr, mode: state.lessonMode, slow: state.slow },
     });
     state.session = data.session;
+    if (state.progress) state.progress.startedToday = (state.progress.startedToday || 0) + 1;
     if (Number.isInteger(data.current)) {
       state.phraseIdx = data.current;
       renderPhrase();
@@ -832,6 +838,7 @@ async function startLive(lesson) {
     const data = await api("api/session", { json: { lessonId: lesson.id, mode: "live" } });
     if (data.mode !== "live") throw new Error("Jonli suhbat serverda yoqilmagan.");
     state.session = data.session;
+    if (state.progress) state.progress.startedToday = (state.progress.startedToday || 0) + 1;
     state.seconds = state.left = data.seconds;
 
     const call = new LiveCall({
@@ -1578,7 +1585,7 @@ async function finish() {
   try {
     const data = await api("api/end", { json: { session } });
     if (data.progress) {
-      state.progress = data.progress;
+      state.progress = { ...data.progress, limit: state.progress?.limit, startedToday: state.progress?.startedToday };
       renderLessons();
     }
     renderReport(data.report, data.score);
