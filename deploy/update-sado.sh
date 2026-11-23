@@ -5,6 +5,7 @@ git fetch -q origin && git reset -q --hard origin/ccr-b21c2185-xe8igr
 npm install --omit=dev --silent
 git checkout -- package-lock.json 2>/dev/null
 mkdir -p data && chown -R www-data:www-data data   # progress shu yerda saqlanadi
+grep -q "^SHARE_URL=" .env || echo "SHARE_URL=https://t.me/Uzdtm_bot" >> .env   # natijani ulashish havolasi
 systemctl restart sado-speaking
 sleep 3
 echo "holat: $(systemctl is-active sado-speaking)"

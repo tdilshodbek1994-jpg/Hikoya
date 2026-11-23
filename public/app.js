@@ -132,6 +132,7 @@ async function loadLessons() {
     state.voiceEnabled = data.voiceEnabled;
     state.liveEnabled = Boolean(data.liveEnabled);
     state.sessionMinutes = data.sessionMinutes;
+    state.shareUrl = data.shareUrl || "";
     renderChips();
     renderLessons();
     loadProgress();
@@ -1242,10 +1243,32 @@ function el(tag, cls, text) {
   return e;
 }
 
+// 📤 Natijani Telegram orqali ulashish
+$("shareBtn").addEventListener("click", () => {
+  const { r, score } = state.lastResult || {};
+  const l = state.lesson;
+  const sc = r?.score ?? score;
+  const text = [
+    `🎤 Sado AI bilan ingliz tilida gaplashdim!`,
+    `${l.emoji} ${l.title}: ${sc} ball${r?.level ? ` · ${r.level}` : ""}`,
+    `✅ ${state.used.size}/${l.phrases.length} ta ibora`,
+    state.progress?.streak ? `🔥 ${state.progress.streak} kunlik seriya` : "",
+    `Sen ham sinab ko'r 👇`,
+  ].filter(Boolean).join("\n");
+  const url = state.shareUrl || "https://t.me";
+  const link = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+  haptic();
+  if (inTelegram && tg.openTelegramLink) tg.openTelegramLink(link);
+  else if (navigator.share) navigator.share({ text: text + (state.shareUrl ? "\n" + state.shareUrl : "") }).catch(() => {});
+  else window.open(link, "_blank");
+});
+
 // 📝 AI hisobot: ball, daraja, xatolar, maslahatlar, yangi so'zlar
 function renderReport(r, score) {
   const box = $("report");
   box.innerHTML = "";
+  state.lastResult = { r, score };
+  $("shareBtn").hidden = !(r || score != null);
   if (!r) {
     if (score == null) return (box.hidden = true);
     box.append(el("div", "rep-score-row", ""));
@@ -1314,6 +1337,7 @@ function showResult() {
   });
   $("report").hidden = true;
   $("report").innerHTML = "";
+  $("shareBtn").hidden = true;
   haptic(k === n ? "success" : "light");
   show("result");
 }

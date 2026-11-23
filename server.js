@@ -79,7 +79,7 @@ function sendError(res, err) {
 
 // ---- API ----
 app.get("/api/lessons", (req, res) => {
-  res.json({ lessons: LESSONS.map(publicLesson), voiceEnabled, liveEnabled, sessionMinutes: SESSION_MINUTES });
+  res.json({ lessons: LESSONS.map(publicLesson), voiceEnabled, liveEnabled, sessionMinutes: SESSION_MINUTES, shareUrl: process.env.SHARE_URL || "" });
 });
 
 app.post("/api/session", express.json(), auth, async (req, res) => {
