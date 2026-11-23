@@ -228,9 +228,18 @@ function toggleFav(id) {
 
 // 60 balldan past darslar — takrorlash uchun
 const WEAK = 60;
+// Necha kun oldin o'tilgan (Toshkent vaqti)
+function daysSince(dateStr) {
+  if (!dateStr) return null;
+  const t = new Date(Date.now() + 5 * 3600_000).toISOString().slice(0, 10);
+  return Math.round((Date.parse(t) - Date.parse(dateStr)) / 86400_000);
+}
+const STALE = 7; // shuncha kundan keyin takrorlash tavsiya etiladi
 function weakIds() {
   const ls = state.progress?.lessons || {};
-  return Object.keys(ls).filter((id) => id !== "review" && ls[id].best < WEAK && state.lessons.some((l) => l.id === id && !l.liveOnly));
+  return Object.keys(ls).filter(
+    (id) => id !== "review" && (ls[id].best < WEAK || daysSince(ls[id].last) >= STALE) && state.lessons.some((l) => l.id === id && !l.liveOnly),
+  );
 }
 
 function lessonButton(l) {
@@ -252,6 +261,9 @@ function lessonButton(l) {
     if (pr.best < WEAK && !l.liveOnly) {
       b.classList.add("weak");
       b.querySelector(".lesson-sub").textContent = `🔁 Takrorlang · ${pr.best} ball`;
+    } else if (!l.liveOnly && daysSince(pr.last) >= STALE) {
+      b.classList.add("weak");
+      b.querySelector(".lesson-sub").textContent = `✅ ${pr.best} ball · 🔁 ${daysSince(pr.last)} kun oldin`;
     }
   }
   b.addEventListener("click", () => openSheet(l));
