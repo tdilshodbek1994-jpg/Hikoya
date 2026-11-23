@@ -146,21 +146,40 @@ function confirmEnd() {
 }
 
 // ---------------- Darslar ro'yxati ----------------
+function applyLessons(data) {
+  state.lessons = data.lessons;
+  state.voiceEnabled = data.voiceEnabled;
+  state.liveEnabled = Boolean(data.liveEnabled);
+  state.sessionMinutes = data.sessionMinutes;
+  state.shareUrl = data.shareUrl || "";
+  renderChips();
+  renderLessons();
+}
 async function loadLessons() {
+  // ⚡ Oldingi safar saqlangan ro'yxat darhol chiqadi, yangisi fonda yuklanadi
+  let cached = null;
+  try {
+    cached = JSON.parse(localStorage.getItem("sado-lessons") || "null");
+  } catch {}
+  if (cached?.lessons?.length && !state.lessons.length) applyLessons(cached);
   try {
     const data = await api("api/lessons", { method: "GET" });
-    state.lessons = data.lessons;
-    state.voiceEnabled = data.voiceEnabled;
-    state.liveEnabled = Boolean(data.liveEnabled);
-    state.sessionMinutes = data.sessionMinutes;
-    state.shareUrl = data.shareUrl || "";
-    renderChips();
-    renderLessons();
+    const fresh = JSON.stringify(data);
+    if (fresh !== JSON.stringify(cached)) {
+      applyLessons(data);
+      try { localStorage.setItem("sado-lessons", fresh); } catch {}
+    }
     loadProgress();
     if (!inTelegram) $("homeNote").textContent = "Eslatma: ilova Telegram bot orqali ochilganda to'liq ishlaydi.";
   } catch (e) {
+    if (state.lessons.length) return toast("📶 Internet sekin — saqlangan ro'yxat ko'rsatilmoqda", 3000);
     $("lessonList").innerHTML = "";
     $("homeNote").textContent = "Darslarni yuklab bo'lmadi. Internetni tekshiring.";
+  }
+  // Yuklanish paytida bosilgan "Gaplashishni boshlash" — endi bajariladi
+  if (state.pendingFree) {
+    state.pendingFree = false;
+    $("freeHero").click();
   }
 }
 
@@ -1139,7 +1158,10 @@ $("setSheet").addEventListener("click", (e) => {
 
 $("freeHero").addEventListener("click", () => {
   const free = state.lessons.find((l) => l.liveOnly);
-  if (!free) return;
+  if (!free) {
+    state.pendingFree = true;
+    return toast("⏳ Yuklanmoqda... bir soniya", 1500);
+  }
   haptic("medium");
   if (state.liveEnabled) startLesson(free, "live");
   else openSheet(free);
