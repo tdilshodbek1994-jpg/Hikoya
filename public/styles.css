@@ -697,3 +697,6 @@ body:has(#lesson.active) .toast { top: calc(34vh + var(--safe-t)); }
 /* 📖 Dars ichidagi qoida kartasi */
 .lesson-rule { margin-top: 0; margin-bottom: 10px; animation: fade 0.2s ease; }
 #ruleBtn.on { background: var(--primary); color: #fff; }
+
+.search-free { margin-top: 4px; }
+#lessonList { min-height: 72vh; align-content: start; } /* qidiruvda natija kam bo'lsa ham qidiruv maydoni tepaga chiqa olsin */

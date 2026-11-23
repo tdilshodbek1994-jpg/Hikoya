@@ -684,6 +684,20 @@ function renderLessons() {
   });
   if (!items.length) {
     list.append(el("p", "note", "Hech narsa topilmadi. Boshqa so'z bilan qidirib ko'ring."));
+    // 💬 Topilmagan mavzuni Erkin suhbatda gaplashish taklifi
+    const q = (state.filter.q || "").replace(/\s+/g, " ").trim().slice(0, 60);
+    const free = state.lessons.find((l) => l.liveOnly);
+    if (q.length >= 3 && free && state.liveEnabled) {
+      const b = el("button", "btn next wide search-free", `💬 Sado bilan «${q}» haqida gaplashish`);
+      b.addEventListener("click", () => {
+        haptic("medium");
+        state.topic = "custom:" + q;
+        localStorage.setItem("sado-topic", state.topic);
+        renderTopicPick();
+        startLesson(free, "live");
+      });
+      list.append(b);
+    }
     return;
   }
   const done = state.progress?.lessons || {};
@@ -783,6 +797,13 @@ $("goal").addEventListener("click", () => {
 });
 
 let searchT;
+// Qidiruvga yozilganda qidiruv maydoni ekran tepasiga chiqadi — natijalar ko'rinib turadi
+$("searchInput").addEventListener("focus", () => {
+  setTimeout(() => {
+    const top = $("searchInput").getBoundingClientRect().top + window.scrollY - document.querySelector(".topbar").offsetHeight - 8;
+    window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+  }, 250); // klaviatura ochilishini kutamiz
+});
 $("searchInput").addEventListener("input", (e) => {
   clearTimeout(searchT);
   searchT = setTimeout(() => {
