@@ -3400,6 +3400,7 @@ const FAQ = [
   ["O'zim xohlagan mavzuda gaplashsam bo'ladimi?", "Ha! Bosh sahifadagi Erkin suhbat bannerida «✏️ O'z mavzuim» tugmasini bosing va istalgan mavzuni yozing — Sado shu mavzuda gaplashadi.", "✏️ Mavzu yozish", () => { $("helpSheet").hidden = true; openTopicSheet(state.topic.startsWith("custom:") ? state.topic.slice(7) : ""); }],
   ["«🔁 Takrorlash» nima?", "Toifalar qatoridagi bu filtr 60 balldan past olingan va 7 kundan beri o'tilmagan darslarni ko'rsatadi. Ularni qayta o'tsangiz, iboralar uzoq muddat esda qoladi."],
   ["Xatolarim qayerda saqlanadi?", "📒 Lug'atim → «✏️ Xatolarim». «🔁 Xatolarim ustida Sado bilan ishlash» darsida to'g'ri aytgan xatoingiz «✅ tuzatildi» bo'ladi.", "📒 Lug'atni ochish", () => { $("helpSheet").hidden = true; $("vocabBtn").hidden ? toast("Lug'at birinchi darsdan keyin paydo bo'ladi") : $("vocabBtn").click(); }],
+  ["IELTS/CEFR uchun namunaviy javob bormi?", "Ha! IELTS va CEFR kurslaridagi dars tugagach, hisobot ostida «📝 Namunaviy javob» tugmasi chiqadi: o'sha savol yoki kartochkaga Band 7 / B2 darajadagi javob va foydali iboralar. O'z javobingizni u bilan solishtiring."],
   ["O'zbekcha gapirsam bo'ladimi?", "Ha! Sado o'zbekcha tushunadi, o'zbekcha tushuntiradi va buni inglizcha qanday aytishni o'rgatadi."],
   ["Ball qanday qo'yiladi?", "Dars oxirida AI gaplaringizni tahlil qilib 0–100 ball, daraja (CEFR yoki IELTS band), xatolar va maslahatlar beradi."],
   ["Kuniga nechta dars?", "Kunlik limit bor — qolgan darslar soni bosh sahifadagi «Bugungi maqsad» blokida ko'rinadi. Limit har kuni yangilanadi."],
@@ -3411,6 +3412,10 @@ function renderFaq() {
   for (const [q, a, label, fn] of FAQ) {
     const d = document.createElement("details");
     d.className = "faq-item";
+    // Bittasi ochilsa — qolganlari yopiladi (ro'yxat qisqa qoladi)
+    d.addEventListener("toggle", () => {
+      if (d.open) for (const x of box.querySelectorAll(".faq-item[open]")) if (x !== d) x.open = false;
+    });
     const s = document.createElement("summary");
     s.textContent = q;
     d.append(s, el("p", "", a));
