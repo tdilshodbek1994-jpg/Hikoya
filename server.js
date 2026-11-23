@@ -463,6 +463,7 @@ app.get("/api/admin/stats", (req, res) => {
   s.startsToday = startsTodayTotal();
   s.ttsCache = ttsStats;
   s.features = { ...featStats, topic: liveStats.topicSwitches };
+  s.live = { calls: liveStats.calls, ready: liveStats.ready, ends: liveStats.ends, noReply: liveStats.noReply, nudges: liveStats.nudges, recent: liveStats.recent };
   res.json(s);
 });
 

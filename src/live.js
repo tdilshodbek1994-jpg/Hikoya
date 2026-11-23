@@ -135,7 +135,14 @@ function detectUsed(lesson, text, used) {
 // Foydalanuvchi tanlaydigan ovozlar
 const VOICES = { f: process.env.GEMINI_LIVE_VOICE_F || "Kore", m: process.env.GEMINI_LIVE_VOICE_M || "Puck" };
 
-export const liveStats = { topicSwitches: 0 };
+export const liveStats = { topicSwitches: 0, calls: 0, ready: 0, ends: {}, noReply: 0, nudges: 0, recent: [] };
+// 🩺 Qo'ng'iroq qanday tugaganini yozib boramiz (admin sahifada «qotish» sababini ko'rish uchun)
+function noteEnd(info) {
+  liveStats.ends[info.reason] = (liveStats.ends[info.reason] || 0) + 1;
+  if (info.noReply) liveStats.noReply++;
+  liveStats.recent.unshift({ at: new Date().toISOString().slice(5, 16).replace("T", " "), ...info });
+  liveStats.recent.length = Math.min(liveStats.recent.length, 20);
+}
 let vadSupported = process.env.GEMINI_LIVE_VAD !== "0"; // rad etilsa — keyingi qo'ng'iroqlarda ishlatilmaydi // 📊 admin uchun
 export async function runLive(client, session, lesson, { maxMs, voice, topic }) {
   // ✏️ O'quvchi yozgan mavzu: faqat harf, raqam va oddiy belgilar, 60 belgigacha
@@ -146,10 +153,19 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
   const send = (obj) => client.readyState === WebSocket.OPEN && client.send(JSON.stringify(obj));
   let upstream;
   let closed = false;
+  liveStats.calls++;
+  const t0 = Date.now();
+  let turns = 0, lastUserAt = 0, lastSadoAt = 0, endReason = "", noted = false;
+  const note = (reason) => {
+    if (noted) return;
+    noted = true;
+    noteEnd({ reason: endReason || reason, sec: Math.round((Date.now() - t0) / 1000), ready, turns, noReply: lastUserAt > lastSadoAt && lastUserAt > 0 });
+  };
   // 📝 Javobi kelmay qolgan oxirgi gaplar ham hisobotga tushsin (aks holda "Hali hech narsa demadingiz" chiqardi)
   let flushTurns = () => {};
   const close = (reason) => {
     if (closed) return;
+    endReason ||= reason;
     flushTurns();
     closed = true;
     send({ type: "closed", reason });
@@ -182,6 +198,7 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
     clearTimeout(wrapTimer);
     if (!closed) flushTurns();
     closed = true;
+    note("ilova yopildi");
     try { upstream?.close(); } catch {}
   });
 
@@ -244,6 +261,7 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
     }
     if (msg.setupComplete) {
       ready = true;
+      liveStats.ready++;
       session.liveReady = true; // kunlik limit faqat haqiqiy suhbat uchun hisoblanadi
       send({ type: "ready", model });
       // Sado birinchi bo'lib gapirsin
@@ -262,16 +280,19 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
       for (const part of sc.modelTurn?.parts || []) {
         const d = part.inlineData;
         if (d?.data && /audio/.test(d.mimeType || "audio")) {
+          lastSadoAt = Date.now();
           if (client.readyState === WebSocket.OPEN) client.send(Buffer.from(d.data, "base64"));
         }
       }
       if (sc.inputTranscription?.text) {
+        lastUserAt = Date.now();
         const t = toLatin(sc.inputTranscription.text, userRaw.slice(-1));
         userRaw += sc.inputTranscription.text;
         userTurn += t;
         send({ type: "user", text: t });
       }
       if (sc.outputTranscription?.text) {
+        lastSadoAt = Date.now();
         const t = toLatin(sc.outputTranscription.text, sadoRaw.slice(-1));
         sadoRaw += sc.outputTranscription.text;
         sadoTurn += t;
@@ -291,7 +312,7 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
           if (found.length) send({ type: "used", used: [...session.used].sort((a, b) => a - b), found });
           userTurn = "";
         }
-        if (sc.turnComplete) send({ type: "turn" });
+        if (sc.turnComplete) { send({ type: "turn" }); turns++; }
       }
     }
     if (msg.goAway) send({ type: "error", message: "Suhbat tez orada tugaydi." });
@@ -308,7 +329,7 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
     if (!closed) {
       console.error("Gemini Live yopildi:", code, reason?.toString().slice(0, 200));
       if (code !== 1000) send({ type: "error", message: `Ulanish uzildi (${code}). Qaytadan boshlang.` });
-      close("upstream");
+      close(`Gemini uzdi (${code})`);
     }
   });
   upstream.on("error", (e) => {
@@ -337,6 +358,7 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
       if (m.type === "end") close("foydalanuvchi");
       // 🤫 O'quvchi uzoq jim qoldi — Sado o'zi yordam beradi (bir qo'ng'iroqda 3 martagacha)
       if (m.type === "nudge" && (session.nudges = (session.nudges || 0) + 1) <= 3) {
+        liveStats.nudges++;
         upstream.send(
           JSON.stringify({
             clientContent: {
