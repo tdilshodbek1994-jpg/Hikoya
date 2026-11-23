@@ -1097,3 +1097,8 @@ button.rep-ml { font: inherit; font-size: 12.5px; font-weight: 700; text-align: 
 .ml-mark { position: absolute; top: -5px; width: 3px; height: calc(100% + 10px); background: #0f766e; border-radius: 2px; transform: translateX(-50%); }
 body.dark .ml-mark { background: #5eead4; }
 .ml-note { display: block; margin-top: 6px; color: var(--muted); font-size: 11.5px; line-height: 1.35; }
+/* 📖 Darsdagi qoida: yopish tugmasi va ochiq paytda kichikroq maskot (Sado gapi ko'rinib tursin) */
+.lesson-rule { position: relative; }
+.rule-close { position: absolute; top: 6px; right: 8px; width: 28px; height: 28px; border-radius: 50%; font-size: 13px; color: var(--muted); background: color-mix(in srgb, var(--muted) 12%, transparent); }
+#lesson:has(#lessonRule:not([hidden])) .mascot { width: min(34vw, 130px); }
+#lessonRule:not([hidden]) { max-height: 24vh; overflow-y: auto; overscroll-behavior: contain; }

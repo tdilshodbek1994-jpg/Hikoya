@@ -572,13 +572,23 @@ function renderLessonRule(lesson) {
   box.hidden = true;
   box.innerHTML = "";
   if (!lesson?.rule) return;
-  box.append(el("b", "", "📖 Qoida"), ruleBody(lesson.rule));
+  // ✕ Yopish tugmasi qoida ichida ham (yuqoridagi tugmaga qaytib bormaslik uchun)
+  const close = el("button", "rule-close", "✕");
+  close.title = "Qoidani yopish";
+  close.addEventListener("click", () => $("ruleBtn").click());
+  box.append(close, el("b", "", "📖 Qoida"), ruleBody(lesson.rule));
+  // 💾 O'quvchi qoidani ochiq holda ishlatishni yoqtirsa — keyingi grammatika darsida ham ochiq
+  if (localStorage.getItem("sado-rule-open") === "1") {
+    box.hidden = false;
+    $("ruleBtn").classList.add("on");
+  }
 }
 $("ruleBtn").addEventListener("click", () => {
   haptic();
   const box = $("lessonRule");
   box.hidden = !box.hidden;
   $("ruleBtn").classList.toggle("on", !box.hidden);
+  localStorage.setItem("sado-rule-open", box.hidden ? "0" : "1");
 });
 
 // 🖼 Rasm/jadval topshiriqlari: o'quvchi ko'rib turib gapiradi
