@@ -654,7 +654,7 @@ async function playReply(parts, fallbackText) {
     if (state.phase !== "speaking") break; // dars tugatilgan bo'lsa
     $("statusText").textContent = p.lang === "uz" ? "Sado tushuntirmoqda..." : "Sado gapirmoqda...";
     try {
-      if (p.audio) await playMp3(p.audio);
+      if (p.audio) await playMp3(p.audio, p.mime);
       else await speakBrowser(p.text, p.lang);
     } catch (e) {
       console.warn("Ijro:", e);
@@ -664,7 +664,7 @@ async function playReply(parts, fallbackText) {
   mascot.setLevel(0);
 }
 
-async function playMp3(b64) {
+async function playMp3(b64, mime = "audio/mpeg") {
   // Android WebView'da AudioContext o'zi to'xtab qolishi mumkin - har safar qayta yoqamiz
   try {
     if (audio.ctx.state !== "running") await audio.ctx.resume();
@@ -676,11 +676,11 @@ async function playMp3(b64) {
   try {
     buffer = await audio.ctx.decodeAudioData(bytes.buffer);
   } catch {
-    return playViaElement(b64);
+    return playViaElement(b64, mime);
   }
   if (audio.ctx.state !== "running") {
     toast("ℹ️ Audio holati: " + audio.ctx.state, 3000);
-    return playViaElement(b64);
+    return playViaElement(b64, mime);
   }
   return new Promise((resolve) => {
     let raf = 0;
@@ -709,9 +709,9 @@ async function playMp3(b64) {
 }
 
 // Zaxira usul: oddiy <audio> elementi orqali ijro
-function playViaElement(b64) {
+function playViaElement(b64, mime = "audio/mpeg") {
   return new Promise((resolve) => {
-    const el = new Audio("data:audio/mpeg;base64," + b64);
+    const el = new Audio(`data:${mime};base64,` + b64);
     let raf = 0;
     const fake = (t) => {
       mascot.setLevel(0.35 + Math.abs(Math.sin(t / 90)) * 0.5);

@@ -6,6 +6,10 @@ const OPENAI_KEY = process.env.OPENAI_API_KEY || "";
 const STT_MODEL = process.env.STT_MODEL || "gpt-4o-transcribe"; // o'zbekchani yaxshiroq taniydi
 const TTS_MODEL = process.env.TTS_MODEL || "gpt-4o-mini-tts";
 const TTS_VOICE = process.env.TTS_VOICE || "coral";
+// Gemini: o'zbekcha qismlar uchun ovoz (kalit bo'lmasa OpenAI ishlatiladi)
+const GEMINI_KEY = process.env.GEMINI_API_KEY || "";
+const GEMINI_TTS_MODEL = process.env.GEMINI_TTS_MODEL || "gemini-3.8-flash-tts";
+const GEMINI_VOICE = process.env.GEMINI_VOICE || "Kore";
 
 const anthropic = new Anthropic(); // ANTHROPIC_API_KEY muhit o'zgaruvchisidan o'qiladi
 
@@ -13,6 +17,7 @@ const anthropic = new Anthropic(); // ANTHROPIC_API_KEY muhit o'zgaruvchisidan o
 const SUPPORTS_FALLBACKS = /^claude-(opus-5|sonnet-5-5|fable-5)/.test(CLAUDE_MODEL);
 
 export const voiceEnabled = Boolean(OPENAI_KEY);
+export const geminiEnabled = Boolean(GEMINI_KEY);
 
 function systemPrompt(lesson) {
   const list = lesson.phrases.map((p, i) => `${i}. "${p.en}"`).join("\n");
@@ -230,6 +235,55 @@ const TTS_STYLE = {
   uz: "Speak in the Uzbek language with natural Uzbek pronunciation, warmly and clearly, like a friendly teacher. Pronounce any English words inside quotes in clear English.",
 };
 
+// 16-bit PCM (mono) ni WAV fayliga o'raydi - brauzer to'g'ridan-to'g'ri ijro eta olishi uchun
+function pcmToWav(pcm, sampleRate = 24000, channels = 1) {
+  const h = Buffer.alloc(44);
+  h.write("RIFF", 0);
+  h.writeUInt32LE(36 + pcm.length, 4);
+  h.write("WAVE", 8);
+  h.write("fmt ", 12);
+  h.writeUInt32LE(16, 16);
+  h.writeUInt16LE(1, 20);
+  h.writeUInt16LE(channels, 22);
+  h.writeUInt32LE(sampleRate, 24);
+  h.writeUInt32LE(sampleRate * channels * 2, 28);
+  h.writeUInt16LE(channels * 2, 32);
+  h.writeUInt16LE(16, 34);
+  h.write("data", 36);
+  h.writeUInt32LE(pcm.length, 40);
+  return Buffer.concat([h, pcm]);
+}
+
+const GEMINI_STYLE = {
+  uz: "Read the following text aloud in the Uzbek language (O'zbek tili) with natural, native Uzbek pronunciation, in a warm, clear and friendly teacher's voice, at a calm pace:",
+  en: "Read the following text aloud in clear English, in a warm, friendly teacher's voice, a little slower than normal:",
+};
+
+// Gemini TTS so'rovi. Muvaffaqiyatda { audio (base64 wav), mime }, aks holda { error }.
+export async function geminiTts(text, lang = "uz") {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_TTS_MODEL}:generateContent`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "x-goog-api-key": GEMINI_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: `${GEMINI_STYLE[lang] || GEMINI_STYLE.uz}\n\n${text}` }] }],
+      generationConfig: {
+        responseModalities: ["AUDIO"],
+        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: GEMINI_VOICE } } },
+      },
+    }),
+  });
+  if (!res.ok) return { error: `${res.status} ${(await res.text()).slice(0, 300)}` };
+  const json = await res.json();
+  const part = json?.candidates?.[0]?.content?.parts?.find((p) => p.inlineData?.data);
+  if (!part) return { error: "javobda audio yo'q: " + JSON.stringify(json).slice(0, 200) };
+  const mime = part.inlineData.mimeType || "";
+  const pcm = Buffer.from(part.inlineData.data, "base64");
+  if (/wav|mpeg|mp3|ogg/i.test(mime)) return { audio: pcm.toString("base64"), mime };
+  const rate = Number((mime.match(/rate=(\d+)/) || [])[1]) || 24000;
+  return { audio: pcmToWav(pcm, rate).toString("base64"), mime: "audio/wav" };
+}
+
 // OpenAI'ga bitta TTS so'rovi. Muvaffaqiyatda base64 mp3, aks holda { error } qaytaradi.
 export async function ttsRequest(body) {
   const res = await fetch("https://api.openai.com/v1/audio/speech", {
@@ -246,7 +300,18 @@ let useFallbackTts = false;
 const FALLBACK_TTS = { model: "tts-1", voice: process.env.TTS_FALLBACK_VOICE || "nova" };
 
 export async function speak(text, lang = "en") {
-  if (!OPENAI_KEY || !text) return null;
+  if (!text) return null;
+  // O'zbekcha qismlar: avval Gemini (o'zbekchani tabiiyroq talaffuz qiladi)
+  if (lang === "uz" && GEMINI_KEY) {
+    try {
+      const g = await geminiTts(text, "uz");
+      if (g.audio) return { audio: g.audio, mime: g.mime };
+      console.error(`Gemini TTS xatosi (${GEMINI_TTS_MODEL}):`, g.error, "- OpenAI ovoziga o'tilmoqda");
+    } catch (e) {
+      console.error("Gemini TTS ulanish xatosi:", e.message);
+    }
+  }
+  if (!OPENAI_KEY) return null;
   if (!useFallbackTts) {
     const r = await ttsRequest({
       model: TTS_MODEL,
@@ -254,13 +319,13 @@ export async function speak(text, lang = "en") {
       input: text,
       instructions: TTS_STYLE[lang] || TTS_STYLE.en,
     });
-    if (r.audio) return r.audio;
+    if (r.audio) return { audio: r.audio, mime: "audio/mpeg" };
     console.error(`TTS xatosi (${TTS_MODEL}):`, r.error, "- zaxira tts-1 ga o'tilmoqda");
   }
   const f = await ttsRequest({ ...FALLBACK_TTS, input: text });
   if (f.audio) {
     useFallbackTts = true;
-    return f.audio;
+    return { audio: f.audio, mime: "audio/mpeg" };
   }
   console.error("TTS xatosi (tts-1):", f.error);
   return null;
@@ -276,5 +341,10 @@ export async function speakParts(parts) {
       }),
     ),
   );
-  return list.map((p, i) => ({ lang: p.lang, text: p.text, audio: audios[i] }));
+  return list.map((p, i) => ({
+    lang: p.lang,
+    text: p.text,
+    audio: audios[i]?.audio || null,
+    mime: audios[i]?.mime || "audio/mpeg",
+  }));
 }
