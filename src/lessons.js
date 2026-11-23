@@ -2078,6 +2078,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-place",
+    category: "Grammatika gapirib",
+    title: "Joy predloglari: next to, between, opposite",
+    emoji: "🗺️",
+    level: "A2",
+    added: "2026-11-27",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on prepositions of place: next to, between, opposite, behind, in front of, under, above, near, on the left/right, at the corner. Ask the student to describe their room, their street and how to find places in their town (The bank is opposite the school. The café is between the pharmacy and the bakery). Have a natural conversation that makes the student use these prepositions a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Describe your street, please. What is next to your house?",
+    openerUz: "Ko'changizni tasvirlab bering. Uyingiz yonida nima bor?",
+    phrases: [
+      { en: "The bank is next to the post office.", uz: "Bank pochta yonida." },
+      { en: "The café is between the pharmacy and the bakery.", uz: "Kafe dorixona bilan novvoyxona orasida." },
+      { en: "There's a park opposite my house.", uz: "Uyimning ro'parasida park bor." },
+      { en: "My bag is under the table.", uz: "Sumkam stol tagida." },
+      { en: "The car is behind the building.", uz: "Mashina bino orqasida." },
+      { en: "Turn left at the corner.", uz: "Muyulishda chapga buriling." },
+    ],
+  },
+  {
+    id: "gr-indirect",
+    category: "Grammatika gapirib",
+    title: "Muloyim savol: Could you tell me where…?",
+    emoji: "🎩",
+    level: "B1-B2",
+    added: "2026-11-27",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on indirect (polite) questions: Could you tell me where the station is? Do you know what time it opens? I wonder if you could help me. Word order after the question phrase is like a statement (where the station is — not where is the station), and do/does/did disappear (Do you know where he lives? — not where does he live). Use if/whether for yes/no questions. Role-play a tourist asking for help at a hotel reception and in a city. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Good morning, this is the hotel reception. How can I help you today?",
+    openerUz: "Xayrli tong, bu mehmonxona qabulxonasi. Bugun sizga qanday yordam bera olaman?",
+    phrases: [
+      { en: "Could you tell me where the station is?", uz: "Vokzal qayerdaligini ayta olasizmi?" },
+      { en: "Do you know what time the museum opens?", uz: "Muzey soat nechada ochilishini bilasizmi?" },
+      { en: "I wonder if you could help me.", uz: "Menga yordam bera olarmikansiz." },
+      { en: "Can you tell me how much it costs?", uz: "Bu qancha turishini ayta olasizmi?" },
+      { en: "Do you know if there is a bank nearby?", uz: "Yaqin atrofda bank bor-yo'qligini bilasizmi?" },
+      { en: "Could you tell me when the bus leaves?", uz: "Avtobus qachon jo'nashini ayta olasizmi?" },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -2981,7 +3021,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-tobe", "gr-this", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-future", "gr-compare", "gr-adverbs", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-ppvsps", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-passive", "gr-phrasal", "gr-tags", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative"];
+const GR_ORDER = ["gr-tobe", "gr-this", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adverbs", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-ppvsps", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-tags", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative"];
 // Avval daraja guruhi (A1–A2 → B1 → B2), guruh ichida — GR_ORDER tartibi
 const grGroup = (lv) => (/B2/.test(lv || "") ? 2 : /A2-B1|^B1$/.test(lv || "") ? 1 : 0);
 const grRank = (l) => grGroup(l.level) * 100 + (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
@@ -3016,6 +3056,8 @@ const QUIZ = {
   "gr-ppvsps": ["I ___ to Bukhara last summer.|went|have gone|have been", "___ you ever eaten sushi?|Have|Did|Do", "She ___ her homework yet.|hasn't finished|didn't finish yesterday|not finished", "I ___ him two days ago.|saw|have seen|seen", "When ___ you start learning English?|did|have|has", "We ___ here since 2018.|have lived|lived|live", "He ___ me yesterday evening.|called|has called|have called", "I've never ___ to London.|been|went|go", "They ___ married in 2020.|got|have got|get", "I ___ just eaten. I'm not hungry.|have|did|was", "Did you ___ the match last night?|watch|watched|watching", "How long ___ you known her?|have|did|do"],
   "gr-adverbs": ["My mother cooks very ___.|well|good|goodly", "Please speak ___. I don't understand.|slowly|slow|slowlier", "He drives very ___.|carefully|careful|carefuly", "She is a ___ driver.|careful|carefully|care", "I passed the exam ___.|easily|easy|easyly", "He works ___ every day.|hard|hardly|hardy", "This car is very ___.|fast|fastly|fastful", "They arrived ___ for the meeting.|late|lately|latly", "She speaks English ___.|fluently|fluent|fluently good", "He is a ___ singer.|good|well|goodly", "Walk ___! The floor is wet.|carefully|careful|carefull", "The children played ___ in the garden.|happily|happy|happyly"],
   "gr-causative": ["I had my hair ___ yesterday.|cut|cutting|to cut", "I need to get my phone ___.|repaired|repair|repairing", "We're having our flat ___.|painted|paint|to paint", "She ___ her car washed every week.|has|makes|does", "Where can I have my photo ___?|taken|take|took", "I'll have the pizza ___ to my office.|delivered|deliver|delivering", "He got his watch ___ at the market.|fixed|fix|fixing", "They had a new kitchen ___ last year.|installed|install|installing", "Have you ___ your eyes tested recently?|had|got to|made", "I must get my suit ___ before the wedding.|cleaned|clean|cleaning", "We had the documents ___ into English.|translated|translate|translating", "She is going to have her nails ___.|done|do|did"],
+  "gr-place": ["The bank is next ___ the post office.|to|of|at", "The café is between the pharmacy ___ the bakery.|and|or|with", "There's a park ___ my house.|opposite|opposite of|front", "My bag is ___ the table.|under|between|opposite to", "The car is ___ the building.|behind|between|next", "I'm waiting in front ___ the cinema.|of|to|at", "The lamp is ___ the sofa, on the wall.|above|under|between", "Turn left ___ the corner.|at|in|on", "The school is ___ my home. It's a 2-minute walk.|near|next|between", "The cat is sitting ___ the two chairs.|between|among of|opposite", "The pharmacy is on the ___.|left|lefts|leftside of", "Our flat is ___ the shop. Just go upstairs!|above|under|opposite of"],
+  "gr-indirect": ["Could you tell me where the station ___?|is|does|be", "Do you know what time the museum ___?|opens|does open|open", "I wonder ___ you could help me.|if|that|what", "Can you tell me how much it ___?|costs|does cost|cost", "Do you know ___ there is a bank nearby?|if|where if|that", "Could you tell me when the bus ___?|leaves|does leave|leave", "Do you know where ___?|he lives|does he live|lives he", "Can you tell me what ___ name is?|her|is her|does her", "I'd like to know why ___ late.|you were|were you|did you", "Do you know ___ the shop is open today?|whether|what|which", "Could you tell me where ___ the toilets?|I can find|can I find|do I find", "Do you remember what time ___?|the film started|did the film start|started the film"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink", "My sister ___ English very well.|speaks|speak|speaking", "They ___ live in Tashkent.|don't|doesn't|aren't", "Where ___ he work?|does|do|is", "The shop ___ at nine o'clock.|opens|open|opening", "Water ___ at 100 degrees.|boils|boil|is boil", "My friends ___ like rap music.|don't|doesn't|isn't", "___ your brother study at university?|Does|Do|Is", "He usually ___ his homework in the evening.|does|do|doing"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on", "I was born ___ 2008.|in|on|at", "We have a party ___ Friday evening.|on|in|at", "I usually sleep ___ night.|at|in|on", "The keys are ___ the table.|on|at|in", "The meeting is ___ 3 pm.|at|in|on", "I'll see you ___ the weekend.|at|in|on", "She lives ___ Samarkand.|in|at|on", "My birthday is ___ 5th March.|on|in|at"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do", "Listen! The baby ___ crying.|is|are|be", "We ___ waiting for the bus now.|are|is|am", "What ___ you doing?|are|do|is", "She isn't ___ TV at the moment.|watching|watch|watches", "I ___ working from home this week.|am|is|are", "Why ___ you laughing?|are|is|do", "They ___ playing football right now.|are|is|be", "Be quiet! Grandma ___ sleeping.|is|are|am"],
@@ -3066,6 +3108,8 @@ const KEYWORDS = {
   "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
 };
 const RULES = {
+  "gr-place": "next to — yonida, between ... and ... — orasida, opposite — ro'parasida.\nbehind — orqasida, in front of — oldida, under — tagida, above — ustida (tegmasdan), near — yaqinida.\nThe bank is next to the post office. The café is between the pharmacy and the bakery.\nThere's a park opposite my house. Turn left at the corner.",
+  "gr-indirect": "Muloyim savol: Could you tell me / Do you know + savol so'zi + ega + fe'l (darak tartib).\nWhere is the station? → Could you tell me where the station is?\ndo/does/did tushib qoladi: Where does he live? → Do you know where he lives?\nHa/yo'q savol — if: Is there a bank? → Do you know if there is a bank? (✗ where is the station?)",
   "gr-adverbs": "Sifat — narsani tasvirlaydi: a quick runner, a careful driver.\nRavish — fe'lni tasvirlaydi (qanday?): he runs quickly, she drives carefully.\nKo'pincha sifat + -ly: slow → slowly, easy → easily, careful → carefully.\nNoto'g'ri: good → well, fast → fast, hard → hard, late → late. She sings well. (✗ She sings good)",
   "gr-causative": "Ishni o'zimiz emas, boshqa odam qiladi: have / get + narsa + 3-shakl.\nI had my hair cut. (sartarosh qirqdi) I cut my hair. (o'zim qirqdim)\nI need to get my phone repaired. We're having the house painted.\nZamon have da o'zgaradi: I'll have it delivered. She has had her car washed.",
   "gr-irregular": "Ko'p fe'llar o'tgan zamonda -ed olmaydi, yod olish kerak:\ngo → went → gone, see → saw → seen, eat → ate → eaten, buy → bought → bought.\ntake → took → taken, write → wrote → written, think → thought → thought, come → came → come.\nI went home. (✗ I goed home) She bought a car. (✗ She buyed)",
