@@ -1009,3 +1009,6 @@ body.dark .fold-tag.new { color: #fb7185; } body.dark .fold-tag.rep { color: #fb
 /* Bo'lim sarlavhasi bir qatorda; tor ekranda progress chizig'i qolgan joyni oladi */
 .cat-title { white-space: nowrap; }
 @media (max-width: 360px) { .cat-title { font-size: 14px; gap: 6px; } .cat-title .cat-progress { min-width: 0; } .fold-tag { padding: 1px 4px; margin-left: 0; } }
+
+/* Tor ekranda dars sarlavhasi chiplari faqat belgi bilan (taymer kesilmasin) */
+@media (max-width: 360px) { .lesson-head .chip-txt { display: none; } .lesson-head { gap: 6px; } }

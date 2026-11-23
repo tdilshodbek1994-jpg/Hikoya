@@ -2355,7 +2355,10 @@ $("slowBtn").addEventListener("click", () => {
 function applyTr() {
   $("trBtn").hidden = state.lessonMode === "tutor"; // ustoz rejimida Sado o'zi o'zbekcha gapiradi
   $("trBtn").classList.toggle("on", state.tr);
-  $("trBtn").textContent = state.tr ? "🇺🇿 Tarjima ✓" : "🇺🇿 Tarjima";
+  // Matn qismi alohida — tor ekranda faqat belgi qoladi (sarlavha sig'ishi uchun)
+  $("trBtn").innerHTML = "";
+  $("trBtn").append("🇺🇿", el("span", "chip-txt", state.tr ? " Tarjima ✓" : " Tarjima"));
+  $("trBtn").title = "O'zbekcha tarjima";
 }
 $("trBtn").addEventListener("click", () => {
   haptic();
