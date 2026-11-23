@@ -1339,3 +1339,11 @@ body.dark .acc-tag.hi { color: #4ade80; } body.dark .acc-tag.mid { color: #fbbf2
 .rule-acc.mid { color: #d97706; background: color-mix(in srgb, #f59e0b 16%, transparent); }
 .rule-acc.lo { color: var(--danger); background: color-mix(in srgb, var(--danger) 14%, transparent); }
 .rules-sort { margin: 0 0 8px; font-size: 13px; }
+
+/* 🧩 Kun iborasi: tezkor savol */
+.daily-q { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, var(--primary) 7%, var(--bg)); }
+.daily-q-text { font-size: 14.5px; font-weight: 600; line-height: 1.45; }
+.daily-q-gap { color: var(--primary); padding: 0 2px; }
+.daily-q-gap.ok { color: var(--ok); }
+.daily-q-opts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.daily-q-opts .qz-opt { min-height: 34px; padding: 5px 12px; font-size: 14px; }

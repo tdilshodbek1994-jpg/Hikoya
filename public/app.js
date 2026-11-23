@@ -2010,6 +2010,34 @@ function renderDaily() {
       box.append(rev);
     }
   }
+  // 🧩 Ibora grammatika darsidan bo'lsa — shu mavzudan bitta tezkor savol (shu yerning o'zida)
+  if (l.quiz?.length) {
+    const q = l.quiz[phraseHash(`${dayNo}|${state.dailyOff || 0}|q`) % l.quiz.length];
+    const [before, after] = q.text.split("___");
+    const qb = el("div", "daily-q");
+    const line = el("div", "daily-q-text");
+    const gap = el("b", "daily-q-gap", "____");
+    line.append(el("span", "", "🧩 " + before), gap, el("span", "", after));
+    const opts = el("div", "daily-q-opts");
+    for (const o of [...q.options].sort((a, b) => phraseHash(dayNo + a) - phraseHash(dayNo + b))) {
+      const b = el("button", "qz-opt", o);
+      b.addEventListener("click", () => {
+        if (opts.dataset.done) return;
+        opts.dataset.done = "1";
+        const ok = o === q.answer;
+        haptic(ok ? "light" : "medium");
+        b.classList.add(ok ? "ok" : "bad");
+        if (!ok) [...opts.children].find((x) => x.textContent === q.answer)?.classList.add("ok");
+        gap.textContent = q.answer;
+        gap.classList.add("ok");
+        quizMiss({ before: before.trimEnd(), after, answer: q.answer, options: q.options, from: l.id }, l.id, ok);
+        if (!ok) toast("💡 Bu mavzu «Shu darsni ochish» da batafsil", 2500);
+      });
+      opts.append(b);
+    }
+    qb.append(line, opts);
+    box.append(qb);
+  }
   // 📅 Bugungi grammatika testiga tezkor havola (grammatika bo'limiga kirmasdan)
   if (state.lessons.some((l) => l.quiz?.length)) {
     const dt = dailyTest();
