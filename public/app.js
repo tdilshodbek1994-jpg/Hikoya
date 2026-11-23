@@ -287,7 +287,7 @@ function ruleBody(rule) {
       ex.addEventListener("click", (e) => {
         e.stopPropagation();
         haptic();
-        speakBrowser(t, "en");
+        sayPhrase(t).then(() => mascot.setLevel(0));
       });
       row.append(ex);
       last = m.index + t.length;
@@ -970,7 +970,7 @@ function openSheet(lesson) {
     for (const p of all ? lesson.phrases : lesson.phrases.slice(0, 3)) {
       const li = el("li", "", p.en);
       li.append(el("span", "", p.uz));
-      li.addEventListener("click", () => speakBrowser(p.en.replace(/\.\.\./g, "something"), "en"));
+      li.addEventListener("click", () => sayPhrase(p.en).then(() => mascot.setLevel(0)));
       ul.append(li);
     }
     if (!all && lesson.phrases.length > 3) {
@@ -1166,7 +1166,7 @@ async function sayPhrase(en) {
   const key = (state.slow ? "slow:" : "") + en;
   let part = sayCache.get(key);
   if (!part) {
-    part = await api(`api/say?text=${encodeURIComponent(en)}&slow=${state.slow ? 1 : 0}`, { method: "GET" }).catch(() => null);
+    part = await api(`api/say?text=${encodeURIComponent(en)}&slow=${state.slow ? 1 : 0}&session=${encodeURIComponent(state.session || "")}`, { method: "GET" }).catch(() => null);
     if (part?.audio) sayCache.set(key, part);
   }
   ensureCtx();
@@ -1558,7 +1558,7 @@ $("hintBtn").addEventListener("click", async () => {
     for (const h of hints || []) {
       const d = el("div", "hint-item");
       d.append(el("b", "", h.en), el("span", "", h.uz));
-      if (!live) d.addEventListener("click", () => speakBrowser(h.en, "en"));
+      if (!live) d.addEventListener("click", () => sayPhrase(h.en).then(() => mascot.setLevel(0)));
       box.append(d);
     }
     if (!hints?.length) box.append(el("div", "muted", "Hozircha namuna topilmadi."));
@@ -1878,7 +1878,7 @@ function setSubs(ai, aiUz, me, fix, say) {
       const b = el("button", "sub-en", x.text);
       b.addEventListener("click", () => {
         haptic();
-        speakBrowser(x.text, "en");
+        sayPhrase(x.text).then(() => mascot.setLevel(0));
       });
       $("subAi").append(b);
     });

@@ -225,6 +225,8 @@ app.post(
       s.turns += 1;
       if (s.mode === "tutor") {
         const t = await tutorTurn(s, lesson, text);
+        s.sayable ||= new Set();
+        for (const x of t.say) if (x.lang === "en") s.sayable.add(x.text);
         s.transcript.push({ who: "student", text }, { who: "sado", text: t.say.map((x) => x.text).join(" ") });
         for (const i of t.used_phrases) s.used.add(i);
         s.current = t.current;
@@ -306,12 +308,17 @@ app.post("/api/end", express.json(), auth, async (req, res) => {
 
 // 🔊 Iborani to'g'ri talaffuz bilan eshittirish (faqat darslardagi iboralar, keshlanadi)
 const PHRASES = new Set(LESSONS.flatMap((l) => l.phrases.map((p) => p.en)));
+// Grammatika qoidalaridagi inglizcha misollar ham ovozga aylantirilishi mumkin
+for (const l of LESSONS) for (const m of (l.rule || "").matchAll(/[A-Z][A-Za-z0-9' ,]*[A-Za-z0-9][.?!]/g)) if (m[0].split(" ").length >= 2) PHRASES.add(m[0]);
 const sayCache = new Map();
 app.get("/api/say", auth, async (req, res) => {
   const text = String(req.query.text || "");
   // Faqat darslardagi iboralar yoki o'quvchining o'z lug'atidagi so'zlar (TTS xarajatini cheklash uchun)
   const own = () => text.length <= 120 && (summary(req.userId).words || []).some((w) => w.en === text);
-  if (!PHRASES.has(text) && !own()) return res.status(400).json({ error: "Noma'lum ibora" });
+  // Joriy darsda AI aytgan/taklif qilgan inglizcha gaplar (namunalar, ustoz misollari)
+  const sess = sessions.get(String(req.query.session || ""));
+  const inSession = () => sess && sess.userId === req.userId && sess.sayable?.has(text);
+  if (!PHRASES.has(text) && !own() && !inSession()) return res.status(400).json({ error: "Noma'lum ibora" });
   const slow = req.query.slow === "1";
   const key = (slow ? "slow:" : "") + text;
   try {
@@ -334,7 +341,11 @@ app.post("/api/hint", express.json(), auth, async (req, res) => {
   if (s.hints > 20) return res.status(429).json({ error: "Bu darsda yordam soni tugadi." });
   const lastSado = [...s.transcript].reverse().find((t) => t.who === "sado")?.text;
   try {
-    res.json({ hints: await suggestReplies(lessonOf(s), lastSado, s.used) });
+    const hints = await suggestReplies(lessonOf(s), lastSado, s.used);
+    // Shu sessiyada bu namunalarni Sado ovozida eshitish mumkin
+    s.sayable ||= new Set();
+    for (const h of hints || []) if (h?.en) s.sayable.add(String(h.en).slice(0, 200));
+    res.json({ hints });
   } catch (err) {
     sendError(res, err);
   }
