@@ -1065,3 +1065,9 @@ body.dark .fold-tag.new { color: #fb7185; } body.dark .fold-tag.rep { color: #fb
 /* 🖼 Bolalar: ibora rasmi */
 .phrase-pic { font-size: 40px; line-height: 1.1; margin: 2px 0 4px; animation: picIn 0.35s ease; }
 @keyframes picIn { from { transform: scale(0.6); opacity: 0; } }
+/* 🎧 Lug'at: hammasini tinglash */
+.vocab-card #vocabList { margin-top: 10px; }
+.vocab-play { margin-top: 8px; }
+.vocab-play.on { color: var(--danger); }
+#vocabList li.playing { outline: 2px solid var(--primary); outline-offset: -2px; background: color-mix(in srgb, var(--primary) 10%, var(--bg)); }
+.btn.vocab-play.on { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 60%, transparent); }

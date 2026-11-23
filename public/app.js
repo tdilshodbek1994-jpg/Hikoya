@@ -756,6 +756,7 @@ function renderVocab() {
   if (state.vocabTab === "fix") items = [...items.filter((w) => !w.fixed), ...items.filter((w) => w.fixed)];
   // 🔍 Lug'atda qidirish (ro'yxat uzun bo'lsa ko'rinadi)
   $("vocabSearch").hidden = items.length < 8 || Boolean(state.flash);
+  $("vocabPlay").hidden = items.length < 2 || Boolean(state.flash);
   $("flashBtn").textContent = state.vocabTab === "fix" ? "🃏 Xatolarim bo'yicha kartochkalar" : "🃏 Kartochka mashqi";
   const vq = $("vocabSearch").hidden ? "" : $("vocabSearch").value.trim().toLowerCase().replace(/[‘’`ʻʼ]/g, "'");
   const total = items.length;
@@ -767,6 +768,7 @@ function renderVocab() {
   if (!items.length) ul.append(el("li", "muted", vq && total ? `«${vq}» topilmadi` : state.vocabTab === "fix" ? "Hozircha xato yo'q 👏" : "Hozircha so'z yo'q"));
   for (const w of items) {
     const li = el("li", "rep-word" + (w.type === "fix" ? " rep-mistake" : ""));
+    li.dataset.en = w.en;
     if (w.type === "fix") {
       const line = el("div", "");
       line.append(el("s", "rep-wrong", w.wrong || ""), document.createTextNode(" → "), el("b", "rep-right", w.en));
@@ -839,7 +841,35 @@ $("vocabBtn").addEventListener("click", () => {
 });
 $("vocabClose").addEventListener("click", () => {
   $("vocabSheet").hidden = true;
+  stopVocabPlay();
   stopFlash();
+});
+
+// 🎧 Hammasini tinglash: ro'yxatdagi so'zlar ketma-ket o'qiladi (qo'l bo'sh takrorlash)
+function stopVocabPlay() {
+  if (!state.vocabPlay) return;
+  state.vocabPlay.stop = true;
+  state.vocabPlay = null;
+  $("vocabPlay").textContent = "🎧 Hammasini tinglash";
+  $("vocabPlay").classList.remove("on");
+  document.querySelectorAll("#vocabList .playing").forEach((x) => x.classList.remove("playing"));
+}
+$("vocabPlay").addEventListener("click", async () => {
+  haptic();
+  if (state.vocabPlay) return stopVocabPlay();
+  const run = (state.vocabPlay = { stop: false });
+  $("vocabPlay").textContent = "⏹ To'xtatish";
+  $("vocabPlay").classList.add("on");
+  const lis = [...$("vocabList").querySelectorAll("li[data-en]")];
+  for (const li of lis) {
+    if (run.stop) return;
+    document.querySelectorAll("#vocabList .playing").forEach((x) => x.classList.remove("playing"));
+    li.classList.add("playing");
+    li.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    await sayPhrase(li.dataset.en).catch(() => {});
+    await new Promise((res) => setTimeout(res, 1200)); // o'quvchi takrorlashi uchun pauza
+  }
+  if (!run.stop) stopVocabPlay();
 });
 
 // 🃏 Kartochka mashqi: o'zbekchasi ko'rsatiladi, inglizchasini eslash kerak
@@ -865,6 +895,8 @@ function startFlash() {
   $("vocabList").hidden = true;
   $("vocabCopy").hidden = true;
   $("flashBtn").hidden = true;
+  stopVocabPlay();
+  $("vocabPlay").hidden = true;
   $("reviewBtn").hidden = true;
   $("flash").hidden = false;
   renderFlash();
@@ -897,7 +929,7 @@ function renderFlash() {
     const again = el("button", "btn primary wide", "🔁 Yana bir marta");
     again.addEventListener("click", startFlash);
     const back = el("button", "btn ghost wide", "Lug'atga qaytish");
-    back.addEventListener("click", stopFlash);
+    back.addEventListener("click", () => (stopFlash(), renderVocab()));
     box.append(again, back);
     return;
   }
@@ -959,11 +991,12 @@ $("flashBtn").addEventListener("click", () => {
   startFlash();
 });
 $("vocabSheet").addEventListener("click", (e) => {
-  if (e.target.id === "vocabSheet") $("vocabSheet").hidden = true;
+  if (e.target.id === "vocabSheet") $("vocabSheet").hidden = true, stopVocabPlay();
 });
 for (const b of document.querySelectorAll(".vocab-tabs .chip-f")) {
   b.addEventListener("click", () => {
     state.vocabTab = b.dataset.t;
+    stopVocabPlay();
     $("vocabSearch").value = "";
     for (const x of document.querySelectorAll(".vocab-tabs .chip-f")) x.classList.toggle("on", x === b);
     renderVocab();
