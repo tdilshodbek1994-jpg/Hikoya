@@ -1947,13 +1947,54 @@ export const LESSONS = [
       { en: "Thanks, that's really helpful.", uz: "Rahmat, bu juda foydali bo'ldi." },
     ],
   },
+  // ======== Grammatika (qo'shimcha 2) ========
+  {
+    id: "gr-usedto",
+    category: "Grammatika gapirib",
+    title: "Avvalgi odatlar (used to)",
+    emoji: "🕰️",
+    level: "A2-B1",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on grammar: used to + verb for past habits and states that are no longer true (I used to play..., Did you use to...?, I didn't use to...). Have a natural conversation that makes the student use this grammar a lot. Ask simple questions, listen, and whenever the student makes a mistake with this grammar, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "When you were a child, what did you use to do after school?",
+    openerUz: "Bolaligingizda maktabdan keyin nima qilardingiz?",
+    rule: "O'tmishdagi, hozir yo'q odat: used to + fe'l.\nI used to play football. (Endi o'ynamayman.)\nInkor/savol: didn't use to / Did you use to...? (d yo'q!)",
+    phrases: [
+      { en: "I used to play football every day.", uz: "Men har kuni futbol o'ynardim." },
+      { en: "I didn't use to like vegetables.", uz: "Men sabzavotlarni yoqtirmasdim." },
+      { en: "Did you use to have a pet?", uz: "Sizning uy hayvoningiz bormidi?" },
+      { en: "We used to live in a village.", uz: "Biz qishloqda yashardik." },
+      { en: "I used to be very shy.", uz: "Men juda uyatchan edim." },
+      { en: "But now I ...", uz: "Lekin hozir men ..." },
+    ],
+  },
+  {
+    id: "gr-gerund",
+    category: "Grammatika gapirib",
+    title: "-ing yoki to + fe'l (Gerund / Infinitive)",
+    emoji: "🔀",
+    level: "B1",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on grammar: verb patterns: verbs followed by -ing (enjoy, like, love, hate, finish, avoid) versus to + infinitive (want, decide, hope, plan, need, would like). Have a natural conversation that makes the student use this grammar a lot. Ask simple questions, listen, and whenever the student makes a mistake with this grammar, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "What do you enjoy doing at the weekend? And what do you want to do next year?",
+    openerUz: "Dam olish kunlari nima qilishni yoqtirasiz? Kelasi yili nima qilmoqchisiz?",
+    rule: "enjoy, like, love, hate, finish, avoid → fe'l + -ing: I enjoy reading.\nwant, decide, hope, plan, need, would like → to + fe'l: I want to learn.\nlike/love dan keyin ikkalasi ham bo'ladi.",
+    phrases: [
+      { en: "I enjoy reading books.", uz: "Men kitob o'qishni yoqtiraman." },
+      { en: "I want to learn French.", uz: "Men frantsuz tilini o'rganmoqchiman." },
+      { en: "I've decided to study abroad.", uz: "Chet elda o'qishga qaror qildim." },
+      { en: "I hate waking up early.", uz: "Erta turishni yomon ko'raman." },
+      { en: "I'm planning to visit Bukhara.", uz: "Buxoroga borishni rejalashtiryapman." },
+      { en: "I finished writing my essay.", uz: "Inshoni yozib tugatdim." },
+    ],
+  },
 ];
 
 const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Grammatika gapirib", "Bolalar uchun", "Kundalik hayot", "Sayohat", "O'qish va ish", "Biznes va IT"];
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-continuous", "gr-past", "gr-questions", "gr-articles", "gr-future", "gr-compare", "gr-modals", "gr-perfect", "gr-conditional", "gr-passive"];
+const GR_ORDER = ["gr-continuous", "gr-past", "gr-questions", "gr-articles", "gr-future", "gr-compare", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-passive"];
 const grRank = (l) => (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
 LESSONS.sort((a, b) => ORDER.indexOf(a.category) - ORDER.indexOf(b.category) || partRank(a) - partRank(b) || (a.category === "Grammatika gapirib" ? grRank(a) - grRank(b) : 0));
 // Kurs darslarini tartib raqami bilan nomlaymiz
