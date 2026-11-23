@@ -1219,3 +1219,6 @@ body.dark .daily-test.done { color: #4ade80; }
 .qz-line.bad { border-color: var(--danger); border-style: solid; background: color-mix(in srgb, var(--danger) 8%, transparent); }
 .qz-w { padding: 7px 12px; min-height: 36px; }
 .qz-line .qz-w { background: color-mix(in srgb, var(--primary) 14%, var(--bg)); border-color: color-mix(in srgb, var(--primary) 40%, transparent); }
+.qz-tools { display: flex; gap: 8px; margin-top: 10px; }
+.qz-tool { font: inherit; font-size: 13px; font-weight: 700; color: var(--muted); background: color-mix(in srgb, var(--muted) 12%, transparent); padding: 6px 12px; border-radius: 99px; }
+.qz-tool.used { color: var(--primary); }

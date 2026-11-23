@@ -628,6 +628,7 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
   const asOrder = (it) => {
     if (/«/.test(it.before)) return it;
     const full = sent(it, it.answer);
+    if (/[—–]|\s-\s/.test(full)) return it; // ikki qismli gap (savol — javob) tartiblash uchun chalkash
     const words = full.split(" ");
     if (words.length < 4 || words.length > 8 || new Set(words).size !== words.length) return it;
     let mixed = [...words];
@@ -736,7 +737,23 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
         });
         bank.append(b);
       }
-      body.append(line, bank);
+      // 🔊 Eshitib yordam olish va ↺ qaytadan boshlash
+      const tools = el("div", "qz-tools");
+      const hear = el("button", "qz-tool", "🔊 Eshitish");
+      hear.addEventListener("click", () => {
+        haptic();
+        hear.classList.add("used");
+        sayPhrase(it.right).then(() => mascot.setLevel(0)).catch(() => {});
+      });
+      const reset = el("button", "qz-tool", "↺ Tozalash");
+      reset.addEventListener("click", () => {
+        if (line.classList.contains("ok") || line.classList.contains("bad")) return;
+        haptic();
+        for (const b of [...placed]) bank.append(b);
+        placed.length = 0;
+      });
+      tools.append(hear, reset);
+      body.append(line, bank, tools);
       return;
     }
     const q = el("p", "qz-q");
