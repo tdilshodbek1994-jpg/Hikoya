@@ -302,6 +302,8 @@ function toggleFav(id) {
   localStorage.setItem("sado-favs", JSON.stringify([...state.favs]));
 }
 
+const isHard = (l) => /^B2|C1|C2/.test(l.level || "");
+
 // 60 balldan past darslar — takrorlash uchun
 const WEAK = 60;
 // Necha kun oldin o'tilgan (Toshkent vaqti)
@@ -582,6 +584,8 @@ function renderChips() {
   const newN = state.lessons.filter((l) => state.newIds?.has(l.id) && !state.progress?.lessons?.[l.id]).length;
   if (newN) favChip.unshift(["__new", `🆕 Yangi (${newN})`]);
   if (!newN && state.filter.cat === "__new") state.filter.cat = "";
+  // 🔥 Qiyin darslar (B2 va undan yuqori)
+  favChip.push(["__hard", `🔥 Qiyin (${state.lessons.filter(isHard).length})`]);
   const weakN = weakIds().length;
   if (weakN) favChip.push(["__weak", `🔁 Takrorlash (${weakN})`]);
   if (!weakN && state.filter.cat === "__weak") state.filter.cat = "";
@@ -1105,7 +1109,7 @@ function renderLessons() {
   const hits = new Map(); // dars id -> topilgan ibora
   const items = state.lessons.filter((l) => {
     if (l.liveOnly) return false;
-    if (state.filter.cat && !(state.filter.cat === "__fav" ? state.favs.has(l.id) : state.filter.cat === "__weak" ? weakIds().includes(l.id) : state.filter.cat === "__new" ? state.newIds?.has(l.id) && !state.progress?.lessons?.[l.id] : l.category === state.filter.cat)) return false;
+    if (state.filter.cat && !(state.filter.cat === "__fav" ? state.favs.has(l.id) : state.filter.cat === "__weak" ? weakIds().includes(l.id) : state.filter.cat === "__new" ? state.newIds?.has(l.id) && !state.progress?.lessons?.[l.id] : state.filter.cat === "__hard" ? isHard(l) : l.category === state.filter.cat)) return false;
     if (!q) return true;
     if (norm(l.title + " " + l.category).includes(q)) return true;
     const p = l.phrases.find((x) => norm(x.en + " " + x.uz).includes(q));
