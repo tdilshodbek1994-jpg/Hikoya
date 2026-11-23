@@ -374,7 +374,17 @@ function lessonButton(l) {
   }
   // 🧩 Grammatika mashqining eng yaxshi natijasi
   const qz = quizBest()[l.id];
-  if (qz) b.querySelector(".lesson-sub").textContent += ` · 🧩 ${qz}`;
+  if (qz) b.querySelector(".lesson-sub").textContent += `\u00a0· 🧩\u00a0${qz}`; // "🧩 4/4" bo'linmasin
+  // 🎯 Mavzu bo'yicha test aniqligi; 8+ javob va 80%+ bo'lsa — 🎓 o'zlashtirildi
+  const ts = l.quiz?.length ? quizStats().by?.[l.id] : null;
+  if (ts?.all >= 3) {
+    const pct = Math.round((ts.ok / ts.all) * 100);
+    const mastered = ts.all >= 8 && pct >= 80;
+    const tag = el("span", "acc-tag " + (mastered ? "hi" : pct >= 50 ? "mid" : "lo"), mastered ? `🎓 ${pct}%` : `🎯 ${pct}%`);
+    tag.title = mastered ? "Mavzu o'zlashtirildi" : "Testlardagi aniqlik";
+    b.querySelector(".lesson-sub").append(" ", tag);
+    if (mastered) b.classList.add("mastered");
+  }
   b.addEventListener("click", () => openSheet(l));
   return b;
 }
