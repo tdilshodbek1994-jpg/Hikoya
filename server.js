@@ -9,7 +9,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { LESSONS, getLesson, publicLesson } from "./src/lessons.js";
 import { verifyInitData } from "./src/telegram.js";
 import { WebSocketServer } from "ws";
-import { liveEnabled, runLive } from "./src/live.js";
+import { liveEnabled, runLive, liveStats } from "./src/live.js";
 import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies, translateUz, sampleAnswer, samplePhrases, sampleStats, sampleCount, ttsStats } from "./src/ai.js";
 import { recordSession, touchDay, summary, adminStats, startedToday, countStart, refundStart, startsTodayTotal, deleteUser, markFixed, addWord, removeWord, setRemind, remindTargets, markReminded } from "./src/store.js";
 
@@ -371,6 +371,7 @@ app.post("/api/hint", express.json(), auth, async (req, res) => {
   const s = getSession(req, res);
   if (!s) return;
   s.hints = (s.hints || 0) + 1;
+  featStats.hint++;
   if (s.hints > 20) return res.status(429).json({ error: "Bu darsda yordam soni tugadi." });
   const lastSado = [...s.transcript].reverse().find((t) => t.who === "sado")?.text;
   try {
@@ -385,6 +386,7 @@ app.post("/api/hint", express.json(), auth, async (req, res) => {
 });
 
 // 🇺🇿 Sado aytgan gapning tarjimasi — faqat shu sessiyada Sado aytgan gaplar uchun (bepul tarjimon bo'lib qolmasin)
+const featStats = { translate: 0, hint: 0 }; // 📊 admin: yangi imkoniyatlardan foydalanish (server ishga tushgandan beri)
 const normTr = (t) => String(t || "").toLowerCase().replace(/\s+/g, " ").trim();
 app.post("/api/translate", express.json(), auth, async (req, res) => {
   const s = getSession(req, res);
@@ -393,6 +395,7 @@ app.post("/api/translate", express.json(), auth, async (req, res) => {
   const said = (s.transcript || []).filter((t) => t.who === "sado").map((t) => normTr(t.text));
   if (!text || !said.some((t) => t.includes(normTr(text)))) return res.status(400).json({ error: "Bu gap darsda aytilmagan" });
   s.translates = (s.translates || 0) + 1;
+  featStats.translate++;
   if (s.translates > 40) return res.status(429).json({ error: "Bu darsda tarjima soni tugadi." });
   try {
     res.json({ uz: await translateUz(text) });
@@ -444,6 +447,7 @@ app.get("/api/admin/stats", (req, res) => {
   s.samples = { ready: sampleCount(), ...sampleStats };
   s.startsToday = startsTodayTotal();
   s.ttsCache = ttsStats;
+  s.features = { ...featStats, topic: liveStats.topicSwitches };
   res.json(s);
 });
 

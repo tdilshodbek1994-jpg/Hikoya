@@ -118,6 +118,7 @@ function detectUsed(lesson, text, used) {
 // Foydalanuvchi tanlaydigan ovozlar
 const VOICES = { f: process.env.GEMINI_LIVE_VOICE_F || "Kore", m: process.env.GEMINI_LIVE_VOICE_M || "Puck" };
 
+export const liveStats = { topicSwitches: 0 }; // 📊 admin uchun
 export async function runLive(client, session, lesson, { maxMs, voice, topic }) {
   // ✏️ O'quvchi yozgan mavzu: faqat harf, raqam va oddiy belgilar, 60 belgigacha
   const custom = String(topic || "").startsWith("custom:")
@@ -274,6 +275,7 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
       if (m.type === "end") close("foydalanuvchi");
       // 🔀 Erkin suhbat: o'quvchi boshqa mavzu so'radi (bir qo'ng'iroqda 6 martagacha)
       if (m.type === "newtopic" && lesson.liveOnly && (session.topicSwitches = (session.topicSwitches || 0) + 1) <= 6) {
+        liveStats.topicSwitches++;
         upstream.send(
           JSON.stringify({
             clientContent: {
