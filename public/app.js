@@ -1670,7 +1670,9 @@ async function finish() {
   try {
     const data = await api("api/end", { json: { session } });
     if (data.progress) {
+      const before = new Set(Object.keys(state.progress?.lessons || {}));
       state.progress = { ...data.progress, limit: state.progress?.limit, startedToday: state.progress?.startedToday };
+      checkCourseDone(before);
       renderLessons();
     }
     renderReport(data.report, data.score);
@@ -1685,6 +1687,37 @@ function el(tag, cls, text) {
   if (cls) e.className = cls;
   if (text != null) e.textContent = text;
   return e;
+}
+
+// 🎓 Kurs tugatildi: shu dars kursning oxirgi o'tilmagan darsi bo'lsa
+function checkCourseDone(before) {
+  const l = state.lesson;
+  $("cert").hidden = true;
+  if (!l || !/kursi$|Grammatika/.test(l.category || "")) return;
+  const all = state.lessons.filter((x) => x.category === l.category);
+  const done = state.progress?.lessons || {};
+  const wasDone = all.every((x) => before.has(x.id));
+  if (wasDone || !all.every((x) => done[x.id])) return;
+  const avg = Math.round(all.reduce((s, x) => s + (done[x.id]?.best || 0), 0) / all.length);
+  const box = $("cert");
+  box.innerHTML = "";
+  box.append(
+    el("div", "cert-ico", "🎓"),
+    el("div", "cert-t", "Tabriklaymiz! Kurs tugatildi"),
+    el("div", "cert-c", l.category),
+    el("div", "cert-s", `${all.length} ta dars · o'rtacha ${avg} ball`),
+  );
+  const share = el("button", "btn share wide", "📤 Yutuqni ulashish");
+  share.addEventListener("click", () => {
+    const text = `🎓 Sado AI'da «${l.category}» ni to'liq tugatdim!\n${all.length} ta dars · o'rtacha ${avg} ball\nSen ham sinab ko'r 👇`;
+    const link = `https://t.me/share/url?url=${encodeURIComponent(state.shareUrl || "https://t.me")}&text=${encodeURIComponent(text)}`;
+    if (inTelegram && tg.openTelegramLink) tg.openTelegramLink(link);
+    else window.open(link, "_blank");
+  });
+  box.append(share);
+  box.hidden = false;
+  confetti();
+  haptic("success");
 }
 
 // 📜 Suhbat matni
@@ -1859,6 +1892,7 @@ function showResult() {
   $("report").innerHTML = "";
   $("shareBtn").hidden = true;
   $("transcript").hidden = true;
+  $("cert").hidden = true;
   // ➡️ Kurs ichidagi keyingi dars (IELTS/CEFR kursi, grammatika)
   const course = state.lessons.filter((x) => x.category === lesson.category);
   const idx = course.findIndex((x) => x.id === lesson.id);
