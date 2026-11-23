@@ -2027,7 +2027,7 @@ function renderLessons() {
   if (canFold && items.length > 10) {
     const cats = [...new Set(items.map((l) => l.category).filter(Boolean))];
     const allFolded = cats.every((c) => folded.has(c));
-    const t = el("button", "fold-all", allFolded ? "▾ Hammasini ochish" : "▸ Hammasini yig'ish (faqat bo'lim nomlari)");
+    const t = el("button", "fold-all", allFolded ? "▾ Hammasini ochish" : "▸ Bo'limlarni yig'ish");
     t.addEventListener("click", () => {
       haptic();
       localStorage.setItem("sado-folded", JSON.stringify(allFolded ? [] : cats));
