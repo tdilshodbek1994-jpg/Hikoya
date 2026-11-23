@@ -2638,6 +2638,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-simcon",
+    category: "Grammatika gapirib",
+    title: "Present Simple yoki Continuous?",
+    emoji: "🔃",
+    level: "A2-B1",
+    added: "2026-11-23",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice contrasting present simple (habits, routines, facts: I usually walk to school. Water boils at 100 degrees.) with present continuous (happening now or around now, temporary: I'm walking to school today because the bus is broken. I'm reading a great book these days.). Signal words: usually, every day, often vs now, at the moment, today, these days. Ask what the student usually does on weekdays and what they are doing differently this week. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "What do you usually do in the evening? And what are you doing right now?",
+    openerUz: "Kechqurun odatda nima qilasiz? Hozir esa nima qilyapsiz?",
+    phrases: [
+      { en: "I usually walk to school.", uz: "Odatda maktabga piyoda boraman." },
+      { en: "Today I'm taking a taxi.", uz: "Bugun taksida ketyapman." },
+      { en: "She works in a bank.", uz: "U bankda ishlaydi." },
+      { en: "At the moment she's working from home.", uz: "Hozircha u uydan ishlayapti." },
+      { en: "I'm reading a great book these days.", uz: "Shu kunlarda zo'r kitob o'qiyapman." },
+      { en: "It rarely snows here.", uz: "Bu yerda kamdan-kam qor yog'adi." },
+    ],
+  },
+  {
+    id: "gr-stative",
+    category: "Grammatika gapirib",
+    title: "Holat fe'llari: I know (✗ I'm knowing)",
+    emoji: "🧠",
+    level: "B1",
+    added: "2026-11-23",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on stative verbs that are normally NOT used in the continuous form: know, understand, believe, remember, like, love, hate, want, need, prefer, own, belong, seem, mean. Correct: I know him. I want a coffee. This bag belongs to me. Wrong: I'm knowing, I'm wanting, I'm understanding. Mention verbs with two meanings: think (I think it's good — opinion / I'm thinking about it — process), have (I have a car / I'm having lunch). Ask about what the student wants, needs, likes and believes. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "What do you really want to do this year?",
+    openerUz: "Bu yil nima qilishni juda xohlaysiz?",
+    phrases: [
+      { en: "I know what you mean.", uz: "Nima demoqchi ekaningizni tushunaman." },
+      { en: "I want to learn English quickly.", uz: "Ingliz tilini tez o'rganishni xohlayman." },
+      { en: "Do you understand this word?", uz: "Bu so'zni tushunasizmi?" },
+      { en: "This phone belongs to my brother.", uz: "Bu telefon akamniki." },
+      { en: "I think it's a good idea.", uz: "Menimcha, bu yaxshi fikr." },
+      { en: "I'm thinking about my future.", uz: "Kelajagim haqida o'ylayapman." },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -3861,7 +3901,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-can", "gr-wouldlike", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-mine", "gr-reflexive", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adjorder", "gr-adverbs", "gr-tooenough", "gr-sosuch", "gr-modals", "gr-might", "gr-better", "gr-usedto", "gr-perfect", "gr-forsince", "gr-ppvsps", "gr-pastperf", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-saytell", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-verbprep", "gr-tags", "gr-sotoo", "gr-both", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused", "gr-unless", "gr-inversion"];
+const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-can", "gr-wouldlike", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-mine", "gr-reflexive", "gr-frequency", "gr-continuous", "gr-simcon", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adjorder", "gr-adverbs", "gr-tooenough", "gr-sosuch", "gr-modals", "gr-might", "gr-better", "gr-usedto", "gr-perfect", "gr-stative", "gr-forsince", "gr-ppvsps", "gr-pastperf", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-saytell", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-verbprep", "gr-tags", "gr-sotoo", "gr-both", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused", "gr-unless", "gr-inversion"];
 // Avval daraja guruhi (A1–A2 → B1 → B2), guruh ichida — GR_ORDER tartibi
 const grGroup = (lv) => (/B2/.test(lv || "") ? 2 : /A2-B1|^B1$/.test(lv || "") ? 1 : 0);
 const grRank = (l) => grGroup(l.level) * 100 + (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
@@ -3918,6 +3958,8 @@ const QUIZ = {
   "gr-might": ["It ___ rain later. Take an umbrella.|might|must|will to", "She ___ be at home now. I'm not sure.|may|can|must to", "He ___ not come to the party.|might|could|can", "We ___ go to the park if it's sunny.|could|must|should to", "I might ___ at home tonight.|stay|to stay|staying", "Take a coat. It ___ get cold.|may|can|must to", "They ___ be late — there's a lot of traffic.|might|can|will to", "I'm not sure. I ___ go to the cinema.|may|will|must", "She may ___ the answer.|know|to know|knows", "It might ___ sunny tomorrow.|be|is|being", "You ___ want to bring some water.|might|must to|can to", "Don't wait for me. I ___ be very late.|might|can|should"],
   "gr-saytell": ["She ___ me a funny story.|told|said|says", "He ___ that he was tired.|said|told|tell", "Can you ___ me the time?|tell|say|said", "Always ___ the truth.|tell|say|speak", "She ___ goodbye to everyone.|said|told|tell", "Don't forget to ___ thank you.|say|tell|speak", "My grandmother ___ us a story every night.|tells|says|speaks", "What did he ___ to you?|say|tell|told", "Please ___ me how to get there.|tell|say|speak", "He ___ me that the shop was closed.|told|said|says", "I want to ___ sorry.|say|tell|told", "Did she ___ you about the party?|tell|say|said"],
   "gr-verbprep": ["I listen ___ music every day.|to|—|at", "I'm waiting ___ the bus.|for|—|to", "It depends ___ the weather.|on|of|from", "I agree ___ you.|with|to|on", "Don't worry ___ the exam.|about|for|on", "Who does this bag belong ___?|to|for|with", "Look ___ this photo!|at|to|on", "I'm looking ___ my keys. Have you seen them?|for|at|to", "I need to talk ___ my teacher.|to|at|for", "We arrived ___ the airport at six.|at|to|in to", "How much did you pay ___ the tickets?|for|to|on", "What are you thinking ___?|about|on|for"],
+  "gr-simcon": ["I usually ___ to school.|walk|am walking|walks", "Today I ___ a taxi because it's raining.|'m taking|take|takes", "She ___ in a bank.|works|is working|work", "Look! It ___.|'s raining|rains|rain", "We ___ English every Monday.|have|are having|has", "At the moment he ___ from home.|'s working|works|work", "The sun ___ in the east.|rises|is rising|rise", "Be quiet! The baby ___.|'s sleeping|sleeps|sleep", "How often ___ you go to the gym?|do|are|does", "I ___ a great book these days.|'m reading|read|reads", "It rarely ___ here in winter.|snows|is snowing|snow", "What ___ you doing right now?|are|do|does"],
+  "gr-stative": ["I ___ what you mean.|know|'m knowing|knowing", "I ___ a new laptop for my studies.|want|'m wanting|wanting", "___ you understand this word?|Do|Are|Is", "This phone ___ to my brother.|belongs|is belonging|belong", "I ___ it's a good idea.|think|'m thinking|thinking", "I ___ about my future these days.|'m thinking|think|thinks", "She ___ chocolate.|loves|is loving|love", "We ___ more time to finish.|need|are needing|needing", "He ___ a big house in the city.|has|is having|have", "They ___ lunch right now.|'re having|have|has", "I ___ your name. Sorry!|don't remember|'m not remembering|not remember", "This soup ___ delicious.|tastes|is tasting|taste"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink", "My sister ___ English very well.|speaks|speak|speaking", "They ___ live in Tashkent.|don't|doesn't|aren't", "Where ___ he work?|does|do|is", "The shop ___ at nine o'clock.|opens|open|opening", "Water ___ at 100 degrees.|boils|boil|is boil", "My friends ___ like rap music.|don't|doesn't|isn't", "___ your brother study at university?|Does|Do|Is", "He usually ___ his homework in the evening.|does|do|doing"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on", "I was born ___ 2008.|in|on|at", "We have a party ___ Friday evening.|on|in|at", "I usually sleep ___ night.|at|in|on", "The keys are ___ the table.|on|at|in", "The meeting is ___ 3 pm.|at|in|on", "I'll see you ___ the weekend.|at|in|on", "She lives ___ Samarkand.|in|at|on", "My birthday is ___ 5th March.|on|in|at"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do", "Listen! The baby ___ crying.|is|are|be", "We ___ waiting for the bus now.|are|is|am", "What ___ you doing?|are|do|is", "She isn't ___ TV at the moment.|watching|watch|watches", "I ___ working from home this week.|am|is|are", "Why ___ you laughing?|are|is|do", "They ___ playing football right now.|are|is|be", "Be quiet! Grandma ___ sleeping.|is|are|am"],
@@ -3972,6 +4014,8 @@ const KEYWORDS = {
   "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
 };
 const RULES = {
+  "gr-simcon": "Present Simple — odat, doimiy holat, fakt: I usually walk to school. She works in a bank.\nPresent Continuous — hozir yoki vaqtincha: Today I'm taking a taxi. She's working from home this week.\nBelgi so'zlar: usually, every day, often — now, at the moment, today, these days.\n(✗ I'm usually walking) (✗ Look! It rains)",
+  "gr-stative": "Holat fe'llari odatda -ing bilan kelmaydi: know, understand, want, need, like, love, believe, belong.\nI know him. I want a coffee. (✗ I'm knowing) (✗ I'm wanting)\nthink — fikr: I think it's a good idea. Jarayon: I'm thinking about it.\nhave — egalik: I have a car. Harakat: I'm having lunch.",
   "gr-saytell": "say + nima: She said hello. He said that he was tired.\nsay ... to + kimga: He said goodbye to me.\ntell + kimga + nima: She told me a secret. Tell me your name. (✗ He said me)\nIboralar: tell a story, tell the truth, tell a joke — say sorry, say thank you.",
   "gr-verbprep": "Ba'zi fe'llar doim o'z predlogi bilan keladi: listen to, wait for, look at, depend on, belong to.\nI listen to music. I'm waiting for the bus. (✗ I listen music) (✗ waiting the bus)\nIt depends on the weather. (✗ depends of) I agree with you.\nworry about, think about, talk to, pay for, apologise for.",
   "gr-wouldlike": "like — umuman yoqtiraman: I like coffee. She likes music.\nwould like ('d like) — hozir xohlayman (muloyim): I'd like a coffee, please.\nTaklif: Would you like some tea? — Yes, please. / No, thank you.\nwould like to + fe'l: I'd like to visit London. (✗ I'd like visit)",
