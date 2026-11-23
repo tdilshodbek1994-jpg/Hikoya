@@ -98,6 +98,7 @@ export class LiveCall {
     const s = ctx.createBufferSource();
     s.buffer = buf;
     s.connect(this.out);
+    this.voiceFrames = 0; // Sado javob beryapti
     const at = Math.max(ctx.currentTime + 0.04, this.playhead);
     s.start(at);
     this.playhead = at + buf.duration;
@@ -167,6 +168,8 @@ export class LiveCall {
     let sum = 0;
     for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
     const level = Math.min(1, Math.sqrt(sum / buf.length) * (speaking ? 6 : 9));
+    // 🗣 O'quvchi ovozini sezdik (keyin Sado javob bermasa — eslatamiz)
+    if (!speaking && level > 0.3) { this.voiceFrames = (this.voiceFrames || 0) + 1; this.voiceAt = Date.now(); }
     this.onState(speaking ? "speaking" : "listening", level);
     this.raf = requestAnimationFrame(this.loop);
   }
@@ -174,6 +177,11 @@ export class LiveCall {
   // 🤫 Uzoq jimlik: Sado'dan yordam so'rash
   nudge() {
     try { this.ws?.readyState === WebSocket.OPEN && this.ws.send(JSON.stringify({ type: "nudge" })); return true; } catch { return false; }
+  }
+
+  // 🗣 O'quvchi gapirdi, lekin javob kelmadi — Sado'dan javob berishni so'rash
+  poke() {
+    try { this.ws?.readyState === WebSocket.OPEN && this.ws.send(JSON.stringify({ type: "poke" })); return true; } catch { return false; }
   }
 
   // 🔀 Erkin suhbatda mavzuni almashtirish so'rovi

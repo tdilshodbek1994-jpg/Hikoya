@@ -160,8 +160,9 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
   const custom = String(topic || "").startsWith("custom:")
     ? String(topic).slice(7).replace(/[^\p{L}\p{N} ,.'‘’\-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 60)
     : "";
-  const topicUz = custom || FREE_TOPICS_UZ[topic] || "";
-  topic = custom || FREE_TOPICS[topic] || "";
+  // 💬 Erkin suhbat: Sado o'zi mavzu tanlamaydi — salomlashib, o'quvchidan nima haqida gaplashishni so'raydi
+  const topicUz = lesson.free ? "" : custom || FREE_TOPICS_UZ[topic] || "";
+  topic = lesson.free ? "" : custom || FREE_TOPICS[topic] || "";
   const send = (obj) => client.readyState === WebSocket.OPEN && client.send(JSON.stringify(obj));
   let upstream;
   let closed = false;
@@ -380,6 +381,18 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
           JSON.stringify({
             clientContent: {
               turns: [{ role: "user", parts: [{ text: "(System: the student has been silent for a while — maybe they didn't understand or don't know what to say. Gently help: in Uzbek, briefly repeat or simplify your last question and suggest a short English answer they can say. One or two short sentences.)" }] }],
+              turnComplete: true,
+            },
+          }),
+        );
+      }
+      // 🗣 O'quvchi gapirdi, lekin Sado javob bermadi (bir qo'ng'iroqda 6 martagacha)
+      if (m.type === "poke" && (session.pokes = (session.pokes || 0) + 1) <= 6) {
+        liveStats.pokes = (liveStats.pokes || 0) + 1;
+        upstream.send(
+          JSON.stringify({
+            clientContent: {
+              turns: [{ role: "user", parts: [{ text: "(System: the student just spoke, but you have not answered. Reply now. If you understood them, answer naturally. If you did not hear them clearly, kindly ask them in Uzbek to say it again a little louder.)" }] }],
               turnComplete: true,
             },
           }),

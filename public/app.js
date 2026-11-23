@@ -3035,7 +3035,7 @@ async function startLive(lesson) {
   let lastSpeaker = "";
   let connected = false;
   let lastErr = "";
-  const quiet = { at: Date.now(), done: false, n: 0 };
+  const quiet = { at: Date.now(), done: false, n: 0, pokes: 0 };
   clearTimeout(state.liveWait);
   try {
     const data = await api("api/session", { json: { lessonId: lesson.id, mode: "live", level: localStorage.getItem("sado-level") || "" } });
@@ -3057,6 +3057,7 @@ async function startLive(lesson) {
       },
       onEvent: (m) => {
         if (m.type === "turn" || m.type === "user") quiet.at = Date.now();
+        if (m.type === "sado" || m.type === "user") call.voiceFrames = 0; // javob/eshitildi — kutish shart emas
         if (m.type === "user") quiet.done = false;
         if (m.type === "ready") {
           connected = true;
@@ -3113,6 +3114,13 @@ async function startLive(lesson) {
         return;
       }
       if (call.speaking()) quiet.at = Date.now(); // jimlik Sado ovozi tugagandan keyin sanaladi
+      // 🗣 O'quvchi gapirdi (≈0,4 s ovoz), 5 soniya o'tdi, lekin Sado na eshitdi, na javob berdi — javob so'raymiz
+      if (connected && !call.muted && !call.speaking() && (call.voiceFrames || 0) >= 25 && Date.now() - call.voiceAt > 5000 && quiet.pokes < 6 && call.poke()) {
+        call.voiceFrames = 0;
+        quiet.pokes++;
+        quiet.at = Date.now();
+        return;
+      }
       if (!connected || call.muted || call.speaking() || quiet.done || quiet.n >= 3) return;
       if (Date.now() - quiet.at > 15000 && call.nudge()) {
         quiet.done = true;
@@ -3120,7 +3128,7 @@ async function startLive(lesson) {
         quiet.at = Date.now();
       }
     }, 2000);
-    await call.start(data.session, tg?.initData || "", state.voice, lesson.liveOnly ? state.topic : "");
+    await call.start(data.session, tg?.initData || "", state.voice, lesson.liveOnly && FREE_TOPIC_PICK ? state.topic : "");
     // 20 soniyada ulanmasa — kutib qolmaymiz
     state.liveWait = setTimeout(() => {
       if (!connected && state.live === call && state.phase !== "ended") liveFailed("Sado javob bermadi (internet sekin bo'lishi mumkin).");
@@ -4898,7 +4906,7 @@ function showResult() {
   }
   $("againBtn").textContent = lesson.liveOnly ? "📞 Yana gaplashish" : state.lessonMode === "live" ? "📞 Yana qo'ng'iroq qilish" : "Qaytadan mashq qilish";
   document.querySelectorAll(".again-topics").forEach((x) => x.remove());
-  if (lesson.liveOnly && state.liveEnabled) {
+  if (lesson.liveOnly && state.liveEnabled && FREE_TOPIC_PICK) {
     // 🔄 Boshqa mavzuda darhol yana gaplashish
     const box = el("div", "again-topics");
     box.append(el("small", "", "Boshqa mavzuda gaplashamizmi?"));
