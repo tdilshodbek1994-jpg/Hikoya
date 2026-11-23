@@ -532,6 +532,15 @@ function renderVisual(lesson) {
   }
 }
 
+// Chiplar yopishqoq — ro'yxat boshini chiplar qatori ostiga keltiramiz; tanlangan chip markazda
+function scrollToList(smooth = false) {
+  const box = $("chips");
+  const top = $("lessonList").getBoundingClientRect().top + window.scrollY - document.querySelector(".topbar").offsetHeight - box.offsetHeight - 6;
+  window.scrollTo({ top: Math.max(0, top), behavior: smooth ? "smooth" : "auto" });
+  const on = box.querySelector(".chip-f.on");
+  if (on) box.scrollLeft = on.offsetLeft - (box.clientWidth - on.offsetWidth) / 2;
+}
+
 function renderChips() {
   const box = $("chips");
   if (!box) return;
@@ -566,9 +575,7 @@ function renderChips() {
       const on = box.querySelector(".chip-f.on");
       if (on) box.scrollTo({ left: on.offsetLeft - (box.clientWidth - on.offsetWidth) / 2, behavior: "smooth" });
       renderLessons();
-      // Chiplar yopishqoq — ro'yxat boshini chiplar qatori ostiga keltiramiz
-      const top = $("lessonList").getBoundingClientRect().top + window.scrollY - document.querySelector(".topbar").offsetHeight - box.offsetHeight - 6;
-      window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+      scrollToList(true);
     });
     box.append(b);
   });
@@ -2734,7 +2741,7 @@ function checkCourseDone(before) {
       state.filter.cat = nc;
       renderChips();
       renderLessons();
-      setTimeout(() => $("chips").scrollIntoView({ block: "start" }), 50);
+      setTimeout(() => scrollToList(), 50);
     });
     box.append(go);
   }
@@ -2968,7 +2975,7 @@ function renderReport(r, score) {
           renderChips();
           renderLessons();
           return setTimeout(() => {
-            $("chips").scrollIntoView({ block: "start" });
+            scrollToList();
             const on = $("chips").querySelector(".chip-f.on");
             if (on) $("chips").scrollLeft = on.offsetLeft - ($("chips").clientWidth - on.offsetWidth) / 2;
           }, 50);
