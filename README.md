@@ -3,14 +3,12 @@
 DTM botingiz ichida ochiladigan ovozli AI suhbatdosh. O'quvchi vaziyatni (kafe, tanishuv, aeroport va h.k.) tanlaydi, maskot **Sado** bilan ovoz chiqarib inglizcha gaplashadi va har bir darsda 6 ta iborani ishlatishga harakat qiladi.
 
 **Imkoniyatlar**
-- 📞 **Jonli suhbat** (Gemini Live): xuddi telefonda gaplashgandek, gapni bo'lish mumkin; 👩/👨 ovoz tanlash; oxirgi daqiqada Sado suhbatni o'zi yakunlaydi.
-- 🇺🇿 **Ustoz** (o'zbekcha tushuntiradi) va 🇬🇧 **Inglizcha suhbat** rejimlari; 🐢 sekin gapirish, 🇺🇿 tarjima, 🔁 qayta eshitish, 💡 javob namunalari.
-- 📚 **100+ mavzu**: 💬 Erkin suhbat, 🏆 Imtihonlar, 📘 IELTS kursi (41 dars, Part 2 kartochka + 1 daqiqa tayyorlanish), 📗 CEFR kursi (10 dars), ✏️ Grammatika (16 dars, qoidalar bilan), 🧒 Bolalar uchun (9 dars), 🏠 Kundalik hayot (16 dars), ✈️ Sayohat (11 dars), 🎓 O'qish va ish (9 dars), 💼 Biznes va IT (7 dars).
-- 📝 **Hisobot**: ball, CEFR/IELTS daraja (IELTS'da 4 mezon), xatolar, maslahatlar, yangi so'zlar, avvalgi rekord bilan solishtirish, suhbat matni, ulashish.
-- 📈 **Progress**: kunlik maqsad, seriya, natijalar grafigi, 🏅 yutuqlar, 🎓 kurs sertifikati, ⭐ sevimlilar, 🔍 qidiruv.
-- 📒 **Lug'at**: yangi so'zlar va xatolar, 🃏 kartochka mashqi, 🔁 xatolar ustida shaxsiy dars.
-- ♿ Tun/kunduz mavzusi, "Aa" matn o'lchami, kichik ekranlar, internet uzilsa qayta yuborish, mikrofon yo'riqnomasi, ❓ yordam.
-- 📊 **Admin statistikasi**: `/admin.html?key=ADMIN_KEY` (kalit `update-sado.sh` chiqaradi).
+- 🎙️ Ikki rejim: **Bosmasdan gapirish** (ovozni o'zi aniqlaydi) va **Bosib gapirish**.
+- 🤖 Jonli maskot: tinglayotganda yashil, o'ylayotganda sariq, gapirayotganda binafsha rangda bo'ladi. Og'zi ovozga mos harakatlanadi.
+- 📋 Ibora kartasi va progress ("6 tadan N ta ibora"), 10 daqiqalik taymer.
+- 💬 Subtitrlar: AI javobi, o'zbekcha tarjimasi, siz aytgan gap va qisqa grammatik maslahat.
+- ✍️ Mikrofon bo'lmasa, yozib javob berish rejimi.
+- 🔒 Har bir so'rov Telegram imzosi (`initData`) orqali tekshiriladi va kunlik limit qo'yilgan.
 
 ## Qanday ishlaydi
 
@@ -86,15 +84,12 @@ Har birida `WEBAPP_URL = "https://SIZNING-DOMEN.uz/speaking/"` qatorini o'z dome
 | `CLAUDE_EFFORT` | `low` (tez javob) / `medium` / `high` |
 | `TTS_VOICE` | AI ovozi: `coral`, `alloy`, `nova`, `sage`... |
 | `SESSION_MINUTES` | Bitta dars davomiyligi (standart 10) |
-| `DAILY_SESSIONS` | Bir foydalanuvchi uchun kunlik darslar soni (0 yoki bo'sh — cheksiz, standart) |
-| `REMINDERS` | `1` bo'lsa, o'quvchi sozlamalarda yoqqan **kechki eslatma** ishlaydi: seriyasi bor, lekin bugun dars qilmaganlarga bot xabar yuboradi (standart: o'chiq) |
-| `REMIND_HOUR` | Eslatma soati, Toshkent vaqti (standart 20) |
-| `WEBAPP_URL` | Eslatmadagi «🎤 Darsni boshlash» tugmasi ochadigan manzil, masalan `https://testmarkaz.online/speaking/` |
+| `DAILY_SESSIONS` | Bir foydalanuvchi uchun kunlik darslar soni (standart 10) |
 | `ALLOW_DEV` | `1` bo'lsa Telegram'siz brauzerda sinash mumkin. **Serverda 0 qoldiring** |
 
 ## Yangi dars qo'shish
 
-`src/lessons.js` fayliga yangi obyekt qo'shing: AI roli, ochilish gapi va 6 ta ibora (inglizcha va o'zbekcha). O'quvchilarga 14 kun «🆕 Yangi» bo'lib ko'rinishi uchun darsga `added: "YYYY-MM-DD"` qo'shing. Keyin `npm run check` bilan tekshiring: takrorlangan ID, ibora soni, bo'sh tarjima, IELTS kartochka/savollar va grammatika qoidalari tekshiriladi. Serverni qayta ishga tushiring: `sudo systemctl restart sado-speaking`.
+`src/lessons.js` fayliga yangi obyekt qo'shing: AI roli, ochilish gapi va 6 ta ibora (inglizcha va o'zbekcha). Serverni qayta ishga tushiring: `sudo systemctl restart sado-speaking`.
 
 ## Kompyuterda sinash
 
@@ -108,10 +103,3 @@ npm run dev            # http://localhost:3000 (ALLOW_DEV=1 bilan)
 
 - Sessiyalar server xotirasida saqlanadi. Server qayta ishga tushsa, davom etayotgan darslar to'xtaydi.
 - Har bir gap 3 ta API chaqiruvini ishlatadi (STT, Claude, TTS). Xarajatni `DAILY_SESSIONS` va `SESSION_MINUTES` bilan cheklang.
-
-## Yangilash
-
-```bash
-bash /opt/sado-speaking/deploy/update-sado.sh
-```
-Skript kodni yangilaydi, paketlarni o'rnatadi, `ADMIN_KEY` va `SHARE_URL` ni (bo'lmasa) qo'shadi, xizmatni qayta ishga tushiradi va statistika havolasini chiqaradi.
