@@ -703,10 +703,17 @@ function renderChips() {
   rnd.addEventListener("click", () => {
     haptic("medium");
     const done = state.progress?.lessons || {};
-    const all = state.lessons.filter((l) => !l.liveOnly);
+    // Tanlangan bo'lim ichidan; aks holda — bolalar darslarisiz (maqsad "Bolalar" bo'lmasa)
+    const cat = state.filter.cat && !state.filter.cat.startsWith("__") ? state.filter.cat : "";
+    const kidsGoal = localStorage.getItem("sado-goal") === "Bolalar uchun";
+    let all = state.lessons.filter((l) => !l.liveOnly && (cat ? l.category === cat : kidsGoal || l.category !== "Bolalar uchun"));
+    // Boshlovchiga juda qiyin (B2+) darslar tushmasin
+    if (localStorage.getItem("sado-level") === "beg" && all.some((l) => !isHard(l))) all = all.filter((l) => !isHard(l));
     const fresh = all.filter((l) => !done[l.id]);
     const pool = fresh.length ? fresh : all;
+    if (!pool.length) return;
     openSheet(pool[Math.floor(Math.random() * pool.length)]);
+    if (cat) toast(`🎲 «${cat}» bo'limidan tasodifiy dars`, 1800);
   });
   box.append(rnd);
   const favChip = state.favs.size ? [["__fav", `⭐ Sevimlilar (${state.favs.size})`]] : [];
@@ -1595,6 +1602,8 @@ function openSheet(lesson) {
   };
   render(false);
   $("startSheet").hidden = false;
+  // Yangi dars oynasi doim boshidan ochilsin (oldingi darsning aylantirish joyi qolmasin) — ko'rsatilgandan keyin
+  $("startSheet").querySelector(".sheet-card").scrollTop = 0;
 }
 
 $("goal").addEventListener("click", () => {
