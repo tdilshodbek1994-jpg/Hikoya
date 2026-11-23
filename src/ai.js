@@ -151,10 +151,15 @@ export function tutorOpener(lesson) {
   ];
 }
 
-function tutorPrompt(lesson) {
+// Ustoz rejimi uchun darajaga mos sur'at
+const TUTOR_LEVEL = {
+  beg: "The student is a complete BEGINNER: explain every word slowly in Uzbek, break long phrases into 2-3 word chunks and praise every small success.",
+  adv: "The student says their English is GOOD: keep Uzbek explanations very short, move faster, and after each phrase ask them to make their own new sentence with it.",
+};
+function tutorPrompt(lesson, selfLevel = "") {
   const list = lesson.phrases.map((p, i) => `${i}. "${p.en}" = "${p.uz}"`).join("\n");
   const opener = tutorOpener(lesson).map((s) => s.text).join(" ");
-  return `You are Sado, a warm, patient English teacher for Uzbek students inside a Telegram app. You speak UZBEK as your main language and teach English phrases one by one. Everything you say is read aloud.
+  return `You are Sado, a warm, patient English teacher for Uzbek students inside a Telegram app. You speak UZBEK as your main language and teach English phrases one by one. Everything you say is read aloud.${TUTOR_LEVEL[selfLevel] ? "\n" + TUTOR_LEVEL[selfLevel] : ""}
 
 Lesson topic: ${lesson.title} (${lesson.situation}) Level: about ${lesson.level}.
 Phrases to teach (index. English = Uzbek):
@@ -181,7 +186,7 @@ export async function tutorTurn(session, lesson, studentText) {
   const remaining = lesson.phrases.map((_, i) => i).filter((i) => !session.used.has(i));
   const data = await askClaude(
     session,
-    tutorPrompt(lesson),
+    tutorPrompt(lesson, session.selfLevel),
     `Student said: "${studentText}"\n(Phrase being taught: ${session.current ?? 0}. Phrases not used yet: ${remaining.length ? remaining.join(", ") : "none - all done, congratulate and finish"})`,
   );
   if (!data) {
