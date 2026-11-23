@@ -3322,6 +3322,7 @@ function renderSpeakStats(list, serverBest) {
   const box = $("report");
   if (!mine.length || box.hidden) return;
   const words = mine.reduce((n, t) => n + t.text.trim().split(/\s+/).filter((w) => /[A-Za-z]/.test(w)).length, 0);
+  state.lastWords = words; // 📤 ulashish matni uchun
   const longest = mine.reduce((m, t) => Math.max(m, t.text.trim().split(/\s+/).length), 0);
   const row = el("div", "speak-stats");
   row.append(
@@ -3419,10 +3420,13 @@ $("shareBtn").addEventListener("click", () => {
   const sc = r?.score ?? score;
   const text = [
     `🎤 Sado AI bilan ingliz tilida gaplashdim!`,
-    `${l.emoji} ${l.title}: ${sc} ball${r?.level ? ` · ${r.level}` : ""}`,
+    `${l.emoji} ${l.title}: ${sc} ball${r?.level && l.category !== "Bolalar uchun" ? ` · ${r.level}` : ""}`, // bolalarda daraja ko'rsatilmaydi
     // Erkin suhbatda iboralar yo'q — "0/0 ta ibora" yozilmasin
-    !l.liveOnly && l.phrases.length ? `✅ ${state.used.size}/${l.phrases.length} ta ibora` : "",
-    Number.isFinite(r?.ml_score) ? `🇺🇿 Multilevel: ~${r.ml_score}/75` : "",
+    l.category === "Bolalar uchun" && l.phrases.length
+      ? `${"⭐".repeat(state.used.size)}${"☆".repeat(Math.max(0, l.phrases.length - state.used.size))} — ${state.used.size} ta yulduz yig'dim!`
+      : !l.liveOnly && l.phrases.length ? `✅ ${state.used.size}/${l.phrases.length} ta ibora` : "",
+    state.lastWords ? `🗣 ${state.lastWords} ta inglizcha so'z gapirdim` : "",
+    r?.ml_score != null && Number.isFinite(Number(r.ml_score)) ? `🇺🇿 Multilevel: ~${Math.round(Number(r.ml_score))}/75` : "",
     r?.criteria ? `📊 Fluency ${r.criteria.fluency} · Lexical ${r.criteria.vocabulary} · Grammar ${r.criteria.grammar} · Pronunciation ${r.criteria.pronunciation}` : "",
     r?.new_words?.length ? `📚 ${r.new_words.length} ta yangi so'z o'rgandim` : "",
     state.progress?.streak ? `🔥 ${state.progress.streak} kunlik seriya` : "",
@@ -3739,6 +3743,7 @@ function showResult() {
   $("report").innerHTML = "";
   document.querySelectorAll(".new-badge").forEach((x) => x.remove());
   $("shareBtn").hidden = true;
+  state.lastWords = 0; // oldingi darsning so'z soni ulashishga o'tib qolmasin
   $("transcript").hidden = true;
   $("cert").hidden = true;
   // ➡️ Kurs ichidagi keyingi dars (IELTS/CEFR kursi, grammatika)
