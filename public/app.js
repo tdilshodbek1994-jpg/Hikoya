@@ -416,6 +416,7 @@ function quizMiss(it, lessonId, ok) {
   localStorage.setItem("sado-qz-miss", JSON.stringify(list.slice(0, 60)));
 }
 function openMissTest() {
+  state.speedRun = (state.speedRun || 0) + 1;
   const quiz = quizMisses();
   if (!quiz.length) return toast("👏 Xato savollar yo'q");
   $("mixLevels").innerHTML = "";
@@ -424,11 +425,80 @@ function openMissTest() {
   renderQuiz({ id: "gr-miss", quiz }, $("mixQuiz"), `🔁 Xato savollarim · ${quiz.length} ta`, Math.min(10, quiz.length));
 }
 
+// ⚡ 60 soniyalik tezkor test: imkon qadar ko'p to'g'ri javob, rekord saqlanadi
+function openSpeedTest() {
+  const pool = state.lessons
+    .filter((l) => l.category === "Grammatika gapirib")
+    .flatMap((l) => (l.quiz || []).map((q) => { const [before, after] = q.text.split("___"); return { before: before.trimEnd(), after, answer: q.answer, options: q.options, from: l.id }; }));
+  if (!pool.length) return;
+  $("mixSheet").hidden = false;
+  $("mixLevels").innerHTML = "";
+  const box = $("mixQuiz");
+  box.innerHTML = "";
+  const best = Number(localStorage.getItem("sado-speed-best")) || 0;
+  const head = el("div", "sp-head");
+  const timeEl = el("b", "sp-time", "⏱ 60");
+  const scoreEl = el("b", "sp-score", "✅ 0");
+  head.append(el("b", "", "⚡ 60 soniya"), timeEl, scoreEl);
+  const body = el("div", "qz-body");
+  box.append(head, el("small", "qz-n", best ? `🏆 Rekordingiz: ${best} ta` : "Iloji boricha ko'p savolga to'g'ri javob bering"), body);
+  let left = 60, score = 0, wrong = 0, busy = false;
+  const order = [...pool].sort(() => Math.random() - 0.5);
+  let k = 0;
+  const run = (state.speedRun = (state.speedRun || 0) + 1);
+  const finish = () => {
+    clearInterval(state.speedTimer);
+    body.innerHTML = "";
+    const rec = score > best;
+    if (rec) localStorage.setItem("sado-speed-best", String(score));
+    body.append(el("p", "qz-done", rec && best ? `🎉 Yangi rekord: ${score} ta! (avval ${best})` : `⏱ Vaqt tugadi! ✅ ${score} ta to'g'ri, ❌ ${wrong} ta xato`));
+    const again = el("button", "qz-again", "⚡ Yana bir bor");
+    again.addEventListener("click", () => { haptic(); openSpeedTest(); });
+    body.append(again);
+    if (state.lessons.length) renderLessons();
+  };
+  const next = () => {
+    if (run !== state.speedRun) return;
+    const it = order[k++ % order.length];
+    body.innerHTML = "";
+    const q = el("p", "qz-q");
+    q.append(document.createTextNode(it.before + " "), el("span", "qz-gap", "____"), document.createTextNode(it.after));
+    const opts = el("div", "qz-opts");
+    for (const o of [...it.options].sort(() => Math.random() - 0.5)) {
+      const b = el("button", "qz-opt", o);
+      b.addEventListener("click", () => {
+        if (busy || left <= 0) return;
+        busy = true;
+        const ok = o === it.answer;
+        haptic(ok ? "light" : "medium");
+        ok ? score++ : wrong++;
+        if (!ok) quizMiss(it, it.from, false);
+        scoreEl.textContent = `✅ ${score}`;
+        b.classList.add(ok ? "ok" : "bad");
+        if (!ok) [...opts.children].find((x) => x.textContent === it.answer)?.classList.add("ok");
+        setTimeout(() => { busy = false; if (left > 0) next(); }, ok ? 250 : 900);
+      });
+      opts.append(b);
+    }
+    body.append(q, opts);
+  };
+  clearInterval(state.speedTimer);
+  state.speedTimer = setInterval(() => {
+    if (run !== state.speedRun || $("mixSheet").hidden) return clearInterval(state.speedTimer);
+    left--;
+    timeEl.textContent = `⏱ ${left}`;
+    timeEl.classList.toggle("low", left <= 10);
+    if (left <= 0) finish();
+  }, 1000);
+  next();
+}
+
 // 📝 Aralash grammatika testi (barcha darslar savollaridan)
 // Daraja guruhlari: boshlang'ich (A1–A2), o'rta (A2-B1, B1), yuqori (B1-B2)
 const MIX_LEVELS = [["", "Hammasi"], ["beg", "🌱 A1–A2"], ["mid", "🌿 B1"], ["adv", "🌳 B2"]];
 const mixLevelOf = (lv) => (/B2/.test(lv) ? "adv" : /A2-B1|^B1$/.test(lv) ? "mid" : "beg");
 function openMixTest(level = localStorage.getItem("sado-mix-lv") || "") {
+  state.speedRun = (state.speedRun || 0) + 1; // tezkor test to'xtaydi
   const gr = state.lessons.filter((l) => l.category === "Grammatika gapirib" && (!level || mixLevelOf(l.level) === level));
   const quiz = gr.flatMap((l) => (l.quiz || []).map((q) => ({ ...q, from: l.id })));
   if (quiz.length < 4) return;
@@ -1587,7 +1657,10 @@ function renderLessons() {
           const mix = el("button", "", mixBest ? `📝 Aralash test · 🏆 ${mixBest}` : "📝 Aralash test");
           mix.addEventListener("click", () => { haptic(); openMixTest(); });
           const btns = el("span", "gr-qbtns");
-          btns.append(mix, go);
+          const spBest = Number(localStorage.getItem("sado-speed-best")) || 0;
+          const sp = el("button", "", spBest ? `⚡ 60 soniya · 🏆 ${spBest}` : "⚡ 60 soniya");
+          sp.addEventListener("click", () => { haptic(); openSpeedTest(); });
+          btns.append(mix, sp, go);
           const nMiss = quizMisses().length;
           if (nMiss) {
             const mb = el("button", "gr-miss", `🔁 Xato savollarim (${nMiss})`);
