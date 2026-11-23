@@ -1171,7 +1171,7 @@ async function startLesson(lesson, lessonMode = "tutor") {
     }
     state.seconds = state.left = data.seconds;
     startTimer();
-    setSubs(data.reply, data.reply_uz, "", "");
+    setSubs(data.reply, data.reply_uz, "", "", data.say);
     await playReply(data.parts, data.reply);
     afterReply();
   } catch (e) {
@@ -1552,8 +1552,22 @@ function setPhase(phase, text) {
   updateHoldBtn();
 }
 
-function setSubs(ai, aiUz, me, fix) {
+function setSubs(ai, aiUz, me, fix, say) {
   $("subAi").textContent = ai || "";
+  // 🇺🇿 Ustoz rejimi: o'zbekcha tushuntirish ichidagi inglizcha qismlar ajratib ko'rsatiladi, bosilsa eshittiriladi
+  if (Array.isArray(say) && say.some((x) => x.lang === "en")) {
+    $("subAi").textContent = "";
+    say.forEach((x, i) => {
+      if (i) $("subAi").append(" ");
+      if (x.lang !== "en") return $("subAi").append(x.text);
+      const b = el("button", "sub-en", x.text);
+      b.addEventListener("click", () => {
+        haptic();
+        speakBrowser(x.text, "en");
+      });
+      $("subAi").append(b);
+    });
+  }
   $("subAiUz").textContent = aiUz || "";
   $("subMe").textContent = me || "";
   $("subMeWrap").hidden = !me;
@@ -1833,7 +1847,7 @@ async function sendTurn(payload) {
     }
     applyHint();
     const tutorCurrent = Number.isInteger(data.current) ? data.current : null;
-    setSubs(data.reply, data.reply_uz, data.heard, data.uz_say);
+    setSubs(data.reply, data.reply_uz, data.heard, data.uz_say, data.say);
     markWords(data.heard);
     if (data.uz_say && !state.subs) toast("🇺🇿 " + data.uz_say, 6000);
     markUsed(data.used || []);

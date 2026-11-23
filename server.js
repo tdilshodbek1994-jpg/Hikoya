@@ -146,6 +146,7 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
         seconds: (lesson.minutes || SESSION_MINUTES) * 60,
         reply: say.map((x) => x.text).join(" "),
         reply_uz: "",
+        say,
         current: 0,
         parts,
       });
@@ -205,6 +206,7 @@ app.post(
           heard: text,
           reply: t.say.map((x) => x.text).join(" "),
           reply_uz: "",
+          say: t.say,
           uz_say: "",
           used_phrases: t.used_phrases,
           current: t.current,

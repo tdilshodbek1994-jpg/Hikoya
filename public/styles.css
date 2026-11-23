@@ -714,3 +714,7 @@ body:has(#lesson.active) .toast { top: calc(40vh + var(--safe-t)); }
 #lesson .bottom-row { position: sticky; bottom: 0; z-index: 5; margin: 8px -14px 0; padding: 10px 14px calc(10px + var(--safe-b)); background: linear-gradient(to top, var(--bg) 70%, transparent); }
 @media (max-width: 360px) { #lesson .bottom-row { margin-left: -10px; margin-right: -10px; padding-left: 10px; padding-right: 10px; } }
 #lesson:not(.is-live) .mascot { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+
+/* 🇬🇧 Ustoz gapidagi inglizcha qism */
+.sub-en { display: inline; font: inherit; font-weight: 700; color: color-mix(in srgb, var(--primary) 70%, var(--text)); background: color-mix(in srgb, var(--primary) 10%, transparent); padding: 0 5px; border-radius: 6px; cursor: pointer; }
+.sub-en::after { content: "\00a0🔊"; font-size: 11px; opacity: 0.6; }
