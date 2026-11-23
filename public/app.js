@@ -614,6 +614,7 @@ async function startLive(lesson) {
   $("subsBtn").classList.add("on");
   $("muteBtn").hidden = false;
   $("hintBtn").hidden = true;
+  $("replayBtn").hidden = true;
   clearHints();
   setMuteUi(false);
   setSubs("", "", "", "");
@@ -670,6 +671,16 @@ async function startLive(lesson) {
 }
 
 // 💡 Javob namunalari
+// 🔁 Sado'ning oxirgi gapini qayta eshitish
+$("replayBtn").addEventListener("click", async () => {
+  if (!state.lastParts || state.phase === "thinking" || state.phase === "speaking") return;
+  haptic();
+  const wasListening = state.phase === "listening";
+  if (wasListening) cancelRecording();
+  await playReply(state.lastParts, "");
+  afterReply();
+});
+
 $("hintBtn").addEventListener("click", async () => {
   if (!state.session || state.hintBusy) return;
   state.hintBusy = true;
@@ -700,6 +711,9 @@ function clearHints() {
 }
 
 function resetLiveUi() {
+  state.ttsWarned = false;
+  state.lastParts = null;
+  $("replayBtn").hidden = true;
   $("hintBtn").hidden = false;
   clearHints();
   $("chatlog").hidden = true;
@@ -881,7 +895,8 @@ $("modeToggle").addEventListener("click", (e) => {
 function applySlow() {
   $("slowBtn").hidden = state.lessonMode === "live";
   $("slowBtn").classList.toggle("on", state.slow);
-  $("slowBtn").textContent = state.slow ? "🐢 Sekin" : "🐇 Oddiy";
+  $("slowBtn").textContent = state.slow ? "🐢" : "🐇";
+  $("slowBtn").title = state.slow ? "Sekin gapirish" : "Oddiy tezlik";
 }
 $("slowBtn").addEventListener("click", () => {
   haptic();
@@ -894,7 +909,7 @@ $("slowBtn").addEventListener("click", () => {
 function applyTr() {
   $("trBtn").hidden = state.lessonMode === "tutor"; // ustoz rejimida Sado o'zi o'zbekcha gapiradi
   $("trBtn").classList.toggle("on", state.tr);
-  $("trBtn").textContent = state.tr ? "🇺🇿 Tarjima: yoqiq" : "🇺🇿 Tarjima: o'chiq";
+  $("trBtn").textContent = state.tr ? "🇺🇿 Tarjima ✓" : "🇺🇿 Tarjima";
 }
 $("trBtn").addEventListener("click", () => {
   haptic();
@@ -1161,7 +1176,13 @@ async function playReply(parts, fallbackText) {
   // Shuning uchun Sado gapirayotganda mikrofonni o'chiramiz; bu aks-sadoning ham oldini oladi.
   cancelRecording();
   releaseMic();
-  if (!parts.some((p) => p.audio)) toast("⚠️ Ovoz serverdan kelmadi (TTS)", 4000);
+  // Ovoz xatosi haqida bir darsda faqat bir marta aytamiz
+  if (!parts.some((p) => p.audio) && !state.ttsWarned) {
+    state.ttsWarned = true;
+    toast("⚠️ Ovoz serverdan kelmadi — matn bilan davom etamiz", 3500);
+  }
+  state.lastParts = parts;
+  $("replayBtn").hidden = false;
   setPhase("speaking");
   for (const p of parts) {
     if (state.phase !== "speaking") break; // dars tugatilgan bo'lsa

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
   <title>Sado — ingliz tilida gaplashish</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="styles.css?v=25" />
+  <link rel="stylesheet" href="styles.css?v=26" />
 </head>
 <body>
   <header class="topbar">
@@ -49,7 +49,7 @@
   <!-- 2. Dars (suhbat) -->
   <main id="lesson" class="screen">
     <div class="lesson-head">
-      <div class="head-left"><b>Sado AI</b> <span class="muted" id="lessonTitle"></span></div>
+      <div class="head-left"><b id="lessonTitle"></b></div>
       <button class="chip" id="slowBtn">🐇 Oddiy</button>
       <button class="chip" id="trBtn">🇺🇿 Tarjima</button>
       <div class="timer" id="timer">
@@ -89,7 +89,10 @@
       <div class="sub sub-fix" id="subFixWrap" hidden>🇺🇿 <span id="subFix"></span></div>
     </div>
 
-    <button class="hint-btn" id="hintBtn" hidden>💡 Nima deyishni bilmayapman</button>
+    <div class="help-row">
+      <button class="hint-btn" id="replayBtn" hidden>🔁 Qayta eshitish</button>
+      <button class="hint-btn" id="hintBtn" hidden>💡 Nima deyishni bilmayapman</button>
+    </div>
     <div class="hint-box" id="hintBox" hidden></div>
 
     <form class="text-reply" id="textForm" hidden>
@@ -171,6 +174,6 @@
 
   <div class="toast" id="toast" hidden></div>
 
-  <script type="module" src="app.js?v=25"></script>
+  <script type="module" src="app.js?v=27"></script>
 </body>
 </html>
