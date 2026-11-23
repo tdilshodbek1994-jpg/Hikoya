@@ -624,8 +624,18 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
     const bad = wrong[Math.floor(Math.random() * wrong.length)];
     return { ...it, mode: "pick", sentences: [sent(it, it.answer), sent(it, bad)], right: sent(it, it.answer) };
   };
+  // 🧱 "So'zlarni tartibga soling": to'g'ri gapning so'zlari aralashtiriladi (4–8 so'zli gaplar)
+  const asOrder = (it) => {
+    if (/«/.test(it.before)) return it;
+    const full = sent(it, it.answer);
+    const words = full.split(" ");
+    if (words.length < 4 || words.length > 8 || new Set(words).size !== words.length) return it;
+    let mixed = [...words];
+    for (let t = 0; t < 5 && mixed.join(" ") === full; t++) mixed = [...words].sort(() => Math.random() - 0.5);
+    return { ...it, mode: "order", words, mixed, right: full };
+  };
   const pick = () => (pool.length > QN ? [...pool].sort(() => Math.random() - 0.5).slice(0, QN) : [...pool])
-    .map((it, k) => (pool.length > QN && k % 3 === 2 ? asPick(it) : it)); // har 3-savol — gap tanlash
+    .map((it, k) => (pool.length > QN && k % 3 === 2 ? asPick(it) : pool.length > QN && k % 3 === 1 ? asOrder(it) : it)); // 2-savol — so'z tartibi, 3-savol — gap tanlash
   let items = pick();
   box.hidden = items.length < (lesson.id === "gr-miss" ? 1 : 2);
   if (box.hidden) return;
@@ -692,6 +702,43 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
     }
     const it = items[i];
     body.append(el("small", "qz-n", `${i + 1}/${items.length}${pool.length > QN ? ` · to'plamda ${pool.length} ta savol` : ""}`));
+    if (it.mode === "order") {
+      body.append(el("p", "qz-q", ""));
+      body.lastChild.append(el("b", "qz-pick", "🧱 So'zlarni tartibga soling"));
+      const line = el("div", "qz-line");
+      const bank = el("div", "qz-opts qz-bank");
+      const placed = [];
+      const check = () => {
+        if (placed.length < it.words.length) return;
+        const got = placed.map((b) => b.textContent).join(" ");
+        const ok = got === it.right;
+        if (ok) right++;
+        else if (it.from) (state.mixWeak ||= new Map()).set(it.from, (state.mixWeak.get(it.from) || 0) + 1);
+        quizMiss(it, lesson.id, ok);
+        marks.push(ok ? "🟩" : "🟥");
+        line.classList.add(ok ? "ok" : "bad");
+        haptic(ok ? "light" : "medium");
+        if (ok) return setTimeout(() => { i++; show(); }, 800);
+        missed.push(it.right);
+        body.append(el("div", "qz-why", "✅ To'g'risi: " + it.right));
+        const nx = el("button", "qz-next", i < items.length - 1 ? "Keyingi ›" : "Natija ›");
+        nx.addEventListener("click", () => { haptic(); i++; show(); });
+        body.append(nx);
+      };
+      for (const w of it.mixed) {
+        const b = el("button", "qz-opt qz-w", w);
+        b.addEventListener("click", () => {
+          if (line.classList.contains("ok") || line.classList.contains("bad")) return;
+          haptic();
+          if (b.parentNode === bank) { line.append(b); placed.push(b); }
+          else { bank.append(b); placed.splice(placed.indexOf(b), 1); }
+          check();
+        });
+        bank.append(b);
+      }
+      body.append(line, bank);
+      return;
+    }
     const q = el("p", "qz-q");
     if (it.mode === "pick") q.append(el("b", "qz-pick", "✅ Qaysi gap to'g'ri?"));
     else q.append(document.createTextNode(it.before + " "), el("span", "qz-gap", "____"), document.createTextNode(it.after));
