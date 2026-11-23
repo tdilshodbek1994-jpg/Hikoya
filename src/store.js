@@ -72,6 +72,7 @@ export function recordSession(userId, { lessonId, mode, used, total, seconds, re
     total,
     score,
     level: report?.level || "",
+    ...(Number.isFinite(report?.ml_score) ? { ml: report.ml_score } : {}),
   });
   u.history = u.history.slice(-MAX_HISTORY);
   // 📒 Lug'at: yangi so'zlar va tuzatilgan xatolar
@@ -133,6 +134,11 @@ export function summary(userId) {
       const L = ["A1", "A2", "B1", "B2", "C1", "C2"];
       const v = u.history.map((h) => L.indexOf((h.level || "").match(/\b([ABC][12])\b/)?.[1])).filter((i) => i >= 0).slice(-3);
       return v.length ? L[Math.round(v.reduce((s, i) => s + i, 0) / v.length)] : null;
+    })(),
+    // 🇺🇿 Taxminiy Multilevel: oxirgi 3 ta CEFR natijasining o'rtachasi (0–75)
+    ml: (() => {
+      const v = u.history.filter((h) => Number.isFinite(h.ml)).slice(-3).map((h) => h.ml);
+      return v.length ? Math.round(v.reduce((a, b) => a + b, 0) / v.length) : null;
     })(),
     // 🎯 Taxminiy IELTS band: oxirgi 3 ta IELTS natijasining o'rtachasi (0.5 ga yaxlitlangan)
     band: (() => {

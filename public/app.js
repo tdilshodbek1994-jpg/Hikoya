@@ -959,7 +959,8 @@ function renderBand() {
   // IELTS natijasi bo'lmasa — CEFR zinapoyasi
   if (!b && cefr) {
     const L = ["A1", "A2", "B1", "B2", "C1", "C2"];
-    box.append(el("b", "", `📗 Taxminiy daraja: ${cefr}`), el("span", "", "so'nggi darslar bo'yicha"));
+    const ml = state.progress?.ml;
+    box.append(el("b", "", `📗 Taxminiy daraja: ${cefr}`), el("span", "", ml != null ? `🇺🇿 Multilevel ~${ml}/75` : "so'nggi darslar bo'yicha"));
     const ladder = el("div", "cefr-ladder");
     for (const x of L) ladder.append(el("i", L.indexOf(x) < L.indexOf(cefr) ? "done" : x === cefr ? "on" : "", x));
     box.append(ladder);
