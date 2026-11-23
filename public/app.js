@@ -476,9 +476,9 @@ function renderVisual(lesson) {
   if (!v && lesson?.plan) {
     const d = document.createElement("details");
     d.className = "vis-q";
-    d.open = true;
+    d.open = window.innerHeight > 720; // past ekranda yig'iq — Sado gapi ko'rinib tursin
     const sm = document.createElement("summary");
-    sm.textContent = "📋 Javob rejasi — imtihonda shu qismlar baholanadi";
+    sm.textContent = `📋 Javob rejasi — ${lesson.plan.length} qism`;
     const ul = el("ul", "plan-list");
     for (const step of lesson.plan) {
       const li = el("li", "", step);
@@ -488,7 +488,7 @@ function renderVisual(lesson) {
       });
       ul.append(li);
     }
-    d.append(sm, ul, el("small", "", "👆 Gapirib bo'lgan qismingizni bosib belgilang"));
+    d.append(sm, ul, el("small", "", "👆 Imtihonda shu qismlar baholanadi. Gapirib bo'lganingizni bosib belgilang"));
     box.append(d);
     return;
   }

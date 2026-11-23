@@ -922,3 +922,4 @@ body.dark .invite { color: #a5b4fc; }
 }
 .badge small { overflow-wrap: normal; }
 @media (max-width: 360px) { .badge small { font-size: 9px; letter-spacing: -0.2px; } .badge { overflow: visible; } }
+.phrase-card.can-insert .phrase-en::after { content: "\00a0✍️"; }
