@@ -3324,7 +3324,7 @@ function showOnboarding() {
       const lv = el("div", "onb-level");
       lv.append(el("small", "", "Ingliz tilingiz qanday?"));
       const row = el("div", "onb-lv-row");
-      for (const [k, label] of [["beg", "🌱 Endi boshlayapman"], ["mid", "🌿 O'rtacha"], ["adv", "🌳 Yaxshi"]]) {
+      for (const [k, label] of [["beg", "🌱 Boshlovchi"], ["mid", "🌿 O'rtacha"], ["adv", "🌳 Yaxshi"]]) {
         const b = el("button", "chip-f" + (localStorage.getItem("sado-level") === k ? " on" : ""), label);
         b.addEventListener("click", () => {
           haptic();
