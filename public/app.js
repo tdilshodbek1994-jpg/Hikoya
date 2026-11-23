@@ -3556,7 +3556,10 @@ function keepSubsVisible() {
     if (sb.hidden || !$("lesson").classList.contains("active") || !($("subAi").textContent || $("subMe").textContent)) return;
     if (!$("cue").hidden && !$("cueReady").hidden) return; // Part 2 tayyorlanishida kartochka (mavzu, taymer) ko'rinib tursin
     const r = sb.getBoundingClientRect(), ctl = $("controls").getBoundingClientRect().top;
-    const dy = Math.min(r.bottom - ctl + 16, r.top - 70);
+    let dy = Math.min(r.bottom - ctl + 16, r.top - 70);
+    // 🖼 Topshiriq materiali (CEFR rasmlari, jadval, savollar) yuqoridan chiqib ketmasin
+    const task = $("visual");
+    if (!task.hidden && task.offsetHeight && !task.querySelector(":scope > details")) dy = Math.min(dy, task.getBoundingClientRect().top - 70);
     if (r.bottom > ctl - 8 && dy > 0) window.scrollBy({ top: dy, behavior: "smooth" });
   }, 380);
 }
