@@ -1102,3 +1102,5 @@ body.dark .ml-mark { background: #5eead4; }
 .rule-close { position: absolute; top: 6px; right: 8px; width: 28px; height: 28px; border-radius: 50%; font-size: 13px; color: var(--muted); background: color-mix(in srgb, var(--muted) 12%, transparent); }
 #lesson:has(#lessonRule:not([hidden])) .mascot { width: min(34vw, 130px); }
 #lessonRule:not([hidden]) { max-height: 24vh; overflow-y: auto; overscroll-behavior: contain; }
+/* Yordam: ＋/－ belgisi ikki qatorli savolda ham o'rtada */
+.faq-item summary::after { top: 50%; transform: translateY(-50%); }
