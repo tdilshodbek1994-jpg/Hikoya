@@ -647,6 +647,25 @@ function renderVocab() {
       li.append(el("b", "", w.en), el("span", "muted", " — " + (w.uz || "")));
     }
     li.addEventListener("click", () => sayPhrase(w.en).then(() => mascot.setLevel(0)));
+    // ✕ Lug'atdan o'chirish
+    const del = el("button", "w-del", "✕");
+    del.title = "O'chirish";
+    del.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      haptic();
+      li.classList.add("removing");
+      try {
+        const d = await api("api/word", { method: "DELETE", json: { en: w.en } });
+        if (d.progress) state.progress = { ...state.progress, words: d.progress.words };
+        renderVocabBtn();
+        renderVocab();
+        toast(`🗑 «${w.en.slice(0, 30)}» lug'atdan o'chirildi`);
+      } catch (err) {
+        li.classList.remove("removing");
+        toast(err.message);
+      }
+    });
+    li.append(del);
     ul.append(li);
   }
   $("vocabCopy").hidden = !items.length || Boolean(state.flash);

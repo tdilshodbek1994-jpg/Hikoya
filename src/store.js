@@ -265,6 +265,14 @@ export function addWord(userId, en, uz) {
   return true;
 }
 
+export function removeWord(userId, en) {
+  const u = user(userId);
+  const n = (u.words || []).length;
+  u.words = (u.words || []).filter((w) => w.en !== en);
+  if (u.words.length !== n) save();
+  return u.words.length !== n;
+}
+
 // ✅ Takrorlash darsida to'g'ri aytilgan xatolar "tuzatildi" deb belgilanadi
 export function markFixed(userId, ens) {
   const u = user(userId);

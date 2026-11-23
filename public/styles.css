@@ -953,3 +953,9 @@ body.dark .rep-ml { color: #5eead4; }
 .sheet-phrases li:has(.ph-keep)::after { right: 46px; }
 .ph-keep { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; font-size: 16px; font-weight: 800; color: var(--primary); background: color-mix(in srgb, var(--primary) 10%, transparent); }
 .ph-keep.on { color: var(--ok); background: color-mix(in srgb, var(--ok) 14%, transparent); }
+
+/* ✕ Lug'atdan o'chirish */
+#vocabList li { position: relative; padding-right: 40px; }
+.w-del { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; border-radius: 50%; font-size: 13px; color: var(--muted); background: transparent; }
+.w-del:active { background: color-mix(in srgb, var(--danger) 14%, transparent); color: var(--danger); }
+#vocabList li.removing { opacity: 0.4; }
