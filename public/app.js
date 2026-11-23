@@ -1559,6 +1559,17 @@ function renderDaily() {
       box.append(rev);
     }
   }
+  // 📅 Bugungi grammatika testiga tezkor havola (grammatika bo'limiga kirmasdan)
+  if (state.lessons.some((l) => l.quiz?.length)) {
+    const dt = dailyTest();
+    const done = dt.day === dayNum();
+    const alive = done || dt.day === dayNum() - 1;
+    const link = el("button", "daily-test" + (done ? " done" : ""), done
+      ? `✅ Bugungi test: ${dt.score}${dt.streak ? ` · 🔥 ${dt.streak} kun` : ""}`
+      : `📅 Bugungi grammatika testi — 5 ta savol${alive && dt.streak ? ` · 🔥 ${dt.streak}` : ""} ›`);
+    link.addEventListener("click", () => { haptic(); openDailyTest(); });
+    box.append(link);
+  }
 }
 
 // 📅 Haftalik xulosa
