@@ -94,6 +94,21 @@ Rules:
 - Start the conversation yourself now with: "${lesson.opener}"`;
 }
 
+// ---- 🔤 Kirill → lotin (o'zbekcha) ----
+// Gemini o'zbekcha nutqni ko'pincha kirillda yozadi; ilova va hisobot lotin yozuvida.
+const CYR = { а: "a", б: "b", в: "v", г: "g", д: "d", е: "e", ё: "yo", ж: "j", з: "z", и: "i", й: "y", к: "k", л: "l", м: "m", н: "n", о: "o", п: "p", р: "r", с: "s", т: "t", у: "u", ф: "f", х: "x", ц: "ts", ч: "ch", ш: "sh", щ: "sh", ъ: "'", ы: "i", ь: "", э: "e", ю: "yu", я: "ya", ў: "o'", қ: "q", ғ: "g'", ҳ: "h" };
+export function toLatin(text, prev = "") {
+  if (!/[\u0400-\u04FF]/.test(text)) return text;
+  return text.replace(/[\u0400-\u04FF]/g, (ch, i) => {
+    const low = ch.toLowerCase();
+    let out = CYR[low] ?? ch;
+    // So'z boshidagi "е" — "ye" (ер → yer)
+    if (low === "е" && !/[\u0400-\u04FFa-z']/i.test(i ? text[i - 1] : prev.slice(-1))) out = "ye";
+    if (ch !== low && out) out = out[0].toUpperCase() + out.slice(1);
+    return out;
+  });
+}
+
 // ---- Iboralarni aniqlash (o'quvchi gapidan) ----
 const norm = (t) =>
   t
@@ -173,6 +188,7 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
   upstream = new WebSocket(`${WS_URL}?key=${encodeURIComponent(GEMINI_KEY)}`);
   let userTurn = "";
   let sadoTurn = "";
+  let userRaw = "", sadoRaw = ""; // asl (kirill) matn — bo'laklar orasidagi so'z chegarasi uchun
 
   upstream.on("open", () => {
     upstream.send(
@@ -222,12 +238,16 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
         }
       }
       if (sc.inputTranscription?.text) {
-        userTurn += sc.inputTranscription.text;
-        send({ type: "user", text: sc.inputTranscription.text });
+        const t = toLatin(sc.inputTranscription.text, userRaw.slice(-1));
+        userRaw += sc.inputTranscription.text;
+        userTurn += t;
+        send({ type: "user", text: t });
       }
       if (sc.outputTranscription?.text) {
-        sadoTurn += sc.outputTranscription.text;
-        send({ type: "sado", text: sc.outputTranscription.text });
+        const t = toLatin(sc.outputTranscription.text, sadoRaw.slice(-1));
+        sadoRaw += sc.outputTranscription.text;
+        sadoTurn += t;
+        send({ type: "sado", text: t });
       }
       if (sc.interrupted) send({ type: "interrupted" });
       if (sc.turnComplete || sc.generationComplete) {
