@@ -524,3 +524,14 @@ body.dark .onb-card { box-shadow: 0 0 0 1px var(--line), 0 20px 50px rgba(0,0,0,
 .cert-c { font-weight: 800; font-size: 22px; color: #92400e; margin-top: 2px; }
 .cert-s { font-size: 13.5px; margin-top: 4px; }
 .cert .btn.share { margin-top: 12px; }
+
+/* ---------- Yordam ---------- */
+.help-btn { margin-left: 6px; width: 36px; padding: 0; }
+.help-card { text-align: left; }
+.help-card h3 { text-align: center; }
+.faq-item { background: var(--bg); border-radius: 14px; margin-top: 8px; padding: 0 12px; }
+.faq-item summary { cursor: pointer; font-weight: 700; font-size: 15px; padding: 12px 0; list-style: none; position: relative; padding-right: 20px; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: "＋"; position: absolute; right: 0; color: var(--muted); }
+.faq-item[open] summary::after { content: "－"; }
+.faq-item p { margin: 0 0 12px; font-size: 14px; color: var(--muted); line-height: 1.5; }

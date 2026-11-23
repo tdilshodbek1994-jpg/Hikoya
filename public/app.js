@@ -1957,4 +1957,41 @@ function showOnboarding() {
 }
 showOnboarding();
 
+// ❓ Yordam: ko'p beriladigan savollar
+const FAQ = [
+  ["Qaysi rejimni tanlay?", "Boshlovchi bo'lsangiz — 🇺🇿 Ustoz. O'rta darajada — 🇬🇧 Inglizcha suhbat. Erkin gaplashmoqchi bo'lsangiz — 📞 Jonli suhbat. Dars oynasidagi ⭐ Tavsiya belgisiga qarang."],
+  ["Sado meni eshitmayapti", "Telegram'ga mikrofon ruxsatini bering, telefonni yaqin tuting va tinch joyda gapiring. Shovqinli joyda «Bosib gapirish» rejimini tanlang."],
+  ["Sado ovozi eshitilmayapti", "Telefon ovozini balandlating va «ovozsiz» rejimni o'chiring. «🔁 Qayta eshitish» tugmasi bilan oxirgi gapni yana tinglashingiz mumkin."],
+  ["O'zbekcha gapirsam bo'ladimi?", "Ha! Sado o'zbekcha tushunadi, o'zbekcha tushuntiradi va buni inglizcha qanday aytishni o'rgatadi."],
+  ["Ball qanday qo'yiladi?", "Dars oxirida AI gaplaringizni tahlil qilib 0–100 ball, daraja (CEFR yoki IELTS band), xatolar va maslahatlar beradi."],
+  ["Kuniga nechta dars?", "Kunlik limit bor — qolgan darslar soni bosh sahifadagi «Bugungi maqsad» blokida ko'rinadi. Limit har kuni yangilanadi."],
+  ["Ma'lumotlarim xavfsizmi?", "Ovozingiz dars paytida tahlil uchun AI xizmatlariga (OpenAI, Google, Anthropic) yuboriladi, lekin Sado serverida saqlanmaydi. Serverda faqat ballar, o'tilgan darslar va lug'at saqlanadi."],
+];
+function renderFaq() {
+  const box = $("faq");
+  box.innerHTML = "";
+  for (const [q, a] of FAQ) {
+    const d = document.createElement("details");
+    d.className = "faq-item";
+    const s = document.createElement("summary");
+    s.textContent = q;
+    d.append(s, el("p", "", a));
+    box.append(d);
+  }
+}
+$("helpBtn").addEventListener("click", () => {
+  haptic();
+  renderFaq();
+  $("helpSheet").hidden = false;
+});
+$("helpClose").addEventListener("click", () => ($("helpSheet").hidden = true));
+$("helpSheet").addEventListener("click", (e) => {
+  if (e.target.id === "helpSheet") $("helpSheet").hidden = true;
+});
+$("onbAgain").addEventListener("click", () => {
+  $("helpSheet").hidden = true;
+  localStorage.removeItem("sado-onb");
+  showOnboarding();
+});
+
 loadLessons();
