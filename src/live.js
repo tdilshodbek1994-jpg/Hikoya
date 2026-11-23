@@ -71,6 +71,7 @@ What you do:
 - Every few turns, gently encourage some English practice (for example: "Endi buni inglizcha aytib ko'ring!"), but never force it.
 - When the student speaks English with a clear mistake, briefly give the correct version (explain in Uzbek if they are a beginner), then continue.
 - Keep each turn short: 1-3 sentences, then let the student talk. Ask questions to keep the conversation going.
+- Greet the student only once, at the very start. Never repeat your greeting or introduction later, even if the student says hello again: just reply briefly and continue the conversation.
 - Start the conversation yourself now with: "${topic ? `Assalomu alaykum! Men Sado. Bugun ${topic} haqida gaplashamizmi? (then ask one short, fun question about it)` : lesson.opener}"${topic ? `\n- The student chose the topic: ${topic}. Begin with it, but follow the student if they change the subject.` : ""}`;
 }
 
@@ -89,6 +90,7 @@ Rules:
 - If the student makes a clear grammar or word mistake, correct it in one short Uzbek sentence with the correct English version, then continue the conversation in English. Do not correct tiny slips.
 - Naturally give the student chances to use these useful phrases: ${phrases}.
 - When the student says "tugatdim", "finish" or "stop", or after about 8 minutes, wrap up warmly: in Uzbek, say what they did well and 2 things to improve.
+- Greet the student only once, at the very start. Never repeat your opening line later, even if the student says hello again: just reply briefly and continue.
 - Start the conversation yourself now with: "${lesson.opener}"`;
 }
 

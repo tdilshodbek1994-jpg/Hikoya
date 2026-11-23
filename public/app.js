@@ -1,5 +1,5 @@
 import { Mascot } from "./mascot.js";
-import { LiveCall } from "./live.js?v=6";
+import { LiveCall } from "./live.js?v=7";
 
 const tg = window.Telegram?.WebApp;
 const inTelegram = Boolean(tg && tg.initData);
@@ -96,14 +96,20 @@ function toast(msg, ms = 2600) {
   toast.t = setTimeout(() => (el.hidden = true), ms);
 }
 
-async function api(path, { json, body, headers = {}, method = "POST" } = {}) {
+async function api(path, { json, body, headers = {}, method = "POST", timeout = 0 } = {}) {
   const h = { "X-Telegram-Init-Data": tg?.initData || "", ...headers };
   if (json) h["Content-Type"] = "application/json";
   let res;
+  // ⏱ Cheksiz kutib qolmaslik uchun (masalan hisobot)
+  const ac = timeout ? new AbortController() : null;
+  const tm = ac && setTimeout(() => ac.abort(), timeout);
   try {
-    res = await fetch(path, { method, headers: h, body: json ? JSON.stringify(json) : body });
-  } catch {
+    res = await fetch(path, { method, headers: h, body: json ? JSON.stringify(json) : body, signal: ac?.signal });
+  } catch (e) {
+    if (e?.name === "AbortError") throw Object.assign(new Error("Server javob bermadi ⏱"), { network: true });
     throw Object.assign(new Error("Internet bilan aloqa yo'q 📶"), { network: true });
+  } finally {
+    clearTimeout(tm);
   }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw Object.assign(new Error(data.error || `Xatolik (${res.status})`), { status: res.status });
@@ -130,6 +136,9 @@ $("backBtn").addEventListener("click", () => onBack());
 
 
 function onBack() {
+  // Ochiq oyna (masalan ⚙️ Sozlamalar) bo'lsa — avval uni yopamiz, darsni emas
+  const open = [...document.querySelectorAll(".sheet")].filter((s) => !s.hidden);
+  if (open.length) return void (open[open.length - 1].hidden = true);
   if ($("lesson").classList.contains("active")) {
     confirmEnd();
   } else if ($("home").classList.contains("active")) {
@@ -2822,7 +2831,7 @@ async function startLive(lesson) {
   setMuteUi(false);
   setSubs("", "", "", "");
   setPhase("thinking", "Ulanmoqda...");
-  $("hint").textContent = "Shunchaki gapiring. Sado gapirayotganda gapini bo'lishingiz ham mumkin.";
+  $("hint").textContent = "Shunchaki gapiring. Sado gapini tugatgach javob bering 🙂";
 
   ensureCtx();
   let sadoLine = "";
@@ -3974,7 +3983,7 @@ async function finish() {
   $("report").hidden = false;
   $("report").innerHTML = '<div class="rep-loading"><span class="spin"></span>Sado hisobot tayyorlamoqda...</div>';
   try {
-    const data = await api("api/end", { json: { session } });
+    const data = await api("api/end", { json: { session }, timeout: 45000 });
     // 🙊 Hech narsa aytilmagan: maqtov o'rniga tushuntirish, limit sarflanmaydi
     if (data.empty) {
       $("report").hidden = true;
@@ -3998,7 +4007,9 @@ async function finish() {
     renderTranscript(data.transcript, data.report?.mistakes);
     renderSpeakStats(data.transcript, data.prevMaxWords);
   } catch {
-    $("report").hidden = true;
+    // Hisobot kelmadi — aylanib turgan belgini qoldirmaymiz
+    $("report").innerHTML = "";
+    $("report").append(el("div", "muted", "⏱ Hisobot hozir tayyor bo'lmadi (internet sekin bo'lishi mumkin)."));
   }
 }
 

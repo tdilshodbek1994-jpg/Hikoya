@@ -25,8 +25,14 @@ export class LiveCall {
     this.sink.gain.value = 0;
     this.sink.connect(ctx.destination);
 
+    // 🔇 Exo himoyasi: Sado gapirayotganda (va undan keyin qisqa vaqt) telefon karnayidan chiqqan
+    // ovoz mikrofonga qaytib tushadi — Gemini uni o'quvchi gapi deb o'ylab, Sado'ni to'xtatib,
+    // salomlashishni qayta boshlardi. Shu paytda va mikrofon o'chiq bo'lsa jimlik yuboramiz:
+    // oqim uzilmaydi, Gemini esa o'quvchi gapi tugaganini to'g'ri aniqlaydi.
     const sendPcm = (buf) => {
-      if (!this.muted && this.ws?.readyState === WebSocket.OPEN) this.ws.send(buf);
+      if (this.ws?.readyState !== WebSocket.OPEN) return;
+      const echo = this.sources.size > 0 || ctx.currentTime < this.playhead + 0.35;
+      this.ws.send(this.muted || echo ? new ArrayBuffer(buf.byteLength) : buf);
     };
     if (ctx.audioWorklet) {
       await ctx.audioWorklet.addModule("pcm-worklet.js?v=1");
