@@ -4552,19 +4552,15 @@ $("appRefresh").addEventListener("click", () => {
 });
 
 // 🆕 Nima yangi: versiya o'zgarganda bir marta ko'rsatiladi (yangi foydalanuvchiga emas)
-const NEWS_VERSION = "2026-11-26";
+const NEWS_VERSION = "2026-11-27";
 const NEWS = [
-  "🧩 Grammatika darslarida tez mashq: bo'sh joyni to'ldiring, natija saqlanadi",
-  "✏️ 4 ta yangi grammatika darsi: Present Simple, There is / are, my / his / 's va in / on / at",
+  "🧪 Grammatika bo'limida yangi «Testlar» paneli: 408 ta savol, 34 ta mavzu",
+  "📅 Bugungi test — har kuni 5 ta savol, 🔥 seriya va do'stlarga 🟩🟥 natijani ulashish",
+  "📊 Daraja testi — grammatika darajangizni (A1–B2) aniqlang",
+  "⚡ 60 soniya tezkor test, 📝 Aralash test (daraja bo'yicha), 🔁 Xatolarim",
+  "🧱 Yangi savol turlari: so'z tartibi, «qaysi gap to'g'ri?», 🔎 xatoni toping",
+  "🎯 Mavzular bo'yicha aniqlik va 📈 o'sish grafigi, 💪 zaif mavzulardan test",
   "🇺🇿 Jonli suhbatda Sado gapini bosing — o'zbekcha tarjimasi chiqadi",
-  "🙈 «Yoddan» rejimi: inglizcha iborani eslab ayting",
-  "🔁 «Takrorlash» filtri: past ballli va 7 kundan beri o'tilmagan darslar",
-  "✅ Xatolar ustida ishlash: tuzatilgan xatolar belgilanadi, 🏅 yangi yutuqlar",
-  "🃏 Aqlli kartochkalar: bilmagan so'zlaringiz oldinroq chiqadi",
-  "🎯 Taxminiy IELTS band va 📗 CEFR daraja zinapoyasi, 🗓 haftalik kalendar",
-  "🧒 Bolalar uchun: ⭐ yulduzlar, katta yozuv, iliq ustoz",
-  "❓ IELTS savollari va 📋 CEFR javob rejasi dars ekranida",
-  "⚡ Ilova ancha tezroq ochiladi",
 ];
 function showNews() {
   const seen = localStorage.getItem("sado-news");
@@ -4593,7 +4589,7 @@ const FAQ = [
   ["IELTS/CEFR uchun namunaviy javob bormi?", "Ha! IELTS va CEFR kurslaridagi dars tugagach, hisobot ostida «📝 Namunaviy javob» tugmasi chiqadi: o'sha savol yoki kartochkaga Band 7 / B2 darajadagi javob va foydali iboralar. O'z javobingizni u bilan solishtiring."],
   ["Jonli suhbatda Sado gapini tushunmadim", "Sado gapi yozilgan pufakchani bosing — ostida o'zbekcha tarjimasi chiqadi. Erkin suhbatda mavzu yoqmasa, «🔀 Boshqa mavzu» tugmasini bosing."],
   ["Iboralarni qanday tez yodlayman?", "Dars oynasida «🎧 Tinglab takrorlash» (🐢 sekin tezlik bilan), dars ekranida «🙈 Yoddan» rejimi (inglizchasi yashirinadi), 📒 Lug'atda «🃏 Kartochkalar» va «🎧 Tinglash»."],
-  ["Grammatikani qanday mustahkamlayman?", "Har bir grammatika darsida «🧩 Tez mashq» bor: bo'sh joyni to'ldiring. Natija dars plitkasida 🧩 3/4 kabi ko'rinadi, «🎲 Tasodifiy mashq» hali a'lo bo'lmagan mashqni ochadi.", "✏️ Grammatika darslari", () => { $("helpSheet").hidden = true; state.filter.cat = "Grammatika gapirib"; renderChips(); renderLessons(); scrollToList(true); }],
+  ["Grammatikani qanday mustahkamlayman?", "Grammatika bo'limidagi «🧪 Testlar» panelida: 📅 Bugungi test (har kuni 5 savol), 📝 Aralash test (daraja tanlab), ⚡ 60 soniya, 📊 Daraja testi va 🔁 Xatolarim. «🎯 %» ni bosing — qaysi mavzu zaif ekanini ko'rasiz. Har bir darsda ham «🧩 Tez mashq» bor.", "✏️ Grammatika darslari", () => { $("helpSheet").hidden = true; state.filter.cat = "Grammatika gapirib"; renderChips(); renderLessons(); scrollToList(true); }],
   ["O'zbekcha gapirsam bo'ladimi?", "Ha! Sado o'zbekcha tushunadi, o'zbekcha tushuntiradi va buni inglizcha qanday aytishni o'rgatadi."],
   ["Ball qanday qo'yiladi?", "Dars oxirida AI gaplaringizni tahlil qilib 0–100 ball, daraja (CEFR yoki IELTS band), xatolar va maslahatlar beradi."],
   ["Kuniga nechta dars?", "Kunlik limit bor — qolgan darslar soni bosh sahifadagi «Bugungi maqsad» blokida ko'rinadi. Limit har kuni yangilanadi."],
