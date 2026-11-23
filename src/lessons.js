@@ -1678,6 +1678,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-there",
+    category: "Grammatika gapirib",
+    title: "There is / There are",
+    emoji: "🏠",
+    level: "A1-A2",
+    added: "2026-11-26",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on grammar: there is / there are / is there? / are there? / there isn't / there aren't (with a, some, any, a lot of). Talk about the student's room, home, street and city: what there is and isn't. Have a natural conversation that makes the student use this grammar a lot. Ask simple questions, listen, whenever the student makes a mistake with this grammar, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Tell me about your room. What is there in your room?",
+    openerUz: "Xonangiz haqida gapirib bering. Xonangizda nimalar bor?",
+    phrases: [
+      { en: "There is a big window in my room.", uz: "Xonamda katta deraza bor." },
+      { en: "There are two beds.", uz: "Ikkita karavot bor." },
+      { en: "There isn't a TV.", uz: "Televizor yo'q." },
+      { en: "Is there a park near your house?", uz: "Uyingiz yaqinida park bormi?" },
+      { en: "There are a lot of shops in my street.", uz: "Ko'chamda do'konlar ko'p." },
+      { en: "There aren't any cinemas in my village.", uz: "Qishlog'imda birorta ham kinoteatr yo'q." },
+    ],
+  },
+  {
+    id: "gr-possessive",
+    category: "Grammatika gapirib",
+    title: "Egalik: my, your, his, 's",
+    emoji: "👨‍👩‍👧",
+    level: "A1-A2",
+    added: "2026-11-26",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on grammar: possessive adjectives (my, your, his, her, its, our, their) and possessive 's (my sister's name, my parents' house), plus whose? Talk about the student's family, friends and their things. Have a natural conversation that makes the student use this grammar a lot. Ask simple questions, listen, whenever the student makes a mistake with this grammar (especially his/her confusion), explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Let's talk about your family. What is your mother's name?",
+    openerUz: "Oilangiz haqida gaplashaylik. Onangizning ismi nima?",
+    phrases: [
+      { en: "My mother's name is Dilnoza.", uz: "Onamning ismi Dilnoza." },
+      { en: "Her job is very interesting.", uz: "Uning (ayolning) ishi juda qiziq." },
+      { en: "His car is white.", uz: "Uning (erkakning) mashinasi oq." },
+      { en: "Our house has a garden.", uz: "Uyimizning bog'i bor." },
+      { en: "This is my brother's phone.", uz: "Bu akamning telefoni." },
+      { en: "Whose bag is this?", uz: "Bu kimning sumkasi?" },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -2581,7 +2621,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-simple", "gr-continuous", "gr-past", "gr-pastcont", "gr-questions", "gr-quantity", "gr-articles", "gr-prepositions", "gr-future", "gr-compare", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-relative", "gr-reported", "gr-passive"];
+const GR_ORDER = ["gr-simple", "gr-there", "gr-possessive", "gr-continuous", "gr-past", "gr-pastcont", "gr-questions", "gr-quantity", "gr-articles", "gr-prepositions", "gr-future", "gr-compare", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-relative", "gr-reported", "gr-passive"];
 const grRank = (l) => (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
 LESSONS.sort((a, b) => ORDER.indexOf(a.category) - ORDER.indexOf(b.category) || partRank(a) - partRank(b) || (a.category === "Grammatika gapirib" ? grRank(a) - grRank(b) : 0));
 // Kurs darslarini tartib raqami bilan nomlaymiz
@@ -2594,6 +2634,8 @@ for (const cat of ["IELTS kursi", "CEFR kursi", "Grammatika gapirib"]) {
 // ✏️ Grammatika darslari uchun qisqa qoida (o'zbekcha)
 // 🧩 Grammatika tez mashqi: "gap ___ bilan|to'g'ri|noto'g'ri|..." (birinchi variant — to'g'ri javob)
 const QUIZ = {
+  "gr-there": ["There ___ a cat in the garden.|is|are|have", "There ___ many people here.|are|is|has", "___ there a bank near here?|Is|Are|Does", "There aren't ___ eggs.|any|some|a"],
+  "gr-possessive": ["Laylo is my friend. ___ dog is small.|Her|His|She", "Anvar loves ___ car.|his|her|he", "We love ___ teacher.|our|we|us", "This is my ___ room.|sister's|sisters|sister"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do"],
@@ -2626,6 +2668,8 @@ const KID_PICS = {
   "kid-weather": ["☀️", "🌧️", "🥶", "🧥", "☂️", "❄️"],
 };
 const RULES = {
+  "gr-there": "Bor/yo'qligini aytish: There is + bitta narsa, There are + ko'p narsa.\nThere is a table. There are three chairs.\nInkor: There isn't a TV. There aren't any shops.\nSavol: Is there a bank? Are there any parks?",
+  "gr-possessive": "Egalik so'zlari: I → my, you → your, he → his, she → her, we → our, they → their.\nHis name is Anvar. Her name is Laylo.\nKimningdir narsasi: ism + 's: My sister's bag. Ko'plikda: my parents' house.\nSavol: Whose phone is this?",
   "gr-simple": "Odat va doimiy narsalar: I/you/we/they + fe'l: I work. They live here.\nhe/she/it + fe'l-s: She works. He goes. It rains.\nInkor: don't / doesn't + fe'l: He doesn't like tea. (✗ He doesn't likes)\nSavol: Do you ...? Does she ...? Does he play football?",
   "gr-prepositions": "in — oy, yil, kun qismi, shahar, xona:\nI was born in May. I study in the morning. I live in Tashkent.\non — hafta kuni, sana, narsa ustida:\nSee you on Monday. The cake is on the table.\nat — aniq soat, nuqta joy:\nThe lesson starts at five. I'm at home.",
   "gr-relative": "Odam uchun — who: a teacher who helps students.\nNarsa uchun — which yoki that: a phone which/that I bought.\nJoy uchun — where: a city where I was born.\nEgalik — whose: the girl whose brother is a pilot.\nIt's a place where you can buy medicine.",

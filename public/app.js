@@ -3875,7 +3875,7 @@ $("appRefresh").addEventListener("click", () => {
 const NEWS_VERSION = "2026-11-26";
 const NEWS = [
   "🧩 Grammatika darslarida tez mashq: bo'sh joyni to'ldiring, natija saqlanadi",
-  "✏️ 2 ta yangi grammatika darsi: Present Simple (he/she + -s) va in / on / at",
+  "✏️ 4 ta yangi grammatika darsi: Present Simple, There is / are, my / his / 's va in / on / at",
   "🇺🇿 Jonli suhbatda Sado gapini bosing — o'zbekcha tarjimasi chiqadi",
   "🙈 «Yoddan» rejimi: inglizcha iborani eslab ayting",
   "🔁 «Takrorlash» filtri: past ballli va 7 kundan beri o'tilmagan darslar",
