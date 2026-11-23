@@ -8,7 +8,8 @@ import { LESSONS, getLesson, publicLesson } from "./src/lessons.js";
 import { verifyInitData } from "./src/telegram.js";
 import { WebSocketServer } from "ws";
 import { liveEnabled, runLive } from "./src/live.js";
-import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled } from "./src/ai.js";
+import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport } from "./src/ai.js";
+import { recordSession, summary } from "./src/store.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -104,6 +105,8 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
     turns: 0,
     mode,
     current: 0,
+    transcript: [],
+    startedAt: Date.now(),
     expiresAt: Date.now() + SESSION_MINUTES * 60_000,
   });
 
@@ -172,6 +175,7 @@ app.post(
       s.turns += 1;
       if (s.mode === "tutor") {
         const t = await tutorTurn(s, lesson, text);
+        s.transcript.push({ who: "student", text }, { who: "sado", text: t.say.map((x) => x.text).join(" ") });
         for (const i of t.used_phrases) s.used.add(i);
         s.current = t.current;
         const parts = await speakParts(t.say);
@@ -189,6 +193,7 @@ app.post(
       }
 
       const result = await chatTurn(s, lesson, text);
+      s.transcript.push({ who: "student", text }, { who: "sado", text: result.reply });
       for (const i of result.used_phrases) s.used.add(i);
       // Tartib: o'zbekcha izoh -> inglizcha javob -> (ixtiyoriy) o'zbekcha tarjima
       const tr = req.query.tr !== "0";
@@ -212,10 +217,39 @@ app.post(
   },
 );
 
-app.post("/api/end", express.json(), auth, (req, res) => {
-  const s = sessions.get(String(req.body?.session || ""));
-  if (s && s.userId === req.userId) sessions.delete(String(req.body.session));
-  res.json({ ok: true, used: s ? [...s.used] : [] });
+app.post("/api/end", express.json(), auth, async (req, res) => {
+  const id = String(req.body?.session || "");
+  const s = sessions.get(id);
+  if (!s || s.userId !== req.userId) return res.json({ ok: true, used: [], report: null, progress: summary(req.userId) });
+  sessions.delete(id);
+  if (s.ended) return res.json({ ok: true, used: [...s.used], report: null, progress: summary(req.userId) });
+  s.ended = true;
+  const lesson = getLesson(s.lessonId);
+  const used = s.used.size;
+  const total = lesson.phrases.length;
+  let report = null;
+  try {
+    if (process.env.ANTHROPIC_API_KEY) report = await lessonReport(lesson, s.transcript, { used, total, mode: s.mode });
+  } catch (err) {
+    console.error("Hisobot xatosi:", err?.message || err);
+  }
+  // Hech narsa gapirilmagan darsni progressga yozmaymiz
+  const spoke = s.transcript.some((t) => t.who === "student" && t.text.trim());
+  const score = spoke
+    ? recordSession(req.userId, {
+        lessonId: s.lessonId,
+        mode: s.mode,
+        used,
+        total,
+        seconds: (Date.now() - s.startedAt) / 1000,
+        report,
+      })
+    : null;
+  res.json({ ok: true, used: [...s.used], score, report, progress: summary(req.userId) });
+});
+
+app.get("/api/progress", auth, (req, res) => {
+  res.json(summary(req.userId));
 });
 
 // Telegram WebView eski fayllarni keshda ushlab qolmasligi uchun har safar yangiligini tekshiradi

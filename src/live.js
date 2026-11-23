@@ -132,6 +132,7 @@ export async function runLive(client, session, lesson, { maxMs }) {
 
   upstream = new WebSocket(`${WS_URL}?key=${encodeURIComponent(GEMINI_KEY)}`);
   let userTurn = "";
+  let sadoTurn = "";
   let ready = false; // Gemini sozlamani qabul qilguncha ovoz yubormaymiz
 
   upstream.on("open", () => {
@@ -184,10 +185,18 @@ export async function runLive(client, session, lesson, { maxMs }) {
         userTurn += sc.inputTranscription.text;
         send({ type: "user", text: sc.inputTranscription.text });
       }
-      if (sc.outputTranscription?.text) send({ type: "sado", text: sc.outputTranscription.text });
+      if (sc.outputTranscription?.text) {
+        sadoTurn += sc.outputTranscription.text;
+        send({ type: "sado", text: sc.outputTranscription.text });
+      }
       if (sc.interrupted) send({ type: "interrupted" });
       if (sc.turnComplete || sc.generationComplete) {
+        if (sadoTurn) {
+          session.transcript?.push({ who: "sado", text: sadoTurn });
+          sadoTurn = "";
+        }
         if (userTurn) {
+          session.transcript?.push({ who: "student", text: userTurn });
           const found = detectUsed(lesson, userTurn, session.used);
           for (const i of found) session.used.add(i);
           if (found.length) send({ type: "used", used: [...session.used].sort((a, b) => a - b), found });

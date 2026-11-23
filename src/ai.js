@@ -348,3 +348,68 @@ export async function speakParts(parts) {
     mime: audios[i]?.mime || "audio/mpeg",
   }));
 }
+
+// ---- 📝 Dars yakunidagi hisobot ----
+// transcript: [{ who: "student" | "sado", text }]
+export async function lessonReport(lesson, transcript, { used, total, mode }) {
+  const lines = transcript
+    .filter((t) => t.text && t.text.trim())
+    .slice(-80)
+    .map((t) => `${t.who === "student" ? "STUDENT" : "SADO"}: ${t.text.trim().slice(0, 400)}`)
+    .join("\n");
+  if (!lines.includes("STUDENT:")) return null;
+  const isIelts = /ielts/i.test(lesson.id + lesson.title + (lesson.category || ""));
+
+  const system = `You are an experienced English speaking examiner for Uzbek students. You write short, kind, practical feedback in simple Uzbek (Latin alphabet). Judge only the STUDENT's English (ignore their Uzbek sentences; speech-recognition may cause small spelling glitches - ignore those).
+
+Answer with ONLY a JSON object, no markdown:
+{"score": <0-100 overall speaking score for this lesson>,
+ "level": "<${isIelts ? "estimated IELTS Speaking band, e.g. 'IELTS 5.5'" : "estimated CEFR level: A1, A2, B1, B2 or C1"}>",
+ "summary_uz": "<1-2 sentences: overall impression>",
+ "strengths_uz": ["<up to 2 things done well>"],
+ "mistakes": [{"wrong": "<exact student phrase>", "right": "<corrected English>", "why_uz": "<short reason in Uzbek>"}],
+ "tips_uz": ["<2 concrete tips for next time>"],
+ "new_words": [{"en": "<useful word or phrase from the lesson topic>", "uz": "<translation>"}]}
+Rules: at most 5 mistakes (most important first, only real mistakes), at most 5 new_words. If the student said very little, give a low score and encourage them.`;
+
+  const params = {
+    model: CLAUDE_MODEL,
+    max_tokens: 3000,
+    output_config: { effort: "low" },
+    system,
+    messages: [
+      {
+        role: "user",
+        content: `Lesson: ${lesson.title} (${lesson.situation || ""}). Mode: ${mode}. Target phrases used: ${used} of ${total}.\n\nTranscript:\n${lines}`,
+      },
+    ],
+  };
+  if (SUPPORTS_FALLBACKS) {
+    params.betas = ["server-side-fallback-2026-07-01"];
+    params.fallbacks = "default";
+  }
+  const response = await anthropic.beta.messages.create(params);
+  if (response.stop_reason === "refusal") return null;
+  const data = parseJson(
+    response.content
+      .filter((b) => b.type === "text")
+      .map((b) => b.text)
+      .join(""),
+  );
+  if (!data) return null;
+  const arr = (x, n) => (Array.isArray(x) ? x.slice(0, n) : []);
+  const str = (x, n = 300) => String(x ?? "").slice(0, n);
+  return {
+    score: Math.max(0, Math.min(100, Math.round(Number(data.score) || 0))),
+    level: str(data.level, 20),
+    summary_uz: str(data.summary_uz, 400),
+    strengths_uz: arr(data.strengths_uz, 2).map((s) => str(s)),
+    mistakes: arr(data.mistakes, 5)
+      .filter((m) => m && m.wrong && m.right)
+      .map((m) => ({ wrong: str(m.wrong, 200), right: str(m.right, 200), why_uz: str(m.why_uz, 250) })),
+    tips_uz: arr(data.tips_uz, 3).map((s) => str(s)),
+    new_words: arr(data.new_words, 5)
+      .filter((w) => w && w.en)
+      .map((w) => ({ en: str(w.en, 80), uz: str(w.uz, 80) })),
+  };
+}

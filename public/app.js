@@ -119,6 +119,7 @@ async function loadLessons() {
     state.liveEnabled = Boolean(data.liveEnabled);
     state.sessionMinutes = data.sessionMinutes;
     renderLessons();
+    loadProgress();
     if (!inTelegram) $("homeNote").textContent = "Eslatma: ilova Telegram bot orqali ochilganda to'liq ishlaydi.";
   } catch (e) {
     $("lessonList").innerHTML = "";
@@ -126,7 +127,34 @@ async function loadLessons() {
   }
 }
 
+async function loadProgress() {
+  try {
+    state.progress = await api("api/progress", { method: "GET" });
+    renderLessons();
+  } catch {
+    // Telegram'siz ochilgan bo'lsa progress ko'rsatilmaydi
+  }
+}
+
+function renderStats() {
+  const p = state.progress;
+  const box = $("stats");
+  if (!p) return (box.hidden = true);
+  box.hidden = false;
+  box.innerHTML = "";
+  [
+    ["🔥", p.streak, "kun seriya"],
+    ["✅", p.done, "dars o'tildi"],
+    ["⏱️", p.minutes, "daqiqa"],
+  ].forEach(([ico, n, label]) => {
+    const d = el("div", "stat");
+    d.append(el("b", "", `${ico} ${n}`), el("span", "", label));
+    box.append(d);
+  });
+}
+
 function renderLessons() {
+  renderStats();
   const list = $("lessonList");
   list.innerHTML = "";
   const CAT_ICONS = { "Erkin suhbat": "💬", Imtihonlar: "🏆", "IELTS kursi": "📘", "CEFR kursi": "📗", "Grammatika gapirib": "✏️", "Kundalik hayot": "🏠", Sayohat: "✈️", "O'qish va ish": "🎓" };
@@ -152,6 +180,11 @@ function renderLessons() {
       ? "Istalgan mavzu · o'zbekcha va inglizcha 📞"
       : `${l.phrases.length} ta ibora · ${state.sessionMinutes} daqiqa`;
     b.querySelector(".lesson-level").textContent = l.level;
+    const pr = state.progress?.lessons?.[l.id];
+    if (pr) {
+      b.classList.add("done");
+      b.querySelector(".lesson-sub").textContent = `✅ O'tildi · eng yaxshi: ${pr.best} ball`;
+    }
     b.addEventListener("click", () => openSheet(l));
     list.appendChild(b);
   }
@@ -890,8 +923,69 @@ async function finish() {
   releaseMic();
   const session = state.session;
   state.session = null;
-  if (session) api("api/end", { json: { session } }).catch(() => {});
   showResult();
+  if (!session) return;
+  $("report").hidden = false;
+  $("report").innerHTML = '<div class="rep-loading"><span class="spin"></span>Sado hisobot tayyorlamoqda...</div>';
+  try {
+    const data = await api("api/end", { json: { session } });
+    if (data.progress) {
+      state.progress = data.progress;
+      renderLessons();
+    }
+    renderReport(data.report, data.score);
+  } catch {
+    $("report").hidden = true;
+  }
+}
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+}
+
+// 📝 AI hisobot: ball, daraja, xatolar, maslahatlar, yangi so'zlar
+function renderReport(r, score) {
+  const box = $("report");
+  box.innerHTML = "";
+  if (!r) {
+    if (score == null) return (box.hidden = true);
+    box.append(el("div", "rep-score-row", ""));
+    box.firstChild.append(el("div", "rep-score", String(score)), el("div", "rep-level", "ball"));
+    return;
+  }
+  const top = el("div", "rep-score-row");
+  const ring = el("div", "rep-score", String(r.score));
+  ring.style.setProperty("--p", r.score);
+  const right = el("div", "rep-top-text");
+  right.append(el("div", "rep-level", r.level || ""), el("div", "rep-summary", r.summary_uz || ""));
+  top.append(ring, right);
+  box.append(top);
+
+  const section = (title, items, render) => {
+    if (!items || !items.length) return;
+    box.append(el("div", "rep-title", title));
+    const ul = el("ul", "rep-list");
+    items.forEach((it) => ul.append(render(it)));
+    box.append(ul);
+  };
+  section("👍 Yaxshi chiqdi", r.strengths_uz, (t) => el("li", "", t));
+  section("✏️ Xatolar ustida ishlaymiz", r.mistakes, (m) => {
+    const li = el("li", "rep-mistake");
+    const line = el("div", "");
+    line.append(el("s", "rep-wrong", m.wrong), document.createTextNode(" → "), el("b", "rep-right", m.right));
+    li.append(line, el("div", "rep-why", m.why_uz || ""));
+    return li;
+  });
+  section("💡 Keyingi safar", r.tips_uz, (t) => el("li", "", t));
+  section("📚 Yangi so'zlar", r.new_words, (w) => {
+    const li = el("li", "rep-word");
+    li.append(el("b", "", w.en), el("span", "muted", " — " + (w.uz || "")));
+    li.addEventListener("click", () => speakBrowser(w.en, "en"));
+    return li;
+  });
 }
 
 function showResult() {
@@ -920,6 +1014,8 @@ function showResult() {
     li.append(mark, div);
     ul.appendChild(li);
   });
+  $("report").hidden = true;
+  $("report").innerHTML = "";
   haptic(k === n ? "success" : "light");
   show("result");
 }
