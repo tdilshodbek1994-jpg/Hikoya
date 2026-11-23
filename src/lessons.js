@@ -1908,6 +1908,45 @@ export const LESSONS = [
       { en: "This is mainly because ...", uz: "Bu asosan ... sababli." },
     ],
   },
+  // ======== O'qish va ish (qo'shimcha) ========
+  {
+    id: "scholarship",
+    category: "O'qish va ish",
+    title: "Grant (stipendiya) suhbati",
+    emoji: "🏅",
+    level: "B2",
+    role: "a scholarship committee member interviewing the student for a fully funded study-abroad scholarship",
+    situation: "A scholarship interview: motivation, academic goals, leadership experience, how the student will contribute back to Uzbekistan. Ask follow-up questions and give tips in Uzbek at the end.",
+    opener: "Welcome, and congratulations on reaching the interview stage. Why do you want to receive this scholarship?",
+    openerUz: "Xush kelibsiz, suhbat bosqichiga o'tganingiz bilan tabriklayman. Nega bu grantni olmoqchisiz?",
+    phrases: [
+      { en: "I have always been passionate about ...", uz: "Men doim ... ga qiziqib kelganman." },
+      { en: "This programme will help me to ...", uz: "Bu dastur menga ... ga yordam beradi." },
+      { en: "One of my biggest achievements is ...", uz: "Eng katta yutuqlarimdan biri ..." },
+      { en: "I led a team of ...", uz: "Men ... dan iborat jamoaga boshchilik qildim." },
+      { en: "After graduating, I plan to return and ...", uz: "O'qishni tugatgach, qaytib ... ni rejalashtiryapman." },
+      { en: "I believe I can contribute by ...", uz: "Men ... orqali hissa qo'sha olaman deb ishonaman." },
+    ],
+  },
+  {
+    id: "abroad",
+    category: "O'qish va ish",
+    title: "Xorijda o'qish: birinchi kun",
+    emoji: "🌍",
+    level: "B1",
+    role: "an international student advisor at a university abroad",
+    situation: "The student has just arrived to study abroad: registering, asking about classes, accommodation, a student card and making friends.",
+    opener: "Hi, welcome to the International Office! How was your journey? How can I help you today?",
+    openerUz: "Salom, Xalqaro bo'limga xush kelibsiz! Yo'lingiz qanday o'tdi? Bugun sizga qanday yordam bera olaman?",
+    phrases: [
+      { en: "I'm a new international student.", uz: "Men yangi xalqaro talabaman." },
+      { en: "Where can I get my student card?", uz: "Talaba guvohnomasini qayerdan olsam bo'ladi?" },
+      { en: "I'm looking for my timetable.", uz: "Dars jadvalimni qidiryapman." },
+      { en: "Is there any help with accommodation?", uz: "Yashash joyi bo'yicha yordam bormi?" },
+      { en: "How can I join a student club?", uz: "Talabalar klubiga qanday qo'shilsam bo'ladi?" },
+      { en: "Thanks, that's really helpful.", uz: "Rahmat, bu juda foydali bo'ldi." },
+    ],
+  },
 ];
 
 const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Grammatika gapirib", "Bolalar uchun", "Kundalik hayot", "Sayohat", "O'qish va ish", "Biznes va IT"];
@@ -1920,7 +1959,7 @@ LESSONS.sort((a, b) => ORDER.indexOf(a.category) - ORDER.indexOf(b.category) || 
 // Kurs darslarini tartib raqami bilan nomlaymiz
 for (const cat of ["IELTS kursi", "CEFR kursi", "Grammatika gapirib"]) {
   LESSONS.filter((l) => l.category === cat).forEach((l, i) => {
-    l.title = `${i + 1}. ${l.title.replace(/^\d+\.\s*/, "")}`;
+    l.title = `${i + 1}. ${l.title.replace(/^\d+\.\s*/, "").replace(/^CEFR:\s*/, "")}`;
   });
 }
 
