@@ -1359,3 +1359,9 @@ body.dark #status.paused { color: #fdba74; }
 
 /* ⚡ Ekrandan tashqaridagi dars kartalari keyinroq chiziladi (185+ dars — sekin telefonda tezroq) */
 .lesson-list > .lesson { content-visibility: auto; contain-intrinsic-size: auto 84px; }
+
+/* 📝 Namunaviy javob: tinglash va o'qilayotgan paragraf */
+.sample-box > p.now { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 6px; }
+.sample-box .sample-play { margin: 0 0 8px; }
+.sample-box .rep-word { display: flex; align-items: center; gap: 8px; }
+.sample-box .rep-word .ph-keep { position: static; transform: none; margin-left: auto; flex-shrink: 0; }

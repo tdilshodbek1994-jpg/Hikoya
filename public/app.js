@@ -4740,7 +4740,27 @@ function renderReport(r, score) {
         const d = await api("api/sample", { json: { lessonId: state.lesson.id } });
         out.innerHTML = "";
         out.dataset.ok = "1";
-        for (const para of d.answer.split(/\n+/)) out.append(el("p", "", para));
+        const paras = d.answer.split(/\n+/).filter((x) => x.trim());
+        // 🔊 Butun namunani tinglash (paragraflar ketma-ket, o'qilayotgani ajratiladi; yana bosilsa — to'xtaydi)
+        const play = el("button", "rule-all sample-play", "▶ Namunani tinglash");
+        let run = 0;
+        play.addEventListener("click", async () => {
+          haptic();
+          const my = ++run;
+          const ps = [...out.querySelectorAll(":scope > p")];
+          if (play.classList.contains("on")) { play.classList.remove("on"); play.textContent = "▶ Namunani tinglash"; ps.forEach((x) => x.classList.remove("now")); return; }
+          play.classList.add("on");
+          play.textContent = "⏹ To'xtatish";
+          for (const x of ps) {
+            if (my !== run || !out.isConnected) break;
+            ps.forEach((y) => y.classList.toggle("now", y === x));
+            await sayPhrase(x.textContent).catch(() => {});
+          }
+          if (my === run) { play.classList.remove("on"); play.textContent = "▶ Namunani tinglash"; ps.forEach((y) => y.classList.remove("now")); }
+          mascot.setLevel(0);
+        });
+        out.append(play);
+        for (const para of paras) out.append(el("p", "", para));
         if (d.phrases?.length) {
           out.append(el("b", "", "💬 Foydali iboralar:"));
           const ul = el("ul", "rep-list");
@@ -4748,6 +4768,26 @@ function renderReport(r, score) {
             const li = el("li", "rep-word");
             li.append(el("b", "", ph.en), el("span", "muted", " — " + ph.uz));
             li.addEventListener("click", () => sayPhrase(ph.en).then(() => mascot.setLevel(0)));
+            // 📒 Lug'atga saqlash (kartochkalarda takrorlanadi)
+            if (state.progress) {
+              const has = (state.progress.words || []).some((w) => w.en === ph.en);
+              const keep = el("button", "ph-keep" + (has ? " on" : ""), has ? "✓" : "＋");
+              keep.title = has ? "Lug'atda" : "Lug'atga saqlash";
+              keep.addEventListener("click", async (e) => {
+                e.stopPropagation();
+                if (keep.classList.contains("on")) return toast("📒 Bu ibora lug'atingizda bor");
+                haptic();
+                try {
+                  const r = await api("api/word", { json: { en: ph.en } });
+                  if (r.progress) state.progress = { ...state.progress, words: r.progress.words };
+                  renderVocabBtn();
+                  keep.classList.add("on");
+                  keep.textContent = "✓";
+                  toast("📒 Lug'atga saqlandi — kartochkalarda takrorlanadi");
+                } catch (err) { toast(err.message); }
+              });
+              li.append(keep);
+            }
             ul.append(li);
           }
           out.append(ul);

@@ -10,7 +10,7 @@ import { LESSONS, getLesson, publicLesson } from "./src/lessons.js";
 import { verifyInitData } from "./src/telegram.js";
 import { WebSocketServer } from "ws";
 import { liveEnabled, runLive, liveStats } from "./src/live.js";
-import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies, translateUz, sampleAnswer, samplePhrases, sampleStats, sampleCount, ttsStats } from "./src/ai.js";
+import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies, translateUz, sampleAnswer, samplePhrases, samplePhraseUz, sampleStats, sampleCount, ttsStats } from "./src/ai.js";
 import { recordSession, touchDay, summary, adminStats, startedToday, countStart, refundStart, startsTodayTotal, deleteUser, markFixed, addWord, removeWord, setRemind, remindTargets, markReminded } from "./src/store.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -423,8 +423,10 @@ app.post("/api/translate", express.json(), auth, async (req, res) => {
 const PHRASE_UZ = new Map(LESSONS.flatMap((l) => l.phrases.map((p) => [p.en, p.uz])));
 app.post("/api/word", express.json(), auth, (req, res) => {
   const en = String(req.body?.en || "");
-  if (!PHRASE_UZ.has(en)) return res.status(400).json({ error: "Noma'lum ibora" });
-  const added = addWord(req.userId, en, PHRASE_UZ.get(en));
+  // Dars iboralari yoki namunaviy javobdagi foydali iboralar
+  const uz = PHRASE_UZ.has(en) ? PHRASE_UZ.get(en) : samplePhraseUz(en);
+  if (uz == null) return res.status(400).json({ error: "Noma'lum ibora" });
+  const added = addWord(req.userId, en, uz);
   res.json({ ok: true, added, progress: summary(req.userId) });
 });
 

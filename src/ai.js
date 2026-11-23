@@ -509,7 +509,13 @@ try {
   for (const [k, v] of Object.entries(JSON.parse(fs.readFileSync(SAMPLE_FILE, "utf8")))) sampleCache.set(k, v);
 } catch {}
 // Namunadagi iboralar Sado ovozida eshittirilishi mumkin
-export const samplePhrases = () => new Set([...sampleCache.values()].flatMap((v) => v.phrases.map((p) => p.en)));
+// Ovoz yaratishga ruxsat: namunaning foydali iboralari va javob paragraflari («▶ Namunani tinglash»)
+export const samplePhrases = () => new Set([...sampleCache.values()].flatMap((v) => [...(v.phrases || []).map((p) => p.en), ...String(v.answer || "").split(/\n+/).map((x) => x.trim()).filter(Boolean)]));
+// 📒 Namunaviy javob iborasining tarjimasi (lug'atga saqlash uchun; faqat keshdagi namunalardan)
+export function samplePhraseUz(en) {
+  for (const v of sampleCache.values()) for (const p of v.phrases || []) if (p.en === en) return p.uz || "";
+  return null;
+}
 export const sampleStats = { opens: 0, generated: 0 };
 export const sampleCount = () => sampleCache.size;
 export async function sampleAnswer(lessonId, cue, questions, task) {
