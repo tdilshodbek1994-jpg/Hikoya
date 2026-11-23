@@ -444,3 +444,16 @@ body.dark .flash-card.open .flash-a { color: #a5b4fc; }
 .transcript summary { cursor: pointer; font-weight: 700; font-size: 14.5px; padding: 12px; border-radius: 14px; background: var(--bg); list-style: none; text-align: center; }
 .transcript summary::-webkit-details-marker { display: none; }
 .tr-log { max-height: 50vh; margin-top: 10px; }
+
+/* ---------- Kun iborasi ---------- */
+.daily { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 12px 14px; margin: -6px 0 14px;
+  border-left: 4px solid #f59e0b; }
+.daily-top { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.daily-tag { font-size: 12.5px; font-weight: 800; color: #b45309; }
+body.dark .daily-tag { color: #fbbf24; }
+.daily-from { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.daily-en { display: block; text-align: left; font-size: 18px; font-weight: 800; margin-top: 6px; color: var(--text); }
+.daily-uz { font-size: 13.5px; color: var(--muted); margin-top: 2px; }
+.daily-go { margin-top: 8px; font-size: 13px; font-weight: 700; color: var(--primary); }
+body.dark .daily-go { color: #a5b4fc; }
+.daily-en, .daily-go { padding: 0; }

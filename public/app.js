@@ -455,7 +455,30 @@ function renderMoreStats() {
   }
 }
 
+// 🌟 Kun iborasi: sanaga qarab har kuni boshqa ibora (hamma uchun bir xil)
+function renderDaily() {
+  const box = $("daily");
+  const pool = state.lessons.filter((l) => !l.liveOnly).flatMap((l) => l.phrases.filter((p) => !p.en.includes("...")).map((p) => ({ p, l })));
+  if (!pool.length) return (box.hidden = true);
+  const d = new Date();
+  const dayNo = Math.floor((d.getTime() + 5 * 3600_000) / 86400_000); // Toshkent vaqti
+  const { p, l } = pool[(dayNo * 7919) % pool.length];
+  box.hidden = false;
+  box.innerHTML = "";
+  const top = el("div", "daily-top");
+  top.append(el("span", "daily-tag", "🌟 Kun iborasi"), el("span", "daily-from", `${l.emoji} ${l.title.replace(/^\d+\.\s*/, "")}`));
+  const en = el("button", "daily-en", p.en + "  🔊");
+  en.addEventListener("click", () => {
+    haptic();
+    speakBrowser(p.en, "en");
+  });
+  const go = el("button", "daily-go", "Shu darsni ochish ›");
+  go.addEventListener("click", () => openSheet(l));
+  box.append(top, en, el("div", "daily-uz", p.uz), go);
+}
+
 function renderLessons() {
+  renderDaily();
   renderGoal();
   renderMoreStats();
   renderBadges();
