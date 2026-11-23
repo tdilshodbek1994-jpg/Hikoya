@@ -96,9 +96,11 @@ function toast(msg, ms = 2600) {
   toast.t = setTimeout(() => (el.hidden = true), ms);
 }
 
+const SADO_BUILD = (document.querySelector('script[src^="app.js"]')?.getAttribute("src") || "").split("v=")[1] || "0";
 // ⏱ Har qanday so'rov ko'pi bilan 60 s kutiladi — server yoki AI javob bermasa ilova qotib qolmaydi
 async function api(path, { json, body, headers = {}, method = "POST", timeout = 60_000 } = {}) {
-  const h = { "X-Telegram-Init-Data": tg?.initData || "", ...headers };
+  // X-Sado-Build: server yangi ilova ekanini biladi (eski, keshda qolgan nusxalarga kesh tozalash buyrug'i yuboriladi)
+  const h = { "X-Telegram-Init-Data": tg?.initData || "", "X-Sado-Build": SADO_BUILD, ...headers };
   if (json) h["Content-Type"] = "application/json";
   let res;
   // ⏱ Cheksiz kutib qolmaslik uchun (masalan hisobot)

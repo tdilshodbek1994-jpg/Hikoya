@@ -144,7 +144,12 @@ try {
 const appBuild = () => { try { return Number((fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), "public", "index.html"), "utf8").match(/app\.js\?v=(\d+)/) || [])[1]) || 0; } catch { return 0; } };
 app.get("/api/version", (req, res) => { res.setHeader("Cache-Control", "no-store"); res.json({ version: APP_VERSION, build: appBuild() }); });
 
+// 🧹 Telefonda keshda qolib ketgan ESKI ilova (X-Sado-Build yubormaydi) — brauzerga keshni tozalashni
+// buyuramiz: keyingi ochilishda yangi versiya yuklanadi. (Faqat HTTP kesh; localStorage, kirish ma'lumotlari saqlanadi)
+const clearStale = (req, res) => { if (!req.get("X-Sado-Build")) res.setHeader("Clear-Site-Data", '"cache"'); };
+
 app.get("/api/lessons", (req, res) => {
+  clearStale(req, res);
   if (!lessonsCache) {
     const body = Buffer.from(JSON.stringify({ lessons: LESSONS.map(publicLesson), voiceEnabled, liveEnabled, sessionMinutes: SESSION_MINUTES, shareUrl: process.env.SHARE_URL || "", version: APP_VERSION }));
     lessonsCache = { body, gz: zlib.gzipSync(body, { level: 9 }), etag: `"l-${crypto.createHash("sha1").update(body).digest("hex").slice(0, 16)}"` };
@@ -534,6 +539,7 @@ if (REMINDERS) {
 }
 
 app.get("/api/progress", auth, (req, res) => {
+  clearStale(req, res);
   const used = startedToday(req.userId);
   res.json({ ...summary(req.userId), limit: req.userId === "dev" || DAILY_SESSIONS <= 0 ? 0 : DAILY_SESSIONS, startedToday: used, remindAvailable: REMINDERS, remindDefault: REMIND_HOUR });
 });
