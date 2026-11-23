@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
   <title>Sado — ingliz tilida gaplashish</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="styles.css?v=50" />
+  <link rel="stylesheet" href="styles.css?v=51" />
 </head>
 <body>
   <header class="topbar">
@@ -210,8 +210,19 @@
     </div>
   </div>
 
+  <div class="sheet" id="micSheet" hidden>
+    <div class="sheet-card mic-card">
+      <div class="sheet-emoji">🎙️</div>
+      <h3>Mikrofonga ruxsat kerak</h3>
+      <p class="muted">Sado sizni eshitishi uchun Telegram'ga mikrofon ruxsatini bering:</p>
+      <ol class="mic-steps" id="micSteps"></ol>
+      <button class="btn primary wide" id="micRetry">🔄 Qayta urinish</button>
+      <button class="btn ghost wide" id="micText">✍️ Hozircha yozib javob beraman</button>
+    </div>
+  </div>
+
   <div class="toast" id="toast" hidden></div>
 
-  <script type="module" src="app.js?v=50"></script>
+  <script type="module" src="app.js?v=51"></script>
 </body>
 </html>

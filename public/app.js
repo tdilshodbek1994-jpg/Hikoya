@@ -773,9 +773,36 @@ async function ensureAudio() {
   } catch (e) {
     console.warn("Mikrofon:", e);
     state.textOnly = true;
-    toast("Mikrofonga ruxsat berilmadi. Hozircha yozib javob bering.", 3500);
+    if (e?.name === "NotAllowedError" || e?.name === "SecurityError") showMicHelp();
+    else toast("Mikrofon topilmadi. Hozircha yozib javob bering.", 3500);
   }
 }
+
+// 🎙️ Mikrofon ruxsati bo'yicha yo'riqnoma
+function showMicHelp(liveLesson) {
+  const ios = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const steps = ios
+    ? ["iPhone Sozlamalar (Settings) ni oching", "Pastga tushib Telegram ni tanlang", "Microphone (Mikrofon) ni yoqing", "Telegram'ga qaytib, «Qayta urinish» ni bosing"]
+    : ["Telefon Sozlamalar → Ilovalar → Telegram ni oching", "Ruxsatlar (Permissions) → Mikrofon → «Ruxsat berish»", "Yoki: Telegram'da so'ralganda «Ruxsat berish» ni bosing", "Shu yerga qaytib, «Qayta urinish» ni bosing"];
+  $("micSteps").innerHTML = "";
+  for (const s of steps) $("micSteps").append(el("li", "", s));
+  state.micRetryLesson = liveLesson || null;
+  $("micSheet").hidden = false;
+  haptic("error");
+}
+$("micRetry").addEventListener("click", async () => {
+  $("micSheet").hidden = true;
+  if (state.micRetryLesson) return startLesson(state.micRetryLesson, "live");
+  await ensureAudio();
+  applyMode();
+  if (!state.textOnly && state.phase === "idle" && state.mode === "auto") listenAuto();
+});
+$("micText").addEventListener("click", () => {
+  $("micSheet").hidden = true;
+  if (state.micRetryLesson) return show("home");
+  state.textOnly = true;
+  applyMode();
+});
 
 function releaseMic() {
   audio.stream?.getTracks().forEach((t) => t.stop());
@@ -924,7 +951,8 @@ async function startLive(lesson) {
     state.live?.stop();
     state.live = null;
     setPhase("idle", "");
-    toast(e.name === "NotAllowedError" ? "Mikrofonga ruxsat bering." : e.message || "Jonli suhbatni boshlab bo'lmadi.", 4000);
+    if (e.name === "NotAllowedError") showMicHelp(lesson);
+    else toast(e.message || "Jonli suhbatni boshlab bo'lmadi.", 4000);
     show("home");
   }
 }
