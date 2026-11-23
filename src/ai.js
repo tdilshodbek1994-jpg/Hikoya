@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-const CLAUDE_MODEL = process.env.CLAUDE_MODEL || "claude-opus-5-5";
+const CLAUDE_MODEL = process.env.CLAUDE_MODEL || "claude-haiku-5-5"; // ⚡ eng tez model (qisqa suhbat javoblari uchun yetarli)
 const CLAUDE_EFFORT = process.env.CLAUDE_EFFORT || "low"; // suhbat uchun tez javob
 const OPENAI_KEY = process.env.OPENAI_API_KEY || "";
 const STT_MODEL = process.env.STT_MODEL || "gpt-4o-transcribe"; // o'zbekchani yaxshiroq taniydi
@@ -15,6 +15,8 @@ const anthropic = new Anthropic(); // ANTHROPIC_API_KEY muhit o'zgaruvchisidan o
 
 // Server tomonidagi zaxira model (refusal bo'lsa) faqat shu modellarda bor
 const SUPPORTS_FALLBACKS = /^claude-(opus-5|sonnet-5-5|fable-5)/.test(CLAUDE_MODEL);
+
+const FAST_NO_THINKING = /^claude-haiku-5/.test(CLAUDE_MODEL) && ["low", "medium", "high"].includes(CLAUDE_EFFORT);
 
 export const voiceEnabled = Boolean(OPENAI_KEY);
 export const geminiEnabled = Boolean(GEMINI_KEY);
@@ -65,6 +67,8 @@ async function askClaude(session, system, userContent) {
     model: CLAUDE_MODEL,
     max_tokens: 4000,
     output_config: { effort: CLAUDE_EFFORT },
+    // ⚡ Haiku'da javobdan oldin "o'ylash"ni o'chiramiz — javob darhol boshlanadi (low/medium/high effort bilan ruxsat etilgan)
+    ...(FAST_NO_THINKING ? { thinking: { type: "disabled" } } : {}),
     cache_control: { type: "ephemeral" },
     system,
     messages: session.messages,
