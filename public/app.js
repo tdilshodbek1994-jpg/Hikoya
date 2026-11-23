@@ -1057,7 +1057,11 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
         const aw = String(it.answer).toLowerCase().replace(/[^a-z' ]/g, "").trim();
         const has = lines.filter((ln) => aw && new RegExp(`(^|[^a-z])${aw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}([^a-z]|$)`, "i").test(ln));
         // Izohli (":" bor, o'zbekcha) qator afzal — faqat inglizcha misol qatori emas
-        const hit = has.find((ln) => ln.includes(":")) || has[0] || lines.find((ln) => ln.includes(":")) || lines[0];
+        // ✗ Avvalo o'quvchi tanlagan noto'g'ri so'z tilga olingan qator (ayniqsa "✗ ..." izohi) — xatosi aynan tushuntiriladi
+        const ww = it.mode === "pick" ? "" : String(btn.textContent).toLowerCase().replace(/[^a-z' ]/g, "").trim();
+        const wre = ww && ww !== aw ? new RegExp(`(^|[^a-z'])${ww.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}([^a-z']|$)`, "i") : null;
+        const bad = wre ? lines.filter((ln) => wre.test(ln)) : [];
+        const hit = bad.find((ln) => ln.includes("✗")) || (ww.length >= 4 && bad[0]) || has.find((ln) => ln.includes(":")) || has[0] || lines.find((ln) => ln.includes(":")) || lines[0];
         if (hit) body.append(el("div", "qz-why", "💡 " + hit));
         const nx = el("button", "qz-next", i < items.length - 1 ? "Keyingi ›" : "Natija ›");
         nx.addEventListener("click", () => { haptic(); i++; show(); });
