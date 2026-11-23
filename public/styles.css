@@ -1332,3 +1332,10 @@ body.dark .acc-tag.hi { color: #4ade80; } body.dark .acc-tag.mid { color: #fbbf2
 /* ⚙️ 5+ variantli tanlov (masalan Yo'nalish) ikki qatorga bo'linadi — ekrandan chiqmaydi */
 .seg:has(> .seg-b:nth-child(5)) { flex-wrap: wrap; }
 .seg:has(> .seg-b:nth-child(5)) > .seg-b { flex: 1 1 30%; }
+
+/* 📖 Qoidalar: mavzu aniqligi */
+.rule-acc { margin-left: 6px; font-size: 12px; font-weight: 800; padding: 1px 7px; border-radius: 99px; vertical-align: 1px; }
+.rule-acc.hi { color: var(--ok); background: color-mix(in srgb, var(--ok) 14%, transparent); }
+.rule-acc.mid { color: #d97706; background: color-mix(in srgb, #f59e0b 16%, transparent); }
+.rule-acc.lo { color: var(--danger); background: color-mix(in srgb, var(--danger) 14%, transparent); }
+.rules-sort { margin: 0 0 8px; font-size: 13px; }

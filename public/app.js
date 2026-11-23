@@ -486,18 +486,28 @@ function openRules() {
   q.type = "search";
   q.placeholder = "🔍 Qidirish: past, have, artikl…";
   const list = el("div", "rules-list");
+  // 📊 Har mavzu yonida test aniqligi; «⚠️ Avval zaiflari» — eng past aniqlikdagilar tepada
+  const by = quizStats().by || {};
+  const acc = (id) => (by[id]?.all ? Math.round((by[id].ok / by[id].all) * 100) : null);
+  let weakFirst = false;
+  const sortBtn = el("button", "chip-f rules-sort", "⚠️ Avval zaiflari");
+  sortBtn.hidden = !Object.keys(by).length;
+  sortBtn.addEventListener("click", () => { haptic(); weakFirst = !weakFirst; sortBtn.classList.toggle("on", weakFirst); render(); });
   const render = () => {
     list.innerHTML = "";
     const t = q.value.trim().toLowerCase();
     let last = "";
-    for (const l of gr) {
+    const items = weakFirst ? gr.filter((l) => acc(l.id) !== null).sort((a, b) => acc(a.id) - acc(b.id)) : gr;
+    for (const l of items) {
       if (t && !(l.title + " " + l.rule).toLowerCase().includes(t)) continue;
       const lv = mixLevelOf(l.level);
-      if (lv !== last) { last = lv; list.append(el("div", "part-title", { beg: "🌱 A1–A2", mid: "🌿 B1", adv: "🌳 B2" }[lv])); }
+      if (!weakFirst && lv !== last) { last = lv; list.append(el("div", "part-title", { beg: "🌱 A1–A2", mid: "🌿 B1", adv: "🌳 B2" }[lv])); }
       const d = document.createElement("details");
       d.className = "rule-item";
       const sm = document.createElement("summary");
       sm.textContent = `${l.emoji} ${l.title.replace(/^\d+\.\s*/, "")}`;
+      const a = acc(l.id);
+      if (a !== null) sm.append(el("span", "rule-acc " + (a >= 80 ? "hi" : a >= 50 ? "mid" : "lo"), `${a}%`));
       const go = el("button", "rep-grlink", "🧩 Mashq ›");
       go.addEventListener("click", () => { haptic(); $("mixSheet").hidden = true; openSheet(l); setTimeout(() => $("sheetQuiz").scrollIntoView({ behavior: "smooth", block: "start" }), 350); });
       d.append(sm, ruleBody(l.rule), go);
@@ -507,7 +517,7 @@ function openRules() {
     if (!list.children.length) list.append(el("p", "qz-n", "Hech narsa topilmadi"));
   };
   q.addEventListener("input", render);
-  box.append(q, list);
+  box.append(q, sortBtn, list);
   render();
 }
 
