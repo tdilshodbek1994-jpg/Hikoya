@@ -373,7 +373,10 @@ function quizItems(rule) {
 function renderQuiz(lesson) {
   const box = $("sheetQuiz");
   box.innerHTML = "";
-  const items = lesson.rule ? quizItems(lesson.rule) : [];
+  // Darsning o'z mashqi bo'lsa — o'shani, aks holda qoida misollaridan avtomatik
+  const items = lesson.quiz?.length
+    ? lesson.quiz.map((q) => { const [before, after] = q.text.split("___"); return { before: before.trimEnd(), after, answer: q.answer, options: q.options }; })
+    : lesson.rule ? quizItems(lesson.rule) : [];
   box.hidden = items.length < 2;
   if (box.hidden) return;
   let i = 0, right = 0;

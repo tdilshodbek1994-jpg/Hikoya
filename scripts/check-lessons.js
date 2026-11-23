@@ -28,6 +28,8 @@ for (const l of LESSONS) {
   if (/^ielts-p2/.test(l.id) && !pub.cue) errors.push(`${where}: Part 2 kartochkasi topilmadi ("Describe ... You should say: ...")`);
   if (/^ielts-p[13]/.test(l.id) && !pub.questions?.length) errors.push(`${where}: savollar topilmadi ("Ask these questions one at a time: ...")`);
   if (l.category === "Grammatika gapirib" && !l.rule) warns.push(`${where}: grammatika qoidasi (RULES) yo'q`);
+  if (l.category === "Grammatika gapirib" && pub.quiz.length < 2) warns.push(`${where}: tez mashq (QUIZ) yo'q yoki 2 tadan kam`);
+  for (const q of pub.quiz) if (!q.text.includes("___") || q.options.length < 2 || new Set(q.options).size !== q.options.length) errors.push(`${where}: noto'g'ri mashq "${q.text}"`);
 }
 
 console.log(`📚 ${LESSONS.length} ta dars tekshirildi`);

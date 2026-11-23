@@ -2392,6 +2392,25 @@ for (const cat of ["IELTS kursi", "CEFR kursi", "Grammatika gapirib"]) {
 }
 
 // ✏️ Grammatika darslari uchun qisqa qoida (o'zbekcha)
+// 🧩 Grammatika tez mashqi: "gap ___ bilan|to'g'ri|noto'g'ri|..." (birinchi variant — to'g'ri javob)
+const QUIZ = {
+  "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do"],
+  "gr-past": ["Yesterday I ___ to the bazaar.|went|go|goed", "We ___ football last Sunday.|played|play|plaied", "___ you see the match?|Did|Do|Was", "She didn't ___ breakfast.|eat|ate|eaten"],
+  "gr-pastcont": ["I ___ sleeping when you called.|was|were|am", "They ___ playing outside at 6 pm.|were|was|are", "What ___ you doing at 9 o'clock?|were|was|did", "I was walking ___ it started to rain.|when|while then|after that"],
+  "gr-questions": ["Where ___ you live?|do|does|are", "What ___ your sister do?|does|do|is", "Why ___ you choose this job?|did|was|does", "How old ___ you?|are|do|is"],
+  "gr-quantity": ["How ___ apples do you need?|many|much|lot", "How ___ milk is there?|much|many|few", "There isn't ___ sugar.|any|some|many", "I have ___ friends in London.|a few|a little|much"],
+  "gr-articles": ["I saw ___ elephant at the zoo.|an|a|the", "She is ___ doctor.|a|an|the", "___ sun is very hot today.|The|A|An", "I like ___ cats.|—|the|a"],
+  "gr-future": ["Look at the clouds! It's going ___ rain.|to|for|—", "The phone is ringing. I ___ answer it.|'ll|am going|answered", "I ___ my grandma tomorrow, it's planned.|am visiting|visit|visited", "Next year I ___ to study in Tashkent.|am going|go|went"],
+  "gr-compare": ["My brother is ___ than me.|taller|more tall|tallest", "This is the ___ book I've read.|most interesting|interestingest|more interesting", "Today is ___ than yesterday.|better|gooder|more good", "It's the ___ day of my life.|worst|baddest|worse"],
+  "gr-modals": ["You look tired. You ___ rest.|should|can|might to", "I can ___ three languages.|speak|to speak|speaks", "She ___ to wear a uniform at school.|has|have|must", "Take an umbrella. It ___ rain.|might|must to|cans"],
+  "gr-usedto": ["I ___ to play football every day.|used|use|was used", "Did you ___ to live in a village?|use|used|using", "She didn't use to ___ coffee.|drink|drinking|drank", "We ___ to have a dog, but now we don't.|used|use|are used"],
+  "gr-perfect": ["I ___ never been to London.|have|has|am", "She ___ finished her homework.|has|have|is", "Have you ever ___ snow?|seen|saw|see", "I've lived here ___ 2015.|since|for|from"],
+  "gr-gerund": ["I enjoy ___ books.|reading|to read|read", "I want ___ a doctor.|to become|becoming|become", "She is good at ___.|drawing|to draw|draw", "We decided ___ a taxi.|to take|taking|take"],
+  "gr-conditional": ["If it rains, I ___ stay home.|will|would|am", "If I had money, I ___ buy a car.|would|will|am", "If I ___ you, I would study more.|were|am|will be", "If you heat ice, it ___.|melts|melted|would melt"],
+  "gr-relative": ["She is the teacher ___ helped me.|who|which|where", "This is the phone ___ I bought.|which|who|where", "That's the city ___ I was born.|where|which|who", "He's the boy ___ father is a pilot.|whose|who's|which"],
+  "gr-reported": ["«I am hungry.» → He said that he ___ hungry.|was|is|were", "«I will call.» → She said she ___ call.|would|will|can", "He asked if I ___ ready.|was|am|were I", "«I can swim.» → She said she ___ swim.|could|can|cans"],
+  "gr-passive": ["English ___ spoken all over the world.|is|are|was be", "This mosque was ___ in 1420.|built|build|builded", "The phone was invented ___ Bell.|by|from|with", "The letters ___ sent yesterday.|were|was|are"],
+};
 const RULES = {
   "gr-relative": "Odam uchun — who: a teacher who helps students.\nNarsa uchun — which yoki that: a phone which/that I bought.\nJoy uchun — where: a city where I was born.\nEgalik — whose: the girl whose brother is a pilot.\nIt's a place where you can buy medicine.",
   "gr-reported": "Ko'chirma gapda zamon bir pog'ona orqaga siljiydi: am/is → was, will → would, can → could, Past → had + V3.\n«I am tired.» → She said that she was tired.\nSavol: asked + if/where/what + darak tartib: He asked if I was ready. (✗ asked was I ready)\nVaqt so'zlari: tomorrow → the next day, today → that day.",
@@ -2597,6 +2616,7 @@ export function publicLesson(l) {
     minutes: l.minutes || 0,
     cue: cueCard(l),
     rule: l.rule || "",
+    quiz: (QUIZ[l.id] || []).map((q) => { const [text, ...options] = q.split("|"); return { text: text.trim(), answer: options[0], options }; }),
     visual: VISUALS[l.id] || null,
     stages: STAGES[l.id] || null,
     questions: p3Questions(l),
