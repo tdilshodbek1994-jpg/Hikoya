@@ -3,6 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 const CLAUDE_MODEL = process.env.CLAUDE_MODEL || "claude-opus-5-5";
 const CLAUDE_EFFORT = process.env.CLAUDE_EFFORT || "low"; // suhbat uchun tez javob
 const OPENAI_KEY = process.env.OPENAI_API_KEY || "";
+const OPENAI_BASE = (process.env.OPENAI_BASE_URL || "https://api.openai.com").replace(/\/$/, "");
 const STT_MODEL = process.env.STT_MODEL || "gpt-4o-transcribe"; // o'zbekchani yaxshiroq taniydi
 const TTS_MODEL = process.env.TTS_MODEL || "gpt-4o-mini-tts";
 const TTS_VOICE = process.env.TTS_VOICE || "coral";
@@ -219,7 +220,7 @@ export async function transcribe(buffer, mimeType, lesson) {
       lesson.phrases.map((p) => p.en).join(" "),
   );
 
-  const res = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+  const res = await fetch(`${OPENAI_BASE}/v1/audio/transcriptions`, {
     method: "POST",
     headers: { Authorization: `Bearer ${OPENAI_KEY}` },
     body: form,
@@ -288,7 +289,7 @@ export async function geminiTts(text, lang = "uz", slow = false) {
 
 // OpenAI'ga bitta TTS so'rovi. Muvaffaqiyatda base64 mp3, aks holda { error } qaytaradi.
 export async function ttsRequest(body) {
-  const res = await fetch("https://api.openai.com/v1/audio/speech", {
+  const res = await fetch(`${OPENAI_BASE}/v1/audio/speech`, {
     method: "POST",
     headers: { Authorization: `Bearer ${OPENAI_KEY}`, "Content-Type": "application/json" },
     body: JSON.stringify({ response_format: "mp3", ...body }),
@@ -308,8 +309,31 @@ function pauseGemini(reason) {
   console.error(`Gemini TTS xatosi (${GEMINI_TTS_MODEL}): ${reason} — 10 daqiqa OpenAI ovozi ishlatiladi`);
 }
 
+// 💾 Ovoz keshi: bir xil gap (dars kirish gaplari, iboralar) qayta yaratilmaydi
+const ttsCache = new Map();
+const TTS_CACHE_MAX = Number(process.env.TTS_CACHE_MAX || 500);
+export const ttsStats = { hits: 0, misses: 0 };
+
 export async function speak(text, lang = "en", slow = false) {
   if (!text) return null;
+  const key = `${lang}|${slow ? 1 : 0}|${text}`;
+  if (ttsCache.has(key)) {
+    ttsStats.hits++;
+    const v = ttsCache.get(key);
+    ttsCache.delete(key);
+    ttsCache.set(key, v); // eng yangi deb belgilaymiz (LRU)
+    return v;
+  }
+  ttsStats.misses++;
+  const v = await speakUncached(text, lang, slow);
+  if (v?.audio && text.length <= 400) {
+    ttsCache.set(key, v);
+    if (ttsCache.size > TTS_CACHE_MAX) ttsCache.delete(ttsCache.keys().next().value);
+  }
+  return v;
+}
+
+async function speakUncached(text, lang, slow) {
   // O'zbekcha qismlar: avval Gemini (o'zbekchani tabiiyroq talaffuz qiladi)
   if (lang === "uz" && GEMINI_KEY && Date.now() > geminiPausedUntil) {
     try {

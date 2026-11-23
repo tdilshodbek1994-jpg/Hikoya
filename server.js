@@ -8,7 +8,7 @@ import { LESSONS, getLesson, publicLesson } from "./src/lessons.js";
 import { verifyInitData } from "./src/telegram.js";
 import { WebSocketServer } from "ws";
 import { liveEnabled, runLive } from "./src/live.js";
-import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies } from "./src/ai.js";
+import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies, ttsStats } from "./src/ai.js";
 import { recordSession, summary, adminStats, startedToday, countStart, startsTodayTotal } from "./src/store.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -314,6 +314,7 @@ app.get("/api/admin/stats", (req, res) => {
   s.top = s.top.map(([id, n]) => ({ id, n, title: getLesson(id)?.title || id, emoji: getLesson(id)?.emoji || "" }));
   s.liveNow = [...sessions.values()].filter((x) => Date.now() < x.expiresAt).length;
   s.startsToday = startsTodayTotal();
+  s.ttsCache = ttsStats;
   res.json(s);
 });
 
