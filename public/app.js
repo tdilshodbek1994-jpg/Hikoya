@@ -211,6 +211,9 @@ async function loadLessons() {
     progStarted = true;
     loadProgress(); // statistika ham darslar bilan parallel yuklanadi
   }
+  // ⚡ Birinchi kirishda ham statistika so'rovi darslar bilan bir vaqtda yuboriladi (javobi keyin qo'llanadi)
+  const progEarly = progStarted ? null : api("api/progress", { method: "GET" });
+  progEarly?.catch(() => {}); // xato loadProgress ichida ko'riladi
   try {
     const data = await api("api/lessons", { method: "GET" });
     const fresh = JSON.stringify(data);
@@ -218,7 +221,7 @@ async function loadLessons() {
       applyLessons(data);
       try { localStorage.setItem("sado-lessons", fresh); } catch {}
     }
-    if (!progStarted) loadProgress();
+    if (!progStarted) loadProgress(progEarly);
     if (!inTelegram) $("homeNote").textContent = "Eslatma: ilova Telegram bot orqali ochilganda to'liq ishlaydi.";
   } catch (e) {
     if (state.lessons.length) return toast("📶 Internet sekin — saqlangan ro'yxat ko'rsatilmoqda", 3000);
@@ -233,7 +236,7 @@ async function loadLessons() {
 }
 
 const tashDay = () => new Date(Date.now() + 5 * 3600_000).toISOString().slice(0, 10);
-async function loadProgress() {
+async function loadProgress(early) {
   // ⚡ Saqlangan statistika darhol ko'rinadi (faqat shu foydalanuvchiniki), yangisi keyin keladi
   const uid = String(tg?.initDataUnsafe?.user?.id || "dev");
   if (!state.progress) {
@@ -249,7 +252,7 @@ async function loadProgress() {
     } catch {}
   }
   try {
-    state.progress = await api("api/progress", { method: "GET" });
+    state.progress = await (early || api("api/progress", { method: "GET" }));
     try { localStorage.setItem("sado-progress", JSON.stringify({ uid, day: tashDay(), data: state.progress })); } catch {}
     if (!localStorage.getItem("sado-badges")) localStorage.setItem("sado-badges", JSON.stringify(BADGES.filter((b) => b[3](state.progress)).map((b) => b[1])));
     renderChips();
