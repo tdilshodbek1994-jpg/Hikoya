@@ -142,6 +142,18 @@ export async function chatTurn(session, lesson, studentText) {
 export function tutorOpener(lesson) {
   const p = lesson.phrases[0];
   const n = lesson.phrases.length; // takrorlash darsida 6 tadan kam bo'lishi mumkin
+  if (lesson.id === "review") {
+    // 🔁 Xatolar ustida ishlash: avval o'quvchining o'z xatosi, keyin to'g'risi
+    const wrong = String(p.uz || "").replace(/^Xato edi:\s*/, "");
+    // Inglizcha qismlar alohida — ular inglizcha talaffuz bilan o'qiladi
+    return [
+      { lang: "uz", text: `Assalomu alaykum! Bugun oldingi darslarda qiyin bo'lgan ${n} ta gap ustida ishlaymiz. Birinchisi: siz shunday degan edingiz:` },
+      ...(wrong ? [{ lang: "en", text: wrong, wrong: true }] : []),
+      { lang: "uz", text: "To'g'risi esa bunday:" },
+      { lang: "en", text: p.en },
+      { lang: "uz", text: "Qani, to'g'ri variantni ovoz chiqarib ayting!" },
+    ];
+  }
   if (lesson.category === "Bolalar uchun") {
     // 🧒 Bolaga "sen" deb, quvnoq salomlashish
     return [

@@ -875,3 +875,5 @@ body.dark .pill.warn { color: #fbbf24; }
 /* 🧒 Bolalar natijasi: katta yulduzlar, ball va daraja ixcham */
 #result.kids #resultSub { font-size: 34px; letter-spacing: 4px; color: #f59e0b; }
 #result.kids .rep-level, #result.kids .rep-cmp, #result.kids .speak-stats span:nth-child(3) { display: none; }
+
+.sub-en.wrong { color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, transparent); text-decoration: line-through; }

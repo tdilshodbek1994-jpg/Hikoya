@@ -706,7 +706,8 @@ $("reviewBtn").addEventListener("click", () => {
       level: "Shaxsiy",
       phrases: fixes.map((f) => ({ en: f.en, uz: `Xato edi: ${f.wrong || ""}` })),
     },
-    "chat",
+    // Xatolarni o'zbekcha tushuntirish uchun ustoz rejimi; yaxshi biladiganlarga — inglizcha suhbat
+    localStorage.getItem("sado-level") === "adv" ? "chat" : "tutor",
   );
 });
 
@@ -1988,7 +1989,7 @@ function setSubs(ai, aiUz, me, fix, say) {
     say.forEach((x, i) => {
       if (i) $("subAi").append(" ");
       if (x.lang !== "en") return $("subAi").append(x.text);
-      const b = el("button", "sub-en", x.text);
+      const b = el("button", "sub-en" + (x.wrong ? " wrong" : ""), x.text); // xato variant — qizil, ustidan chizilgan
       b.addEventListener("click", () => {
         haptic();
         sayPhrase(x.text).then(() => mascot.setLevel(0));
