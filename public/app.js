@@ -3416,7 +3416,29 @@ function renderReport(r, score) {
   const ml = r.ml_score == null ? NaN : Number(r.ml_score); // null → 0 bo'lib qolmasin
   if (Number.isFinite(ml) && ml >= 0 && ml <= 75) {
     const next = ml < 38 ? [38, "B1"] : ml < 51 ? [51, "B2"] : ml < 65 ? [65, "C1"] : null;
-    right.append(el("div", "rep-ml", `🇺🇿 Multilevel: ~${Math.round(ml)}/75${next ? ` · ${next[1]} gacha ${next[0] - Math.round(ml)} ball` : " · C1 🎉"}`));
+    const pill = el("button", "rep-ml", `🇺🇿 Multilevel: ~${Math.round(ml)}/75${next ? ` · ${next[1]} gacha ${next[0] - Math.round(ml)} ball` : " · C1 🎉"} ⓘ`);
+    // ⓘ Bosilsa — Multilevel shkalasi: qaysi ball qaysi darajaga to'g'ri keladi, siz qayerdasiz
+    const scale = el("div", "ml-scale");
+    scale.hidden = true;
+    const bands = [["B1 gacha", 0, 37], ["B1", 38, 50], ["B2", 51, 64], ["C1", 65, 75]];
+    const bar = el("div", "ml-bar");
+    for (const [name, lo, hi] of bands) {
+      const seg = el("div", "ml-seg" + (ml >= lo && ml <= hi + 0.99 ? " on" : ""));
+      seg.append(el("b", "", name), el("small", "", `${lo}–${hi}`));
+      bar.append(seg);
+    }
+    const mark = el("i", "ml-mark");
+    // Bo'laklar teng kenglikda — belgi o'z bo'lagi ichida joylashadi
+    const bi = bands.findIndex(([, lo, hi]) => ml >= lo && ml < hi + 1);
+    const [, blo, bhi] = bands[Math.max(0, bi)];
+    mark.style.left = `${((Math.max(0, bi) + (ml - blo) / (bhi - blo + 1)) / bands.length) * 100}%`;
+    bar.append(mark);
+    scale.append(bar, el("small", "ml-note", "Milliy sertifikat (Multilevel) speaking bo'limi 75 ballik. Bu — taxminiy baho, haqiqiy imtihonda farq qilishi mumkin."));
+    pill.addEventListener("click", () => {
+      haptic();
+      scale.hidden = !scale.hidden;
+    });
+    right.append(pill, scale);
   }
   right.append(el("div", "rep-summary", r.summary_uz || ""));
   // 📈 Avvalgi natija bilan solishtirish

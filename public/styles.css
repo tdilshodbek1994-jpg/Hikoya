@@ -1084,3 +1084,16 @@ body.dark .fold-tag.new { color: #fb7185; } body.dark .fold-tag.rep { color: #fb
 .app-ver button { font: inherit; font-weight: 700; color: var(--primary); padding: 4px; }
 /* ⬆️ "Yuqoriga" tugmasi oxirgi matnni yopmasin */
 #homeNote { padding: 0 56px 56px; }
+/* ⓘ Multilevel shkalasi */
+button.rep-ml { font: inherit; font-size: 12.5px; font-weight: 700; text-align: left; cursor: pointer; }
+.ml-scale { margin-top: 8px; animation: fade 0.2s ease; }
+.ml-bar { position: relative; display: flex; gap: 2px; border-radius: 10px; overflow: visible; }
+.ml-seg { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 5px 2px; background: color-mix(in srgb, var(--muted) 14%, transparent); font-size: 11px; min-width: 0; }
+.ml-seg:first-child { border-radius: 8px 0 0 8px; }
+.ml-seg:last-child { border-radius: 0 8px 8px 0; }
+.ml-seg b { font-size: 11px; white-space: nowrap; }
+.ml-seg small { color: var(--muted); font-size: 10.5px; }
+.ml-seg.on { background: color-mix(in srgb, #14b8a6 28%, transparent); }
+.ml-mark { position: absolute; top: -5px; width: 3px; height: calc(100% + 10px); background: #0f766e; border-radius: 2px; transform: translateX(-50%); }
+body.dark .ml-mark { background: #5eead4; }
+.ml-note { display: block; margin-top: 6px; color: var(--muted); font-size: 11.5px; line-height: 1.35; }
