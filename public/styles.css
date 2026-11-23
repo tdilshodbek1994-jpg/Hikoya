@@ -480,3 +480,15 @@ body.dark .cue-timer { color: #a5b4fc; }
 .cue.speaking .cue-tip, .cue.speaking .cue-timer { display: none; }
 .goal-left { margin-left: auto; flex: none; font-size: 12px; font-weight: 700; color: var(--muted); background: var(--bg); padding: 5px 9px; border-radius: 99px; }
 .goal-left.low { color: var(--danger); }
+
+/* ---------- Birinchi tanishuv ---------- */
+.onb { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 20px; background: rgba(10, 10, 25, 0.55); animation: fade 0.2s; }
+.onb-card { width: 100%; max-width: 380px; background: var(--card); border-radius: 26px; padding: 22px 18px 14px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,.3); }
+.onb-mascot { width: 130px; height: 130px; margin: 0 auto; position: relative; }
+.onb-slides h2 { margin: 8px 0 6px; font-size: 21px; }
+.onb-slides p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.5; white-space: pre-line; min-height: 92px; }
+.onb-dots { display: flex; justify-content: center; gap: 6px; margin: 12px 0 4px; }
+.onb-dots i { width: 8px; height: 8px; border-radius: 4px; background: var(--line); transition: width 0.2s; }
+.onb-dots i.on { width: 22px; background: var(--primary); }
+.onb-skip { margin-top: 8px; font-size: 13px; color: var(--muted); padding: 6px; }
+body.dark .onb-card { box-shadow: 0 0 0 1px var(--line), 0 20px 50px rgba(0,0,0,.5); }

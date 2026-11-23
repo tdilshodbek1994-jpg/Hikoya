@@ -1757,4 +1757,40 @@ document.addEventListener("visibilitychange", () => {
 });
 
 show("home");
+// 👋 Birinchi marta ochganlar uchun qisqa qo'llanma (bir marta ko'rsatiladi)
+const ONB = [
+  ["Salom! Men Sado 👋", "Ingliz tilida gapirishni o'rgatadigan AI ustozingizman. Men bilan ovoz chiqarib gaplashasiz — xuddi odam bilan gaplashgandek."],
+  ["Qanday o'rganamiz? 🎯", "📞 Jonli suhbat — erkin gaplashish.\n🇺🇿 Ustoz — o'zbekcha tushuntirib, iboralarni takrorlatadi.\n🇬🇧 Suhbat — inglizcha rolli o'yin."],
+  ["Har kuni oz-ozdan 🔥", "Har darsdan keyin ball, xatolar tahlili va yangi so'zlar chiqadi. Kunlik maqsad qo'ying va seriyani uzmang!"],
+];
+function showOnboarding() {
+  if (localStorage.getItem("sado-onb") === "1") return;
+  let i = 0;
+  const m = new Mascot($("onbMascot"));
+  m.setMood("happy");
+  const render = () => {
+    const [t, d] = ONB[i];
+    const box = $("onbSlides");
+    box.innerHTML = "";
+    box.append(el("h2", "", t), el("p", "", d));
+    $("onbDots").innerHTML = ONB.map((_, k) => `<i class="${k === i ? "on" : ""}"></i>`).join("");
+    $("onbNext").textContent = i === ONB.length - 1 ? "🚀 Boshladik!" : "Keyingisi ›";
+  };
+  const close = () => {
+    localStorage.setItem("sado-onb", "1");
+    $("onb").hidden = true;
+  };
+  $("onbNext").onclick = () => {
+    haptic();
+    if (i < ONB.length - 1) {
+      i++;
+      render();
+    } else close();
+  };
+  $("onbSkip").onclick = close;
+  render();
+  $("onb").hidden = false;
+}
+showOnboarding();
+
 loadLessons();
