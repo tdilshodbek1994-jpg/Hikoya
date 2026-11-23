@@ -759,8 +759,20 @@ state.topic = localStorage.getItem("sado-topic") || "";
 function renderTopicPick() {
   const box = $("topicPick");
   box.innerHTML = "";
-  for (const [t, label] of TOPICS) {
-    const b = el("span", "tp" + (state.topic === t ? " on" : ""), label);
+  const custom = state.topic.startsWith("custom:") ? state.topic.slice(7) : "";
+  const items = [...TOPICS, ["__custom", custom ? `✏️ ${custom}` : "✏️ O'z mavzuim"]];
+  for (const [t, label] of items) {
+    const on = t === "__custom" ? Boolean(custom) : state.topic === t;
+    const b = el("span", "tp" + (on ? " on" : "") + (t === "__custom" ? " tp-custom" : ""), label);
+    if (t === "__custom") {
+      b.addEventListener("click", (e) => {
+        e.stopPropagation();
+        haptic();
+        openTopicSheet(custom);
+      });
+      box.append(b);
+      continue;
+    }
     b.addEventListener("click", (e) => {
       e.stopPropagation();
       haptic();
@@ -772,6 +784,35 @@ function renderTopicPick() {
   }
 }
 renderTopicPick();
+
+// ✏️ O'z mavzuim: o'quvchi istalgan mavzuni yozadi
+const TOPIC_IDEAS = ["Shaxmat", "Dasturlash", "Samarqand tarixi", "Kitoblar", "Avtomobillar", "Moda", "Kosmos", "Biznes g'oyalar"];
+function openTopicSheet(cur) {
+  $("topicInput").value = cur || "";
+  const ideas = $("topicIdeas");
+  ideas.innerHTML = "";
+  for (const t of TOPIC_IDEAS) {
+    const b = el("button", "chip-f", t);
+    b.type = "button";
+    b.addEventListener("click", () => ($("topicInput").value = t));
+    ideas.append(b);
+  }
+  $("topicSheet").hidden = false;
+  setTimeout(() => $("topicInput").focus(), 100);
+}
+$("topicForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const t = $("topicInput").value.replace(/\s+/g, " ").trim().slice(0, 60);
+  state.topic = t ? "custom:" + t : "";
+  localStorage.setItem("sado-topic", state.topic);
+  $("topicSheet").hidden = true;
+  renderTopicPick();
+  if (t) toast(`💬 Mavzu: ${t}. Endi «Gaplashishni boshlash»ni bosing`, 3000);
+});
+$("topicCancel").addEventListener("click", () => ($("topicSheet").hidden = true));
+$("topicSheet").addEventListener("click", (e) => {
+  if (e.target.id === "topicSheet") $("topicSheet").hidden = true;
+});
 
 // ⚙️ Sozlamalar: barcha shaxsiy sozlamalar bitta joyda
 function renderSettings() {

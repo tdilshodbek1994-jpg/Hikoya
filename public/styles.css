@@ -668,3 +668,14 @@ body:has(#lesson.active) .toast { top: calc(34vh + var(--safe-t)); }
 .vis-track { height: 12px; background: var(--bg); border-radius: 6px; overflow: hidden; }
 .vis-track i { display: block; height: 100%; background: linear-gradient(90deg, var(--primary), #0ea5e9); border-radius: 6px; }
 .vis-bar b { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ---------- ✏️ O'z mavzuim ---------- */
+.tp-custom { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.topic-card input { width: 100%; margin: 10px 0 8px; padding: 12px 14px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--muted) 30%, transparent); background: var(--bg); color: var(--text); font: inherit; font-size: 16px; }
+.topic-ideas { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.topic-ideas .chip-f { font-size: 13px; padding: 6px 10px; }
+.topic-card .btn + .btn { margin-top: 8px; }
+/* Yolg'iz so'z (🔥, "ball") keyingi qatorga tushmasin */
+.goal, .today-card, .week, .daily { text-wrap: pretty; }
+.free-hero { overflow: clip; } /* ichki elementlar bannerni yon tomonga surib yubormasin */
+.tiles:has(> [hidden]) > :not([hidden]) { grid-column: 1 / -1; } /* bitta plitka qolsa to'liq eni */

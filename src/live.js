@@ -118,7 +118,11 @@ function detectUsed(lesson, text, used) {
 const VOICES = { f: process.env.GEMINI_LIVE_VOICE_F || "Kore", m: process.env.GEMINI_LIVE_VOICE_M || "Puck" };
 
 export async function runLive(client, session, lesson, { maxMs, voice, topic }) {
-  topic = FREE_TOPICS[topic] || "";
+  // ✏️ O'quvchi yozgan mavzu: faqat harf, raqam va oddiy belgilar, 60 belgigacha
+  const custom = String(topic || "").startsWith("custom:")
+    ? String(topic).slice(7).replace(/[^\p{L}\p{N} ,.'‘’\-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 60)
+    : "";
+  topic = custom || FREE_TOPICS[topic] || "";
   const send = (obj) => client.readyState === WebSocket.OPEN && client.send(JSON.stringify(obj));
   let upstream;
   let closed = false;

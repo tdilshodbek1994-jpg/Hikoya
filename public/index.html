@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
   <title>Sado — ingliz tilida gaplashish</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="styles.css?v=72" />
+  <link rel="stylesheet" href="styles.css?v=73" />
 </head>
 <body>
   <header class="topbar">
@@ -234,6 +234,18 @@
     </div>
   </div>
 
+  <div class="sheet" id="topicSheet" hidden>
+    <form class="sheet-card topic-card" id="topicForm">
+      <div class="sheet-emoji">✏️</div>
+      <h3>O'z mavzuingiz</h3>
+      <p class="muted">Sado bilan nima haqida gaplashmoqchisiz? O'zbekcha yoki inglizcha yozing.</p>
+      <input id="topicInput" maxlength="60" autocomplete="off" placeholder="Masalan: shaxmat, Samarqand tarixi, dasturlash" />
+      <div class="topic-ideas" id="topicIdeas"></div>
+      <button class="btn primary wide" type="submit">💬 Saqlash</button>
+      <button class="btn ghost wide" type="button" id="topicCancel">Bekor qilish</button>
+    </form>
+  </div>
+
   <div class="sheet" id="helpSheet" hidden>
     <div class="sheet-card help-card">
       <h3>❓ Yordam</h3>
@@ -263,6 +275,6 @@
 
   <div class="toast" id="toast" hidden></div>
 
-  <script type="module" src="app.js?v=71"></script>
+  <script type="module" src="app.js?v=72"></script>
 </body>
 </html>
