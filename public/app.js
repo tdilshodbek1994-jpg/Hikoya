@@ -161,7 +161,12 @@ async function loadLessons() {
   try {
     cached = JSON.parse(localStorage.getItem("sado-lessons") || "null");
   } catch {}
-  if (cached?.lessons?.length && !state.lessons.length) applyLessons(cached);
+  let progStarted = false;
+  if (cached?.lessons?.length && !state.lessons.length) {
+    applyLessons(cached);
+    progStarted = true;
+    loadProgress(); // statistika ham darslar bilan parallel yuklanadi
+  }
   try {
     const data = await api("api/lessons", { method: "GET" });
     const fresh = JSON.stringify(data);
@@ -169,7 +174,7 @@ async function loadLessons() {
       applyLessons(data);
       try { localStorage.setItem("sado-lessons", fresh); } catch {}
     }
-    loadProgress();
+    if (!progStarted) loadProgress();
     if (!inTelegram) $("homeNote").textContent = "Eslatma: ilova Telegram bot orqali ochilganda to'liq ishlaydi.";
   } catch (e) {
     if (state.lessons.length) return toast("📶 Internet sekin — saqlangan ro'yxat ko'rsatilmoqda", 3000);
@@ -184,8 +189,21 @@ async function loadLessons() {
 }
 
 async function loadProgress() {
+  // ⚡ Saqlangan statistika darhol ko'rinadi (faqat shu foydalanuvchiniki), yangisi keyin keladi
+  const uid = String(tg?.initDataUnsafe?.user?.id || "dev");
+  if (!state.progress) {
+    try {
+      const c = JSON.parse(localStorage.getItem("sado-progress") || "null");
+      if (c?.uid === uid && c.data) {
+        state.progress = c.data;
+        renderChips();
+        renderLessons();
+      }
+    } catch {}
+  }
   try {
     state.progress = await api("api/progress", { method: "GET" });
+    try { localStorage.setItem("sado-progress", JSON.stringify({ uid, data: state.progress })); } catch {}
     renderChips();
     renderLessons();
   } catch {
@@ -1137,7 +1155,8 @@ $("delData").addEventListener("click", () => {
     if (!ok) return;
     try {
       await api("api/progress", { method: "DELETE" });
-      for (const k of ["sado-favs", "sado-more"]) localStorage.removeItem(k);
+      for (const k of ["sado-favs", "sado-more", "sado-progress", "sado-flash"]) localStorage.removeItem(k);
+      state.progress = null;
       state.favs = new Set();
       $("setSheet").hidden = true;
       await loadProgress();
