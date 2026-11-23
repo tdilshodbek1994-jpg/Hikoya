@@ -1998,6 +1998,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-irregular",
+    category: "Grammatika gapirib",
+    title: "Noto'g'ri fe'llar: go – went – gone",
+    emoji: "🔀",
+    level: "A2",
+    added: "2026-11-27",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on common irregular verbs in the past simple and past participle: go-went-gone, see-saw-seen, eat-ate-eaten, buy-bought-bought, take-took-taken, make-made-made, write-wrote-written, drink-drank-drunk, come-came-come, give-gave-given, find-found-found, think-thought-thought. Ask about the student's last holiday, yesterday and things they have ever done. Have a natural conversation that makes the student use these verbs a lot. Ask questions, listen, whenever the student makes a mistake (goed, buyed, eated), explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "What did you do yesterday? Where did you go?",
+    openerUz: "Kecha nima qildingiz? Qayerga bordingiz?",
+    phrases: [
+      { en: "I went to the market yesterday.", uz: "Kecha bozorga bordim." },
+      { en: "We ate plov for lunch.", uz: "Tushlikka palov yedik." },
+      { en: "She bought a new dress.", uz: "U yangi ko'ylak sotib oldi." },
+      { en: "I saw a great film last week.", uz: "O'tgan hafta zo'r film ko'rdim." },
+      { en: "He wrote a letter to his friend.", uz: "U do'stiga xat yozdi." },
+      { en: "I thought it was easy.", uz: "Men buni oson deb o'yladim." },
+    ],
+  },
+  {
+    id: "gr-ppvsps",
+    category: "Grammatika gapirib",
+    title: "Present Perfect yoki Past Simple?",
+    emoji: "⚖️",
+    level: "B1",
+    added: "2026-11-27",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on choosing between present perfect and past simple: past simple with a finished time (yesterday, last year, in 2020, ago, when I was a child) and for questions with When...?; present perfect for experience without a time (Have you ever...?), with ever/never/already/yet/just, and for/since with unfinished time. Ask about travel experiences and then details (Have you ever been to Bukhara? — When did you go?). Have a natural conversation that makes the student use both tenses a lot. Ask questions, listen, whenever the student mixes them (I have been there last year), explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Have you ever been to Bukhara? When did you go there?",
+    openerUz: "Hech Buxoroda bo'lganmisiz? U yerga qachon borgansiz?",
+    phrases: [
+      { en: "I have been to Bukhara twice.", uz: "Men Buxoroda ikki marta bo'lganman." },
+      { en: "I went there last summer.", uz: "U yerga o'tgan yozda borgandim." },
+      { en: "Have you ever tried sushi?", uz: "Hech sushi tatib ko'rganmisiz?" },
+      { en: "I tried it two years ago.", uz: "Ikki yil oldin tatib ko'rgandim." },
+      { en: "She hasn't finished yet.", uz: "U hali tugatmadi." },
+      { en: "When did you start learning English?", uz: "Ingliz tilini qachon o'rgana boshlagansiz?" },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -2901,7 +2941,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-tobe", "gr-this", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-frequency", "gr-continuous", "gr-past", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-future", "gr-compare", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-passive", "gr-phrasal", "gr-tags", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking"];
+const GR_ORDER = ["gr-tobe", "gr-this", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-future", "gr-compare", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-ppvsps", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-passive", "gr-phrasal", "gr-tags", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking"];
 // Avval daraja guruhi (A1–A2 → B1 → B2), guruh ichida — GR_ORDER tartibi
 const grGroup = (lv) => (/B2/.test(lv || "") ? 2 : /A2-B1|^B1$/.test(lv || "") ? 1 : 0);
 const grRank = (l) => grGroup(l.level) * 100 + (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
@@ -2932,6 +2972,8 @@ const QUIZ = {
   "gr-linking": ["___ it was cold, we went swimming.|Although|Despite|However", "___ the rain, the match continued.|Despite|Although|Even though", "It's cheap. ___, it's very slow.|However|Although|Despite", "Cities are noisy, ___ villages are quiet.|whereas|despite|however", "In spite ___ being tired, she kept working.|of|that|to", "He was ill. ___, he stayed at home.|Therefore|Although|Despite", "___ he studied hard, he didn't pass.|Even though|In spite of|However", "Despite ___ late, he got the job.|arriving|he arrived|arrive", "The hotel was nice. ___, the food was terrible.|However|Despite|Although", "I like tea, ___ my sister prefers coffee.|while|despite|therefore", "Although ___ expensive, the phone sold well.|it was|being of|despite", "The flight was delayed. As a ___, we missed the meeting.|result|reason|despite"],
   "gr-makedo": ["I always ___ my homework after dinner.|do|make|have", "Don't worry, everyone ___ mistakes.|makes|does|takes", "We need to ___ a decision today.|make|do|take on", "Can you ___ me a favour?|do|make|give", "She wants to ___ a lot of money.|make|do|win up", "I ___ the shopping on Saturdays.|do|make|go", "He ___ friends very easily.|makes|does|takes", "Please don't ___ so much noise!|make|do|give", "I'll ___ my best in the exam.|do|make|give it", "Let's ___ a plan for the weekend.|make|do|get", "I ___ exercise every morning.|do|make|play", "Could you ___ a phone call for me?|make|do|take on"],
   "gr-edking": ["The film was so ___ that I fell asleep.|boring|bored|bore", "I'm ___ in learning Korean.|interested|interesting|interest", "The trip was long and ___.|tiring|tired|tire", "We were very ___ about the concert.|excited|exciting|excite", "This grammar rule is ___.|confusing|confused|confuse", "She was ___ when she heard the news.|surprised|surprising|surprise", "History is a very ___ subject.|interesting|interested|interest", "I'm ___ after work. I need to rest.|tired|tiring|tire", "The match was really ___!|exciting|excited|excite", "Are you ___? Let's go for a walk.|bored|boring|bore", "His story was ___. Nobody believed it.|amazing|amazed|amaze", "I was ___ because I didn't understand the task.|confused|confusing|confuse"],
+  "gr-irregular": ["Yesterday I ___ to the cinema.|went|goed|gone", "We ___ a lot of plov at the wedding.|ate|eated|eaten", "She ___ a new phone last week.|bought|buyed|buy", "I ___ a funny video this morning.|saw|seed|seen", "He ___ me a nice present.|gave|gived|given", "They ___ the bus to Samarkand.|took|taked|taken", "I ___ a letter to my grandma.|wrote|writed|written", "We ___ home very late.|came|comed|come", "I ___ my keys under the sofa.|found|finded|find", "She ___ it was a good idea.|thought|thinked|thinks", "He ___ two cups of tea.|drank|drinked|drunk", "Have you ever ___ a famous person?|met|meeted|meet"],
+  "gr-ppvsps": ["I ___ to Bukhara last summer.|went|have gone|have been", "___ you ever eaten sushi?|Have|Did|Do", "She ___ her homework yet.|hasn't finished|didn't finish yesterday|not finished", "I ___ him two days ago.|saw|have seen|seen", "When ___ you start learning English?|did|have|has", "We ___ here since 2018.|have lived|lived|live", "He ___ me yesterday evening.|called|has called|have called", "I've never ___ to London.|been|went|go", "They ___ married in 2020.|got|have got|get", "I ___ just eaten. I'm not hungry.|have|did|was", "Did you ___ the match last night?|watch|watched|watching", "How long ___ you known her?|have|did|do"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink", "My sister ___ English very well.|speaks|speak|speaking", "They ___ live in Tashkent.|don't|doesn't|aren't", "Where ___ he work?|does|do|is", "The shop ___ at nine o'clock.|opens|open|opening", "Water ___ at 100 degrees.|boils|boil|is boil", "My friends ___ like rap music.|don't|doesn't|isn't", "___ your brother study at university?|Does|Do|Is", "He usually ___ his homework in the evening.|does|do|doing"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on", "I was born ___ 2008.|in|on|at", "We have a party ___ Friday evening.|on|in|at", "I usually sleep ___ night.|at|in|on", "The keys are ___ the table.|on|at|in", "The meeting is ___ 3 pm.|at|in|on", "I'll see you ___ the weekend.|at|in|on", "She lives ___ Samarkand.|in|at|on", "My birthday is ___ 5th March.|on|in|at"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do", "Listen! The baby ___ crying.|is|are|be", "We ___ waiting for the bus now.|are|is|am", "What ___ you doing?|are|do|is", "She isn't ___ TV at the moment.|watching|watch|watches", "I ___ working from home this week.|am|is|are", "Why ___ you laughing?|are|is|do", "They ___ playing football right now.|are|is|be", "Be quiet! Grandma ___ sleeping.|is|are|am"],
@@ -2982,6 +3024,8 @@ const KEYWORDS = {
   "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
 };
 const RULES = {
+  "gr-irregular": "Ko'p fe'llar o'tgan zamonda -ed olmaydi, yod olish kerak:\ngo → went → gone, see → saw → seen, eat → ate → eaten, buy → bought → bought.\ntake → took → taken, write → wrote → written, think → thought → thought, come → came → come.\nI went home. (✗ I goed home) She bought a car. (✗ She buyed)",
+  "gr-ppvsps": "Aniq o'tgan vaqt bo'lsa — Past Simple: I went there last year. She called me yesterday.\nVaqt aytilmagan tajriba — Present Perfect: I have been to Bukhara. Have you ever tried sushi?\nyesterday, last week, ago, in 2020, When...? — Past Simple.\never, never, already, yet, just, for, since — Present Perfect. (✗ I have been there last year)",
   "gr-makedo": "do — ish, vazifa, faoliyat: do homework, do the shopping, do exercise, do your best, do a favour.\nmake — yangi narsa yaratish/natija: make a mistake, make a decision, make money, make friends, make a plan, make breakfast.\nI made a mistake. (✗ I did a mistake)\nCan you do me a favour? I'll do my best.",
   "gr-edking": "-ed — odam nima his qiladi: I'm bored. She's interested. We were tired.\n-ing — narsa/odam qanday ta'sir qiladi: The film is boring. History is interesting. The trip was tiring.\nI'm boring = men zerikarli odamman! (✗ I'm boring, so I left)\nI was bored because the lesson was boring.",
   "gr-modalperf": "O'tmish haqida: modal + have + 3-shakl.\nshould have — afsus/tanqid: I should have studied. You shouldn't have said that.\nmust have — kuchli taxmin: He must have forgotten. can't have — bo'lishi mumkin emas: She can't have seen it.\nmight / could have — ehtimol: They might have missed the bus. could have — imkon bor edi: You could have called me.",
