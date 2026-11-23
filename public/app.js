@@ -193,6 +193,12 @@ function renderStats() {
 
 const CAT_ICONS = { "Erkin suhbat": "💬", Imtihonlar: "🏆", "IELTS kursi": "📘", "CEFR kursi": "📗", "Grammatika gapirib": "✏️", "Kundalik hayot": "🏠", Sayohat: "✈️", "O'qish va ish": "🎓", "Biznes va IT": "💼" };
 state.filter = { cat: "", q: "" };
+// ⭐ Sevimli darslar (telefonda saqlanadi)
+state.favs = new Set(JSON.parse(localStorage.getItem("sado-favs") || "[]"));
+function toggleFav(id) {
+  state.favs.has(id) ? state.favs.delete(id) : state.favs.add(id);
+  localStorage.setItem("sado-favs", JSON.stringify([...state.favs]));
+}
 
 function lessonButton(l) {
   const b = document.createElement("button");
@@ -204,7 +210,7 @@ function lessonButton(l) {
   b.querySelector(".lesson-emoji").textContent = l.emoji;
   b.querySelector(".lesson-title").textContent = l.title;
   b.querySelector(".lesson-sub").textContent = `${l.phrases.length} ta ibora · ${state.sessionMinutes} daqiqa`;
-  b.querySelector(".lesson-level").textContent = l.level;
+  b.querySelector(".lesson-level").textContent = (state.favs.has(l.id) ? "⭐ " : "") + l.level;
   const pr = state.progress?.lessons?.[l.id];
   if (pr) {
     b.classList.add("done");
@@ -220,7 +226,9 @@ function renderChips() {
   if (!box) return;
   const cats = [...new Set(state.lessons.filter((l) => !l.liveOnly).map((l) => l.category).filter(Boolean))];
   box.innerHTML = "";
-  [["", "📚 Hammasi"], ...cats.map((c) => [c, `${CAT_ICONS[c] || "📚"} ${c}`])].forEach(([c, label]) => {
+  const favChip = state.favs.size ? [["__fav", `⭐ Sevimlilar (${state.favs.size})`]] : [];
+  if (!state.favs.size && state.filter.cat === "__fav") state.filter.cat = "";
+  [["", "📚 Hammasi"], ...favChip, ...cats.map((c) => [c, `${CAT_ICONS[c] || "📚"} ${c}`])].forEach(([c, label]) => {
     const b = el("button", "chip-f" + (state.filter.cat === c ? " on" : ""), label);
     b.addEventListener("click", () => {
       haptic();
@@ -344,7 +352,7 @@ function renderLessons() {
   const items = state.lessons.filter(
     (l) =>
       !l.liveOnly &&
-      (!state.filter.cat || l.category === state.filter.cat) &&
+      (!state.filter.cat || (state.filter.cat === "__fav" ? state.favs.has(l.id) : l.category === state.filter.cat)) &&
       (!q || (l.title + " " + l.category + " " + l.phrases.map((p) => p.en + " " + p.uz).join(" ")).toLowerCase().includes(q)),
   );
   if (!items.length) {
@@ -389,6 +397,7 @@ function openSheet(lesson) {
   haptic();
   state.pendingLesson = lesson;
   $("sheetEmoji").textContent = lesson.emoji;
+  renderFavBtn(lesson);
   $("sheetTitle").textContent = lesson.title;
   // Daraja, iboralar soni va oldingi natija
   const meta = $("sheetMeta");
@@ -459,6 +468,22 @@ $("freeHero").addEventListener("click", () => {
   haptic("medium");
   if (state.liveEnabled) startLesson(free, "live");
   else openSheet(free);
+});
+
+function renderFavBtn(lesson) {
+  const on = state.favs.has(lesson.id);
+  $("favBtn").textContent = on ? "⭐ Sevimlilarda" : "☆ Sevimlilarga qo'shish";
+  $("favBtn").classList.toggle("on", on);
+  $("favBtn").hidden = Boolean(lesson.liveOnly);
+}
+$("favBtn").addEventListener("click", () => {
+  const l = state.pendingLesson;
+  if (!l) return;
+  haptic("success");
+  toggleFav(l.id);
+  renderFavBtn(l);
+  renderChips();
+  renderLessons();
 });
 
 $("cancelBtn").addEventListener("click", () => ($("startSheet").hidden = true));

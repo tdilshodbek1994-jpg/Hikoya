@@ -400,3 +400,7 @@ body.dark .hint-btn { color: #a5b4fc; background: rgba(165, 180, 252, 0.13); }
 
 .help-row { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
 .help-row .hint-btn { margin: 0; }
+
+.fav-btn { font-size: 13px; font-weight: 700; color: var(--muted); padding: 5px 12px; border-radius: 99px; background: var(--bg); }
+.fav-btn.on { color: #b45309; background: rgba(245, 158, 11, 0.16); }
+body.dark .fav-btn.on { color: #fbbf24; }
