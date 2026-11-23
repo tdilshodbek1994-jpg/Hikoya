@@ -1656,6 +1656,46 @@ export const LESSONS = [
       { en: "I need a few tomatoes.", uz: "Menga bir nechta pomidor kerak." },
     ],
   },
+  {
+    id: "gr-relative",
+    category: "Grammatika gapirib",
+    title: "Nisbiy gaplar (who, which, that)",
+    emoji: "🔗",
+    level: "B1",
+    added: "2026-11-25",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on grammar: relative clauses with who (people), which (things), that, where (places) and whose. Play a guessing game: the student describes a person, a thing or a place without naming it (It's a person who..., It's a place where...), and you guess. Have a natural conversation that makes the student use this grammar a lot. Ask simple questions, listen, whenever the student makes a mistake with this grammar, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Let's play a guessing game! I'm thinking of a place where people read and borrow books. What is it? Now you describe something for me!",
+    openerUz: "Keling, topishmoq o'yini o'ynaymiz! Odamlar kitob o'qiydigan va oladigan joyni o'ylayapman. Bu nima?",
+    phrases: [
+      { en: "It's a person who teaches children.", uz: "Bu bolalarga dars beradigan odam." },
+      { en: "It's a thing which you use to call people.", uz: "Bu odamlarga qo'ng'iroq qilish uchun ishlatiladigan narsa." },
+      { en: "It's a place where you can buy medicine.", uz: "Bu dori sotib olish mumkin bo'lgan joy." },
+      { en: "My friend who lives in Tashkent is a doctor.", uz: "Toshkentda yashaydigan do'stim shifokor." },
+      { en: "The book that I'm reading is very interesting.", uz: "Men o'qiyotgan kitob juda qiziqarli." },
+      { en: "He's the man whose car was stolen.", uz: "U mashinasi o'g'irlangan odam." },
+    ],
+  },
+  {
+    id: "gr-reported",
+    category: "Grammatika gapirib",
+    title: "Ko'chirma gap (Reported Speech)",
+    emoji: "💬",
+    level: "B1-B2",
+    added: "2026-11-25",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on grammar: reported speech — said/told/asked with tense backshift (am → was, will → would, can → could), reported questions (She asked if..., He asked where...) and changing pronouns and time words (tomorrow → the next day). Tell the student short things that people 'said' and ask them to report them; then ask them to report a real conversation from their day. Have a natural conversation that makes the student use this grammar a lot. Ask simple questions, listen, whenever the student makes a mistake with this grammar, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "My friend said to me: 'I'm moving to London next month.' How would you report that? Start with: Your friend said that...",
+    openerUz: "Do'stim menga: «Keyingi oy Londonga ko'chaman», dedi. Buni qanday aytib berasiz? «Your friend said that...» deb boshlang.",
+    phrases: [
+      { en: "She said that she was tired.", uz: "U charchaganini aytdi." },
+      { en: "He told me he would call later.", uz: "U keyinroq qo'ng'iroq qilishini aytdi." },
+      { en: "My teacher said I could do better.", uz: "O'qituvchim yaxshiroq qila olishimni aytdi." },
+      { en: "She asked me where I lived.", uz: "U mendan qayerda yashashimni so'radi." },
+      { en: "He asked if I was ready.", uz: "U mendan tayyormisan, deb so'radi." },
+      { en: "They said they had already eaten.", uz: "Ular allaqachon ovqatlanib bo'lganlarini aytishdi." },
+    ],
+  },
   // ======== Kundalik hayot (o'zbekcha hayot) ========
   {
     id: "pharmacy",
@@ -2261,7 +2301,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-continuous", "gr-past", "gr-pastcont", "gr-questions", "gr-quantity", "gr-articles", "gr-future", "gr-compare", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-passive"];
+const GR_ORDER = ["gr-continuous", "gr-past", "gr-pastcont", "gr-questions", "gr-quantity", "gr-articles", "gr-future", "gr-compare", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-relative", "gr-reported", "gr-passive"];
 const grRank = (l) => (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
 LESSONS.sort((a, b) => ORDER.indexOf(a.category) - ORDER.indexOf(b.category) || partRank(a) - partRank(b) || (a.category === "Grammatika gapirib" ? grRank(a) - grRank(b) : 0));
 // Kurs darslarini tartib raqami bilan nomlaymiz
@@ -2273,6 +2313,8 @@ for (const cat of ["IELTS kursi", "CEFR kursi", "Grammatika gapirib"]) {
 
 // ✏️ Grammatika darslari uchun qisqa qoida (o'zbekcha)
 const RULES = {
+  "gr-relative": "Odam uchun — who: a teacher who helps students.\nNarsa uchun — which yoki that: a phone which/that I bought.\nJoy uchun — where: a city where I was born.\nEgalik — whose: the girl whose brother is a pilot.\nIt's a place where you can buy medicine.",
+  "gr-reported": "Ko'chirma gapda zamon bir pog'ona orqaga siljiydi: am/is → was, will → would, can → could, Past → had + V3.\n«I am tired.» → She said that she was tired.\nSavol: asked + if/where/what + darak tartib: He asked if I was ready. (✗ asked was I ready)\nVaqt so'zlari: tomorrow → the next day, today → that day.",
   "gr-pastcont": "O'tmishdagi ma'lum vaqtda davom etayotgan ish: was/were + fe'l-ing.\nI was reading at 8 pm. They were playing football.\nBoshqa ish to'satdan bo'lsa: when + Past Simple: I was walking when it started to rain.\nSavol: What were you doing? Inkor: She wasn't sleeping.",
   "gr-quantity": "Sanaladigan (apples, eggs): many, a few, How many?\nSanalmaydigan (milk, sugar, rice): much, a little, How much?\nIkkalasiga: a lot of, some (darak gap), any (savol va inkor).\nWe have a lot of rice. There isn't any milk. Do we have any eggs?",
   "gr-continuous": "Hozir bo'layotgan ish: am/is/are + fe'l-ing.\nI am reading. She is working. Are you studying?\nInkor: I'm not watching TV.",
