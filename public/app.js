@@ -167,6 +167,7 @@ async function loadLessons() {
 async function loadProgress() {
   try {
     state.progress = await api("api/progress", { method: "GET" });
+    renderChips();
     renderLessons();
   } catch {
     // Telegram'siz ochilgan bo'lsa progress ko'rsatilmaydi
@@ -225,6 +226,13 @@ function toggleFav(id) {
   localStorage.setItem("sado-favs", JSON.stringify([...state.favs]));
 }
 
+// 60 balldan past darslar — takrorlash uchun
+const WEAK = 60;
+function weakIds() {
+  const ls = state.progress?.lessons || {};
+  return Object.keys(ls).filter((id) => id !== "review" && ls[id].best < WEAK && state.lessons.some((l) => l.id === id));
+}
+
 function lessonButton(l) {
   const b = document.createElement("button");
   b.className = "lesson";
@@ -240,6 +248,11 @@ function lessonButton(l) {
   if (pr) {
     b.classList.add("done");
     b.querySelector(".lesson-sub").textContent = `✅ O'tildi · ${pr.best} ball`;
+    // 🔁 Past ball — takrorlash tavsiya etiladi
+    if (pr.best < WEAK) {
+      b.classList.add("weak");
+      b.querySelector(".lesson-sub").textContent = `🔁 Takrorlang · ${pr.best} ball`;
+    }
   }
   b.addEventListener("click", () => openSheet(l));
   return b;
@@ -367,6 +380,9 @@ function renderChips() {
   });
   box.append(rnd);
   const favChip = state.favs.size ? [["__fav", `⭐ Sevimlilar (${state.favs.size})`]] : [];
+  const weakN = weakIds().length;
+  if (weakN) favChip.push(["__weak", `🔁 Takrorlash (${weakN})`]);
+  if (!weakN && state.filter.cat === "__weak") state.filter.cat = "";
   if (!state.favs.size && state.filter.cat === "__fav") state.filter.cat = "";
   [["", "📚 Hammasi"], ...favChip, ...cats.map((c) => [c, `${CAT_ICONS[c] || "📚"} ${c}`])].forEach(([c, label]) => {
     const b = el("button", "chip-f" + (state.filter.cat === c ? " on" : ""), label);
@@ -729,7 +745,7 @@ function renderLessons() {
   const hits = new Map(); // dars id -> topilgan ibora
   const items = state.lessons.filter((l) => {
     if (l.liveOnly) return false;
-    if (state.filter.cat && !(state.filter.cat === "__fav" ? state.favs.has(l.id) : l.category === state.filter.cat)) return false;
+    if (state.filter.cat && !(state.filter.cat === "__fav" ? state.favs.has(l.id) : state.filter.cat === "__weak" ? weakIds().includes(l.id) : l.category === state.filter.cat)) return false;
     if (!q) return true;
     if (norm(l.title + " " + l.category).includes(q)) return true;
     const p = l.phrases.find((x) => norm(x.en + " " + x.uz).includes(q));
@@ -2330,6 +2346,7 @@ async function finish() {
       const before = new Set(Object.keys(state.progress?.lessons || {}));
       state.progress = { ...data.progress, limit: state.progress?.limit, startedToday: state.progress?.startedToday };
       checkCourseDone(before);
+      renderChips(); // 🔁 Takrorlash chipi yangilanishi uchun
       renderLessons();
     }
     renderReport(data.report, data.score);

@@ -783,3 +783,7 @@ body:has(#lesson.active) .toast { top: calc(40vh + var(--safe-t)); }
 .phrase-card.swipe-r .phrase-body { animation: swipeR 0.25s ease; }
 @keyframes swipeL { from { transform: translateX(24px); opacity: 0.3; } to { transform: none; opacity: 1; } }
 @keyframes swipeR { from { transform: translateX(-24px); opacity: 0.3; } to { transform: none; opacity: 1; } }
+
+/* 🔁 Past ballli dars */
+.lesson.done.weak .lesson-sub { color: #d97706; font-weight: 600; }
+.lesson.done.weak .lesson-emoji { box-shadow: inset 0 0 0 2px #f59e0b; }
