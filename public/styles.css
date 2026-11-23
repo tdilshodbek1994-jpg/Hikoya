@@ -724,3 +724,10 @@ body:has(#lesson.active) .toast { top: calc(40vh + var(--safe-t)); }
 #lesson .controls { position: sticky; bottom: 0; z-index: 5; margin: 6px -14px 0; padding: 12px 14px calc(10px + var(--safe-b)); background: linear-gradient(to top, var(--bg) 82%, transparent); display: flex; flex-direction: column; gap: 8px; }
 #lesson .controls > * { margin-top: 0 !important; margin-bottom: 0 !important; }
 @media (max-width: 360px) { #lesson .controls { margin-left: -10px; margin-right: -10px; padding-left: 10px; padding-right: 10px; } }
+
+/* IELTS Part 2 gapirish paytida: ibora kartasi ixcham, maskot kichik — holat yozuvi ko'rinib tursin */
+#lesson:has(#cue.speaking:not([hidden])) .phrase-card .phrase-uz,
+#lesson:has(#cue.speaking:not([hidden])) .phrase-card .listen-btn { display: none; }
+#lesson:has(#cue.speaking:not([hidden])) .phrase-en { font-size: 16px; }
+#lesson:has(#cue.speaking:not([hidden])) .mascot { width: min(26vw, 100px); }
+#lesson:has(#cue.speaking:not([hidden])) .cue-points { margin-bottom: 4px; }

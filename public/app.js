@@ -1967,6 +1967,14 @@ function endCuePrep() {
     clock.textContent = `🎤 ${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
     clock.classList.toggle("ok", sec >= 60 && sec < 120);
     clock.classList.toggle("over", sec >= 120);
+    // ⏰ Imtihondagidek vaqt eslatmalari (bir martadan)
+    if (sec === 60) {
+      haptic("light");
+      toast("✅ 1 daqiqa bo'ldi — zo'r, yana biroz davom eting", 2500);
+    } else if (sec === 115) {
+      haptic("medium");
+      toast("⏰ Vaqt tugayapti — fikringizni yakunlang", 3000);
+    }
     if (sec >= 150 || state.phase === "ended") clearInterval(state.cueClock);
   };
   tick();
