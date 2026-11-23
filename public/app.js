@@ -995,21 +995,47 @@ $("shadowBtn").addEventListener("click", async () => {
   $("shadowBtn").hidden = true;
   box.hidden = false;
   const list = lesson.phrases;
+  // ⏭ Keyingisi: joriy iborani o'tkazib yuborish (kutishni darhol tugatadi)
+  let skip = null;
+  const wait = (ms) => new Promise((r) => {
+    const t = setTimeout(r, ms);
+    skip = () => { clearTimeout(t); r(); };
+  });
   for (let i = 0; i < list.length; i++) {
     const p = list[i];
+    let skipped = false;
     for (const round of [1, 2]) {
-      if (run !== state.shadowRun) return;
+      if (run !== state.shadowRun || skipped) break;
       box.innerHTML = "";
       const stop = el("button", "shadow-stop", "■ To'xtatish");
       stop.addEventListener("click", stopShadow);
-      box.append(el("div", "shadow-n", `${i + 1} / ${list.length}`), el("div", "shadow-en", p.en), el("div", "shadow-uz", p.uz));
+      const next = el("button", "shadow-stop", i < list.length - 1 ? "⏭ Keyingisi" : "⏭ Tugatish");
+      next.addEventListener("click", () => {
+        haptic();
+        skipped = true;
+        try { audio.source?.stop(); } catch {}
+        skip?.();
+      });
+      const dots = el("div", "shadow-dots");
+      list.forEach((_, j) => dots.append(el("i", j < i ? "done" : j === i ? "on" : "")));
+      const btns = el("div", "shadow-btns");
+      btns.append(stop, next);
+      box.append(dots, el("div", "shadow-en", p.en), el("div", "shadow-uz", p.uz));
       const st = el("div", "shadow-st", "🔊 Tinglang...");
-      box.append(st, stop);
+      const bar = el("div", "shadow-bar");
+      const fill = el("i", "");
+      bar.append(fill);
+      box.append(st, bar, btns);
       await sayPhrase(p.en);
       if (run !== state.shadowRun) return;
+      if (skipped) break;
       st.textContent = round === 1 ? "🗣 Endi siz takrorlang!" : "🗣 Yana bir bor!";
       st.classList.add("go");
-      await new Promise((r) => setTimeout(r, Math.max(2500, p.en.length * 110)));
+      // Takrorlash vaqti chiziq bilan ko'rsatiladi
+      const ms = Math.max(2500, p.en.length * 110);
+      bar.classList.add("run");
+      fill.style.animationDuration = ms + "ms";
+      await wait(ms);
     }
   }
   if (run !== state.shadowRun) return;

@@ -731,3 +731,16 @@ body:has(#lesson.active) .toast { top: calc(40vh + var(--safe-t)); }
 #lesson:has(#cue.speaking:not([hidden])) .phrase-en { font-size: 16px; }
 #lesson:has(#cue.speaking:not([hidden])) .mascot { width: min(26vw, 100px); }
 #lesson:has(#cue.speaking:not([hidden])) .cue-points { margin-bottom: 4px; }
+
+/* 🎧 Tinglab takrorlash: nuqtalar, vaqt chizig'i, tugmalar */
+.shadow-dots { display: flex; justify-content: center; gap: 5px; margin-bottom: 6px; }
+.shadow-dots i { width: 8px; height: 8px; border-radius: 50%; background: color-mix(in srgb, var(--muted) 35%, transparent); }
+.shadow-dots i.done { background: var(--ok); }
+.shadow-dots i.on { background: var(--primary); width: 18px; border-radius: 4px; }
+.shadow-bar { height: 6px; margin: 8px auto 4px; max-width: 220px; border-radius: 3px; background: color-mix(in srgb, var(--muted) 20%, transparent); overflow: hidden; visibility: hidden; }
+.shadow-bar.run { visibility: visible; }
+.shadow-bar i { display: block; height: 100%; width: 100%; background: var(--ok); transform-origin: left; }
+.shadow-bar.run i { animation: shadowbar linear forwards; }
+@keyframes shadowbar { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+.shadow-btns { display: flex; justify-content: center; gap: 8px; margin-top: 6px; }
+.shadow-btns .shadow-stop { margin-top: 0; }
