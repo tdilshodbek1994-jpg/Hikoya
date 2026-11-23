@@ -91,6 +91,19 @@ export function summary(userId) {
   for (const [id, l] of Object.entries(u.lessons)) lessons[id] = { best: l.best, count: l.count };
   return {
     streak: streak(u.days),
+    best: u.history.reduce((m, h) => Math.max(m, h.score || 0), 0),
+    bestStreak: (() => {
+      // Eng uzun ketma-ket kunlar seriyasi
+      const ds = [...new Set(u.days)].sort();
+      let best = 0, cur = 0, prev = null;
+      for (const d of ds) {
+        cur = prev && (Date.parse(d) - Date.parse(prev)) === 86400_000 ? cur + 1 : 1;
+        best = Math.max(best, cur);
+        prev = d;
+      }
+      return best;
+    })(),
+    ielts: u.history.some((h) => /IELTS\s*(6|7|8|9)/.test(h.level || "")),
     today: u.history.filter((h) => today(new Date(h.at)) === today()).length,
     done: Object.keys(u.lessons).length,
     minutes: Math.round(u.seconds / 60),

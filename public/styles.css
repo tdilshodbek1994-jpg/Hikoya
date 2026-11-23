@@ -417,3 +417,13 @@ body.dark .flash-card.open .flash-a { color: #a5b4fc; }
 .flash-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .btn.ok { background: var(--ok); color: #fff; }
 .flash-done { text-align: center; font-size: 18px; font-weight: 800; padding: 14px 0; }
+
+/* ---------- Yutuqlar ---------- */
+.badges { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 12px 14px; margin: -6px 0 14px; }
+.badge-row { display: flex; gap: 10px; overflow-x: auto; margin-top: 10px; padding-bottom: 2px; scrollbar-width: none; }
+.badge-row::-webkit-scrollbar { display: none; }
+.badge { flex: none; width: 70px; display: flex; flex-direction: column; align-items: center; gap: 4px; opacity: 0.45; filter: grayscale(1); }
+.badge.on { opacity: 1; filter: none; }
+.badge-ico { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; font-size: 24px; background: var(--bg); }
+.badge.on .badge-ico { background: linear-gradient(135deg, #fde68a, #f59e0b); box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35); }
+.badge small { font-size: 11px; font-weight: 600; text-align: center; line-height: 1.2; color: var(--muted); }

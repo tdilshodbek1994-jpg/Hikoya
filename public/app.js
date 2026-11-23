@@ -410,8 +410,40 @@ function renderTrend() {
   box.append(bars);
 }
 
+// 🏅 Yutuqlar: progressdan hisoblanadi
+const BADGES = [
+  ["🎤", "Birinchi qadam", "Birinchi darsni tugating", (p) => p.done >= 1],
+  ["🔥", "3 kun ketma-ket", "3 kun ketma-ket mashq qiling", (p) => (p.bestStreak || p.streak) >= 3],
+  ["📚", "10 ta dars", "10 xil darsni o'ting", (p) => p.done >= 10],
+  ["💯", "A'lochi", "Biror darsda 90+ ball oling", (p) => (p.best || 0) >= 90],
+  ["🧠", "So'z ustasi", "Lug'atga 30 ta so'z yig'ing", (p) => (p.words || []).length >= 30],
+  ["🏆", "IELTS 6+", "IELTS darsida 6.0+ band oling", (p) => p.ielts],
+  ["⚡", "Hafta qahramoni", "7 kun ketma-ket mashq qiling", (p) => (p.bestStreak || p.streak) >= 7],
+];
+function renderBadges() {
+  const p = state.progress;
+  const box = $("badges");
+  if (!p) return (box.hidden = true);
+  box.hidden = false;
+  box.innerHTML = "";
+  const got = BADGES.filter((b) => b[3](p)).length;
+  const head = el("div", "trend-head");
+  head.append(el("b", "", "🏅 Yutuqlar"), el("span", "", `${got} / ${BADGES.length}`));
+  box.append(head);
+  const row = el("div", "badge-row");
+  for (const [ico, name, how, test] of BADGES) {
+    const on = test(p);
+    const b = el("button", "badge" + (on ? " on" : ""));
+    b.append(el("span", "badge-ico", ico), el("small", "", name));
+    b.addEventListener("click", () => toast(on ? `🏅 ${name} — qo'lga kiritilgan!` : `🔒 ${name}: ${how}`, 2500));
+    row.append(b);
+  }
+  box.append(row);
+}
+
 function renderLessons() {
   renderGoal();
+  renderBadges();
   renderStats();
   renderVocabBtn();
   renderTrend();
