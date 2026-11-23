@@ -271,6 +271,23 @@ function ruleBody(rule) {
   return box;
 }
 
+// 📖 Grammatika darsida qoidani dars davomida ham ochib ko'rish mumkin
+function renderLessonRule(lesson) {
+  const box = $("lessonRule");
+  $("ruleBtn").hidden = !lesson?.rule;
+  $("ruleBtn").classList.remove("on");
+  box.hidden = true;
+  box.innerHTML = "";
+  if (!lesson?.rule) return;
+  box.append(el("b", "", "📖 Qoida"), ruleBody(lesson.rule));
+}
+$("ruleBtn").addEventListener("click", () => {
+  haptic();
+  const box = $("lessonRule");
+  box.hidden = !box.hidden;
+  $("ruleBtn").classList.toggle("on", !box.hidden);
+});
+
 // 🖼 Rasm/jadval topshiriqlari: o'quvchi ko'rib turib gapiradi
 function renderVisual(lesson) {
   const box = $("visual");
@@ -1106,6 +1123,7 @@ async function startLesson(lesson, lessonMode = "tutor") {
   $("lessonTitle").textContent = lesson.title;
   renderPhrase();
   renderVisual(lesson);
+  renderLessonRule(lesson);
   applyMode();
   applySubs();
   applyTr();
@@ -1154,6 +1172,7 @@ async function startLive(lesson) {
   $("lessonTitle").textContent = lesson.title + " · jonli";
   renderPhrase();
   renderVisual(lesson);
+  renderLessonRule(lesson);
   // Jonli rejimda tugmalar kerak emas: shunchaki gaplashiladi
   $("modeToggle").hidden = true;
   $("holdBtn").hidden = true;

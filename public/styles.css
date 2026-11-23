@@ -693,3 +693,7 @@ body:has(#lesson.active) .toast { top: calc(34vh + var(--safe-t)); }
 .rep-mistake.rep-word .rep-right::after { content: "\00a0🔊"; }
 .rep-mistake.rep-word::after { content: none; }
 .tr-copy { margin-top: 8px; font-size: 14px; }
+
+/* 📖 Dars ichidagi qoida kartasi */
+.lesson-rule { margin-top: 0; margin-bottom: 10px; animation: fade 0.2s ease; }
+#ruleBtn.on { background: var(--primary); color: #fff; }
