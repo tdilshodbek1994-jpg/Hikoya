@@ -3,6 +3,8 @@
 // Takrorlangan ID, ibora soni, bo'sh tarjima, takrorlangan iboralar, kartochka/savollar va qoidalarni tekshiradi.
 import { LESSONS, publicLesson } from "../src/lessons.js";
 
+// public/app.js dagi EN_HINT bilan bir xil
+const EN_HINT = /\b(I|I'm|I've|I'd|I'll|you|he|she|it|we|they|is|are|am|do|does|did|will|the|a|an|can|can't|was|were|have|has|had|my|your|his|her|our|their|its|me|him|us|them|to|used|should|must|there|this|that|these|those|any|some|isn't|aren't|wasn't|weren't|don't|doesn't|didn't|won't|let's|please|not|never|ever|been|would|could|might|of|in|on|at|for|with|than|so|such|very|too|what|where|when|who|how|why|if|unless|go|come)\b/i;
 const errors = [];
 const warns = [];
 const ids = new Set();
@@ -28,6 +30,15 @@ for (const l of LESSONS) {
   if (/^ielts-p2/.test(l.id) && !pub.cue) errors.push(`${where}: Part 2 kartochkasi topilmadi ("Describe ... You should say: ...")`);
   if (/^ielts-p[13]/.test(l.id) && !pub.questions?.length) errors.push(`${where}: savollar topilmadi ("Ask these questions one at a time: ...")`);
   if (l.category === "Grammatika gapirib" && !l.rule) warns.push(`${where}: grammatika qoidasi (RULES) yo'q`);
+  // 🔊 Qoidada kamida 2 ta bosiladigan (eshitiladigan) to'liq inglizcha misol bo'lsin — app.js dagi ruleBody() bilan bir xil qoida
+  const rule = pub.rule || l.rule;
+  if (l.category === "Grammatika gapirib" && rule) {
+    const ex = [];
+    for (const line of rule.split("\n"))
+      for (const m of line.matchAll(/[A-Z][A-Za-z0-9' ,]*[A-Za-z0-9][.?!]/g))
+        if (m[0].split(" ").length >= 2 && EN_HINT.test(m[0]) && !/✗\s*$/.test(line.slice(0, m.index))) ex.push(m[0]);
+    if (ex.length < 2) warns.push(`${where}: qoidada eshitiladigan misol kam (${ex.length} ta) — to'liq gap yozing: "She runs quickly."`);
+  }
   if (l.category === "Grammatika gapirib" && pub.quiz.length < 2) warns.push(`${where}: tez mashq (QUIZ) yo'q yoki 2 tadan kam`);
   for (const q of pub.quiz) {
     const k = "quiz:" + q.text.toLowerCase().trim();
