@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
   <title>Sado — ingliz tilida gaplashish</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="styles.css?v=9" />
+  <link rel="stylesheet" href="styles.css?v=10" />
 </head>
 <body>
   <header class="topbar">
@@ -21,13 +21,17 @@
 
   <!-- 1. Darslar ro'yxati -->
   <main id="home" class="screen active">
-    <section class="hero">
-      <div class="hero-mascot" id="heroMascot"></div>
-      <div>
-        <h1>Ingliz tilida gaplashamiz!</h1>
-        <p>Vaziyatni tanlang. Sado bilan ovoz chiqarib gaplashing, 6 ta iborani ishlating.</p>
-      </div>
-    </section>
+    <button class="hero free-hero" id="freeHero">
+      <span class="free-badge">✨ YANGI · Jonli AI</span>
+      <span class="free-row">
+        <span class="hero-mascot" id="heroMascot"></span>
+        <span class="free-text">
+          <b>💬 Erkin suhbat</b>
+          <span>Sado bilan istalgan mavzuda gaplashing: o‘zbekcha ham, inglizcha ham. Xuddi do‘st bilan gaplashgandek!</span>
+        </span>
+      </span>
+      <span class="free-cta">📞 Gaplashishni boshlash</span>
+    </button>
     <div class="lesson-list" id="lessonList">
       <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
     </div>
@@ -137,6 +141,6 @@
 
   <div class="toast" id="toast" hidden></div>
 
-  <script type="module" src="app.js?v=9"></script>
+  <script type="module" src="app.js?v=10"></script>
 </body>
 </html>

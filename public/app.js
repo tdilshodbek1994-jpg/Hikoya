@@ -132,6 +132,7 @@ function renderLessons() {
   const CAT_ICONS = { "Erkin suhbat": "💬", Imtihonlar: "🏆", "Kundalik hayot": "🏠", Sayohat: "✈️", "O'qish va ish": "🎓" };
   let lastCat = null;
   for (const l of state.lessons) {
+    if (l.liveOnly) continue; // Erkin suhbat tepadagi katta bannerda turadi
     if (l.category && l.category !== lastCat) {
       lastCat = l.category;
       const h = document.createElement("div");
@@ -177,6 +178,14 @@ function openSheet(lesson) {
   }
   $("startSheet").hidden = false;
 }
+
+$("freeHero").addEventListener("click", () => {
+  const free = state.lessons.find((l) => l.liveOnly);
+  if (!free) return;
+  haptic("medium");
+  if (state.liveEnabled) startLesson(free, "live");
+  else openSheet(free);
+});
 
 $("cancelBtn").addEventListener("click", () => ($("startSheet").hidden = true));
 $("startSheet").addEventListener("click", (e) => {
