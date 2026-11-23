@@ -1305,6 +1305,29 @@ function renderLessons() {
         });
       }
       list.append(head);
+      // 🧩 Grammatika: mashqlar hisobi va tasodifiy (hali a'lo bo'lmagan) mashq
+      if (l.category === "Grammatika gapirib" && !(canFold && folded.has(l.category))) {
+        const gr = state.lessons.filter((x) => x.category === l.category && x.quiz?.length);
+        const best = quizBest();
+        const perfect = gr.filter((x) => best[x.id] && best[x.id] === `${x.quiz.length}/${x.quiz.length}`);
+        if (gr.length) {
+          const row = el("div", "gr-quizbar");
+          row.append(el("span", "", `🧩 Mashqlar: ${perfect.length}/${gr.length} a'lo`));
+          const pool = gr.filter((x) => !perfect.includes(x));
+          const go = el("button", "", pool.length ? "🎲 Tasodifiy mashq" : "🎉 Hammasi a'lo — yana bir");
+          go.addEventListener("click", () => {
+            haptic();
+            const from = pool.length ? pool : gr;
+            // Hali umuman urinilmaganlar birinchi
+            const fresh = from.filter((x) => !best[x.id]);
+            const pick = (fresh.length ? fresh : from)[Math.floor(Math.random() * (fresh.length || from.length))];
+            openSheet(pick);
+            setTimeout(() => $("sheetQuiz").scrollIntoView({ behavior: "smooth", block: "start" }), 350);
+          });
+          row.append(go);
+          list.append(row);
+        }
+      }
     }
     if (canFold && folded.has(l.category)) continue;
     const part = l.category === "IELTS kursi" ? partOf(l) : null;

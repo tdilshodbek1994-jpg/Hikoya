@@ -1046,3 +1046,6 @@ body.dark .fold-tag.new { color: #fb7185; } body.dark .fold-tag.rep { color: #fb
 .sheet-qs summary { font-weight: 700; cursor: pointer; }
 .sheet-qs ol { margin: 8px 0 4px; padding-left: 22px; display: grid; gap: 4px; }
 .sheet-qs .rule-ex { display: block; width: fit-content; max-width: 100%; text-align: left; padding: 3px 7px; }
+/* 🧩 Grammatika bo'limi: mashqlar qatori */
+.gr-quizbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -2px 2px 8px; font-size: 13px; color: var(--muted); font-weight: 600; flex-wrap: wrap; }
+.gr-quizbar button { font: inherit; font-weight: 700; color: var(--primary); background: color-mix(in srgb, var(--primary) 12%, transparent); border-radius: 99px; padding: 6px 12px; min-height: 34px; }
