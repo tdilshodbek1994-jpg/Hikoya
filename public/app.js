@@ -418,17 +418,31 @@ function quizMiss(it, lessonId, ok) {
 function openMissTest() {
   const quiz = quizMisses();
   if (!quiz.length) return toast("👏 Xato savollar yo'q");
+  $("mixLevels").innerHTML = "";
   state.mixWeak = new Map();
   $("mixSheet").hidden = false;
   renderQuiz({ id: "gr-miss", quiz }, $("mixQuiz"), `🔁 Xato savollarim · ${quiz.length} ta`, Math.min(10, quiz.length));
 }
 
 // 📝 Aralash grammatika testi (barcha darslar savollaridan)
-function openMixTest() {
-  const quiz = state.lessons.filter((l) => l.category === "Grammatika gapirib").flatMap((l) => (l.quiz || []).map((q) => ({ ...q, from: l.id })));
+// Daraja guruhlari: boshlang'ich (A1–A2), o'rta (A2-B1, B1), yuqori (B1-B2)
+const MIX_LEVELS = [["", "Hammasi"], ["beg", "🌱 A1–A2"], ["mid", "🌿 B1"], ["adv", "🌳 B2"]];
+const mixLevelOf = (lv) => (/B2/.test(lv) ? "adv" : /A2-B1|^B1$/.test(lv) ? "mid" : "beg");
+function openMixTest(level = localStorage.getItem("sado-mix-lv") || "") {
+  const gr = state.lessons.filter((l) => l.category === "Grammatika gapirib" && (!level || mixLevelOf(l.level) === level));
+  const quiz = gr.flatMap((l) => (l.quiz || []).map((q) => ({ ...q, from: l.id })));
   if (quiz.length < 4) return;
+  localStorage.setItem("sado-mix-lv", level);
   state.mixWeak = new Map();
   $("mixSheet").hidden = false;
+  // 🎚 Daraja tanlash chiplari
+  const lv = $("mixLevels");
+  lv.innerHTML = "";
+  for (const [k, label] of MIX_LEVELS) {
+    const b = el("button", "chip-f" + (k === level ? " on" : ""), label);
+    b.addEventListener("click", () => { haptic(); openMixTest(k); });
+    lv.append(b);
+  }
   renderQuiz({ id: "gr-mix", quiz }, $("mixQuiz"), `📝 Aralash test · ${quiz.length} ta savoldan 10 tasi`, 10);
 }
 $("mixClose").addEventListener("click", () => ($("mixSheet").hidden = true));
