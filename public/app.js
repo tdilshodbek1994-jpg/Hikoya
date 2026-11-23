@@ -652,6 +652,11 @@ $("startTutorBtn").addEventListener("click", () => startLesson(state.pendingLess
 $("startChatBtn").addEventListener("click", () => startLesson(state.pendingLesson, "chat"));
 $("againBtn").addEventListener("click", () => startLesson(state.lesson, state.lessonMode));
 $("homeBtn").addEventListener("click", () => show("home"));
+$("nextBtn").addEventListener("click", () => {
+  if (!state.nextAfter) return;
+  show("home");
+  openSheet(state.nextAfter);
+});
 
 // ---------------- Audio tayyorlash ----------------
 function pickMime() {
@@ -1659,6 +1664,13 @@ function showResult() {
   $("report").innerHTML = "";
   $("shareBtn").hidden = true;
   $("transcript").hidden = true;
+  // ➡️ Kurs ichidagi keyingi dars (IELTS/CEFR kursi, grammatika)
+  const course = state.lessons.filter((x) => x.category === lesson.category);
+  const idx = course.findIndex((x) => x.id === lesson.id);
+  const nxt = /kursi$|Grammatika/.test(lesson.category || "") && idx >= 0 ? course[idx + 1] : null;
+  state.nextAfter = nxt || null;
+  $("nextBtn").hidden = !nxt;
+  if (nxt) $("nextBtn").textContent = `➡️ Keyingi dars: ${nxt.emoji} ${nxt.title.replace(/^\d+\.\s*/, "")}`;
   // Erkin suhbatda iboralar ro'yxati ma'nosiz - yashiramiz
   ul.hidden = Boolean(lesson.liveOnly);
   if (lesson.liveOnly) {

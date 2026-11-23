@@ -459,3 +459,4 @@ body.dark .daily-go { color: #a5b4fc; }
 .daily-en, .daily-go { padding: 0; }
 .hint-btn.retry, body.dark .hint-btn.retry { color: #fff; background: var(--danger); }
 .chip-f.rnd { background: linear-gradient(135deg, #f59e0b, #f97316); color: #fff; }
+.btn.next { background: linear-gradient(135deg, #16a34a, #14b8a6); color: #fff; box-shadow: 0 8px 20px rgba(22, 163, 74, 0.28); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 14px; }
