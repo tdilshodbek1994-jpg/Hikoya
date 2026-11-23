@@ -2274,6 +2274,11 @@ const VISUALS = {
   },
 };
 
+// 🧭 To'liq imtihonlar: qismlar bosqichi (Sado "Part ..." deganda yangilanadi)
+const IELTS_STAGES = [{ key: "1", label: "Part 1" }, { key: "2", label: "Part 2" }, { key: "3", label: "Part 3" }];
+const CEFR_STAGES = [{ key: "1.1", label: "1.1" }, { key: "1.2", label: "1.2" }, { key: "2", label: "Part 2" }, { key: "3", label: "Part 3" }];
+const STAGES = { ielts: IELTS_STAGES, cefr: CEFR_STAGES, "cefr-8": CEFR_STAGES };
+
 export function publicLesson(l) {
   return {
     id: l.id,
@@ -2285,6 +2290,7 @@ export function publicLesson(l) {
     cue: cueCard(l),
     rule: l.rule || "",
     visual: VISUALS[l.id] || null,
+    stages: STAGES[l.id] || null,
     category: l.category || "",
     phrases: l.phrases,
   };

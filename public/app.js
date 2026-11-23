@@ -274,6 +274,34 @@ function ruleBody(rule) {
   return box;
 }
 
+// 🧭 Imtihon qismlari: Sado gapida "Part 2" / "Part 1.2" uchrasa, bosqich oldinga siljiydi
+function renderStages(lesson, idx = 0) {
+  const box = $("stages");
+  const st = lesson?.stages;
+  box.hidden = !st;
+  state.stageIdx = idx;
+  if (!st) return;
+  box.innerHTML = "";
+  st.forEach((x, i) => {
+    if (i) box.append(el("span", "st-line" + (i <= idx ? " done" : ""), ""));
+    box.append(el("span", "st" + (i < idx ? " done" : i === idx ? " on" : ""), (i < idx ? "✓ " : "") + x.label));
+  });
+}
+function trackStage(text) {
+  const st = state.lesson?.stages;
+  if (!st || !text) return;
+  let best = state.stageIdx || 0;
+  for (const m of text.matchAll(/\bpart\s*(\d(?:\.\d)?)/gi)) {
+    const i = st.findIndex((x) => x.key === m[1] || (m[1] === "1" && x.key === "1.1"));
+    if (i > best) best = i;
+  }
+  if (best !== state.stageIdx) {
+    renderStages(state.lesson, best);
+    haptic("light");
+    toast(`🧭 ${st[best].label} boshlandi`, 2000);
+  }
+}
+
 // 📖 Grammatika darsida qoidani dars davomida ham ochib ko'rish mumkin
 function renderLessonRule(lesson) {
   const box = $("lessonRule");
@@ -1205,6 +1233,7 @@ async function startLesson(lesson, lessonMode = "tutor") {
   renderPhrase();
   renderVisual(lesson);
   renderLessonRule(lesson);
+  renderStages(lesson);
   applyMode();
   applySubs();
   applyTr();
@@ -1254,6 +1283,7 @@ async function startLive(lesson) {
   renderPhrase();
   renderVisual(lesson);
   renderLessonRule(lesson);
+  renderStages(lesson);
   // Jonli rejimda tugmalar kerak emas: shunchaki gaplashiladi
   $("modeToggle").hidden = true;
   $("holdBtn").hidden = true;
@@ -1310,6 +1340,7 @@ async function startLive(lesson) {
           if (lastSpeaker !== m.type) addBubble(m.type);
           lastSpeaker = m.type;
           appendBubble(m.text);
+          if (m.type === "sado") trackStage($("chatlog").lastElementChild?.textContent || "");
         } else if (m.type === "wrapup") {
           toast("⏳ 1 daqiqa qoldi — Sado suhbatni yakunlaydi", 4000);
           haptic("medium");
@@ -1968,6 +1999,7 @@ async function sendTurn(payload) {
     applyHint();
     const tutorCurrent = Number.isInteger(data.current) ? data.current : null;
     setSubs(data.reply, data.reply_uz, data.heard, data.uz_say, data.say);
+    trackStage(data.reply);
     markWords(data.heard);
     if (data.uz_say && !state.subs) toast("🇺🇿 " + data.uz_say, 6000);
     markUsed(data.used || []);

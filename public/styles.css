@@ -759,3 +759,11 @@ body:has(#lesson.active) .toast { top: calc(40vh + var(--safe-t)); }
 .limit-note { text-align: left; padding: 10px 12px; border-radius: 14px; background: color-mix(in srgb, #f59e0b 14%, var(--bg)); border-left: 4px solid #f59e0b; font-size: 13.5px; line-height: 1.45; margin-bottom: 8px; }
 .limit-note b { display: block; margin-bottom: 2px; font-size: 14.5px; }
 .mode-card.locked { opacity: 0.45; filter: grayscale(0.6); pointer-events: none; }
+
+/* 🧭 Imtihon bosqichlari */
+.stages { display: flex; align-items: center; gap: 4px; margin-bottom: 8px; position: relative; z-index: 2; }
+.stages .st { flex: none; font-size: 12px; font-weight: 700; padding: 4px 9px; border-radius: 99px; background: var(--card); color: var(--muted); box-shadow: var(--shadow); }
+.stages .st.on { background: var(--primary); color: #fff; }
+.stages .st.done { color: var(--ok); }
+.stages .st-line { flex: 1; height: 2px; min-width: 6px; background: color-mix(in srgb, var(--muted) 30%, transparent); }
+.stages .st-line.done { background: var(--ok); }
