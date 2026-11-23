@@ -632,8 +632,14 @@ function renderNext() {
   box.hidden = false;
   box.innerHTML = "";
   const started = Object.keys(state.progress?.lessons || {}).length > 0;
-  box.append(el("div", "next-label", started ? "➡️ Keyingi dars" : "🚀 Shu yerdan boshlang"));
-  box.append(lessonButton(n));
+  const head = el("div", "next-label", started ? "➡️ Keyingi dars" : "🚀 Shu yerdan boshlang");
+  // Kurs ichida qayerdaligimiz: "📘 IELTS kursi · 3/41"
+  const all = state.lessons.filter((l) => l.category === n.category);
+  if (all.length > 1) {
+    const done = all.filter((l) => state.progress?.lessons?.[l.id]).length;
+    head.append(el("span", "next-course", `${CAT_ICONS[n.category] || "📚"} ${n.category} · ${done}/${all.length}`));
+  }
+  box.append(head, lessonButton(n));
 }
 
 // 📒 Lug'atim

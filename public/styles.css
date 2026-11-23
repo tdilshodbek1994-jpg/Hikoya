@@ -990,3 +990,6 @@ body.dark .rep-ml { color: #5eead4; }
 .phrase-card.hide-uz .phrase-uz.shown { animation: fade 0.2s ease; }
 .phrase-card.hide-uz .phrase-uz:not(.shown) { filter: none; color: transparent; text-shadow: 0 0 7px color-mix(in srgb, var(--muted) 90%, transparent); }
 .phrase-card.hide-uz .phrase-uz:not(.shown)::after { content: "  👆 tarjima"; color: var(--primary); text-shadow: none; font-size: 12px; font-weight: 700; }
+
+.next-label { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.next-course { font-size: 12px; font-weight: 600; color: var(--muted); white-space: nowrap; }
