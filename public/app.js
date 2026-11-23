@@ -379,8 +379,7 @@ function saveQuiz(id, right, total) {
   const prev = Number(String(all[id] || "0").split("/")[0]);
   if (right >= prev) { all[id] = `${right}/${total}`; localStorage.setItem("sado-quiz", JSON.stringify(all)); }
 }
-function renderQuiz(lesson) {
-  const box = $("sheetQuiz");
+function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq") {
   box.innerHTML = "";
   // Darsning o'z mashqi bo'lsa — o'shani, aks holda qoida misollaridan avtomatik
   const items = lesson.quiz?.length
@@ -389,7 +388,7 @@ function renderQuiz(lesson) {
   box.hidden = items.length < 2;
   if (box.hidden) return;
   let i = 0, right = 0, missed = [];
-  const head = el("b", "", "🧩 Tez mashq");
+  const head = el("b", "", title);
   const body = el("div", "qz-body");
   box.append(head, body);
   const show = () => {
@@ -397,7 +396,7 @@ function renderQuiz(lesson) {
     if (i >= items.length) {
       saveQuiz(lesson.id, right, items.length);
       if (state.lessons.length) renderLessons();
-      body.append(el("p", "qz-done", right === items.length ? `🎉 ${right}/${items.length} — a'lo! Endi gapirib mustahkamlaymiz.` : right * 2 >= items.length ? `👍 ${right}/${items.length} — yaxshi! Xatolarni ko'rib, darsni boshlang.` : `💪 ${right}/${items.length} — qoidani yana bir o'qing va qayta urinib ko'ring.`));
+      body.append(el("p", "qz-done", right === items.length ? `🎉 ${right}/${items.length} — a'lo! Endi gapirib mustahkamlaymiz.` : right * 2 >= items.length ? `👍 ${right}/${items.length} — yaxshi! To'g'ri shakllarini eshitib takrorlang.` : `💪 ${right}/${items.length} — qoidani yana bir o'qing va qayta urinib ko'ring.`));
       // ❌ Xato qilingan gaplarning to'g'ri shakli — eshitish mumkin
       if (missed.length) {
         const ul = el("div", "qz-missed");
@@ -3340,6 +3339,12 @@ function renderReport(r, score) {
     sm.textContent = "📖 Qoidani yana bir ko'rib chiqing";
     d.append(sm, ruleBody(state.lesson.rule));
     box.append(d);
+  }
+  // 🧩 Grammatika darsidan keyin — mustahkamlash mashqi (qisqa test)
+  if (state.lesson?.quiz?.length) {
+    const qz = el("div", "quiz rep-quiz");
+    box.append(qz);
+    renderQuiz(state.lesson, qz, "🧩 Mustahkamlash: 4 ta tez savol");
   }
   // 📝 IELTS Part 2: namunaviy javob (Band 7)
   const cefrTask = /^cefr-\d+$/.test(state.lesson?.id || "") && state.lesson.id !== "cefr-8";
