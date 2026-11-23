@@ -579,3 +579,4 @@ body.dark .onb-card { box-shadow: 0 0 0 1px var(--line), 0 20px 50px rgba(0,0,0,
 body.dark .seg-b.on { color: #a5b4fc; }
 .set-first { margin-left: auto; }
 .nowrap { white-space: nowrap; display: inline-block; }
+.del-btn { display: block; margin: 12px auto 0; font-size: 13px; font-weight: 700; color: var(--danger); padding: 6px; }

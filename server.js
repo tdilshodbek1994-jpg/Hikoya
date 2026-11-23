@@ -9,7 +9,7 @@ import { verifyInitData } from "./src/telegram.js";
 import { WebSocketServer } from "ws";
 import { liveEnabled, runLive } from "./src/live.js";
 import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies, ttsStats } from "./src/ai.js";
-import { recordSession, summary, adminStats, startedToday, countStart, startsTodayTotal } from "./src/store.js";
+import { recordSession, summary, adminStats, startedToday, countStart, startsTodayTotal, deleteUser } from "./src/store.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -316,6 +316,11 @@ app.get("/api/admin/stats", (req, res) => {
   s.startsToday = startsTodayTotal();
   s.ttsCache = ttsStats;
   res.json(s);
+});
+
+app.delete("/api/progress", auth, (req, res) => {
+  deleteUser(req.userId);
+  res.json({ ok: true });
 });
 
 app.get("/api/progress", auth, (req, res) => {

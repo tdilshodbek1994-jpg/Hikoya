@@ -181,3 +181,11 @@ export function countStart(userId) {
 export function startsTodayTotal() {
   return Object.values(db.users).reduce((s, u) => s + (u.started?.day === today() ? u.started.n : 0), 0);
 }
+
+// 🗑 Foydalanuvchi o'z ma'lumotlarini o'chiradi (kunlik limit hisobi saqlanadi)
+export function deleteUser(userId) {
+  const u = db.users[userId];
+  if (!u) return;
+  db.users[userId] = { lessons: {}, history: [], days: [], seconds: 0, words: [], started: u.started };
+  save();
+}

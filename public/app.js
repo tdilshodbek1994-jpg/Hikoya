@@ -727,6 +727,27 @@ $("setClose").addEventListener("click", () => {
   $("setSheet").hidden = true;
   toast("✅ Sozlamalar saqlandi", 1500);
 });
+$("delData").addEventListener("click", () => {
+  const ask = "Barcha ballar, o'tilgan darslar, yutuqlar va lug'at o'chiriladi. Davom etasizmi?";
+  const go = async (ok) => {
+    if (!ok) return;
+    try {
+      await api("api/progress", { method: "DELETE" });
+      for (const k of ["sado-favs", "sado-more"]) localStorage.removeItem(k);
+      state.favs = new Set();
+      $("setSheet").hidden = true;
+      await loadProgress();
+      renderChips();
+      renderLessons();
+      toast("🗑 Ma'lumotlaringiz o'chirildi", 2500);
+    } catch (e) {
+      toast(e.message, 3000);
+    }
+  };
+  if (inTelegram && tg.showConfirm) tg.showConfirm(ask, go);
+  else go(confirm(ask));
+});
+
 $("setSheet").addEventListener("click", (e) => {
   if (e.target.id === "setSheet") $("setSheet").hidden = true;
 });
