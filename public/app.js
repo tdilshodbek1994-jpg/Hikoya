@@ -2788,6 +2788,24 @@ function renderTranscript(list) {
   }
 }
 
+// 👥 Do'stni taklif qilish
+$("inviteBtn").addEventListener("click", () => {
+  haptic();
+  const p = state.progress;
+  const text = [
+    "🎤 Men Sado AI bilan ingliz tilida gaplashishni mashq qilyapman!",
+    p?.streak ? `🔥 ${p.streak} kunlik seriyam bor` : "",
+    "IELTS, CEFR, grammatika va erkin suhbat — o'zbekcha tushuntirish bilan. Sen ham qo'shil 👇",
+  ].filter(Boolean).join("\n");
+  const url = state.shareUrl || "https://t.me";
+  const link = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+  if (inTelegram && tg.openTelegramLink) tg.openTelegramLink(link);
+  else if (navigator.share) navigator.share({ text: text + "\n" + url }).catch(() => {});
+  else window.open(link, "_blank");
+});
+
+$("setInvite").addEventListener("click", () => $("inviteBtn").click());
+
 // 📤 Natijani Telegram orqali ulashish
 $("shareBtn").addEventListener("click", () => {
   const { r, score } = state.lastResult || {};
