@@ -1317,11 +1317,14 @@ function renderLessons() {
     if (l.liveOnly) return false;
     if (state.filter.cat && !(state.filter.cat === "__fav" ? state.favs.has(l.id) : state.filter.cat === "__weak" ? weakIds().includes(l.id) : state.filter.cat === "__new" ? state.newIds?.has(l.id) && !state.progress?.lessons?.[l.id] : state.filter.cat === "__hard" ? isHard(l) : l.category === state.filter.cat)) return false;
     if (!q) return true;
-    if (norm(l.title + " " + l.category).includes(q)) return true;
+    // Sarlavha, bo'lim, ID (masalan "cafe", "airport") va Sado birinchi gapi bo'yicha ham
+    if (norm(l.title + " " + l.category + " " + l.id.replace(/-/g, " ") + " " + (l.openerUz || "")).includes(q)) return true;
     const p = l.phrases.find((x) => norm(x.en + " " + x.uz).includes(q));
     if (p) hits.set(l.id, p);
     return Boolean(p);
   });
+  // 🔍 Qidiruvda nechta dars topilgani
+  if (q && items.length) list.append(el("p", "search-count", `🔍 «${state.filter.q.trim()}» — ${items.length} ta dars topildi`));
   if (!items.length) {
     list.append(el("p", "note", "Hech narsa topilmadi. Boshqa so'z bilan qidirib ko'ring."));
     // 💬 Topilmagan mavzuni Erkin suhbatda gaplashish taklifi
@@ -1413,7 +1416,7 @@ function renderLessons() {
       }
       list.append(head);
       // 🧩 Grammatika: mashqlar hisobi va tasodifiy (hali a'lo bo'lmagan) mashq
-      if (l.category === "Grammatika gapirib" && !(canFold && folded.has(l.category))) {
+      if (l.category === "Grammatika gapirib" && !q && !(canFold && folded.has(l.category))) {
         const gr = state.lessons.filter((x) => x.category === l.category && x.quiz?.length);
         const best = quizBest();
         const perfect = gr.filter((x) => best[x.id] && best[x.id] === `${x.quiz.length}/${x.quiz.length}`);
