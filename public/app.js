@@ -1887,6 +1887,7 @@ async function startLesson(lesson, lessonMode = "tutor") {
 
   show("lesson");
   $("lessonTitle").textContent = lesson.title;
+  resetWords();
   renderPhrase();
   renderVisual(lesson);
   $("lesson").classList.toggle("kids", lesson.category === "Bolalar uchun");
@@ -1959,9 +1960,7 @@ async function startLive(lesson) {
   $("muteBtn").hidden = false;
   $("hintBtn").hidden = false; // 💡 jonli suhbatda ham javob namunalari
   $("lesson").classList.add("is-live");
-  $("wordsLive").hidden = false;
-  $("wordsLive").dataset.n = "0";
-  $("wordsLive").textContent = "🗣 0 so'z";
+  resetWords(true);
   $("replayBtn").hidden = true;
   clearHints();
   setMuteUi(false);
@@ -2178,16 +2177,29 @@ function appendBubble(text) {
   // 🗣 Jonli hisoblagich: o'quvchi aytgan inglizcha so'zlar
   if (last.classList.contains("b-me")) {
     const n = [...log.querySelectorAll(".b-me span")].reduce((k, x) => k + (x.textContent.match(/[A-Za-z]+/g) || []).length, 0);
-    const w = $("wordsLive");
-    if (n !== Number(w.dataset.n || 0)) {
-      w.dataset.n = n;
-      w.textContent = `🗣 ${n} so'z`;
-      w.classList.remove("bump");
-      void w.offsetWidth;
-      w.classList.add("bump");
-    }
+    setWords(n);
   }
   if (atBottom) log.scrollTop = log.scrollHeight;
+}
+
+// 🗣 Aytilgan inglizcha so'zlar hisoblagichi (barcha rejimlarda)
+function setWords(n) {
+  const w = $("wordsLive");
+  if (n === Number(w.dataset.n || 0)) return;
+  w.dataset.n = n;
+  w.textContent = `🗣 ${n} so'z`;
+  w.classList.remove("bump");
+  void w.offsetWidth;
+  w.classList.add("bump");
+  // Oddiy rejimlarda sarlavha tor — hisob ibora kartasidagi qatorda ko'rinadi
+  $("countWords").textContent = `· 🗣 ${n} so'z`;
+  $("countWords").hidden = !$("wordsLive").hidden || n === 0;
+}
+function resetWords(live = false) {
+  $("countWords").hidden = true;
+  $("wordsLive").hidden = !live;
+  $("wordsLive").dataset.n = "0";
+  $("wordsLive").textContent = "🗣 0 so'z";
 }
 
 function startTimer() {
@@ -2779,6 +2791,7 @@ async function sendTurn(payload) {
     setSubs(data.reply, data.reply_uz, data.heard, data.uz_say, data.say);
     trackStage(data.reply);
     markWords(data.heard);
+    setWords(Number($("wordsLive").dataset.n || 0) + (String(data.heard || "").match(/[A-Za-z]+/g) || []).length);
     if (data.uz_say && !state.subs) toast("🇺🇿 " + data.uz_say, 6000);
     markUsed(data.used || []);
     if (tutorCurrent !== null && tutorCurrent !== state.phraseIdx) {

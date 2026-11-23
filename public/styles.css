@@ -1058,3 +1058,4 @@ body.dark .fold-tag.new { color: #fb7185; } body.dark .fold-tag.rep { color: #fb
 .result-list li > div { flex: 1; min-width: 0; }
 .result-list .res-say { flex: none; opacity: 0.55; font-size: 14px; align-self: center; }
 .result-list li.busy .res-say { opacity: 1; animation: pulse 0.8s ease infinite; }
+.count-words { margin-left: 4px; color: var(--ok); font-weight: 700; }
