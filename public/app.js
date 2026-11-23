@@ -3168,8 +3168,8 @@ function renderReport(r, score) {
     box.append(d);
   }
   // 📝 IELTS Part 2: namunaviy javob (Band 7)
-  if (state.lesson?.cue) {
-    const sb = el("button", "btn ghost wide sample-btn", "📝 Namunaviy javob (Band 7) — solishtirib ko'ring");
+  if (state.lesson?.cue || state.lesson?.questions) {
+    const sb = el("button", "btn ghost wide sample-btn", state.lesson.cue ? "📝 Namunaviy javob (Band 7) — solishtirib ko'ring" : "📝 Savollarga namunaviy javoblar (Band 7)");
     const out = el("div", "sample-box");
     out.hidden = true;
     sb.addEventListener("click", async () => {

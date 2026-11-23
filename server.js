@@ -392,10 +392,10 @@ app.delete("/api/word", express.json(), auth, (req, res) => {
 // 📝 IELTS Part 2 namunaviy javobi (faqat kartochkali darslar; natija keshlanadi)
 app.post("/api/sample", express.json(), auth, async (req, res) => {
   const lesson = getLesson(String(req.body?.lessonId || ""));
-  const cue = lesson && publicLesson(lesson).cue;
-  if (!cue) return res.status(400).json({ error: "Bu dars uchun namunaviy javob yo'q" });
+  const pub = lesson && publicLesson(lesson);
+  if (!pub?.cue && !pub?.questions) return res.status(400).json({ error: "Bu dars uchun namunaviy javob yo'q" });
   try {
-    const out = await sampleAnswer(lesson.id, cue);
+    const out = await sampleAnswer(lesson.id, pub.cue, pub.questions);
     if (!out) return res.status(503).json({ error: "Namuna tayyorlab bo'lmadi" });
     res.json(out);
   } catch (err) {

@@ -500,14 +500,19 @@ try {
 } catch {}
 // Namunadagi iboralar Sado ovozida eshittirilishi mumkin
 export const samplePhrases = () => new Set([...sampleCache.values()].flatMap((v) => v.phrases.map((p) => p.en)));
-export async function sampleAnswer(lessonId, cue) {
+export async function sampleAnswer(lessonId, cue, questions) {
   if (sampleCache.has(lessonId)) return sampleCache.get(lessonId);
+  // Part 2 — kartochka monologi; Part 1/3 — har savolga qisqa javob (savol: javob ko'rinishida)
+  const part1 = /^ielts-p1/.test(lessonId);
+  const system = cue
+    ? `You are an IELTS Speaking expert. Write a natural Band 7 sample answer for an IELTS Part 2 cue card, as a student would SAY it (spoken style, 170-220 words, first person, covers every bullet point, uses a few good linking phrases and natural vocabulary, simple paragraphs). Then list 4 useful phrases from it with Uzbek translations. Answer with ONLY JSON: {"answer":"...","phrases":[{"en":"...","uz":"..."}]}`
+    : `You are an IELTS Speaking expert. Write natural Band 7 sample answers for these IELTS Part ${part1 ? 1 : 3} questions, as a student would SAY them (spoken style, ${part1 ? "2-3 sentences" : "3-5 sentences with an opinion, a reason and an example"} each). Put each one as a separate paragraph that starts with the question number, e.g. "1) ...". Then list 4 useful phrases from them with Uzbek translations. Answer with ONLY JSON: {"answer":"...","phrases":[{"en":"...","uz":"..."}]}`;
   const params = {
     model: CLAUDE_MODEL,
     max_tokens: 2000,
     output_config: { effort: "low" },
-    system: `You are an IELTS Speaking expert. Write a natural Band 7 sample answer for an IELTS Part 2 cue card, as a student would SAY it (spoken style, 170-220 words, first person, covers every bullet point, uses a few good linking phrases and natural vocabulary, simple paragraphs). Then list 4 useful phrases from it with Uzbek translations. Answer with ONLY JSON: {"answer":"...","phrases":[{"en":"...","uz":"..."}]}`,
-    messages: [{ role: "user", content: `${cue.title}\nYou should say:\n${cue.points.map((p) => "- " + p).join("\n")}` }],
+    system,
+    messages: [{ role: "user", content: cue ? `${cue.title}\nYou should say:\n${cue.points.map((p) => "- " + p).join("\n")}` : questions.map((q, i) => `${i + 1}) ${q}`).join("\n") }],
   };
   if (SUPPORTS_FALLBACKS) {
     params.betas = ["server-side-fallback-2026-07-01"];
