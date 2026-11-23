@@ -2985,7 +2985,7 @@ function renderReport(r, score) {
   const right = el("div", "rep-top-text");
   right.append(el("div", "rep-level", r.level || ""));
   // 🇺🇿 Milliy CEFR (Multilevel) imtihon shkalasi: 0–75
-  const ml = Number(r.ml_score);
+  const ml = r.ml_score == null ? NaN : Number(r.ml_score); // null → 0 bo'lib qolmasin
   if (Number.isFinite(ml) && ml >= 0 && ml <= 75) {
     const next = ml < 38 ? [38, "B1"] : ml < 51 ? [51, "B2"] : ml < 65 ? [65, "C1"] : null;
     right.append(el("div", "rep-ml", `🇺🇿 Multilevel: ~${Math.round(ml)}/75${next ? ` · ${next[1]} gacha ${next[0] - Math.round(ml)} ball` : " · C1 🎉"}`));
@@ -3206,6 +3206,26 @@ function showResult() {
     $("resultSub").textContent = "⭐".repeat(k) + "☆".repeat(Math.max(0, n - k));
   }
   $("againBtn").textContent = lesson.liveOnly ? "📞 Yana gaplashish" : state.lessonMode === "live" ? "📞 Yana qo'ng'iroq qilish" : "Qaytadan mashq qilish";
+  document.querySelectorAll(".again-topics").forEach((x) => x.remove());
+  if (lesson.liveOnly && state.liveEnabled) {
+    // 🔄 Boshqa mavzuda darhol yana gaplashish
+    const box = el("div", "again-topics");
+    box.append(el("small", "", "Boshqa mavzuda gaplashamizmi?"));
+    const row = el("div", "topic-pick");
+    for (const [t, label] of TOPICS.filter(([t]) => t && t !== state.topic).slice(0, 6)) {
+      const b = el("button", "tp", label);
+      b.addEventListener("click", () => {
+        haptic("medium");
+        state.topic = t;
+        localStorage.setItem("sado-topic", t);
+        renderTopicPick();
+        startLesson(lesson, "live");
+      });
+      row.append(b);
+    }
+    box.append(row);
+    $("againBtn").after(box);
+  }
   if (lesson.liveOnly) {
     $("resultTitle").textContent = "Ajoyib suhbat bo'ldi! 🎉";
     $("resultSub").textContent = "Sado bilan erkin suhbat yakunlandi.";
