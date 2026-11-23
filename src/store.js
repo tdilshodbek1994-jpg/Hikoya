@@ -123,6 +123,15 @@ export function summary(userId) {
     minutes: Math.round(u.seconds / 60),
     lessons,
     recent: u.history.slice(-10).reverse(),
+    week: (() => {
+      // Oxirgi 7 kun va undan oldingi 7 kun
+      const now = Date.now();
+      const inRange = (h, a, b) => { const t = Date.parse(h.at); return t > now - b * 86400_000 && t <= now - a * 86400_000; };
+      const avg = (a) => (a.length ? Math.round(a.reduce((s, h) => s + (h.score || 0), 0) / a.length) : null);
+      const cur = u.history.filter((h) => inRange(h, 0, 7));
+      const prev = u.history.filter((h) => inRange(h, 7, 14));
+      return { n: cur.length, avg: avg(cur), prevAvg: avg(prev), prevN: prev.length };
+    })(),
     words: (u.words || []).slice(-150).reverse(),
   };
 }

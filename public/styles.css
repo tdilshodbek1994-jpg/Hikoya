@@ -591,3 +591,7 @@ body.dark .shadow-btn { color: #5eead4; }
 .shadow-st { margin-top: 10px; font-weight: 800; color: var(--primary); }
 .shadow-st.go { color: var(--ok); animation: pulse 1s ease-in-out infinite; }
 .shadow-stop { margin-top: 10px; font-size: 13px; font-weight: 700; color: var(--muted); padding: 6px 12px; border-radius: 99px; background: var(--card); }
+.week { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: -6px 0 14px; padding: 11px 14px; border-radius: 16px; background: var(--card); box-shadow: var(--shadow); font-size: 14px; }
+.week span { flex: none; font-size: 12.5px; font-weight: 800; color: var(--muted); }
+.week .up { color: var(--ok); }
+.week .down { color: #f59e0b; }
