@@ -230,7 +230,7 @@ function toggleFav(id) {
 const WEAK = 60;
 function weakIds() {
   const ls = state.progress?.lessons || {};
-  return Object.keys(ls).filter((id) => id !== "review" && ls[id].best < WEAK && state.lessons.some((l) => l.id === id));
+  return Object.keys(ls).filter((id) => id !== "review" && ls[id].best < WEAK && state.lessons.some((l) => l.id === id && !l.liveOnly));
 }
 
 function lessonButton(l) {
@@ -249,7 +249,7 @@ function lessonButton(l) {
     b.classList.add("done");
     b.querySelector(".lesson-sub").textContent = `✅ O'tildi · ${pr.best} ball`;
     // 🔁 Past ball — takrorlash tavsiya etiladi
-    if (pr.best < WEAK) {
+    if (pr.best < WEAK && !l.liveOnly) {
       b.classList.add("weak");
       b.querySelector(".lesson-sub").textContent = `🔁 Takrorlang · ${pr.best} ball`;
     }
@@ -2426,6 +2426,7 @@ async function finish() {
     }
     renderReport(data.report, data.score);
     renderTranscript(data.transcript);
+    renderSpeakStats(data.transcript);
   } catch {
     $("report").hidden = true;
   }
@@ -2489,6 +2490,22 @@ function checkCourseDone(before) {
 }
 
 // 📜 Suhbat matni
+// 🗣 Qancha gapirildi: gaplar va so'zlar soni (ayniqsa erkin suhbat uchun foydali)
+function renderSpeakStats(list) {
+  const mine = (list || []).filter((t) => t.who === "student" && t.text?.trim());
+  const box = $("report");
+  if (!mine.length || box.hidden) return;
+  const words = mine.reduce((n, t) => n + t.text.trim().split(/\s+/).filter((w) => /[A-Za-z]/.test(w)).length, 0);
+  const longest = mine.reduce((m, t) => Math.max(m, t.text.trim().split(/\s+/).length), 0);
+  const row = el("div", "speak-stats");
+  row.append(
+    el("span", "", `🗣 ${mine.length} ta gap`),
+    el("span", "", `🔤 ${words} ta inglizcha so'z`),
+    el("span", "", `📏 eng uzun gap: ${longest} so'z`),
+  );
+  box.firstChild ? box.firstChild.after(row) : box.append(row);
+}
+
 function renderTranscript(list) {
   const box = $("transcript");
   const log = $("trLog");
