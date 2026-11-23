@@ -1683,6 +1683,37 @@ $("listenBtn").addEventListener("click", async () => {
   if (wasListening && state.phase === "listening" && state.mode === "auto") listenAuto();
 });
 
+// 👆 Ibora kartasini barmoq bilan surish: chapga — keyingi, o'ngga — oldingi
+(() => {
+  const card = $("phraseCard");
+  let x0 = null, y0 = 0;
+  card.addEventListener("touchstart", (e) => {
+    x0 = e.touches[0].clientX;
+    y0 = e.touches[0].clientY;
+  }, { passive: true });
+  card.addEventListener("touchend", (e) => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    const dy = e.changedTouches[0].clientY - y0;
+    x0 = null;
+    if (Math.abs(dx) < 50 || Math.abs(dy) > Math.abs(dx)) return;
+    const btn = $(dx < 0 ? "nextPhrase" : "prevPhrase");
+    if (btn.hidden || btn.disabled) return;
+    card.classList.remove("swipe-l", "swipe-r");
+    void card.offsetWidth;
+    card.classList.add(dx < 0 ? "swipe-l" : "swipe-r");
+    btn.click();
+  }, { passive: true });
+})();
+
+// Strelka bosilganda (sensorli ekranda) bir marta surish mumkinligini eslatamiz
+for (const id of ["prevPhrase", "nextPhrase"])
+  $(id).addEventListener("click", (e) => {
+    if (!e.isTrusted || !("ontouchstart" in window) || localStorage.getItem("sado-swipe-tip")) return;
+    localStorage.setItem("sado-swipe-tip", "1");
+    toast("👆 Maslahat: iborani barmoq bilan surib ham almashtirish mumkin", 3000);
+  });
+
 $("prevPhrase").addEventListener("click", () => {
   const n = state.lesson.phrases.length;
   state.phraseIdx = (state.phraseIdx - 1 + n) % n;

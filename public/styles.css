@@ -776,3 +776,10 @@ body:has(#lesson.active) .toast { top: calc(40vh + var(--safe-t)); }
 .daily-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .daily-more { color: var(--muted) !important; }
 .daily-en.busy { opacity: 0.6; }
+
+/* 👆 Ibora kartasini surish animatsiyasi */
+.phrase-card { touch-action: pan-y; }
+.phrase-card.swipe-l .phrase-body { animation: swipeL 0.25s ease; }
+.phrase-card.swipe-r .phrase-body { animation: swipeR 0.25s ease; }
+@keyframes swipeL { from { transform: translateX(24px); opacity: 0.3; } to { transform: none; opacity: 1; } }
+@keyframes swipeR { from { transform: translateX(-24px); opacity: 0.3; } to { transform: none; opacity: 1; } }
