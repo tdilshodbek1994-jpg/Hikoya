@@ -1318,7 +1318,7 @@ function renderLessons() {
     if (state.filter.cat && !(state.filter.cat === "__fav" ? state.favs.has(l.id) : state.filter.cat === "__weak" ? weakIds().includes(l.id) : state.filter.cat === "__new" ? state.newIds?.has(l.id) && !state.progress?.lessons?.[l.id] : state.filter.cat === "__hard" ? isHard(l) : l.category === state.filter.cat)) return false;
     if (!q) return true;
     // Sarlavha, bo'lim, ID (masalan "cafe", "airport") va Sado birinchi gapi bo'yicha ham
-    if (norm(l.title + " " + l.category + " " + l.id.replace(/-/g, " ") + " " + (l.openerUz || "")).includes(q)) return true;
+    if (norm(l.title + " " + l.category + " " + l.id.replace(/-/g, " ") + " " + (l.kw || "") + " " + (l.openerUz || "")).includes(q)) return true;
     const p = l.phrases.find((x) => norm(x.en + " " + x.uz).includes(q));
     if (p) hits.set(l.id, p);
     return Boolean(p);

@@ -2667,6 +2667,24 @@ const KID_PICS = {
   "kid-birthday": ["🎂", "🎈", "🚲", "🍰", "🎁", "🎶"],
   "kid-weather": ["☀️", "🌧️", "🥶", "🧥", "☂️", "❄️"],
 };
+// 🔍 Qidiruv uchun inglizcha kalit so'zlar (o'quvchi "coffee", "hospital" deb qidirsa ham dars topilsin)
+const KEYWORDS = {
+  cafe: "coffee cafe tea latte drink", meet: "introduce hello greeting name new friend", shop: "shopping clothes store buy size",
+  restaurant: "food dinner menu order waiter meal", doctor: "hospital ill sick health medicine clinic", family: "parents mother father brother sister",
+  hobbies: "free time interests sport music", weather: "seasons rain snow sunny climate", phone: "call telephone", plans: "weekend meeting invite cinema",
+  pharmacy: "medicine drugstore pills", rent: "flat apartment house landlord", bazaar: "market bargain price discount", navruz: "holiday spring sumalak celebration",
+  guests: "visitors hospitality tea plov", neighbor: "neighbour home building", repair: "plumber broken fix water", barber: "haircut hairdresser",
+  airport: "flight plane check-in boarding ticket", directions: "way street map lost", hotel: "room booking reception", train: "railway station ticket",
+  taxi: "car driver ride", bank: "money card account exchange", "travel-car": "car rental drive", "travel-metro": "subway bus underground ticket transport",
+  "travel-souvenir": "gift shopping market", "travel-museum": "museum tour history exhibition", passport: "border customs visa", lostbag: "luggage baggage suitcase",
+  guide: "tour samarkand tourist history", interview: "university admission", job: "job interview work career cv", classroom: "lesson teacher school",
+  presentation: "speech slides public speaking", dorm: "dormitory roommate", library: "books study", internship: "intern work experience",
+  "work-firstday": "office colleague new job", "study-group": "project teamwork presentation", scholarship: "grant study abroad", abroad: "study abroad university",
+  "biz-meeting": "meeting agenda office", "biz-client": "client customer call", "biz-negotiation": "price deal business", "it-standup": "developer agile scrum team",
+  "biz-email": "email letter formal", "biz-tech-interview": "developer programmer coding", "biz-complaint": "customer support refund", "biz-salary": "salary money offer hr",
+  "it-bug": "bug error app developer testing", "kid-colors": "colours numbers", "kid-animals": "animals pets cat dog", "kid-food": "fruit food apple",
+  "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
+};
 const RULES = {
   "gr-there": "Bor/yo'qligini aytish: There is + bitta narsa, There are + ko'p narsa.\nThere is a table. There are three chairs.\nInkor: There isn't a TV. There aren't any shops.\nSavol: Is there a bank? Are there any parks?",
   "gr-possessive": "Egalik so'zlari: I → my, you → your, he → his, she → her, we → our, they → their.\nHis name is Anvar. Her name is Laylo.\nKimningdir narsasi: ism + 's: My sister's bag. Ko'plikda: my parents' house.\nSavol: Whose phone is this?",
@@ -2877,6 +2895,7 @@ export function publicLesson(l) {
     cue: cueCard(l),
     rule: l.rule || "",
     openerUz: l.liveOnly ? "" : l.openerUz || "",
+    kw: KEYWORDS[l.id] || "",
     quiz: (QUIZ[l.id] || []).map((q) => { const [text, ...options] = q.split("|"); return { text: text.trim(), answer: options[0], options }; }),
     visual: VISUALS[l.id] || null,
     stages: STAGES[l.id] || null,
