@@ -112,7 +112,7 @@ function streak(days) {
 export function summary(userId) {
   const u = user(userId);
   const lessons = {};
-  for (const [id, l] of Object.entries(u.lessons)) lessons[id] = { best: l.best, count: l.count };
+  for (const [id, l] of Object.entries(u.lessons)) lessons[id] = { best: l.best, count: l.count, last: l.last || "" };
   return {
     streak: streak(u.days),
     best: u.history.reduce((m, h) => Math.max(m, h.score || 0), 0),

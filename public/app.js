@@ -916,6 +916,13 @@ function openSheet(lesson) {
   meta.append(el("span", "pill", `📊 ${lesson.level}`), el("span", "pill", `🗂️ ${lesson.phrases.length} ta ibora`), el("span", "pill", `⏱️ ${lesson.minutes || state.sessionMinutes} daq`));
   const pr = state.progress?.lessons?.[lesson.id];
   if (pr) meta.append(el("span", "pill ok", `✅ ${pr.best} ball · ${pr.count} marta`));
+  // 🕒 Oxirgi marta qachon o'tilgan; 7 kundan oshsa — takrorlashni eslatamiz (unutish egri chizig'i)
+  if (pr?.last) {
+    const todayStr = new Date(Date.now() + 5 * 3600_000).toISOString().slice(0, 10);
+    const days = Math.round((Date.parse(todayStr) - Date.parse(pr.last)) / 86400_000);
+    const when = days <= 0 ? "bugun" : days === 1 ? "kecha" : `${days} kun oldin`;
+    meta.append(el("span", "pill" + (days >= 7 ? " warn" : ""), days >= 7 ? `🔁 ${when} — takrorlash vaqti` : `🕒 ${when}`));
+  }
   const ul = $("sheetPhrases");
   ul.innerHTML = "";
   const render = (all) => {
