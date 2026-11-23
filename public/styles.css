@@ -1269,3 +1269,5 @@ body.dark .acc-tag.hi { color: #4ade80; } body.dark .acc-tag.mid { color: #fbbf2
 .rule-item[open] { padding-bottom: 10px; }
 .rule-item .rule-body { font-size: 13.5px; line-height: 1.5; }
 .rule-item .rep-grlink { margin-top: 8px; }
+/* Testlar panelida oxirgi toq tugma — to'liq eni */
+.gr-quizbar .gr-qbtns > button:last-child:nth-child(odd) { grid-column: 1 / -1; }
