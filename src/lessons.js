@@ -4,6 +4,27 @@
 
 export const LESSONS = [
   {
+    id: "free",
+    title: "Erkin suhbat",
+    emoji: "💬",
+    level: "Har qanday",
+    free: true, // ssenariysiz: o'zbekcha ham, inglizcha ham, istalgan mavzuda
+    liveOnly: true,
+    role: "a smart, friendly bilingual (Uzbek and English) companion and English teacher",
+    situation: "Free conversation about anything the student wants.",
+    opener:
+      "Assalomu alaykum! Men Sado. Men bilan o'zbekcha ham, inglizcha ham gaplashishingiz mumkin. Bugun nima haqida gaplashamiz?",
+    openerUz: "",
+    phrases: [
+      { en: "How do you say ... in English?", uz: "Buni inglizcha qanday aytiladi?" },
+      { en: "What does ... mean?", uz: "... nimani anglatadi?" },
+      { en: "Could you repeat that, please?", uz: "Qaytarib aytib bera olasizmi?" },
+      { en: "Can you help me?", uz: "Menga yordam bera olasizmi?" },
+      { en: "I think that ...", uz: "Menimcha, ..." },
+      { en: "Thank you so much!", uz: "Katta rahmat!" },
+    ],
+  },
+  {
     id: "ielts",
     title: "IELTS Speaking",
     emoji: "🏆",
@@ -143,6 +164,7 @@ export function publicLesson(l) {
     title: l.title,
     emoji: l.emoji,
     level: l.level,
+    liveOnly: Boolean(l.liveOnly),
     phrases: l.phrases,
   };
 }

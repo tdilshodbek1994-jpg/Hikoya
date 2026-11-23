@@ -138,7 +138,9 @@ function renderLessons() {
       <span class="lesson-level"></span>`;
     b.querySelector(".lesson-emoji").textContent = l.emoji;
     b.querySelector(".lesson-title").textContent = l.title;
-    b.querySelector(".lesson-sub").textContent = `${l.phrases.length} ta ibora · ${state.sessionMinutes} daqiqa`;
+    b.querySelector(".lesson-sub").textContent = l.liveOnly
+      ? "Istalgan mavzu · o'zbekcha va inglizcha 📞"
+      : `${l.phrases.length} ta ibora · ${state.sessionMinutes} daqiqa`;
     b.querySelector(".lesson-level").textContent = l.level;
     b.addEventListener("click", () => openSheet(l));
     list.appendChild(b);
@@ -147,6 +149,9 @@ function renderLessons() {
 
 function openSheet(lesson) {
   $("startLiveBtn").hidden = !state.liveEnabled;
+  // Erkin suhbat faqat jonli rejimda bo'ladi
+  $("startTutorBtn").hidden = Boolean(lesson.liveOnly) && state.liveEnabled;
+  $("startChatBtn").hidden = Boolean(lesson.liveOnly) && state.liveEnabled;
   haptic();
   state.pendingLesson = lesson;
   $("sheetEmoji").textContent = lesson.emoji;
