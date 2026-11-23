@@ -2124,6 +2124,21 @@ function renderTranscript(list) {
     b.append(el("small", "", t.who === "sado" ? "Sado" : "Siz"), el("span", "", t.text.trim()));
     log.append(b);
   }
+  // 📋 Suhbat matnini nusxalash
+  if (items.length) {
+    const cp = el("button", "btn ghost wide tr-copy", "📋 Suhbat matnini nusxalash");
+    cp.addEventListener("click", async () => {
+      haptic();
+      const text = `💬 Sado bilan suhbat: ${state.lesson?.title || ""}\n\n` + items.map((t) => `${t.who === "sado" ? "Sado" : "Men"}: ${t.text.trim()}`).join("\n");
+      try {
+        await navigator.clipboard.writeText(text);
+        toast("📋 Suhbat matni nusxalandi");
+      } catch {
+        toast("Nusxalab bo'lmadi");
+      }
+    });
+    log.append(cp);
+  }
 }
 
 // 📤 Natijani Telegram orqali ulashish
@@ -2304,6 +2319,7 @@ function showResult() {
   if (nxt) $("nextBtn").textContent = `➡️ Keyingi dars: ${nxt.emoji} ${nxt.title.replace(/^\d+\.\s*/, "")}`;
   // Erkin suhbatda iboralar ro'yxati ma'nosiz - yashiramiz
   ul.hidden = Boolean(lesson.liveOnly);
+  $("againBtn").textContent = lesson.liveOnly ? "📞 Yana gaplashish" : state.lessonMode === "live" ? "📞 Yana qo'ng'iroq qilish" : "Qaytadan mashq qilish";
   if (lesson.liveOnly) {
     $("resultTitle").textContent = "Ajoyib suhbat bo'ldi! 🎉";
     $("resultSub").textContent = "Sado bilan erkin suhbat yakunlandi.";
