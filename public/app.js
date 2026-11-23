@@ -1396,7 +1396,7 @@ $("delData").addEventListener("click", () => {
     if (!ok) return;
     try {
       await api("api/progress", { method: "DELETE" });
-      for (const k of ["sado-favs", "sado-more", "sado-progress", "sado-flash"]) localStorage.removeItem(k);
+      for (const k of ["sado-favs", "sado-more", "sado-progress", "sado-flash", "sado-badges"]) localStorage.removeItem(k);
       state.progress = null;
       state.favs = new Set();
       $("setSheet").hidden = true;
