@@ -231,6 +231,17 @@ function renderChips() {
   if (!box) return;
   const cats = [...new Set(state.lessons.filter((l) => !l.liveOnly).map((l) => l.category).filter(Boolean))];
   box.innerHTML = "";
+  // 🎲 Tasodifiy dars: hali o'tilmaganlardan tanlanadi
+  const rnd = el("button", "chip-f rnd", "🎲 Tasodifiy");
+  rnd.addEventListener("click", () => {
+    haptic("medium");
+    const done = state.progress?.lessons || {};
+    const all = state.lessons.filter((l) => !l.liveOnly);
+    const fresh = all.filter((l) => !done[l.id]);
+    const pool = fresh.length ? fresh : all;
+    openSheet(pool[Math.floor(Math.random() * pool.length)]);
+  });
+  box.append(rnd);
   const favChip = state.favs.size ? [["__fav", `⭐ Sevimlilar (${state.favs.size})`]] : [];
   if (!state.favs.size && state.filter.cat === "__fav") state.filter.cat = "";
   [["", "📚 Hammasi"], ...favChip, ...cats.map((c) => [c, `${CAT_ICONS[c] || "📚"} ${c}`])].forEach(([c, label]) => {
@@ -239,6 +250,7 @@ function renderChips() {
       haptic();
       state.filter.cat = c;
       renderChips();
+      box.querySelector(".chip-f.on")?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
       renderLessons();
       $("lessonList").scrollIntoView({ behavior: "smooth", block: "start" });
     });
