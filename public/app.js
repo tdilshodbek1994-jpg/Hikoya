@@ -1127,9 +1127,16 @@ function renderSettings() {
     ...(state.progress?.remindAvailable
       ? [["🔔 Kechki eslatma (Telegram)", [["1", "Ha"], ["0", "Yo'q"]], () => (state.progress?.remind ? "1" : "0"), (v) => {
           state.progress.remind = v === "1";
+          setTimeout(renderSettings, 0);
           api("api/remind", { json: { on: v === "1" } })
             .then(() => toast(v === "1" ? "🔔 Seriya uzilay desa, kechqurun bot eslatadi" : "🔕 Eslatma o'chirildi"))
             .catch((e) => toast(e.message));
+        }]]
+      : []),
+    ...(state.progress?.remindAvailable && state.progress?.remind
+      ? [["⏰ Eslatma vaqti", [["19", "19:00"], ["20", "20:00"], ["21", "21:00"], ["22", "22:00"]], () => String(state.progress.remindHour || state.progress.remindDefault || 20), (v) => {
+          state.progress.remindHour = Number(v);
+          api("api/remind", { json: { on: true, hour: Number(v) } }).then(() => toast(`⏰ Eslatma soat ${v}:00 da keladi`)).catch((e) => toast(e.message));
         }]]
       : []),
     ["🎯 Kunlik maqsad", [["1", "1 dars"], ["2", "2 dars"], ["3", "3 dars"]], () => String(state.goal), (v) => { state.goal = Number(v); localStorage.setItem("sado-goal", v); renderGoal(); }],

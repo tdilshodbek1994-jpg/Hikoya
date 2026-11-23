@@ -394,14 +394,13 @@ const REMIND_HOUR = Number(process.env.REMIND_HOUR || 20); // Toshkent vaqti
 const TG_API = process.env.TELEGRAM_API || "https://api.telegram.org";
 app.post("/api/remind", express.json(), auth, (req, res) => {
   if (!REMINDERS) return res.status(400).json({ error: "Eslatmalar serverda yoqilmagan" });
-  setRemind(req.userId, req.body?.on);
+  setRemind(req.userId, req.body?.on, Number(req.body?.hour));
   res.json({ ok: true, remind: Boolean(req.body?.on) });
 });
 const remindStats = { sent: 0, off: 0 };
 async function sendReminders() {
   const hour = new Date(Date.now() + 5 * 3600_000).getUTCHours();
-  if (hour !== REMIND_HOUR) return;
-  for (const t of remindTargets()) {
+  for (const t of remindTargets(hour, REMIND_HOUR)) {
     markReminded(t.id); // xato bo'lsa ham qayta-qayta yubormaymiz
     const body = {
       chat_id: t.id,
@@ -431,7 +430,7 @@ if (REMINDERS) {
 
 app.get("/api/progress", auth, (req, res) => {
   const used = startedToday(req.userId);
-  res.json({ ...summary(req.userId), limit: req.userId === "dev" ? 0 : DAILY_SESSIONS, startedToday: used, remindAvailable: REMINDERS });
+  res.json({ ...summary(req.userId), limit: req.userId === "dev" ? 0 : DAILY_SESSIONS, startedToday: used, remindAvailable: REMINDERS, remindDefault: REMIND_HOUR });
 });
 
 // ⚡ Gzip: JS/CSS/HTML ~4 marta kichikroq yuboriladi (sekin mobil internet uchun).

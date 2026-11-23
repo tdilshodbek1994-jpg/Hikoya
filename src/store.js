@@ -155,6 +155,7 @@ export function summary(userId) {
       return { n: cur.length, avg: avg(cur), prevAvg: avg(prev), prevN: prev.length };
     })(),
     remind: Boolean(u.remind),
+    remindHour: u.remindHour || null,
     words: (u.words || []).slice(-150).reverse(),
     // 🗓 Oxirgi 7 kun: qaysi kunlari mashq qilingan (eng eskisidan bugungacha)
     days7: Array.from({ length: 7 }, (_, i) => {
@@ -239,15 +240,17 @@ export function startsTodayTotal() {
 
 // 🗑 Foydalanuvchi o'z ma'lumotlarini o'chiradi (kunlik limit hisobi saqlanadi)
 // 🔔 Kechki eslatma: o'quvchi o'zi yoqadi/o'chiradi
-export function setRemind(userId, on) {
-  user(userId).remind = Boolean(on);
+export function setRemind(userId, on, hour) {
+  const u = user(userId);
+  u.remind = Boolean(on);
+  if ([18, 19, 20, 21, 22].includes(hour)) u.remindHour = hour;
   save();
 }
 // Bugun eslatma kerak bo'lgan o'quvchilar: eslatma yoqilgan, seriyasi bor, bugun dars yo'q, bugun hali yozilmagan
-export function remindTargets() {
+export function remindTargets(hour, defHour = 20) {
   const d = today();
   return Object.entries(db.users)
-    .filter(([id, u]) => u.remind && /^\d+$/.test(id) && u.lastRemind !== d && !u.days.includes(d) && streak(u.days) > 0)
+    .filter(([id, u]) => u.remind && (u.remindHour || defHour) === hour && /^\d+$/.test(id) && u.lastRemind !== d && !u.days.includes(d) && streak(u.days) > 0)
     .map(([id, u]) => ({ id, streak: streak(u.days) }));
 }
 export function markReminded(userId) {
