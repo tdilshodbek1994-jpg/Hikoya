@@ -666,7 +666,7 @@ function renderDaily() {
   if (!pool.length) return (box.hidden = true);
   const d = new Date();
   const dayNo = Math.floor((d.getTime() + 5 * 3600_000) / 86400_000); // Toshkent vaqti
-  const { p, l } = pool[(dayNo * 7919) % pool.length];
+  const { p, l } = pool[(dayNo * 7919 + (state.dailyOff || 0) * 104729) % pool.length];
   box.hidden = false;
   box.innerHTML = "";
   const top = el("div", "daily-top");
@@ -676,13 +676,25 @@ function renderDaily() {
   const last = words.pop();
   const en = el("button", "daily-en", words.length ? words.join(" ") + " " : "");
   en.append(el("span", "nowrap", `${last} 🔊`));
-  en.addEventListener("click", () => {
+  en.addEventListener("click", async () => {
     haptic();
-    speakBrowser(p.en, "en");
+    en.classList.add("busy");
+    await sayPhrase(p.en).catch(() => speakBrowser(p.en, "en")); // Sado'ning tabiiy ovozi
+    mascot.setLevel(0);
+    en.classList.remove("busy");
   });
   const go = el("button", "daily-go", "Shu darsni ochish ›");
   go.addEventListener("click", () => openSheet(l));
-  box.append(top, en, el("div", "daily-uz", p.uz), go);
+  // ⏭ Yana bitta ibora (faqat shu ochilishda; ertaga yangi kun iborasi)
+  const more = el("button", "daily-go daily-more", state.dailyOff ? `⏭ Yana (${state.dailyOff + 1})` : "⏭ Yana bitta");
+  more.addEventListener("click", () => {
+    haptic();
+    state.dailyOff = (state.dailyOff || 0) + 1;
+    renderDaily();
+  });
+  const row = el("div", "daily-row");
+  row.append(go, more);
+  box.append(top, en, el("div", "daily-uz", p.uz), row);
 }
 
 // 📅 Haftalik xulosa
