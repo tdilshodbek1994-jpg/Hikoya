@@ -155,11 +155,11 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
   let closed = false;
   liveStats.calls++;
   const t0 = Date.now();
-  let turns = 0, lastUserAt = 0, lastSadoAt = 0, endReason = "", noted = false;
+  let turns = 0, lastUserAt = 0, lastSadoAt = 0, endReason = "", noted = false, clientDiag = null;
   const note = (reason) => {
     if (noted) return;
     noted = true;
-    noteEnd({ reason: endReason || reason, sec: Math.round((Date.now() - t0) / 1000), ready, turns, noReply: lastUserAt > lastSadoAt && lastUserAt > 0 });
+    noteEnd({ reason: endReason || reason, sec: Math.round((Date.now() - t0) / 1000), ready, turns, noReply: lastUserAt > lastSadoAt && lastUserAt > 0, ...(clientDiag || {}) });
   };
   // 📝 Javobi kelmay qolgan oxirgi gaplar ham hisobotga tushsin (aks holda "Hali hech narsa demadingiz" chiqardi)
   let flushTurns = () => {};
@@ -355,7 +355,12 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
     }
     try {
       const m = JSON.parse(data.toString());
-      if (m.type === "end") close("foydalanuvchi");
+      if (m.type === "end") {
+        // Telefon hisobotidan faqat kichik, xavfsiz maydonlar
+        const d = m.diag || {};
+        clientDiag = { paused: Math.min(99, Number(d.paused) || 0), silentSec: Math.min(9999, Number(d.silentSec) || 0), dev: String(d.dev || "").slice(0, 10), tg: Boolean(d.tg) };
+        close("foydalanuvchi");
+      }
       // 🤫 O'quvchi uzoq jim qoldi — Sado o'zi yordam beradi (bir qo'ng'iroqda 3 martagacha)
       if (m.type === "nudge" && (session.nudges = (session.nudges || 0) + 1) <= 3) {
         liveStats.nudges++;

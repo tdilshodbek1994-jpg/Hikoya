@@ -149,11 +149,12 @@ export class LiveCall {
     if (this.ctx.state !== "running") {
       this.pausedSince ||= performance.now();
       if (performance.now() - this.pausedSince > 1000) {
+        if (!this.pauseCounted) { this.pauses = (this.pauses || 0) + 1; this.pauseCounted = true; }
         this.onState("paused", 0);
         this.raf = requestAnimationFrame(this.loop);
         return;
       }
-    } else this.pausedSince = 0;
+    } else { this.pausedSince = 0; this.pauseCounted = false; }
     const speaking = this.speaking();
     if (!speaking && this.muted) {
       this.onState("muted", 0);
@@ -184,7 +185,15 @@ export class LiveCall {
     if (this.stopped) return;
     this.stopped = true;
     cancelAnimationFrame(this.raf);
-    try { this.ws?.readyState === WebSocket.OPEN && this.ws.send(JSON.stringify({ type: "end" })); } catch {}
+    // 🩺 Telefon tomonidan qisqa hisobot (statistika uchun): ovoz necha marta to'xtagan, oxirgi xabar qachon
+    const diag = {
+      paused: this.pauses || 0,
+      silentSec: Math.round((Date.now() - (this.lastMsg || Date.now())) / 1000),
+      ctx: this.ctx?.state || "",
+      dev: /iPhone|iPad/.test(navigator.userAgent) ? "iOS" : /Android/.test(navigator.userAgent) ? "Android" : "boshqa",
+      tg: Boolean(window.Telegram?.WebApp?.initData),
+    };
+    try { this.ws?.readyState === WebSocket.OPEN && this.ws.send(JSON.stringify({ type: "end", diag })); } catch {}
     try { this.ws?.close(); } catch {}
     this.flush();
     try { this.src?.disconnect(); this.node?.disconnect(); this.sink?.disconnect(); } catch {}
