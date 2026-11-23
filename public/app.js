@@ -1412,6 +1412,22 @@ function openSheet(lesson) {
     }
     qs.append(sm, ol, el("small", "rule-tip", "🔊 Savolni bosing — imtihonchi ovozida eshitasiz. Javobni oldindan o'ylab oling"));
   }
+  // 📋 CEFR: javob rejasi va 🃏 IELTS Part 2 kartochkasi — darsdan oldin tanishib olish
+  else if (lesson.plan?.length || lesson.cue) {
+    qs.hidden = false;
+    const sm = document.createElement("summary");
+    const ul = el("ul", "plain");
+    if (lesson.cue) {
+      sm.textContent = "🃏 Kartochka — 1 daqiqa tayyorlanib, 2 daqiqa gapirasiz";
+      qs.append(sm, el("p", "sheet-cue", lesson.cue.title), el("small", "rule-tip", "You should say:"));
+      for (const pt of lesson.cue.points) ul.append(el("li", "", pt));
+      qs.append(ul);
+    } else {
+      sm.textContent = `📋 Javob rejasi — ${lesson.plan.length} qism`;
+      for (const st of lesson.plan) ul.append(el("li", "", st));
+      qs.append(sm, ul, el("small", "rule-tip", "👆 Imtihonda shu qismlar baholanadi — har biriga to'xtalib o'ting"));
+    }
+  }
   // Daraja, iboralar soni va oldingi natija
   const meta = $("sheetMeta");
   meta.innerHTML = "";
