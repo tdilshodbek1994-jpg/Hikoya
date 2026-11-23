@@ -1718,6 +1718,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-perfcont",
+    category: "Grammatika gapirib",
+    title: "Present Perfect Continuous (have been + -ing)",
+    emoji: "⏳",
+    level: "B1-B2",
+    added: "2026-11-26",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on grammar: present perfect continuous (have/has been + -ing) for actions that started in the past and are still continuing or have just stopped, with for / since / How long...? (I've been learning English for two years). Contrast briefly with present perfect simple (I've read three books vs I've been reading all day). Talk about the student's studies, hobbies and what they have been doing lately. Have a natural conversation that makes the student use this grammar a lot. Ask simple questions, listen, whenever the student makes a mistake with this grammar, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "How long have you been learning English?",
+    openerUz: "Qancha vaqtdan beri ingliz tilini o'rganyapsiz?",
+    phrases: [
+      { en: "I've been learning English for two years.", uz: "Ikki yildan beri ingliz tilini o'rganyapman." },
+      { en: "She has been working here since 2020.", uz: "U 2020-yildan beri shu yerda ishlayapti." },
+      { en: "How long have you been waiting?", uz: "Qancha vaqtdan beri kutyapsiz?" },
+      { en: "It has been raining all morning.", uz: "Ertalabdan beri yomg'ir yog'yapti." },
+      { en: "I'm tired because I've been running.", uz: "Charchadim, chunki yugurayotgan edim." },
+      { en: "We haven't been sleeping well lately.", uz: "Oxirgi paytda yaxshi uxlamayapmiz." },
+    ],
+  },
+  {
+    id: "gr-wish",
+    category: "Grammatika gapirib",
+    title: "Afsus: I wish / 3-tur shart gap",
+    emoji: "💭",
+    level: "B2",
+    added: "2026-11-26",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on grammar: wishes and regrets — I wish + past simple (I wish I had more time), I wish + past perfect (I wish I had studied harder), and third conditional (If I had known, I would have come). Talk about things the student would like to change now and past situations they regret or are glad about. Have a natural conversation that makes the student use this grammar a lot. Ask simple questions, listen, whenever the student makes a mistake with this grammar, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Is there anything you wish were different in your life right now?",
+    openerUz: "Hozir hayotingizda boshqacha bo'lishini xohlagan biror narsa bormi?",
+    phrases: [
+      { en: "I wish I had more free time.", uz: "Qaniydi ko'proq bo'sh vaqtim bo'lsa." },
+      { en: "I wish I could speak French.", uz: "Qaniydi fransuzcha gapira olsam." },
+      { en: "I wish I had studied harder at school.", uz: "Qaniydi maktabda yaxshiroq o'qiganimda." },
+      { en: "If I had known, I would have helped you.", uz: "Bilganimda, sizga yordam bergan bo'lardim." },
+      { en: "If we had left earlier, we wouldn't have missed the bus.", uz: "Ertaroq chiqqanimizda, avtobusdan qolmagan bo'lardik." },
+      { en: "I'm glad I didn't give up.", uz: "Taslim bo'lmaganimdan xursandman." },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -2621,7 +2661,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-simple", "gr-there", "gr-possessive", "gr-continuous", "gr-past", "gr-pastcont", "gr-questions", "gr-quantity", "gr-articles", "gr-prepositions", "gr-future", "gr-compare", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-relative", "gr-reported", "gr-passive"];
+const GR_ORDER = ["gr-simple", "gr-there", "gr-possessive", "gr-continuous", "gr-past", "gr-pastcont", "gr-questions", "gr-quantity", "gr-articles", "gr-prepositions", "gr-future", "gr-compare", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-relative", "gr-reported", "gr-passive", "gr-perfcont", "gr-wish"];
 const grRank = (l) => (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
 LESSONS.sort((a, b) => ORDER.indexOf(a.category) - ORDER.indexOf(b.category) || partRank(a) - partRank(b) || (a.category === "Grammatika gapirib" ? grRank(a) - grRank(b) : 0));
 // Kurs darslarini tartib raqami bilan nomlaymiz
@@ -2636,6 +2676,8 @@ for (const cat of ["IELTS kursi", "CEFR kursi", "Grammatika gapirib"]) {
 const QUIZ = {
   "gr-there": ["There ___ a cat in the garden.|is|are|have", "There ___ many people here.|are|is|has", "___ there a bank near here?|Is|Are|Does", "There aren't ___ eggs.|any|some|a", "There ___ two cats on the sofa.|are|is|be", "___ there any milk in the fridge?|Is|Are|Does", "There ___ a lot of people at the concert.|were|was|is been", "There isn't ___ water in the bottle.|any|some|many", "There ___ a problem with my phone.|is|are|have", "How many students ___ there in your class?|are|is|do", "There ___ any shops in this street.|aren't|isn't|not", "There ___ a big storm last night.|was|were|is"],
   "gr-possessive": ["Laylo is my friend. ___ dog is small.|Her|His|She", "Anvar loves ___ car.|his|her|he", "We love ___ teacher.|our|we|us", "This is my ___ room.|sister's|sisters|sister", "They love ___ new house.|their|there|they", "Is this ___ book, Aziz?|your|you|yours's", "The cat is eating ___ food.|its|it's|it", "This is my ___ car.|father's|fathers|father", "Malika and Sardor love ___ children.|their|they're|there", "Is this ___ pen or mine?|your|you|yours", "My ___ names are Ali and Vali.|brothers'|brother's|brothers", "The dog wagged ___ tail.|its|it's|his's"],
+  "gr-perfcont": ["I've been ___ English for two years.|learning|learn|learned", "She ___ been working here since 2020.|has|have|is", "How long have you been ___?|waiting|wait|waited", "It has been raining ___ three hours.|for|since|from", "They have been living here ___ 2019.|since|for|from", "I'm tired. I've ___ running.|been|being|be", "___ you been studying all night?|Have|Has|Did", "My eyes hurt. I've been ___ at a screen all day.|looking|looked|look", "He hasn't ___ feeling well lately.|been|be|being", "We've been ___ for the bus for twenty minutes.|waiting|waited|wait", "How long ___ she been teaching?|has|have|is", "I've read ___ books this month.|three|been three|being three"],
+  "gr-wish": ["I wish I ___ more free time.|had|have|will have", "I wish I ___ speak French.|could|can|will", "I wish I had ___ harder at school.|studied|study|studying", "If I had known, I would ___ helped you.|have|has|had", "If we ___ left earlier, we wouldn't have missed the bus.|had|have|would", "I wish it ___ so cold today.|wasn't|isn't|won't be", "If she had asked me, I ___ have said yes.|would|will|had", "I wish you ___ here with us.|were|are|will be", "He wishes he ___ that car. It was a mistake.|hadn't bought|didn't buy|doesn't buy", "If I ___ you, I would apologise.|were|am|had", "I'm glad I ___ give up.|didn't|wouldn't|hadn't", "If it hadn't rained, we ___ have gone to the park.|would|will|had"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink", "My sister ___ English very well.|speaks|speak|speaking", "They ___ live in Tashkent.|don't|doesn't|aren't", "Where ___ he work?|does|do|is", "The shop ___ at nine o'clock.|opens|open|opening", "Water ___ at 100 degrees.|boils|boil|is boil", "My friends ___ like rap music.|don't|doesn't|isn't", "___ your brother study at university?|Does|Do|Is", "He usually ___ his homework in the evening.|does|do|doing"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on", "I was born ___ 2008.|in|on|at", "We have a party ___ Friday evening.|on|in|at", "I usually sleep ___ night.|at|in|on", "The keys are ___ the table.|on|at|in", "The meeting is ___ 3 pm.|at|in|on", "I'll see you ___ the weekend.|at|in|on", "She lives ___ Samarkand.|in|at|on", "My birthday is ___ 5th March.|on|in|at"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do", "Listen! The baby ___ crying.|is|are|be", "We ___ waiting for the bus now.|are|is|am", "What ___ you doing?|are|do|is", "She isn't ___ TV at the moment.|watching|watch|watches", "I ___ working from home this week.|am|is|are", "Why ___ you laughing?|are|is|do", "They ___ playing football right now.|are|is|be", "Be quiet! Grandma ___ sleeping.|is|are|am"],
@@ -2686,6 +2728,8 @@ const KEYWORDS = {
   "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
 };
 const RULES = {
+  "gr-perfcont": "O'tmishda boshlanib, hali davom etayotgan ish: have/has been + fe'l-ing.\nI've been learning English for two years. She has been working since 2020.\nSavol: How long have you been waiting?\nNatija (nechta) — Present Perfect: I've read three books. Jarayon — I've been reading all day.",
+  "gr-wish": "Hozirgi istak: I wish + o'tgan zamon: I wish I had more time. I wish I could swim.\nO'tmishdagi afsus: I wish + had + 3-shakl: I wish I had studied harder.\n3-tur shart: If + had + 3-shakl, would have + 3-shakl.\nIf I had known, I would have helped you.",
   "gr-there": "Bor/yo'qligini aytish: There is + bitta narsa, There are + ko'p narsa.\nThere is a table. There are three chairs.\nInkor: There isn't a TV. There aren't any shops.\nSavol: Is there a bank? Are there any parks?",
   "gr-possessive": "Egalik so'zlari: I → my, you → your, he → his, she → her, we → our, they → their.\nHis name is Anvar. Her name is Laylo.\nKimningdir narsasi: ism + 's: My sister's bag. Ko'plikda: my parents' house.\nSavol: Whose phone is this?",
   "gr-simple": "Odat va doimiy narsalar: I/you/we/they + fe'l: I work. They live here.\nhe/she/it + fe'l-s: She works. He goes. It rains.\nInkor: don't / doesn't + fe'l: He doesn't like tea. (✗ He doesn't likes)\nSavol: Do you ...? Does she ...? Does he play football?",
