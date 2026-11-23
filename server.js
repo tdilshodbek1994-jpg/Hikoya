@@ -377,6 +377,7 @@ app.get("/api/admin/stats", (req, res) => {
   const s = adminStats();
   s.top = s.top.map(([id, n]) => ({ id, n, title: getLesson(id)?.title || id, emoji: getLesson(id)?.emoji || "" }));
   s.liveNow = [...sessions.values()].filter((x) => Date.now() < x.expiresAt).length;
+  s.reminders = { enabled: REMINDERS, ...remindStats };
   s.startsToday = startsTodayTotal();
   s.ttsCache = ttsStats;
   res.json(s);
@@ -396,6 +397,7 @@ app.post("/api/remind", express.json(), auth, (req, res) => {
   setRemind(req.userId, req.body?.on);
   res.json({ ok: true, remind: Boolean(req.body?.on) });
 });
+const remindStats = { sent: 0, off: 0 };
 async function sendReminders() {
   const hour = new Date(Date.now() + 5 * 3600_000).getUTCHours();
   if (hour !== REMIND_HOUR) return;
@@ -407,7 +409,14 @@ async function sendReminders() {
     };
     if (process.env.WEBAPP_URL) body.reply_markup = { inline_keyboard: [[{ text: "🎤 Darsni boshlash", web_app: { url: process.env.WEBAPP_URL } }]] };
     try {
-      await fetch(`${TG_API}/bot${BOT_TOKEN}/sendMessage`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      const r = await fetch(`${TG_API}/bot${BOT_TOKEN}/sendMessage`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      const j = await r.json().catch(() => ({}));
+      remindStats.sent += j.ok ? 1 : 0;
+      // Bot bloklangan yoki chat yo'q — bu o'quvchiga boshqa urinmaymiz
+      if (!j.ok && (j.error_code === 403 || j.error_code === 400)) {
+        setRemind(t.id, false);
+        remindStats.off++;
+      }
     } catch (e) {
       console.error("Eslatma yuborilmadi:", e?.message || e);
     }

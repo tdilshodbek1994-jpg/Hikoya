@@ -179,6 +179,7 @@ export function adminStats() {
   }
   return {
     users: users.length,
+    remindOn: users.filter((u) => u.remind).length,
     activeToday: users.filter((u) => u.days.includes(d)).length,
     activeWeek: users.filter((u) => u.days.some((x) => week.has(x))).length,
     lessons: all.length,

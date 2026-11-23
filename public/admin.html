@@ -43,6 +43,7 @@ fetch("api/admin/stats", { headers: { "X-Admin-Key": key } })
         <div class="k"><b>${d.lessons}</b><span>jami darslar (bugun ${d.lessonsToday})</span></div>
         <div class="k"><b>${d.avgScore}</b><span>o'rtacha ball · ${d.minutes} daqiqa</span></div>
       </div>
+      <p style="color:var(--muted);font-size:13px;margin:10px 2px 0">🔔 Kechki eslatma: ${d.reminders?.enabled ? `yoqilgan · ${d.remindOn} o'quvchi obuna · server ishga tushgandan beri ${d.reminders.sent} ta yuborildi${d.reminders.off ? `, ${d.reminders.off} tasi botni bloklagan` : ""}` : "serverda o'chiq (.env: REMINDERS=1)"}</p>
       <p style="color:var(--muted);font-size:13px;margin:10px 2px 0">💾 Ovoz keshi: ${d.ttsCache.hits} marta qayta ishlatildi (tejaldi), ${d.ttsCache.misses} marta yangi yaratildi</p>
       <h2>📅 Oxirgi 7 kun (darslar)</h2>
       <div class="card"><div class="bars">${d.byDay.map(([k, n]) => `<div class="bar">${n}<i style="height:${(n / max) * 80}px"></i>${k.slice(5)}</div>`).join("")}</div></div>
