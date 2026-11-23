@@ -1073,3 +1073,9 @@ body.dark .fold-tag.new { color: #fb7185; } body.dark .fold-tag.rep { color: #fb
 .btn.vocab-play.on { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 60%, transparent); }
 .trend-info:not([hidden]) { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
 .trend-again { flex: none; font: inherit; font-size: 12.5px; font-weight: 700; color: var(--primary); background: color-mix(in srgb, var(--primary) 12%, transparent); border-radius: 99px; padding: 5px 10px; }
+/* ✅ Part 2 kartochka bandlari: bosib belgilash */
+.cue-points li { cursor: pointer; border-radius: 6px; transition: color 0.2s; }
+.cue-points li.done { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--ok); }
+.cue-points li.done::marker { content: "✓  "; color: var(--ok); font-weight: 800; }
+/* Uzun dars nomi — 2 qatorgacha (qisqartirilib "Esd..." bo'lib qolmasin) */
+.head-left { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.2; font-size: 15px; }

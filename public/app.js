@@ -2919,7 +2919,19 @@ function startCuePrep() {
   $("cueTitle").textContent = c.title;
   const ul = $("cuePoints");
   ul.innerHTML = "";
-  for (const p of c.points) ul.append(el("li", "", p));
+  // ✅ Bandni bosib belgilash — gapirayotganda qaysi bandlarga to'xtalganini kuzatish
+  for (const p of c.points) {
+    const li = el("li", "", p);
+    li.addEventListener("click", () => {
+      haptic();
+      li.classList.toggle("done");
+      const n = ul.querySelectorAll(".done").length;
+      $("cueSay").textContent = n ? `You should say: ✅ ${n}/${c.points.length}` : "You should say:";
+      if (n === c.points.length) toast("🎉 Hamma bandlarga to'xtaldingiz — endi xulosa qiling", 2500);
+    });
+    ul.append(li);
+  }
+  $("cueSay").textContent = "You should say:";
   let left = 60;
   $("cueTimer").textContent = "1:00";
   setPhase("idle", "⏳ Tayyorlanish vaqti");
