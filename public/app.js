@@ -414,6 +414,14 @@ function quizMiss(it, lessonId, ok) {
   const st = quizStats();
   st.all++;
   if (ok) st.ok++;
+  // Mavzu bo'yicha ham
+  const tid = it.from || lessonId;
+  if (tid && /^gr-/.test(tid) && !/^gr-(mix|miss)/.test(tid)) {
+    st.by ||= {};
+    const t = (st.by[tid] ||= { ok: 0, all: 0 });
+    t.all++;
+    if (ok) t.ok++;
+  }
   localStorage.setItem("sado-qz-stats", JSON.stringify(st));
   if (!it.options) return;
   const text = `${it.before} ___${it.after}`;
@@ -421,6 +429,43 @@ function quizMiss(it, lessonId, ok) {
   if (!ok) list.unshift({ text, answer: it.answer, options: it.options, from: it.from || lessonId });
   localStorage.setItem("sado-qz-miss", JSON.stringify(list.slice(0, 60)));
 }
+// Ro'yxat qayta chizilganda sahifa joyi saqlanadi (test tugagach yuqoriga sakrab ketmasin)
+function keepScroll(fn) {
+  const y = window.scrollY;
+  fn();
+  window.scrollTo(0, y);
+}
+
+// 🎯 Mavzular bo'yicha aniqlik: eng zaif mavzular tepada
+function openTopicStats() {
+  state.speedRun = (state.speedRun || 0) + 1;
+  const st = quizStats();
+  $("mixSheet").hidden = false;
+  $("mixLevels").innerHTML = "";
+  const box = $("mixQuiz");
+  box.innerHTML = "";
+  box.append(el("b", "", `🎯 Aniqlik: ${st.all ? Math.round((st.ok / st.all) * 100) : 0}% · ${st.all} ta javob`));
+  const rows = Object.entries(st.by || {})
+    .map(([id, t]) => ({ l: state.lessons.find((x) => x.id === id), p: Math.round((t.ok / t.all) * 100), t }))
+    .filter((x) => x.l)
+    .sort((a, b) => a.p - b.p || b.t.all - a.t.all);
+  if (!rows.length) box.append(el("p", "qz-done", "Hali mavzular bo'yicha ma'lumot yo'q — bir nechta test ishlang."));
+  const ul = el("div", "ts-list");
+  for (const { l, p, t } of rows) {
+    const b = el("button", "ts-row");
+    const bar = el("span", "ts-bar");
+    const fill = el("i", p >= 80 ? "hi" : p >= 50 ? "mid" : "lo");
+    fill.style.width = `${Math.max(4, p)}%`;
+    bar.append(fill);
+    b.append(el("span", "ts-name", `${l.emoji} ${l.title.replace(/^\d+\.\s*/, "").replace(/\s*\([^)]*\)$/, "")}`), bar, el("b", "ts-p", `${p}%`), el("small", "ts-n", `${t.ok}/${t.all} to'g'ri`));
+    b.addEventListener("click", () => { haptic(); $("mixSheet").hidden = true; openSheet(l); setTimeout(() => $("sheetQuiz").scrollIntoView({ behavior: "smooth", block: "start" }), 350); });
+    ul.append(b);
+  }
+  box.append(ul);
+  const untouched = state.lessons.filter((l) => l.category === "Grammatika gapirib" && !(st.by || {})[l.id]).length;
+  if (untouched) box.append(el("small", "qz-n", `Hali test ishlanmagan mavzular: ${untouched} ta`));
+}
+
 function openMissTest() {
   state.speedRun = (state.speedRun || 0) + 1;
   const quiz = quizMisses();
@@ -461,7 +506,7 @@ function openSpeedTest() {
     const again = el("button", "qz-again", "⚡ Yana bir bor");
     again.addEventListener("click", () => { haptic(); openSpeedTest(); });
     body.append(again);
-    if (state.lessons.length) renderLessons();
+    if (state.lessons.length) keepScroll(renderLessons);
   };
   const next = () => {
     if (run !== state.speedRun) return;
@@ -552,7 +597,7 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
     body.innerHTML = "";
     if (i >= items.length) {
       saveQuiz(lesson.id === "gr-mix" ? `gr-mix${localStorage.getItem("sado-mix-lv") || ""}` : lesson.id, right, items.length); // aralash testda — har daraja uchun alohida
-      if (state.lessons.length) renderLessons(); // plitkadagi 🧩 va Aralash test 🏆 yangilanadi
+      if (state.lessons.length) keepScroll(renderLessons); // plitkadagi 🧩 va Aralash test 🏆 yangilanadi
       body.append(el("p", "qz-done", right === items.length ? `🎉 ${right}/${items.length} — a'lo! Endi gapirib mustahkamlaymiz.` : right * 2 >= items.length ? `👍 ${right}/${items.length} — yaxshi! To'g'ri shakllarini eshitib takrorlang.` : `💪 ${right}/${items.length} — qoidani yana bir o'qing va qayta urinib ko'ring.`));
       // ❌ Xato qilingan gaplarning to'g'ri shakli — eshitish mumkin
       if (missed.length) {
@@ -1650,7 +1695,13 @@ function renderLessons() {
           const st = quizStats();
           const nQ = gr.reduce((n, x) => n + x.quiz.length, 0);
           const top = el("div", "gq-top");
-          top.append(el("b", "", "🧪 Testlar"), el("span", "", `${nQ} ta savol · 🧩 ${perfect.length}/${gr.length} a'lo${st.all >= 5 ? ` · 🎯 ${Math.round((st.ok / st.all) * 100)}%` : ""}`));
+          top.append(el("b", "", "🧪 Testlar"), el("span", "", `${nQ} ta savol · 🧩 ${perfect.length}/${gr.length} a'lo`));
+          if (st.all >= 5) {
+            const acc = el("button", "gq-acc", `🎯 ${Math.round((st.ok / st.all) * 100)}% ›`);
+            acc.title = "Mavzular bo'yicha aniqlik";
+            acc.addEventListener("click", () => { haptic(); openTopicStats(); });
+            top.append(acc);
+          }
           row.append(top);
           const pool = gr.filter((x) => !perfect.includes(x));
           const go = el("button", "", pool.length ? "🎲 Tasodifiy mashq" : "🎉 Yana bir mashq");
