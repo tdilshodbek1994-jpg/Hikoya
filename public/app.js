@@ -1661,6 +1661,8 @@ async function finish() {
   releaseMic();
   const session = state.session;
   state.session = null;
+  // Avvalgi eng yaxshi natija (yangilanishdan oldin)
+  state.prevBest = state.progress?.lessons?.[state.lesson?.id]?.best ?? null;
   showResult();
   if (!session) return;
   $("report").hidden = false;
@@ -1775,6 +1777,13 @@ function renderReport(r, score) {
   ring.style.setProperty("--p", r.score);
   const right = el("div", "rep-top-text");
   right.append(el("div", "rep-level", r.level || ""), el("div", "rep-summary", r.summary_uz || ""));
+  // 📈 Avvalgi natija bilan solishtirish
+  if (state.prevBest != null) {
+    const d = r.score - state.prevBest;
+    const cls = d > 0 ? "up" : d < 0 ? "down" : "";
+    const txt = d > 0 ? `▲ +${d} — yangi rekord! (avval ${state.prevBest})` : d < 0 ? `▼ ${d} (eng yaxshisi ${state.prevBest})` : `= Rekordingizga teng (${state.prevBest})`;
+    right.append(el("div", "rep-cmp " + cls, txt));
+  }
   top.append(ring, right);
   box.append(top);
 
