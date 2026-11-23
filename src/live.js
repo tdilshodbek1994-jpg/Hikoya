@@ -272,6 +272,17 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
     try {
       const m = JSON.parse(data.toString());
       if (m.type === "end") close("foydalanuvchi");
+      // 🔀 Erkin suhbat: o'quvchi boshqa mavzu so'radi (bir qo'ng'iroqda 6 martagacha)
+      if (m.type === "newtopic" && lesson.liveOnly && (session.topicSwitches = (session.topicSwitches || 0) + 1) <= 6) {
+        upstream.send(
+          JSON.stringify({
+            clientContent: {
+              turns: [{ role: "user", parts: [{ text: "(System: the student pressed the 'new topic' button. Briefly and warmly move to a completely different everyday topic you haven't discussed yet (for example food, travel, films, sport, music, studies, family, dreams, technology, holidays) and ask one simple, interesting question about it.)" }] }],
+              turnComplete: true,
+            },
+          }),
+        );
+      }
     } catch {}
   });
 }

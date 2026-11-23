@@ -1,5 +1,5 @@
 import { Mascot } from "./mascot.js";
-import { LiveCall } from "./live.js?v=5";
+import { LiveCall } from "./live.js?v=6";
 
 const tg = window.Telegram?.WebApp;
 const inTelegram = Boolean(tg && tg.initData);
@@ -2003,6 +2003,7 @@ async function startLive(lesson) {
   $("subsBtn").classList.add("on");
   $("muteBtn").hidden = false;
   $("hintBtn").hidden = false; // 💡 jonli suhbatda ham javob namunalari
+  $("topicBtn").hidden = !lesson.liveOnly; // 🔀 erkin suhbatda mavzuni almashtirish
   $("lesson").classList.add("is-live");
   resetWords(true);
   $("replayBtn").hidden = true;
@@ -2043,7 +2044,9 @@ async function startLive(lesson) {
           startTimer();
           setPhase("speaking", "Sado gapirmoqda...");
         } else if (m.type === "sado" || m.type === "user") {
-          if (lastSpeaker !== m.type) addBubble(m.type);
+          // 🔀 Mavzu almashganda Sado yangi pufakchada boshlaydi
+          if (lastSpeaker !== m.type || (m.type === "sado" && state.newTopicBubble)) addBubble(m.type);
+          if (m.type === "sado") state.newTopicBubble = false;
           lastSpeaker = m.type;
           appendBubble(m.text);
           if (m.type === "sado") trackStage($("chatlog").lastElementChild?.textContent || "");
@@ -2114,6 +2117,18 @@ $("replayBtn").addEventListener("click", async () => {
   afterReply();
 });
 
+$("topicBtn").addEventListener("click", () => {
+  if (!state.live) return;
+  haptic();
+  if (state.live.newTopic()) {
+    clearHints();
+    state.newTopicBubble = true;
+    toast("🔀 Sado yangi mavzu taklif qiladi...", 2200);
+    // Ketma-ket bosilmasin
+    $("topicBtn").disabled = true;
+    setTimeout(() => ($("topicBtn").disabled = false), 6000);
+  }
+});
 $("hintBtn").addEventListener("click", async () => {
   if (!state.session || state.hintBusy) return;
   state.hintBusy = true;
@@ -2146,6 +2161,7 @@ function clearHints() {
 }
 
 function resetLiveUi() {
+  $("topicBtn").hidden = true;
   clearInterval(state.cueTimer);
   state.cueDone = false;
   $("cue").hidden = true;

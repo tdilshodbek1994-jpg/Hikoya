@@ -128,6 +128,11 @@ export class LiveCall {
     this.raf = requestAnimationFrame(this.loop);
   }
 
+  // 🔀 Erkin suhbatda mavzuni almashtirish so'rovi
+  newTopic() {
+    try { this.ws?.readyState === WebSocket.OPEN && this.ws.send(JSON.stringify({ type: "newtopic" })); return true; } catch { return false; }
+  }
+
   stop() {
     if (this.stopped) return;
     this.stopped = true;
