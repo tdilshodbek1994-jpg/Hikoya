@@ -105,7 +105,7 @@ export function summary(userId) {
     })(),
     ielts: u.history.some((h) => /IELTS\s*(6|7|8|9)/.test(h.level || "")),
     today: u.history.filter((h) => today(new Date(h.at)) === today()).length,
-    done: Object.keys(u.lessons).length,
+    done: Object.keys(u.lessons).filter((id) => id !== "review").length,
     minutes: Math.round(u.seconds / 60),
     lessons,
     recent: u.history.slice(-10).reverse(),
