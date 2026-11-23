@@ -2351,6 +2351,16 @@ async function finish() {
   $("report").innerHTML = '<div class="rep-loading"><span class="spin"></span>Sado hisobot tayyorlamoqda...</div>';
   try {
     const data = await api("api/end", { json: { session } });
+    // 🙊 Hech narsa aytilmagan: maqtov o'rniga tushuntirish, limit sarflanmaydi
+    if (data.empty) {
+      $("report").hidden = true;
+      $("resultTitle").textContent = "Hali hech narsa demadingiz 🙂";
+      $("resultSub").textContent = "Hisobot va ball uchun Sado bilan kamida bir-ikki gap almashing. Bu urinish kunlik limitdan hisoblanmadi.";
+      $("resultList").hidden = true;
+      $("againBtn").textContent = "🎤 Qaytadan boshlash";
+      if (state.progress) state.progress.startedToday = data.progress?.startedToday ?? Math.max(0, (state.progress.startedToday || 1) - 1);
+      return;
+    }
     if (data.progress) {
       const before = new Set(Object.keys(state.progress?.lessons || {}));
       state.progress = { ...data.progress, limit: state.progress?.limit, startedToday: state.progress?.startedToday };

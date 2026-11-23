@@ -252,24 +252,29 @@ app.post("/api/end", express.json(), auth, async (req, res) => {
   const lesson = lessonOf(s);
   const used = s.used.size;
   const total = lesson.phrases.length;
+  // Hech narsa gapirilmagan bo'lsa: hisobot so'ralmaydi (AI xarajati yo'q), kunlik limit qaytariladi
+  const spoke = s.transcript.some((t) => t.who === "student" && t.text.trim());
+  if (!spoke) {
+    if (!s.refunded) {
+      s.refunded = true;
+      refundStart(req.userId);
+    }
+    return res.json({ ok: true, empty: true, used: [], score: null, report: null, progress: summary(req.userId), transcript: [] });
+  }
   let report = null;
   try {
     if (process.env.ANTHROPIC_API_KEY) report = await lessonReport(lesson, s.transcript, { used, total, mode: s.mode });
   } catch (err) {
     console.error("Hisobot xatosi:", err?.message || err);
   }
-  // Hech narsa gapirilmagan darsni progressga yozmaymiz
-  const spoke = s.transcript.some((t) => t.who === "student" && t.text.trim());
-  const score = spoke
-    ? recordSession(req.userId, {
-        lessonId: s.lessonId,
-        mode: s.mode,
-        used,
-        total,
-        seconds: (Date.now() - s.startedAt) / 1000,
-        report,
-      })
-    : null;
+  const score = recordSession(req.userId, {
+    lessonId: s.lessonId,
+    mode: s.mode,
+    used,
+    total,
+    seconds: (Date.now() - s.startedAt) / 1000,
+    report,
+  });
   res.json({ ok: true, used: [...s.used], score, report, progress: summary(req.userId), transcript: s.transcript.slice(-60) });
 });
 
