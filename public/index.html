@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
   <title>Sado — ingliz tilida gaplashish</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="styles.css?v=32" />
+  <link rel="stylesheet" href="styles.css?v=33" />
 </head>
 <body>
   <header class="topbar">
@@ -36,8 +36,11 @@
     <button class="goal" id="goal" hidden></button>
     <div class="stats" id="stats" hidden></div>
     <button class="vocab-btn" id="vocabBtn" hidden></button>
-    <div class="trend" id="trend" hidden></div>
-    <div class="badges" id="badges" hidden></div>
+    <details class="more-stats" id="moreStats" hidden>
+      <summary><span>📊 Natijalar grafigi va 🏅 yutuqlar</span><em id="moreStatsHint"></em></summary>
+      <div class="trend" id="trend" hidden></div>
+      <div class="badges" id="badges" hidden></div>
+    </details>
     <div class="next-box" id="nextBox" hidden></div>
     <div class="search-wrap"><input id="searchInput" type="search" placeholder="🔍 Mavzu yoki ibora qidirish..." autocomplete="off" /></div>
     <div class="chips" id="chips"></div>
@@ -178,6 +181,6 @@
 
   <div class="toast" id="toast" hidden></div>
 
-  <script type="module" src="app.js?v=32"></script>
+  <script type="module" src="app.js?v=33"></script>
 </body>
 </html>

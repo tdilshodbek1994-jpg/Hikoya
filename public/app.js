@@ -441,8 +441,23 @@ function renderBadges() {
   box.append(row);
 }
 
+function renderMoreStats() {
+  const p = state.progress;
+  const box = $("moreStats");
+  box.hidden = !p;
+  if (!p) return;
+  const got = BADGES.filter((b) => b[3](p)).length;
+  $("moreStatsHint").textContent = `🏅 ${got}/${BADGES.length}`;
+  if (!box.dataset.init) {
+    box.dataset.init = "1";
+    box.open = localStorage.getItem("sado-more") === "1";
+    box.addEventListener("toggle", () => localStorage.setItem("sado-more", box.open ? "1" : "0"));
+  }
+}
+
 function renderLessons() {
   renderGoal();
+  renderMoreStats();
   renderBadges();
   renderStats();
   renderVocabBtn();
