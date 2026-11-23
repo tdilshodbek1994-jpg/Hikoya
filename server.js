@@ -334,6 +334,12 @@ app.post("/api/end", express.json(), auth, async (req, res) => {
 const PHRASES = new Set(LESSONS.flatMap((l) => l.phrases.map((p) => p.en)));
 // Grammatika qoidalaridagi inglizcha misollar ham ovozga aylantirilishi mumkin
 for (const l of LESSONS) for (const m of (l.rule || "").matchAll(/[A-Z][A-Za-z0-9' ,]*[A-Za-z0-9][.?!]/g)) if (m[0].split(" ").length >= 2) PHRASES.add(m[0]);
+// IELTS Part 1/3 savollari va grammatika mashqining to'g'ri gaplari ham (ilova ularni eshittiradi)
+for (const l of LESSONS) {
+  const pub = publicLesson(l);
+  for (const q of pub.questions || []) PHRASES.add(q);
+  for (const q of pub.quiz || []) PHRASES.add(q.text.replace("___", q.answer === "—" ? "" : q.answer).replace(/\s+/g, " ").replace(/«[^»]*»\s*→\s*/, "").trim());
+}
 const sayCache = new Map();
 app.get("/api/say", auth, async (req, res) => {
   const text = String(req.query.text || "");

@@ -1371,6 +1371,24 @@ function openSheet(lesson) {
     $("sheetRule").append(el("b", "", "📖 Qoida"), ruleBody(lesson.rule));
   }
   renderQuiz(lesson);
+  // ❓ IELTS Part 1/3: imtihonchi so'raydigan savollar — darsdan oldin ko'rib, eshitib olish
+  const qs = $("sheetQs");
+  qs.hidden = !lesson.questions?.length;
+  qs.innerHTML = "";
+  qs.open = false;
+  if (lesson.questions?.length) {
+    const sm = document.createElement("summary");
+    sm.textContent = `❓ Imtihonchi so'raydigan ${lesson.questions.length} ta savol`;
+    const ol = el("ol", "");
+    for (const q of lesson.questions) {
+      const li = el("li", "");
+      const bt = el("button", "rule-ex", q);
+      bt.addEventListener("click", () => { haptic(); sayPhrase(q).then(() => mascot.setLevel(0)); });
+      li.append(bt);
+      ol.append(li);
+    }
+    qs.append(sm, ol, el("small", "rule-tip", "🔊 Savolni bosing — imtihonchi ovozida eshitasiz. Javobni oldindan o'ylab oling"));
+  }
   // Daraja, iboralar soni va oldingi natija
   const meta = $("sheetMeta");
   meta.innerHTML = "";

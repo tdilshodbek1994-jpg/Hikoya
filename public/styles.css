@@ -1041,3 +1041,8 @@ body.dark .fold-tag.new { color: #fb7185; } body.dark .fold-tag.rep { color: #fb
 .b-sado { cursor: pointer; }
 .b-tr-ico { font-style: normal; font-weight: 600; color: var(--primary); opacity: 0.9; }
 .b-tr { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--line); font-size: 13.5px; color: var(--muted); animation: fade 0.2s ease; }
+/* ❓ Dars oynasida IELTS savollari */
+.sheet-qs { text-align: left; margin-top: 10px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; font-size: 14px; }
+.sheet-qs summary { font-weight: 700; cursor: pointer; }
+.sheet-qs ol { margin: 8px 0 4px; padding-left: 22px; display: grid; gap: 4px; }
+.sheet-qs .rule-ex { display: block; width: fit-content; max-width: 100%; text-align: left; padding: 3px 7px; }
