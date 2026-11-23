@@ -1125,3 +1125,6 @@ body.dark .ml-mark { background: #5eead4; }
 .vis-pic.done { outline: 2px solid var(--ok); outline-offset: -2px; }
 .vis-pic.done::after { content: "✓"; position: absolute; top: 6px; right: 8px; width: 22px; height: 22px; border-radius: 50%; background: var(--ok); color: #fff; font-size: 13px; font-weight: 800; display: grid; place-items: center; }
 .vis-tip { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; }
+/* 🎯 Tanishuv: maqsad tanlovi */
+.onb-level small + .onb-lv-row + small { margin-top: 10px; }
+.onb-lv-row.onb-goals { flex-wrap: wrap; }

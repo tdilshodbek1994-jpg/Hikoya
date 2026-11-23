@@ -3832,6 +3832,19 @@ function showOnboarding() {
         row.append(b);
       }
       lv.append(row);
+      // 🎯 Maqsad: bosh sahifa shu bo'limdan ochiladi va birinchi dars shunga mos tanlanadi
+      lv.append(el("small", "", "Maqsadingiz nima?"));
+      const goals = el("div", "onb-lv-row onb-goals");
+      for (const [k, label] of [["IELTS kursi", "🎓 IELTS"], ["CEFR kursi", "📗 CEFR"], ["Kundalik hayot", "💬 Kundalik"], ["Bolalar uchun", "🧒 Bolalar"]]) {
+        const b = el("button", "chip-f" + (localStorage.getItem("sado-goal") === k ? " on" : ""), label);
+        b.addEventListener("click", () => {
+          haptic();
+          localStorage.setItem("sado-goal", k);
+          for (const x of goals.children) x.classList.toggle("on", x === b);
+        });
+        goals.append(b);
+      }
+      lv.append(goals);
       box.append(lv);
     }
     $("onbDots").innerHTML = ONB.map((_, k) => `<i class="${k === i ? "on" : ""}"></i>`).join("");
@@ -3843,7 +3856,15 @@ function showOnboarding() {
     // Daraja tanlangan bo'lsa — mos birinchi darsni darhol taklif qilamiz
     const lvl = localStorage.getItem("sado-level");
     renderNext(); // "Shu yerdan boshlang" darajaga moslanadi
-    const first = lvl === "beg" ? state.lessons.find((l) => l.id === "cafe")
+    const goal = localStorage.getItem("sado-goal");
+    if (goal && state.lessons.some((l) => l.category === goal)) {
+      state.filter.cat = goal;
+      renderChips();
+      renderLessons();
+    }
+    const byGoal = { "IELTS kursi": "ielts-intro", "CEFR kursi": "cefr-1", "Bolalar uchun": "kid-colors" }[goal];
+    const first = byGoal ? state.lessons.find((l) => l.id === byGoal)
+      : lvl === "beg" ? state.lessons.find((l) => l.id === "cafe")
       : lvl === "mid" ? state.lessons.find((l) => l.id === "meet")
       : lvl === "adv" ? state.lessons.find((l) => l.liveOnly) || state.lessons.find((l) => l.id === "ielts")
       : null;
