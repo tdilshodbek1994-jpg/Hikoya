@@ -14,3 +14,11 @@ echo "versiya: $(git log -1 --format='%h %cd' --date=format:'%d.%m %H:%M') · il
 echo "mavzular: $(curl -s localhost:3000/api/lessons | grep -o '"id"' | wc -l)"
 echo "progress API: $(curl -s -o /dev/null -w '%{http_code}' localhost:3000/api/progress) (401 bo'lishi kerak - bu to'g'ri)"
 echo "statistika: https://testmarkaz.online/speaking/admin.html?key=$(grep '^ADMIN_KEY=' .env | cut -d= -f2)"
+# 📞 Jonli suhbat uchun nginx tekshiruvi (faqat o'qiydi, hech narsani o'zgartirmaydi)
+NGX=$(grep -rlE 'location[[:space:]]+/speaking/' /etc/nginx 2>/dev/null | grep -v '\.bak' | head -1)
+if [ -n "$NGX" ] && awk '/location[[:space:]]+\/speaking\//,/}/' "$NGX" | grep -q 'Upgrade'; then
+  echo "nginx (jonli suhbat): ✅ tayyor"
+elif [ -n "$NGX" ]; then
+  echo "nginx (jonli suhbat): ⚠️ sozlanmagan — bir marta ishga tushiring:  bash /opt/sado-speaking/deploy/fix-nginx.sh"
+fi
+# 🧹 Telefonlarda eski versiya: Sado'ni ikki marta oching (birinchisida kesh tozalanadi)
