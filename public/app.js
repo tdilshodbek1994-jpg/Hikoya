@@ -445,7 +445,7 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
     body.innerHTML = "";
     if (i >= items.length) {
       saveQuiz(lesson.id, right, items.length);
-      if (state.lessons.length && lesson.id !== "gr-mix") renderLessons();
+      if (state.lessons.length) renderLessons(); // plitkadagi 🧩 va Aralash test 🏆 yangilanadi
       body.append(el("p", "qz-done", right === items.length ? `🎉 ${right}/${items.length} — a'lo! Endi gapirib mustahkamlaymiz.` : right * 2 >= items.length ? `👍 ${right}/${items.length} — yaxshi! To'g'ri shakllarini eshitib takrorlang.` : `💪 ${right}/${items.length} — qoidani yana bir o'qing va qayta urinib ko'ring.`));
       // ❌ Xato qilingan gaplarning to'g'ri shakli — eshitish mumkin
       if (missed.length) {
@@ -1548,7 +1548,8 @@ function renderLessons() {
             setTimeout(() => $("sheetQuiz").scrollIntoView({ behavior: "smooth", block: "start" }), 350);
           });
           // 📝 Aralash test: barcha grammatika mavzularidan 10 ta savol
-          const mix = el("button", "", "📝 Aralash test");
+          const mixBest = quizBest()["gr-mix"];
+          const mix = el("button", "", mixBest ? `📝 Aralash test · 🏆 ${mixBest}` : "📝 Aralash test");
           mix.addEventListener("click", () => { haptic(); openMixTest(); });
           const btns = el("span", "gr-qbtns");
           btns.append(mix, go);
