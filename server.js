@@ -34,7 +34,28 @@ const sessions = new Map(); // id -> { userId, lessonId, messages, used:Set, tur
 
 setInterval(() => {
   const now = Date.now();
-  for (const [id, s] of sessions) if (s.expiresAt + 60_000 < now) sessions.delete(id);
+  for (const [id, s] of sessions) {
+    if (s.expiresAt + 60_000 >= now) continue;
+    sessions.delete(id);
+    // 📝 "Tugatish" bosilmay yopilgan dars: o'quvchi gapirgan bo'lsa, progress (seriya, daqiqalar) baribir yoziladi.
+    // AI hisobot so'ralmaydi — ball ishlatilgan iboralar ulushidan hisoblanadi.
+    if (!s.ended && s.transcript.some((t) => t.who === "student" && t.text.trim())) {
+      try {
+        const lesson = lessonOf(s);
+        if (!lesson?.phrases?.length) continue; // iborasiz (erkin) suhbatda ball hisoblab bo'lmaydi
+        recordSession(s.userId, {
+          lessonId: s.lessonId,
+          mode: s.mode,
+          used: s.used.size,
+          total: lesson.phrases.length,
+          seconds: (Math.min(now, s.expiresAt) - s.startedAt) / 1000,
+          report: null,
+        });
+      } catch (e) {
+        console.error("Yopilgan darsni yozib bo'lmadi:", e?.message || e);
+      }
+    }
+  }
 }, 60_000).unref();
 
 // ---- Telegram orqali kirishni tekshirish ----
