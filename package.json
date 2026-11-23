@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "ALLOW_DEV=1 node --watch server.js"
+    "dev": "ALLOW_DEV=1 node --watch server.js",
+    "check": "node scripts/check-lessons.js"
   },
   "repository": {
     "type": "git",

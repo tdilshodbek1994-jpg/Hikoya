@@ -94,7 +94,7 @@ Har birida `WEBAPP_URL = "https://SIZNING-DOMEN.uz/speaking/"` qatorini o'z dome
 
 ## Yangi dars qo'shish
 
-`src/lessons.js` fayliga yangi obyekt qo'shing: AI roli, ochilish gapi va 6 ta ibora (inglizcha va o'zbekcha). O'quvchilarga 14 kun «🆕 Yangi» bo'lib ko'rinishi uchun darsga `added: "YYYY-MM-DD"` qo'shing. Serverni qayta ishga tushiring: `sudo systemctl restart sado-speaking`.
+`src/lessons.js` fayliga yangi obyekt qo'shing: AI roli, ochilish gapi va 6 ta ibora (inglizcha va o'zbekcha). O'quvchilarga 14 kun «🆕 Yangi» bo'lib ko'rinishi uchun darsga `added: "YYYY-MM-DD"` qo'shing. Keyin `npm run check` bilan tekshiring: takrorlangan ID, ibora soni, bo'sh tarjima, IELTS kartochka/savollar va grammatika qoidalari tekshiriladi. Serverni qayta ishga tushiring: `sudo systemctl restart sado-speaking`.
 
 ## Kompyuterda sinash
 
