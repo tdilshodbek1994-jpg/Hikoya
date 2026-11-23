@@ -751,6 +751,25 @@ function renderLessons() {
   }
 }
 
+// ⏳ Kunlik limit tugagan bo'lsa — darsni boshlashdan oldin aytamiz va bepul mashqlarni taklif qilamiz
+function renderLimitNote() {
+  const p = state.progress;
+  const left = p?.limit ? p.limit - (p.startedToday || 0) : Infinity;
+  const over = left <= 0;
+  $("limitNote").hidden = !over;
+  for (const id of ["startLiveBtn", "startTutorBtn", "startChatBtn"]) $(id).classList.toggle("locked", over);
+  if (!over) return;
+  // Toshkent vaqti bilan yarim tungacha qolgan vaqt
+  const now = Date.now() + 5 * 3600_000;
+  const mins = Math.ceil((86400_000 - (now % 86400_000)) / 60000);
+  const h = Math.floor(mins / 60);
+  $("limitNote").innerHTML = "";
+  $("limitNote").append(
+    el("b", "", "⏳ Bugungi darslar limiti tugadi"),
+    el("span", "", `Yangi darslar ${h ? h + " soat " : ""}${mins % 60} daqiqadan keyin ochiladi. Hozircha limitsiz mashq qiling: 🎧 Tinglab takrorlash va 📒 lug'at kartochkalari.`),
+  );
+}
+
 function openSheet(lesson) {
   stopShadow();
   $("startLiveBtn").hidden = !state.liveEnabled;
@@ -759,6 +778,7 @@ function openSheet(lesson) {
   $("startChatBtn").hidden = Boolean(lesson.liveOnly) && state.liveEnabled;
   haptic();
   state.pendingLesson = lesson;
+  renderLimitNote();
   $("sheetEmoji").textContent = lesson.emoji;
   renderFavBtn(lesson);
   $("sheetTitle").textContent = lesson.title;
