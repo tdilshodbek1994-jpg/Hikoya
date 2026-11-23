@@ -6,7 +6,38 @@ import express from "express";
 import Anthropic from "@anthropic-ai/sdk";
 import { LESSONS, getLesson, publicLesson } from "./src/lessons.js";
 import { verifyInitData } from "./src/telegram.js";
-import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled } from "./src/ai.js";
+import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, speak, voiceEnabled } from "./src/ai.js";
+
+// ⚡ Tez javob: matn darhol qaytadi, ovoz esa bo'laklab (gapma-gap) parallel tayyorlanadi.
+// Telefon birinchi bo'lak tayyor bo'lishi bilan uni ijro etadi, qolganlari shu paytda tayyorlanadi.
+function splitSentences(text) {
+  const raw = String(text || "").trim().split(/(?<=[.!?…])\s+/).filter(Boolean);
+  const out = [];
+  for (const t of raw) {
+    // juda qisqa bo'laklarni oldingisiga qo'shamiz (masalan "Ok." alohida so'rov bo'lmasin)
+    if (out.length && (out[out.length - 1].length < 25 || t.length < 12)) out[out.length - 1] += " " + t;
+    else out.push(t);
+  }
+  return out;
+}
+function deferParts(s, parts) {
+  s.audio ||= new Map();
+  if (s.audio.size > 200) s.audio.clear();
+  const list = [];
+  for (const p of parts) {
+    if (!p.text || !p.text.trim()) continue;
+    for (const text of splitSentences(p.text)) {
+      const id = String(++s.audioSeq || (s.audioSeq = 1));
+      s.audio.set(id, speak(text, p.lang).catch((err) => {
+        console.error("TTS xatosi:", err?.message || err);
+        return null;
+      }));
+      list.push({ lang: p.lang, text, id, audio: null });
+    }
+  }
+  return list;
+}
+const voiceParts = (req, s, parts) => (req.query.fast === "1" && voiceEnabled ? deferParts(s, parts) : speakParts(parts));
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -107,7 +138,7 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
   try {
     if (mode === "tutor") {
       const say = tutorOpener(lesson);
-      const parts = await speakParts(say);
+      const parts = await voiceParts(req, sessions.get(id), say);
       return res.json({
         session: id,
         mode,
@@ -120,7 +151,7 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
       });
     }
     const tr = req.body?.translate !== false;
-    const parts = await speakParts([
+    const parts = await voiceParts(req, sessions.get(id), [
       { lang: "en", text: lesson.opener },
       ...(tr ? [{ lang: "uz", text: lesson.openerUz }] : []),
     ]);
@@ -167,7 +198,7 @@ app.post(
         const t = await tutorTurn(s, lesson, text);
         for (const i of t.used_phrases) s.used.add(i);
         s.current = t.current;
-        const parts = await speakParts(t.say);
+        const parts = await voiceParts(req, s, t.say);
         return res.json({
           heard: text,
           reply: t.say.map((x) => x.text).join(" "),
@@ -185,7 +216,7 @@ app.post(
       for (const i of result.used_phrases) s.used.add(i);
       // Tartib: o'zbekcha izoh -> inglizcha javob -> (ixtiyoriy) o'zbekcha tarjima
       const tr = req.query.tr !== "0";
-      const parts = await speakParts([
+      const parts = await voiceParts(req, s, [
         { lang: "uz", text: result.uz_say },
         { lang: "en", text: result.reply },
         ...(tr ? [{ lang: "uz", text: result.reply_uz }] : []),
@@ -204,6 +235,17 @@ app.post(
     }
   },
 );
+
+// ⚡ Bitta bo'lakning ovozi (tayyor bo'lishini kutadi)
+app.get("/api/audio", auth, async (req, res) => {
+  const s = getSession(req, res);
+  if (!s) return;
+  const job = s.audio?.get(String(req.query.id || ""));
+  if (!job) return res.status(404).json({ error: "Ovoz topilmadi." });
+  const a = await job;
+  s.audio.delete(String(req.query.id));
+  res.json({ audio: a?.audio || null, mime: a?.mime || "audio/mpeg" });
+});
 
 app.post("/api/end", express.json(), auth, (req, res) => {
   const s = sessions.get(String(req.body?.session || ""));

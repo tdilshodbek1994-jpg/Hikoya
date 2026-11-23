@@ -18,7 +18,7 @@ const state = {
   left: 0,
   timer: null,
   mode: localStorage.getItem("sado-mode") || "auto",
-  subs: localStorage.getItem("sado-subs") === "1",
+  subs: localStorage.getItem("sado-subs") !== "0", // standart: yoqiq — Sado javobi ovozdan oldin yozuvda ko'rinadi
   tr: localStorage.getItem("sado-tr") !== "0", // o'zbekcha tarjimani ovozda aytish
   phase: "idle", // idle | listening | thinking | speaking | ended
   textOnly: false,
@@ -251,7 +251,7 @@ async function startLesson(lesson, lessonMode = "tutor") {
   applyMode();
 
   try {
-    const data = await api("api/session", {
+    const data = await api("api/session?fast=1", {
       json: { lessonId: lesson.id, translate: state.tr, mode: state.lessonMode },
     });
     state.session = data.session;
@@ -567,7 +567,7 @@ async function sendTurn(payload) {
   setPhase("thinking");
   try {
     const data = await api(
-      `api/turn?session=${encodeURIComponent(state.session)}&tr=${state.tr ? 1 : 0}`,
+      `api/turn?session=${encodeURIComponent(state.session)}&tr=${state.tr ? 1 : 0}&fast=1`,
       payload,
     );
     if (state.phase === "ended") return;
@@ -648,12 +648,27 @@ async function playReply(parts, fallbackText) {
   // Shuning uchun Sado gapirayotganda mikrofonni o'chiramiz; bu aks-sadoning ham oldini oladi.
   cancelRecording();
   releaseMic();
-  if (!parts.some((p) => p.audio)) toast("⚠️ Ovoz serverdan kelmadi (TTS)", 4000);
+  // ⚡ Ovoz bo'laklari serverda parallel tayyorlanadi: hammasini darhol so'raymiz, birinchisi kelishi bilan gapiramiz
+  const session = state.session;
+  const jobs = parts.map((p) =>
+    p.id && !p.audio
+      ? api(`api/audio?session=${encodeURIComponent(session)}&id=${encodeURIComponent(p.id)}`, { method: "GET" }).catch(() => null)
+      : null,
+  );
+  const deferred = jobs.some(Boolean);
+  if (!deferred && !parts.some((p) => p.audio)) toast("⚠️ Ovoz serverdan kelmadi (TTS)", 4000);
   setPhase("speaking");
-  for (const p of parts) {
+  let voiced = 0;
+  for (const [i, p] of parts.entries()) {
     if (state.phase !== "speaking") break; // dars tugatilgan bo'lsa
     $("statusText").textContent = p.lang === "uz" ? "Sado tushuntirmoqda..." : "Sado gapirmoqda...";
     try {
+      if (jobs[i]) {
+        const a = await jobs[i];
+        if (state.phase !== "speaking") break;
+        if (a?.audio) Object.assign(p, { audio: a.audio, mime: a.mime });
+      }
+      if (p.audio) voiced++;
       if (p.audio) await playMp3(p.audio, p.mime);
       else await speakBrowser(p.text, p.lang);
     } catch (e) {
@@ -661,6 +676,7 @@ async function playReply(parts, fallbackText) {
       toast("⚠️ Ijro xatosi: " + (e?.message || e), 5000);
     }
   }
+  if (deferred && !voiced && state.phase === "speaking") toast("⚠️ Ovoz serverdan kelmadi (TTS)", 4000);
   mascot.setLevel(0);
 }
 
