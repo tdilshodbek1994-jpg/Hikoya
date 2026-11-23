@@ -947,3 +947,9 @@ body.dark .rep-ml { color: #5eead4; }
 
 .daily-btns { display: inline-flex; gap: 10px; }
 .daily-go:disabled { opacity: 1; color: var(--ok) !important; }
+
+/* 📒 Ibora yonidagi "saqlash" tugmasi (🔊 belgisi o'rniga chapga suriladi) */
+.sheet-phrases li:has(.ph-keep) { padding-right: 70px; }
+.sheet-phrases li:has(.ph-keep)::after { right: 46px; }
+.ph-keep { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; font-size: 16px; font-weight: 800; color: var(--primary); background: color-mix(in srgb, var(--primary) 10%, transparent); }
+.ph-keep.on { color: var(--ok); background: color-mix(in srgb, var(--ok) 14%, transparent); }

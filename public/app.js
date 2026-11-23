@@ -1179,6 +1179,28 @@ function openSheet(lesson) {
       const li = el("li", "", p.en);
       li.append(el("span", "", p.uz));
       li.addEventListener("click", () => sayPhrase(p.en).then(() => mascot.setLevel(0)));
+      // 📒 Iborani lug'atga saqlash
+      if (state.progress) {
+        const has = (state.progress.words || []).some((w) => w.en === p.en);
+        const keep = el("button", "ph-keep" + (has ? " on" : ""), has ? "✓" : "＋");
+        keep.title = has ? "Lug'atda" : "Lug'atga saqlash";
+        keep.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          if (keep.classList.contains("on")) return toast("📒 Bu ibora lug'atingizda bor");
+          haptic();
+          try {
+            const d = await api("api/word", { json: { en: p.en } });
+            if (d.progress) state.progress = { ...state.progress, words: d.progress.words };
+            renderVocabBtn();
+            keep.classList.add("on");
+            keep.textContent = "✓";
+            toast("📒 Lug'atga saqlandi");
+          } catch (err) {
+            toast(err.message);
+          }
+        });
+        li.append(keep);
+      }
       ul.append(li);
     }
     if (!all && lesson.phrases.length > 3) {
