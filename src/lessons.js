@@ -2118,6 +2118,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-havegot",
+    category: "Grammatika gapirib",
+    title: "Have got / has got",
+    emoji: "🎒",
+    level: "A1-A2",
+    added: "2026-11-27",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice for beginners focused on have got / has got for possession, family and appearance: I've got a brother. She's got long hair. Have you got a pet? — Yes, I have. / No, I haven't. He hasn't got a car. Talk about the student's family, pets, things in their bag and what people look like. Have a natural, simple conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake (She have got, Have you got? — Yes, I got), explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Have you got any brothers or sisters?",
+    openerUz: "Aka-uka yoki opa-singillaringiz bormi?",
+    phrases: [
+      { en: "I've got two sisters.", uz: "Mening ikkita opam bor." },
+      { en: "She's got long black hair.", uz: "Uning uzun qora sochi bor." },
+      { en: "Have you got a pet?", uz: "Uy hayvoningiz bormi?" },
+      { en: "No, I haven't.", uz: "Yo'q, yo'q." },
+      { en: "He hasn't got a car.", uz: "Uning mashinasi yo'q." },
+      { en: "We've got a big garden.", uz: "Bizning katta bog'imiz bor." },
+    ],
+  },
+  {
+    id: "gr-futureadv",
+    category: "Grammatika gapirib",
+    title: "Kelasi zamon: will be doing / will have done",
+    emoji: "🔮",
+    level: "B2",
+    added: "2026-11-27",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on future continuous (will be + -ing: an action in progress at a future moment — This time tomorrow I'll be flying to Istanbul) and future perfect (will have + V3: finished before a future moment — By 2030 I will have graduated; by + time). Talk about the student's plans for tomorrow, next year and in ten years. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "What will you be doing this time tomorrow?",
+    openerUz: "Ertaga xuddi shu paytda nima qilayotgan bo'lasiz?",
+    phrases: [
+      { en: "This time tomorrow I'll be working.", uz: "Ertaga shu paytda ishlayotgan bo'laman." },
+      { en: "I'll be waiting for you at the station.", uz: "Sizni vokzalda kutib turgan bo'laman." },
+      { en: "By 2030 I will have graduated.", uz: "2030-yilgacha o'qishni tugatgan bo'laman." },
+      { en: "She will have finished the report by Friday.", uz: "U hisobotni jumagacha tugatgan bo'ladi." },
+      { en: "Will you be using your laptop tonight?", uz: "Bugun kechqurun noutbukingizni ishlatasizmi?" },
+      { en: "By then, we will have saved enough money.", uz: "O'shangacha yetarlicha pul yig'ib qo'ygan bo'lamiz." },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -3021,7 +3061,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-tobe", "gr-this", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adverbs", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-ppvsps", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-tags", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative"];
+const GR_ORDER = ["gr-tobe", "gr-this", "gr-havegot", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adverbs", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-ppvsps", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-tags", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv"];
 // Avval daraja guruhi (A1–A2 → B1 → B2), guruh ichida — GR_ORDER tartibi
 const grGroup = (lv) => (/B2/.test(lv || "") ? 2 : /A2-B1|^B1$/.test(lv || "") ? 1 : 0);
 const grRank = (l) => grGroup(l.level) * 100 + (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
@@ -3058,6 +3098,8 @@ const QUIZ = {
   "gr-causative": ["I had my hair ___ yesterday.|cut|cutting|to cut", "I need to get my phone ___.|repaired|repair|repairing", "We're having our flat ___.|painted|paint|to paint", "She ___ her car washed every week.|has|makes|does", "Where can I have my photo ___?|taken|take|took", "I'll have the pizza ___ to my office.|delivered|deliver|delivering", "He got his watch ___ at the market.|fixed|fix|fixing", "They had a new kitchen ___ last year.|installed|install|installing", "Have you ___ your eyes tested recently?|had|got to|made", "I must get my suit ___ before the wedding.|cleaned|clean|cleaning", "We had the documents ___ into English.|translated|translate|translating", "She is going to have her nails ___.|done|do|did"],
   "gr-place": ["The bank is next ___ the post office.|to|of|at", "The café is between the pharmacy ___ the bakery.|and|or|with", "There's a park ___ my house.|opposite|opposite of|front", "My bag is ___ the table.|under|between|opposite to", "The car is ___ the building.|behind|between|next", "I'm waiting in front ___ the cinema.|of|to|at", "The lamp is ___ the sofa, on the wall.|above|under|between", "Turn left ___ the corner.|at|in|on", "The school is ___ my home. It's a 2-minute walk.|near|next|between", "The cat is sitting ___ the two chairs.|between|among of|opposite", "The pharmacy is on the ___.|left|lefts|leftside of", "Our flat is ___ the shop. Just go upstairs!|above|under|opposite of"],
   "gr-indirect": ["Could you tell me where the station ___?|is|does|be", "Do you know what time the museum ___?|opens|does open|open", "I wonder ___ you could help me.|if|that|what", "Can you tell me how much it ___?|costs|does cost|cost", "Do you know ___ there is a bank nearby?|if|where if|that", "Could you tell me when the bus ___?|leaves|does leave|leave", "Do you know where ___?|he lives|does he live|lives he", "Can you tell me what ___ name is?|her|is her|does her", "I'd like to know why ___ late.|you were|were you|did you", "Do you know ___ the shop is open today?|whether|what|which", "Could you tell me where ___ the toilets?|I can find|can I find|do I find", "Do you remember what time ___?|the film started|did the film start|started the film"],
+  "gr-havegot": ["I've ___ two sisters.|got|get|gets", "She ___ got long hair.|has|have|is", "___ you got a pet?|Have|Has|Do", "Have you got a car? — No, I ___.|haven't|don't|not", "He ___ got a bike.|hasn't|haven't|doesn't", "We ___ got a big garden.|have|has|are", "They ___ got any money.|haven't|hasn't|don't", "___ your brother got a phone?|Has|Have|Does", "My cat has ___ green eyes.|got|get|gotten", "Have they got children? — Yes, they ___.|have|got|are", "I ___ got a cold. I feel bad.|have|has|am", "Has she got a laptop? — Yes, she ___.|has|have|got"],
+  "gr-futureadv": ["This time tomorrow I'll be ___ to Istanbul.|flying|fly|flown", "By 2030 I will have ___.|graduated|graduate|graduating", "She will have finished ___ Friday.|by|until|since", "Don't call at 8. I'll ___ having dinner.|be|have|being", "Will you ___ using your laptop tonight?|be|have|being", "By the time you arrive, we'll have ___ dinner.|eaten|eat|eating", "At midnight I'll ___ sleeping.|be|have|been", "He will ___ worked here for ten years next month.|have|be|has", "I'll be ___ for you at the station.|waiting|wait|waited", "By next year they will have ___ a new house.|built|build|building", "In ten years I'll ___ living in London.|be|have|being", "Will she have ___ the report by tomorrow?|finished|finish|finishing"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink", "My sister ___ English very well.|speaks|speak|speaking", "They ___ live in Tashkent.|don't|doesn't|aren't", "Where ___ he work?|does|do|is", "The shop ___ at nine o'clock.|opens|open|opening", "Water ___ at 100 degrees.|boils|boil|is boil", "My friends ___ like rap music.|don't|doesn't|isn't", "___ your brother study at university?|Does|Do|Is", "He usually ___ his homework in the evening.|does|do|doing"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on", "I was born ___ 2008.|in|on|at", "We have a party ___ Friday evening.|on|in|at", "I usually sleep ___ night.|at|in|on", "The keys are ___ the table.|on|at|in", "The meeting is ___ 3 pm.|at|in|on", "I'll see you ___ the weekend.|at|in|on", "She lives ___ Samarkand.|in|at|on", "My birthday is ___ 5th March.|on|in|at"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do", "Listen! The baby ___ crying.|is|are|be", "We ___ waiting for the bus now.|are|is|am", "What ___ you doing?|are|do|is", "She isn't ___ TV at the moment.|watching|watch|watches", "I ___ working from home this week.|am|is|are", "Why ___ you laughing?|are|is|do", "They ___ playing football right now.|are|is|be", "Be quiet! Grandma ___ sleeping.|is|are|am"],
@@ -3108,6 +3150,8 @@ const KEYWORDS = {
   "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
 };
 const RULES = {
+  "gr-havegot": "Egalik: I / you / we / they + have got, he / she / it + has got.\nI've got a brother. She's got long hair.\nInkor: haven't got / hasn't got. He hasn't got a car.\nSavol: Have you got a pet? — Yes, I have. / No, I haven't. (✗ Yes, I got)",
+  "gr-futureadv": "Kelajakda ma'lum paytda davom etayotgan ish: will be + fe'l-ing.\nThis time tomorrow I'll be flying to Istanbul.\nKelajakdagi paytgacha tugagan ish: will have + 3-shakl (ko'pincha by bilan).\nBy 2030 I will have graduated. She will have finished by Friday.",
   "gr-place": "next to — yonida, between ... and ... — orasida, opposite — ro'parasida.\nbehind — orqasida, in front of — oldida, under — tagida, above — ustida (tegmasdan), near — yaqinida.\nThe bank is next to the post office. The café is between the pharmacy and the bakery.\nThere's a park opposite my house. Turn left at the corner.",
   "gr-indirect": "Muloyim savol: Could you tell me / Do you know + savol so'zi + ega + fe'l (darak tartib).\nWhere is the station? → Could you tell me where the station is?\ndo/does/did tushib qoladi: Where does he live? → Do you know where he lives?\nHa/yo'q savol — if: Is there a bank? → Do you know if there is a bank? (✗ where is the station?)",
   "gr-adverbs": "Sifat — narsani tasvirlaydi: a quick runner, a careful driver.\nRavish — fe'lni tasvirlaydi (qanday?): he runs quickly, she drives carefully.\nKo'pincha sifat + -ly: slow → slowly, easy → easily, careful → carefully.\nNoto'g'ri: good → well, fast → fast, hard → hard, late → late. She sings well. (✗ She sings good)",
