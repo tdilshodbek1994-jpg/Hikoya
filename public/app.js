@@ -629,17 +629,35 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
   let items = pick();
   box.hidden = items.length < (lesson.id === "gr-miss" ? 1 : 2);
   if (box.hidden) return;
-  let i = 0, right = 0, missed = [];
+  let i = 0, right = 0, missed = [], marks = [];
   const head = el("b", "", title);
   const body = el("div", "qz-body");
   box.append(head, body);
   const show = () => {
     body.innerHTML = "";
     if (i >= items.length) {
-      if (lesson.id === "gr-daily") dailyTestDone(right, items.length);
+      if (lesson.id === "gr-daily") {
+        dailyTestDone(right, items.length);
+        // 📤 Natijani kvadratchalar bilan ulashish (javoblar oshkor qilinmaydi)
+        const d = dailyTest();
+        const sh = el("button", "qz-again qz-share", "📤 Natijani ulashish");
+        const text = `📅 Sado — bugungi grammatika testi\n${marks.join("")}  ${right}/${items.length}${d.streak ? `\n🔥 ${d.streak} kun ketma-ket` : ""}\n\nSen ham sinab ko'r 👇`;
+        sh.addEventListener("click", () => {
+          haptic();
+          const url = state.shareUrl || "https://t.me";
+          const link = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+          if (inTelegram && tg.openTelegramLink) tg.openTelegramLink(link);
+          else if (navigator.share) navigator.share({ text: text + (state.shareUrl ? "\n" + state.shareUrl : "") }).catch(() => {});
+          else window.open(link, "_blank");
+        });
+        body.append(el("div", "qz-marks", marks.join("")));
+        state.dailyShareBtn = sh;
+      }
       saveQuiz(lesson.id === "gr-mix" ? `gr-mix${localStorage.getItem("sado-mix-lv") || ""}` : lesson.id, right, items.length); // aralash testda — har daraja uchun alohida
       if (state.lessons.length) keepScroll(renderLessons); // plitkadagi 🧩 va Aralash test 🏆 yangilanadi
-      body.append(el("p", "qz-done", right === items.length ? `🎉 ${right}/${items.length} — a'lo! Endi gapirib mustahkamlaymiz.` : right * 2 >= items.length ? `👍 ${right}/${items.length} — yaxshi! To'g'ri shakllarini eshitib takrorlang.` : `💪 ${right}/${items.length} — qoidani yana bir o'qing va qayta urinib ko'ring.`));
+      const doneLine = (el("p", "qz-done", right === items.length ? `🎉 ${right}/${items.length} — a'lo! Endi gapirib mustahkamlaymiz.` : right * 2 >= items.length ? `👍 ${right}/${items.length} — yaxshi! To'g'ri shakllarini eshitib takrorlang.` : `💪 ${right}/${items.length} — qoidani yana bir o'qing va qayta urinib ko'ring.`));
+      body.append(doneLine);
+      if (lesson.id === "gr-daily" && state.dailyShareBtn) body.append(state.dailyShareBtn), (state.dailyShareBtn = null);
       // ❌ Xato qilingan gaplarning to'g'ri shakli — eshitish mumkin
       if (missed.length) {
         const ul = el("div", "qz-missed");
@@ -667,7 +685,7 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
       const again = el("button", "qz-again", pool.length > QN ? "🔄 Yangi savollar" : "🔄 Qayta");
       again.addEventListener("click", () => {
         if (lesson.id === "gr-miss") return openMissTest(); // ro'yxat yangilangan — qolgan xatolar bilan qayta
-        i = 0; right = 0; missed = []; state.mixWeak = new Map(); items = pick(); show();
+        i = 0; right = 0; missed = []; marks = []; state.mixWeak = new Map(); items = pick(); show();
       });
       body.append(again);
       return;
@@ -687,6 +705,7 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
         haptic();
         const ok = o === (it.mode === "pick" ? it.right : it.answer);
         quizMiss(it, lesson.id, ok);
+        marks.push(ok ? "🟩" : "🟥");
         if (ok) right++;
         else if (it.from) (state.mixWeak ||= new Map()).set(it.from, (state.mixWeak.get(it.from) || 0) + 1);
         if (!ok) missed.push(`${it.before} ${it.answer === "—" ? "" : it.answer}${it.after}`.replace(/\s+/g, " ").replace(/«[^»]*»\s*→\s*/, "").trim());

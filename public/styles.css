@@ -1205,3 +1205,6 @@ body.dark .ml-mark { background: #5eead4; }
 .gq-daily small { display: block; font-size: 12px; opacity: 0.9; margin-top: 2px; }
 .gr-quizbar .gq-daily.done { background: color-mix(in srgb, var(--ok) 14%, var(--bg)); color: var(--text); box-shadow: none; border: 1px solid color-mix(in srgb, var(--ok) 40%, transparent); }
 .gq-daily.done small { color: var(--muted); opacity: 1; }
+.qz-marks { font-size: 26px; letter-spacing: 3px; margin: 2px 0 8px; }
+.mix-quiz .qz-share { color: #fff; background: linear-gradient(135deg, var(--primary), #0ea5a4); border: none; margin-right: 8px; }
+.mix-quiz .qz-share { margin-bottom: 10px; }
