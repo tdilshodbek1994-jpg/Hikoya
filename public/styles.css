@@ -438,3 +438,9 @@ body.dark .flash-card.open .flash-a { color: #a5b4fc; }
 .more-stats[open] summary em::after { content: "  ▴"; }
 .more-stats[open] summary { margin-bottom: 18px; }
 .more-stats .trend, .more-stats .badges { margin: 0 0 10px; }
+
+/* ---------- Suhbat matni ---------- */
+.transcript { margin-top: 12px; text-align: left; }
+.transcript summary { cursor: pointer; font-weight: 700; font-size: 14.5px; padding: 12px; border-radius: 14px; background: var(--bg); list-style: none; text-align: center; }
+.transcript summary::-webkit-details-marker { display: none; }
+.tr-log { max-height: 50vh; margin-top: 10px; }

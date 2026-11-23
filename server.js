@@ -247,7 +247,7 @@ app.post("/api/end", express.json(), auth, async (req, res) => {
         report,
       })
     : null;
-  res.json({ ok: true, used: [...s.used], score, report, progress: summary(req.userId) });
+  res.json({ ok: true, used: [...s.used], score, report, progress: summary(req.userId), transcript: s.transcript.slice(-60) });
 });
 
 // 🔊 Iborani to'g'ri talaffuz bilan eshittirish (faqat darslardagi iboralar, keshlanadi)

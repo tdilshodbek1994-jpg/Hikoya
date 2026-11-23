@@ -194,12 +194,13 @@ export async function runLive(client, session, lesson, { maxMs, voice }) {
       }
       if (sc.interrupted) send({ type: "interrupted" });
       if (sc.turnComplete || sc.generationComplete) {
+        // Bir navbatda avval o'quvchi gapiradi, keyin Sado javob beradi
+        if (userTurn) session.transcript?.push({ who: "student", text: userTurn });
         if (sadoTurn) {
           session.transcript?.push({ who: "sado", text: sadoTurn });
           sadoTurn = "";
         }
         if (userTurn) {
-          session.transcript?.push({ who: "student", text: userTurn });
           const found = detectUsed(lesson, userTurn, session.used);
           for (const i of found) session.used.add(i);
           if (found.length) send({ type: "used", used: [...session.used].sort((a, b) => a - b), found });

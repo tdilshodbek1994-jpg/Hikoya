@@ -1461,6 +1461,7 @@ async function finish() {
       renderLessons();
     }
     renderReport(data.report, data.score);
+    renderTranscript(data.transcript);
   } catch {
     $("report").hidden = true;
   }
@@ -1471,6 +1472,21 @@ function el(tag, cls, text) {
   if (cls) e.className = cls;
   if (text != null) e.textContent = text;
   return e;
+}
+
+// 📜 Suhbat matni
+function renderTranscript(list) {
+  const box = $("transcript");
+  const log = $("trLog");
+  log.innerHTML = "";
+  const items = (list || []).filter((t) => t.text && t.text.trim());
+  box.hidden = !items.length;
+  box.open = false;
+  for (const t of items) {
+    const b = el("div", "bubble " + (t.who === "sado" ? "b-sado" : "b-me"));
+    b.append(el("small", "", t.who === "sado" ? "Sado" : "Siz"), el("span", "", t.text.trim()));
+    log.append(b);
+  }
 }
 
 // 📤 Natijani Telegram orqali ulashish
@@ -1584,6 +1600,13 @@ function showResult() {
   $("report").hidden = true;
   $("report").innerHTML = "";
   $("shareBtn").hidden = true;
+  $("transcript").hidden = true;
+  // Erkin suhbatda iboralar ro'yxati ma'nosiz - yashiramiz
+  ul.hidden = Boolean(lesson.liveOnly);
+  if (lesson.liveOnly) {
+    $("resultTitle").textContent = "Ajoyib suhbat bo'ldi! 🎉";
+    $("resultSub").textContent = "Sado bilan erkin suhbat yakunlandi.";
+  }
   haptic(k === n ? "success" : "light");
   show("result");
 }
