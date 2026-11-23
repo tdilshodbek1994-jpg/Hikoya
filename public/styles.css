@@ -1135,3 +1135,4 @@ body.dark .ml-mark { background: #5eead4; }
 .vocab-play { margin-top: 0; }
 /* Ibora kartasida (masalan, takrorlash darsidagi xato gaplar) birinchi harf bosh harf */
 #phraseEn::first-letter { text-transform: uppercase; }
+.lesson-sub.kid-stars { color: #d97706; font-weight: 700; letter-spacing: 1px; }

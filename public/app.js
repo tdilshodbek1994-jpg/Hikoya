@@ -345,6 +345,15 @@ function lessonButton(l) {
       b.querySelector(".lesson-sub").textContent = `✅ ${pr.best} ball · 🔁 ${daysSince(pr.last)} kun oldin`;
     }
   }
+  // ⭐ Bolalar darslari: natija yulduzlarda (90+ → 3, 60+ → 2, qolgani → 1)
+  if (l.category === "Bolalar uchun") {
+    const sub = b.querySelector(".lesson-sub");
+    if (pr) {
+      const n = pr.best >= 90 ? 3 : pr.best >= 60 ? 2 : 1;
+      sub.textContent = `${"⭐".repeat(n)}${"☆".repeat(3 - n)} · ${pr.best} ball`;
+      sub.classList.add("kid-stars");
+    } else sub.textContent = `🎈 ${l.phrases.length} ta so'z · ${l.minutes || state.sessionMinutes} daqiqa`;
+  }
   // 🧩 Grammatika mashqining eng yaxshi natijasi
   const qz = quizBest()[l.id];
   if (qz) b.querySelector(".lesson-sub").textContent += ` · 🧩 ${qz}`;
