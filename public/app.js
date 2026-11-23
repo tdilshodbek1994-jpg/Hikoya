@@ -189,6 +189,7 @@ function addDated(lessons) {
 function applyLessons(data) {
   trackNewLessons(data.lessons);
   state.lessons = data.lessons;
+  if (!$("newsSheet").hidden) showNews(); // darslar yuklangach — yangiliklardagi sonlar aniq bo'ladi
   state.voiceEnabled = data.voiceEnabled;
   state.liveEnabled = Boolean(data.liveEnabled);
   state.sessionMinutes = data.sessionMinutes;
@@ -4902,7 +4903,8 @@ const NEWS_VERSION = "2026-11-23-v2";
 // Har bir yangilik bosilsa — tegishli joy ochiladi
 const toGrammar = () => { state.filter.cat = "Grammatika gapirib"; renderChips(); renderLessons(); scrollToList(true); };
 const NEWS = [
-  ["✏️ Grammatika: 54 ta mavzu va 648 ta test savoli (for/since, so/such, inversiya va boshqalar)", toGrammar],
+  // Sonlar darslardan hisoblanadi — yangi dars qo'shilganda eskirib qolmaydi
+  [() => { const g = state.lessons.filter((l) => l.category === "Grammatika gapirib"); const q = g.reduce((a, l) => a + (l.quiz?.length || 0), 0); return g.length ? `✏️ Grammatika: ${g.length} ta mavzu va ${q} ta test savoli (for/since, both/either, inversiya va boshqalar)` : "✏️ Grammatikada yangi mavzular va testlar (for/since, both/either, inversiya va boshqalar)"; }, toGrammar],
   ["🎯 Aralash testda «Tanlash» — o'zingiz tanlagan mavzulardan yoki ⚠️ zaif mavzularingizdan test", () => { toGrammar(); openMixTest("pick"); }],
   ["📖 Qoidalarda misollarni ▶ ketma-ket tinglash; xato javobda 💡 aynan xatoingiz tushuntiriladi", () => { toGrammar(); openRules(); }],
   ["🧩 Lug'atimda so'z testi — o'zbekchasidan inglizchasini toping", () => { $("vocabBtn").click(); }],
@@ -4914,7 +4916,7 @@ function showNews() {
   if (seen === NEWS_VERSION) return;
   $("newsList").innerHTML = "";
   for (const [n, fn] of NEWS) {
-    const li = el("li", fn ? "news-go" : "", n);
+    const li = el("li", fn ? "news-go" : "", typeof n === "function" ? n() : n);
     if (fn) {
       li.append(el("span", "news-arrow", " ›"));
       li.addEventListener("click", () => {
