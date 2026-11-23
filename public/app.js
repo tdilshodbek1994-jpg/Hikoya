@@ -1500,7 +1500,7 @@ function openSheet(lesson) {
   const render = (all) => {
     ul.innerHTML = "";
     for (const p of all ? lesson.phrases : lesson.phrases.slice(0, 3)) {
-      const li = el("li", "", p.en);
+      const li = el("li", "", (p.pic ? p.pic + " " : "") + p.en);
       li.append(el("span", "", p.uz));
       li.addEventListener("click", () => sayPhrase(p.en).then(() => mascot.setLevel(0)));
       // 📒 Iborani lug'atga saqlash
@@ -3636,8 +3636,9 @@ function showResult() {
   const ul = $("resultList");
   ul.innerHTML = "";
   // 🗂️ Sarlavha: nechta ibora ishlatildi; har bir iborani bosib eshitish mumkin
-  const head = el("li", "res-title", `🗂️ Dars iboralari — ${k}/${n} ishlatildi`);
-  if (k < n) head.append(el("small", "", "Ishlatilmaganlarini bosib eshiting va keyingi safar ayting"));
+  const kidsRes = lesson.category === "Bolalar uchun";
+  const head = el("li", "res-title", kidsRes ? `⭐ So'zlarim — ${k}/${n} ta aytildi` : `🗂️ Dars iboralari — ${k}/${n} ishlatildi`);
+  if (k < n) head.append(el("small", "", kidsRes ? "Bosing, eshiting va baland ovozda takrorlang! 🔊" : "Ishlatilmaganlarini bosib eshiting va keyingi safar ayting"));
   ul.append(head);
   lesson.phrases.forEach((p, i) => {
     const li = document.createElement("li");
@@ -3648,6 +3649,8 @@ function showResult() {
     const div = document.createElement("div");
     const b = document.createElement("b");
     b.textContent = p.en;
+    // 🖼 Bolalar darsida ibora rasmi ham
+    if (p.pic) b.prepend(el("span", "res-pic", p.pic + " "));
     const s = document.createElement("span");
     s.className = "muted";
     s.textContent = p.uz;

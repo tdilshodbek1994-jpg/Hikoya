@@ -1104,3 +1104,4 @@ body.dark .ml-mark { background: #5eead4; }
 #lessonRule:not([hidden]) { max-height: 24vh; overflow-y: auto; overscroll-behavior: contain; }
 /* Yordam: ＋/－ belgisi ikki qatorli savolda ham o'rtada */
 .faq-item summary::after { top: 50%; transform: translateY(-50%); }
+.res-pic { font-size: 18px; }
