@@ -1,5 +1,5 @@
 import { Mascot } from "./mascot.js";
-import { LiveCall } from "./live.js?v=8";
+import { LiveCall } from "./live.js?v=9";
 
 const tg = window.Telegram?.WebApp;
 const inTelegram = Boolean(tg && tg.initData);
@@ -2839,6 +2839,7 @@ async function startLive(lesson) {
   let lastSpeaker = "";
   let connected = false;
   let lastErr = "";
+  const quiet = { at: Date.now(), done: false, n: 0 };
   clearTimeout(state.liveWait);
   try {
     const data = await api("api/session", { json: { lessonId: lesson.id, mode: "live", level: localStorage.getItem("sado-level") || "" } });
@@ -2858,8 +2859,11 @@ async function startLive(lesson) {
         mascot.setLevel(level);
       },
       onEvent: (m) => {
+        if (m.type === "turn" || m.type === "user") quiet.at = Date.now();
+        if (m.type === "user") quiet.done = false;
         if (m.type === "ready") {
           connected = true;
+          quiet.at = Date.now();
           clearTimeout(state.liveWait);
           startTimer();
           setPhase("speaking", "Sado gapirmoqda...");
@@ -2887,6 +2891,18 @@ async function startLive(lesson) {
       },
     });
     state.live = call;
+    // 🤫 O'quvchi 15 soniya jim qolsa — Sado o'zi yordam beradi (har jimlikda bir marta, jami 3 marta)
+    clearInterval(state.quietTimer);
+    state.quietTimer = setInterval(() => {
+      if (state.live !== call || call.stopped) return clearInterval(state.quietTimer);
+      if (call.sources.size) quiet.at = Date.now(); // jimlik Sado ovozi tugagandan keyin sanaladi
+      if (!connected || call.muted || call.sources.size || quiet.done || quiet.n >= 3) return;
+      if (Date.now() - quiet.at > 15000 && call.nudge()) {
+        quiet.done = true;
+        quiet.n++;
+        quiet.at = Date.now();
+      }
+    }, 2000);
     await call.start(data.session, tg?.initData || "", state.voice, lesson.liveOnly ? state.topic : "");
     // 20 soniyada ulanmasa — kutib qolmaymiz
     state.liveWait = setTimeout(() => {

@@ -145,6 +145,11 @@ export class LiveCall {
     this.raf = requestAnimationFrame(this.loop);
   }
 
+  // 🤫 Uzoq jimlik: Sado'dan yordam so'rash
+  nudge() {
+    try { this.ws?.readyState === WebSocket.OPEN && this.ws.send(JSON.stringify({ type: "nudge" })); return true; } catch { return false; }
+  }
+
   // 🔀 Erkin suhbatda mavzuni almashtirish so'rovi
   newTopic() {
     try { this.ws?.readyState === WebSocket.OPEN && this.ws.send(JSON.stringify({ type: "newtopic" })); return true; } catch { return false; }

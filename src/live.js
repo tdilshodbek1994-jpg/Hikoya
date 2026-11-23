@@ -295,6 +295,17 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
     try {
       const m = JSON.parse(data.toString());
       if (m.type === "end") close("foydalanuvchi");
+      // 🤫 O'quvchi uzoq jim qoldi — Sado o'zi yordam beradi (bir qo'ng'iroqda 3 martagacha)
+      if (m.type === "nudge" && (session.nudges = (session.nudges || 0) + 1) <= 3) {
+        upstream.send(
+          JSON.stringify({
+            clientContent: {
+              turns: [{ role: "user", parts: [{ text: "(System: the student has been silent for a while — maybe they didn't understand or don't know what to say. Gently help: in Uzbek, briefly repeat or simplify your last question and suggest a short English answer they can say. One or two short sentences.)" }] }],
+              turnComplete: true,
+            },
+          }),
+        );
+      }
       // 🔀 Erkin suhbat: o'quvchi boshqa mavzu so'radi (bir qo'ng'iroqda 6 martagacha)
       if (m.type === "newtopic" && lesson.liveOnly && (session.topicSwitches = (session.topicSwitches || 0) + 1) <= 6) {
         liveStats.topicSwitches++;
