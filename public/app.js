@@ -710,8 +710,9 @@ $("vocabCopy").addEventListener("click", async () => {
   const fix = state.vocabTab === "fix";
   let items = (state.progress?.words || []).filter((w) => (fix ? w.type === "fix" : w.type !== "fix"));
   // Qidiruv bo'lsa — faqat topilganlar nusxalanadi
-  const vq = $("vocabSearch").hidden ? "" : $("vocabSearch").value.trim().toLowerCase();
-  if (vq) items = items.filter((w) => [w.en, w.uz, w.wrong].some((x) => String(x || "").toLowerCase().includes(vq)));
+  const norm = (x) => String(x || "").toLowerCase().replace(/[‘’`ʻʼ]/g, "'");
+  const vq = $("vocabSearch").hidden ? "" : norm($("vocabSearch").value.trim());
+  if (vq) items = items.filter((w) => [w.en, w.uz, w.wrong].some((x) => norm(x).includes(vq)));
   const lines = items.map((w, i) => (fix ? `${i + 1}. ❌ ${w.wrong || ""} → ✅ ${w.en}${w.uz ? ` (${w.uz})` : ""}` : `${i + 1}. ${w.en} — ${w.uz || ""}`));
   const text = `${fix ? "✏️ Xatolarim" : "📚 Yangi so'zlarim"} (Sado)\n\n${lines.join("\n")}`;
   try {
