@@ -553,6 +553,10 @@ function renderVocab() {
   let items = (state.progress?.words || []).filter((w) => (state.vocabTab === "fix" ? w.type === "fix" : w.type !== "fix"));
   // Tuzatilmagan xatolar tepada, tuzatilganlari pastda
   if (state.vocabTab === "fix") items = [...items.filter((w) => !w.fixed), ...items.filter((w) => w.fixed)];
+  // 🏆 Hamma xato tuzatilgan bo'lsa — tabrik, takrorlash tugmasi "mustahkamlash"ga aylanadi
+  const allFixed = state.vocabTab === "fix" && items.length > 0 && items.every((w) => w.fixed);
+  $("reviewBtn").textContent = allFixed ? "💪 Tuzatilganlarni mustahkamlash" : "🔁 Xatolarim ustida Sado bilan ishlash";
+  if (allFixed) ul.append(el("li", "all-fixed", `🏆 Barcha ${items.length} ta xatoingiz tuzatilgan! Yangi darslarda yangi xatolar chiqsa, shu yerda paydo bo'ladi.`));
   if (!items.length) ul.append(el("li", "muted", state.vocabTab === "fix" ? "Hozircha xato yo'q 👏" : "Hozircha so'z yo'q"));
   for (const w of items) {
     const li = el("li", "rep-word" + (w.type === "fix" ? " rep-mistake" : ""));
