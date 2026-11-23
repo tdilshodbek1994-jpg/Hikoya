@@ -2878,6 +2878,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-gohome",
+    category: "Grammatika gapirib",
+    title: "Go home, go to school (artiklsiz)",
+    emoji: "🏘️",
+    level: "A2",
+    added: "2026-11-23",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on places used without 'the' when we talk about their normal purpose: go home (no 'to'!), go to school, go to work, go to bed, go to university, be at home / at school / at work / in bed, vs places that need 'the': go to the cinema, go to the bank, go to the park, go to the shop. Uzbek speakers often say 'go to home' or 'go to the school'. Ask about the student's daily routine and weekend plans. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "What time do you usually go home after school or work?",
+    openerUz: "Maktab yoki ishdan keyin odatda soat nechada uyga ketasiz?",
+    phrases: [
+      { en: "I go home at five o'clock.", uz: "Soat beshda uyga ketaman." },
+      { en: "My sister goes to school by bus.", uz: "Singlim maktabga avtobusda boradi." },
+      { en: "I usually go to bed at eleven.", uz: "Odatda soat o'n birda uxlashga yotaman." },
+      { en: "My father is at work now.", uz: "Otam hozir ishda." },
+      { en: "Let's go to the cinema tonight.", uz: "Bugun kechqurun kinoga boraylik." },
+      { en: "I need to go to the bank.", uz: "Bankka borishim kerak." },
+    ],
+  },
+  {
+    id: "gr-wasgoing",
+    category: "Grammatika gapirib",
+    title: "I was going to… (amalga oshmagan reja)",
+    emoji: "🙈",
+    level: "B1",
+    added: "2026-11-23",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on was/were going to + verb for plans in the past that did not happen (I was going to call you, but my phone died. We were going to go to the beach, but it rained.), often followed by 'but' and a reason. Also 'I was about to...' for something that nearly happened. Ask the student about plans that changed, excuses and funny situations. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Tell me about a plan that didn't work out. What were you going to do?",
+    openerUz: "Amalga oshmagan bir rejangiz haqida aytib bering. Nima qilmoqchi edingiz?",
+    phrases: [
+      { en: "I was going to call you, but my phone died.", uz: "Sizga qo'ng'iroq qilmoqchi edim, lekin telefonim o'chib qoldi." },
+      { en: "We were going to go to the beach, but it rained.", uz: "Sohilga bormoqchi edik, lekin yomg'ir yog'di." },
+      { en: "She was going to study, but she fell asleep.", uz: "U dars qilmoqchi edi, lekin uxlab qoldi." },
+      { en: "I was about to leave when you called.", uz: "Siz qo'ng'iroq qilganingizda chiqib ketmoqchi edim." },
+      { en: "What were you going to say?", uz: "Nima demoqchi edingiz?" },
+      { en: "I wasn't going to tell anyone.", uz: "Hech kimga aytmoqchi emas edim." },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -4341,7 +4381,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-can", "gr-wouldlike", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-mine", "gr-reflexive", "gr-frequency", "gr-continuous", "gr-simcon", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-howq", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-timeclause", "gr-compare", "gr-adjorder", "gr-adverbs", "gr-sense", "gr-tooenough", "gr-sosuch", "gr-modals", "gr-might", "gr-better", "gr-usedto", "gr-perfect", "gr-stative", "gr-forsince", "gr-ppvsps", "gr-pastperf", "gr-gerund", "gr-preping", "gr-subjq", "gr-conditional", "gr-relative", "gr-makedo", "gr-saytell", "gr-edking", "gr-lookslike", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-verbprep", "gr-tags", "gr-sotoo", "gr-both", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused", "gr-unless", "gr-inversion"];
+const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-can", "gr-wouldlike", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-mine", "gr-reflexive", "gr-frequency", "gr-continuous", "gr-simcon", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-howq", "gr-quantity", "gr-indefinite", "gr-articles", "gr-gohome", "gr-prepositions", "gr-place", "gr-future", "gr-timeclause", "gr-compare", "gr-adjorder", "gr-adverbs", "gr-sense", "gr-tooenough", "gr-sosuch", "gr-modals", "gr-might", "gr-better", "gr-usedto", "gr-perfect", "gr-stative", "gr-forsince", "gr-ppvsps", "gr-pastperf", "gr-wasgoing", "gr-gerund", "gr-preping", "gr-subjq", "gr-conditional", "gr-relative", "gr-makedo", "gr-saytell", "gr-edking", "gr-lookslike", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-verbprep", "gr-tags", "gr-sotoo", "gr-both", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused", "gr-unless", "gr-inversion"];
 // Avval daraja guruhi (A1–A2 → B1 → B2), guruh ichida — GR_ORDER tartibi
 const grGroup = (lv) => (/B2/.test(lv || "") ? 2 : /A2-B1|^B1$/.test(lv || "") ? 1 : 0);
 const grRank = (l) => grGroup(l.level) * 100 + (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
@@ -4406,6 +4446,8 @@ const QUIZ = {
   "gr-subjq": ["Who ___ you last night?|called|did call|did you call", "Who ___ you call yesterday?|did|does|—", "What ___?|happened|did happen|happens did", "Who ___ the window?|broke|did break|breaked", "What ___ you see?|did|do|was", "Who ___ in that house?|lives|does live|live", "Who ___ Aziz love?|does|is|—", "Who ___ the most goals?|scored|did score|did scored", "What ___ she say to you?|did|was|—", "Which team ___ the match?|won|did win|winned", "What ___ you buy at the market?|did|were|—", "Who ___ this cake? It's delicious!|made|did make|maked"],
   "gr-sense": ["You look ___ today.|tired|tiredly|tire", "That ___ great!|sounds|sounds like|is sounding", "This soup smells ___.|delicious|deliciously|delicacy", "The cake tastes too ___.|sweet|sweetly|sweets", "It looks ___ rain.|like|as|—", "It sounds ___ a good plan.|like|—|as", "I feel ___ after the exam.|happy|happily|happiness", "Her voice sounds ___.|beautiful|beautifully|beauty", "This milk smells ___. Don't drink it!|bad|badly|worse", "You look ___ your mother.|like|as|—", "The sofa feels very ___.|soft|softly|softness", "Your idea sounds ___.|interesting|interestingly|interest"],
   "gr-lookslike": ["What does your brother ___ like?|look|looks|is", "What ___ your teacher like? — She's very kind.|is|does|do", "She's tall ___ long dark hair.|with|has|and has", "I look ___ my father.|like|as|to", "What does she ___? — She likes music.|like|look like|is like", "He's very kind ___ funny.|and|with|but has", "What are your parents ___?|like|look|liking", "Who do you look ___?|like|as|to", "My sister ___ blue eyes.|has got|is|has with", "What does the new student ___ like? — She has short hair.|look|is|looks", "___ is your best friend like?|What|How|Who", "He ___ like a film star!|looks|look|is looking"],
+  "gr-gohome": ["I go ___ at five o'clock.|home|to home|to the home", "My sister goes to ___ by bus.|school|the school|a school", "I usually go to ___ at eleven.|bed|the bed|a bed", "My father is at ___ now.|work|the work|a work", "Let's go to ___ cinema tonight.|the|—|a", "I need to go to ___ bank.|the|—|a", "Are you at ___? — Yes, I'm in my room.|home|the home|house", "She goes to ___ every day by metro.|work|the work|a work", "We went to ___ park after lunch.|the|—|a", "He's studying. He goes to ___.|university|the university|an university", "What time did you get ___ yesterday?|home|to home|at home", "Children go to ___ at the age of seven.|school|the school|a school"],
+  "gr-wasgoing": ["I was ___ to call you, but my phone died.|going|go|went", "We ___ going to go to the beach, but it rained.|were|was|are", "She was going to ___, but she fell asleep.|study|studying|studied", "I was ___ to leave when you called.|about|going about|just", "What ___ you going to say?|were|was|did", "I ___ going to tell anyone.|wasn't|weren't|didn't", "They were going to buy a car, ___ it was too expensive.|but|so|and", "He was going to ___ the bus, but he missed it.|take|took|taken", "___ you going to come to the party?|Were|Was|Did", "I was about to ___ you a message.|send|sending|sent", "We were going to stay longer, but we ___ to go home.|had|have|has", "She ___ going to cook dinner, but we ordered pizza.|was|were|is"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink", "My sister ___ English very well.|speaks|speak|speaking", "They ___ live in Tashkent.|don't|doesn't|aren't", "Where ___ he work?|does|do|is", "The shop ___ at nine o'clock.|opens|open|opening", "Water ___ at 100 degrees.|boils|boil|is boil", "My friends ___ like rap music.|don't|doesn't|isn't", "___ your brother study at university?|Does|Do|Is", "He usually ___ his homework in the evening.|does|do|doing"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on", "I was born ___ 2008.|in|on|at", "We have a party ___ Friday evening.|on|in|at", "I usually sleep ___ night.|at|in|on", "The keys are ___ the table.|on|at|in", "The meeting is ___ 3 pm.|at|in|on", "I'll see you ___ the weekend.|at|in|on", "She lives ___ Samarkand.|in|at|on", "My birthday is ___ 5th March.|on|in|at"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do", "Listen! The baby ___ crying.|is|are|be", "We ___ waiting for the bus now.|are|is|am", "What ___ you doing?|are|do|is", "She isn't ___ TV at the moment.|watching|watch|watches", "I ___ working from home this week.|am|is|are", "Why ___ you laughing?|are|is|do", "They ___ playing football right now.|are|is|be", "Be quiet! Grandma ___ sleeping.|is|are|am"],
@@ -4462,6 +4504,8 @@ const KEYWORDS = {
   "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
 };
 const RULES = {
+  "gr-gohome": "home — to va the siz: I go home at five. (✗ go to home) Lekin: I'm at home.\nAsosiy maqsadda the yo'q: go to school, go to work, go to bed, go to university.\nBoshqa joylar the bilan: Let's go to the cinema. I need to go to the bank.\n(✗ go to the school — agar o'qish uchun borayotgan bo'lsangiz)",
+  "gr-wasgoing": "was / were going to + fe'l — qilmoqchi edim, lekin bo'lmadi:\nI was going to call you, but my phone died.\nWe were going to go to the beach, but it rained.\nI was about to leave when you called. (endigina ... moqchi edim)",
   "gr-sense": "look / sound / smell / taste / feel + sifat (ravish emas!): You look tired. That sounds great!\nThis soup smells delicious. I feel happy. (✗ You look tiredly)\nOt bilan — like qo'shiladi: It looks like rain. It sounds like a good plan.\n(✗ It sounds a good plan)",
   "gr-lookslike": "Tashqi ko'rinish: What does she look like? — She's tall with long dark hair.\nXarakter: What is she like? — She's kind and funny.\nYoqtirish: What does she like? — She likes music.\nO'xshash: I look like my father. (✗ I look like to my father)",
   "gr-preping": "Predlogdan keyin fe'l doim -ing bilan keladi: I'm good at drawing. I'm interested in learning Korean.\nThank you for helping me. (✗ for help me) (✗ interested in learn)\nbefore / after / instead of + -ing: Before leaving, turn off the lights.\nTaklif: How about going to the park?",
