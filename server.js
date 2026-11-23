@@ -140,7 +140,9 @@ try {
   }
   APP_VERSION = sha.slice(0, 7);
 } catch {}
-app.get("/api/version", (req, res) => res.json({ version: APP_VERSION }));
+// Ilova versiyasi (index.html dagi app.js?v=...) — telefondagi eski nusxa o'zini yangilashi uchun
+const appBuild = () => { try { return Number((fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), "public", "index.html"), "utf8").match(/app\.js\?v=(\d+)/) || [])[1]) || 0; } catch { return 0; } };
+app.get("/api/version", (req, res) => { res.setHeader("Cache-Control", "no-store"); res.json({ version: APP_VERSION, build: appBuild() }); });
 
 app.get("/api/lessons", (req, res) => {
   if (!lessonsCache) {
@@ -563,7 +565,9 @@ app.use((req, res, next) => {
   const etag = `"gz-${st.size.toString(16)}-${Math.round(st.mtimeMs).toString(16)}"`;
   res.setHeader("Vary", "Accept-Encoding");
   res.setHeader("ETag", etag);
-  res.setHeader("Cache-Control", req.query.v ? "public, max-age=31536000, immutable" : "no-cache");
+  // ⚠️ HTML hech qachon uzoq keshlanmaydi: UzDTM Sado'ni "/speaking/?v=7" bilan ochadi — avval bu
+  // index.html'ni telefonda 1 yilga muzlatib qo'yardi va yangilanishlar yetib bormasdi
+  res.setHeader("Cache-Control", req.query.v && !rel.endsWith(".html") ? "public, max-age=31536000, immutable" : "no-cache");
   if (req.headers["if-none-match"] === etag) return res.status(304).end();
   res.type(path.extname(file));
   res.setHeader("Content-Encoding", "gzip");

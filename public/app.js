@@ -5002,11 +5002,26 @@ showOnboarding();
 
 // ℹ️ Versiya va 🔄 yangilash: eski saqlangan darslar ro'yxatini tozalab, ilovani qayta yuklash
 $("appVer").textContent = `Sado v${(document.querySelector('script[src^="app.js"]')?.getAttribute("src") || "").split("v=")[1] || "?"}`;
+// 🔄 Telefonda eski sahifa qolib ketgan bo'lsa (kesh) — serverdagi versiya yangiroq bo'lsa o'zini bir marta yangilaydi
+(async () => {
+  const mine = Number((document.querySelector('script[src^="app.js"]')?.getAttribute("src") || "").split("v=")[1]) || 0;
+  try {
+    const r = await fetch(`api/version?t=${Date.now()}`, { cache: "no-store" });
+    const { build } = await r.json();
+    if (build > mine && sessionStorage.getItem("sado-upd") !== String(build)) {
+      sessionStorage.setItem("sado-upd", String(build)); // cheksiz qayta yuklanmasin
+      const u = new URL(location.href);
+      u.searchParams.set("r", String(build)); // yangi manzil — eski kesh ishlatilmaydi
+      location.replace(u.toString());
+    }
+  } catch {}
+})();
 $("appRefresh").addEventListener("click", () => {
   haptic();
   localStorage.removeItem("sado-lessons");
   toast("🔄 Yangilanmoqda...", 1500);
-  setTimeout(() => location.reload(), 300);
+  // Manzilni o'zgartirib ochamiz — telefon keshidagi eski sahifa ishlatilmaydi
+  setTimeout(() => { const u = new URL(location.href); u.searchParams.set("r", String(Date.now())); location.replace(u.toString()); }, 300);
 });
 
 // 🆕 Nima yangi: versiya o'zgarganda bir marta ko'rsatiladi (yangi foydalanuvchiga emas)
