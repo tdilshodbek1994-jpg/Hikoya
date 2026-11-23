@@ -145,6 +145,11 @@ export function summary(userId) {
       return { n: cur.length, avg: avg(cur), prevAvg: avg(prev), prevN: prev.length };
     })(),
     words: (u.words || []).slice(-150).reverse(),
+    // 🗓 Oxirgi 7 kun: qaysi kunlari mashq qilingan (eng eskisidan bugungacha)
+    days7: Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(Date.now() - (6 - i) * 86400_000);
+      return { d: today(d), on: u.days.includes(today(d)) };
+    }),
   };
 }
 

@@ -814,3 +814,11 @@ body:has(#lesson.active) .toast { top: calc(40vh + var(--safe-t)); }
 .cefr-ladder i.done { background: color-mix(in srgb, var(--ok) 18%, var(--bg)); color: var(--ok); }
 .cefr-ladder i.on { background: var(--primary); color: #fff; }
 .band.cefr { cursor: default; }
+
+/* 🗓 7 kunlik mini kalendar */
+.week { flex-wrap: wrap; }
+.days7 { flex-basis: 100%; display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 6px; }
+.days7 i { font-style: normal; text-align: center; font-size: 11px; font-weight: 700; padding: 4px 0; border-radius: 8px; background: var(--bg); color: var(--muted); }
+.days7 i.on { background: color-mix(in srgb, var(--ok) 20%, var(--bg)); color: var(--ok); }
+.days7 i.on::before { content: "✓ "; }
+.days7 i.today { box-shadow: inset 0 0 0 1.5px var(--primary); }

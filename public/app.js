@@ -765,11 +765,22 @@ function renderWeek() {
   if (!w || !w.n) return (box.hidden = true);
   box.hidden = false;
   box.innerHTML = "";
-  box.append(el("b", "", `📅 Bu hafta: ${w.n} ta dars · o'rtacha ${w.avg} ball`));
+  box.append(el("b", "", `📅 Bu hafta: ${w.n} dars · ~${w.avg} ball`));
   if (w.prevAvg != null) {
     const d = w.avg - w.prevAvg;
     box.append(el("span", d > 0 ? "up" : d < 0 ? "down" : "", d > 0 ? `▲ +${d}` : d < 0 ? `▼ ${d}` : "= barqaror"));
   } else box.append(el("span", "", "birinchi hafta 🌱"));
+  // 🗓 7 kunlik mini kalendar: mashq qilingan kunlar yashil
+  const d7 = state.progress?.days7;
+  if (d7?.length) {
+    const WD = ["Ya", "Du", "Se", "Ch", "Pa", "Ju", "Sh"];
+    const row = el("div", "days7");
+    d7.forEach((x, i) => {
+      const wd = WD[new Date(x.d + "T12:00:00").getDay()];
+      row.append(el("i", (x.on ? "on" : "") + (i === 6 ? " today" : ""), wd));
+    });
+    box.append(row);
+  }
 }
 
 function renderLessons() {
