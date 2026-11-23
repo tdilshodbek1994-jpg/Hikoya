@@ -1173,6 +1173,24 @@ function renderDaily() {
   right.append(keep, more);
   row.append(go, right);
   box.append(top, en, el("div", "daily-uz", p.uz), row);
+  // 🔁 Kechagi ibora: o'zbekchasi ko'rinadi, inglizchasini eslab, bosib tekshirish (takrorlash)
+  if (!state.dailyOff) {
+    const y = pool[((dayNo - 1) * 7919) % pool.length].p;
+    if (y.en !== p.en) {
+      const rev = el("button", "daily-yday");
+      rev.append(el("span", "", "🔁 Kechagi: "), el("b", "", `«${y.uz}»`), el("em", "", " — inglizchasini eslang, keyin bosing"));
+      rev.addEventListener("click", async () => {
+        haptic();
+        if (!rev.classList.contains("open")) {
+          rev.classList.add("open");
+          rev.lastChild.textContent = ` → ${y.en} 🔊`;
+        }
+        await sayPhrase(y.en).catch(() => speakBrowser(y.en, "en"));
+        mascot.setLevel(0);
+      });
+      box.append(rev);
+    }
+  }
 }
 
 // 📅 Haftalik xulosa

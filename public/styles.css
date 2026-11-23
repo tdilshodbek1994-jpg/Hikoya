@@ -1105,3 +1105,7 @@ body.dark .ml-mark { background: #5eead4; }
 /* Yordam: ＋/－ belgisi ikki qatorli savolda ham o'rtada */
 .faq-item summary::after { top: 50%; transform: translateY(-50%); }
 .res-pic { font-size: 18px; }
+/* 🔁 Kun iborasi: kechagi iborani takrorlash */
+.daily-yday { display: block; width: 100%; text-align: left; margin-top: 10px; padding: 8px 10px; border-radius: 10px; font: inherit; font-size: 13px; color: var(--text); background: color-mix(in srgb, var(--muted) 10%, transparent); line-height: 1.4; }
+.daily-yday em { font-style: normal; color: var(--muted); }
+.daily-yday.open em { color: var(--primary); font-weight: 700; }
