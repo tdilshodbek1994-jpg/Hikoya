@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
   <title>Sado — ingliz tilida gaplashish</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="styles.css?v=17" />
+  <link rel="stylesheet" href="styles.css?v=18" />
 </head>
 <body>
   <header class="topbar">
@@ -85,6 +85,9 @@
       <div class="sub sub-fix" id="subFixWrap" hidden>🇺🇿 <span id="subFix"></span></div>
     </div>
 
+    <button class="hint-btn" id="hintBtn" hidden>💡 Nima deyishni bilmayapman</button>
+    <div class="hint-box" id="hintBox" hidden></div>
+
     <form class="text-reply" id="textForm" hidden>
       <input id="textInput" autocomplete="off" placeholder="Inglizcha yozing..." />
       <button type="submit">Yuborish</button>
@@ -163,6 +166,6 @@
 
   <div class="toast" id="toast" hidden></div>
 
-  <script type="module" src="app.js?v=17"></script>
+  <script type="module" src="app.js?v=18"></script>
 </body>
 </html>

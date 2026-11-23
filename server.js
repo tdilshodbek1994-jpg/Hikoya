@@ -8,7 +8,7 @@ import { LESSONS, getLesson, publicLesson } from "./src/lessons.js";
 import { verifyInitData } from "./src/telegram.js";
 import { WebSocketServer } from "ws";
 import { liveEnabled, runLive } from "./src/live.js";
-import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport } from "./src/ai.js";
+import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies } from "./src/ai.js";
 import { recordSession, summary } from "./src/store.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -262,6 +262,19 @@ app.get("/api/say", auth, async (req, res) => {
       if (sayCache.size > 400) sayCache.delete(sayCache.keys().next().value);
     }
     res.json(sayCache.get(text));
+  } catch (err) {
+    sendError(res, err);
+  }
+});
+
+app.post("/api/hint", express.json(), auth, async (req, res) => {
+  const s = getSession(req, res);
+  if (!s) return;
+  s.hints = (s.hints || 0) + 1;
+  if (s.hints > 20) return res.status(429).json({ error: "Bu darsda yordam soni tugadi." });
+  const lastSado = [...s.transcript].reverse().find((t) => t.who === "sado")?.text;
+  try {
+    res.json({ hints: await suggestReplies(getLesson(s.lessonId), lastSado, s.used) });
   } catch (err) {
     sendError(res, err);
   }

@@ -413,3 +413,26 @@ Rules: at most 5 mistakes (most important first, only real mistakes), at most 5 
       .map((w) => ({ en: str(w.en, 80), uz: str(w.uz, 80) })),
   };
 }
+
+// ---- 💡 Javob namunalari (o'quvchi nima deyishni bilmasa) ----
+export async function suggestReplies(lesson, lastSado, used) {
+  const remaining = lesson.phrases.filter((_, i) => !used.has(i)).map((p) => p.en);
+  const params = {
+    model: CLAUDE_MODEL,
+    max_tokens: 1500,
+    output_config: { effort: "low" },
+    system: `You help an Uzbek student who doesn't know what to answer in an English speaking lesson. Suggest 2 short, natural replies they could say next (one very simple A2 reply, one a bit richer B1-B2 reply). If it fits, use one of these target phrases: ${remaining.join(" | ") || "(none)"}. Answer with ONLY JSON: {"hints":[{"en":"...","uz":"<Uzbek translation>"},{"en":"...","uz":"..."}]}`,
+    messages: [{ role: "user", content: `Lesson: ${lesson.title}. The teacher (Sado) just said: "${lastSado || lesson.opener}"` }],
+  };
+  if (SUPPORTS_FALLBACKS) {
+    params.betas = ["server-side-fallback-2026-07-01"];
+    params.fallbacks = "default";
+  }
+  const response = await anthropic.beta.messages.create(params);
+  if (response.stop_reason === "refusal") return [];
+  const data = parseJson(response.content.filter((b) => b.type === "text").map((b) => b.text).join(""));
+  return (Array.isArray(data?.hints) ? data.hints : [])
+    .filter((h) => h && h.en)
+    .slice(0, 3)
+    .map((h) => ({ en: String(h.en).slice(0, 200), uz: String(h.uz || "").slice(0, 200) }));
+}

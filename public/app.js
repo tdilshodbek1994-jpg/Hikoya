@@ -528,6 +528,8 @@ async function startLive(lesson) {
   $("chatlog").innerHTML = "";
   $("subsBtn").classList.add("on");
   $("muteBtn").hidden = false;
+  $("hintBtn").hidden = true;
+  clearHints();
   setMuteUi(false);
   setSubs("", "", "", "");
   setPhase("thinking", "Ulanmoqda...");
@@ -582,7 +584,39 @@ async function startLive(lesson) {
   }
 }
 
+// 💡 Javob namunalari
+$("hintBtn").addEventListener("click", async () => {
+  if (!state.session || state.hintBusy) return;
+  state.hintBusy = true;
+  haptic();
+  const box = $("hintBox");
+  box.hidden = false;
+  box.innerHTML = '<div class="rep-loading"><span class="spin"></span>Sado namunalar tayyorlamoqda...</div>';
+  try {
+    const { hints } = await api(`api/hint?session=${encodeURIComponent(state.session)}`, { json: {} });
+    box.innerHTML = "";
+    box.append(el("div", "hint-title", "Shunday deyishingiz mumkin (bosing — eshitasiz):"));
+    for (const h of hints || []) {
+      const d = el("div", "hint-item");
+      d.append(el("b", "", h.en), el("span", "", h.uz));
+      d.addEventListener("click", () => speakBrowser(h.en, "en"));
+      box.append(d);
+    }
+    if (!hints?.length) box.append(el("div", "muted", "Hozircha namuna topilmadi."));
+  } catch (e) {
+    box.innerHTML = "";
+    box.append(el("div", "muted", e.message));
+  }
+  state.hintBusy = false;
+});
+function clearHints() {
+  $("hintBox").hidden = true;
+  $("hintBox").innerHTML = "";
+}
+
 function resetLiveUi() {
+  $("hintBtn").hidden = false;
+  clearHints();
   $("chatlog").hidden = true;
   $("muteBtn").hidden = true;
   $("listenBtn").hidden = false;
@@ -943,6 +977,7 @@ $("textForm").addEventListener("submit", async (e) => {
 
 async function sendTurn(payload) {
   if (!state.session) return;
+  clearHints();
   setPhase("thinking");
   try {
     const data = await api(
