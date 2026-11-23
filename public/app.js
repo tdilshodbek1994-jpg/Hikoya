@@ -542,14 +542,17 @@ function renderVocabBtn() {
   const n = words.filter((w) => w.type !== "fix").length;
   const f = words.length - n;
   btn.innerHTML = "";
-  btn.append(el("b", "", "📒 Lug'atim"), el("small", "", `${n} so'z · ${f} xato ›`));
+  const fx = words.filter((w) => w.type === "fix" && w.fixed).length;
+  btn.append(el("b", "", "📒 Lug'atim"), el("small", "", `${n} so'z · ${f} xato${fx ? ` (✅${fx})` : ""} ›`));
 }
 function renderVocab() {
   const fixes = (state.progress?.words || []).filter((w) => w.type === "fix" && w.en);
   $("reviewBtn").hidden = state.vocabTab !== "fix" || fixes.length < 2 || Boolean(state.flash);
   const ul = $("vocabList");
   ul.innerHTML = "";
-  const items = (state.progress?.words || []).filter((w) => (state.vocabTab === "fix" ? w.type === "fix" : w.type !== "fix"));
+  let items = (state.progress?.words || []).filter((w) => (state.vocabTab === "fix" ? w.type === "fix" : w.type !== "fix"));
+  // Tuzatilmagan xatolar tepada, tuzatilganlari pastda
+  if (state.vocabTab === "fix") items = [...items.filter((w) => !w.fixed), ...items.filter((w) => w.fixed)];
   if (!items.length) ul.append(el("li", "muted", state.vocabTab === "fix" ? "Hozircha xato yo'q 👏" : "Hozircha so'z yo'q"));
   for (const w of items) {
     const li = el("li", "rep-word" + (w.type === "fix" ? " rep-mistake" : ""));
