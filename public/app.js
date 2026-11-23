@@ -1657,9 +1657,47 @@ $("shareBtn").addEventListener("click", () => {
 });
 
 // 📝 AI hisobot: ball, daraja, xatolar, maslahatlar, yangi so'zlar
+// 🎉 Konfetti (80+ ball)
+function confetti() {
+  const c = document.createElement("canvas");
+  c.className = "confetti";
+  c.width = innerWidth;
+  c.height = innerHeight;
+  document.body.append(c);
+  const ctx = c.getContext("2d");
+  const colors = ["#4f46e5", "#14b8a6", "#f59e0b", "#e11d48", "#16a34a", "#a855f7"];
+  const ps = Array.from({ length: 120 }, () => ({
+    x: Math.random() * c.width, y: -20 - Math.random() * c.height * 0.5,
+    vx: (Math.random() - 0.5) * 3, vy: 2 + Math.random() * 3, r: 4 + Math.random() * 4,
+    a: Math.random() * Math.PI, va: (Math.random() - 0.5) * 0.3, col: colors[(Math.random() * colors.length) | 0],
+  }));
+  const t0 = performance.now();
+  const tick = (t) => {
+    ctx.clearRect(0, 0, c.width, c.height);
+    for (const p of ps) {
+      p.x += p.vx; p.y += p.vy; p.a += p.va;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.col;
+      ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); ctx.restore();
+    }
+    if (t - t0 < 3200) requestAnimationFrame(tick);
+    else c.remove();
+  };
+  requestAnimationFrame(tick);
+}
+
 function renderReport(r, score) {
   const box = $("report");
   box.innerHTML = "";
+  // Sarlavha va maskot AI baliga qarab
+  const sc = r?.score ?? score;
+  if (sc != null && !state.lesson?.liveOnly) {
+    $("resultTitle").textContent = sc >= 85 ? "Ajoyib! 🎉" : sc >= 65 ? "Barakalla! 👏" : sc >= 40 ? "Yaxshi harakat! 💪" : "Boshlanishi yomon emas! 🌱";
+    resultMascot.setMood(sc >= 65 ? "happy" : "neutral");
+  }
+  if (sc >= 80) {
+    confetti();
+    haptic("success");
+  }
   state.lastResult = { r, score };
   $("shareBtn").hidden = !(r || score != null);
   if (!r) {

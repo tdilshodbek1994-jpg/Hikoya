@@ -492,3 +492,4 @@ body.dark .cue-timer { color: #a5b4fc; }
 .onb-dots i.on { width: 22px; background: var(--primary); }
 .onb-skip { margin-top: 8px; font-size: 13px; color: var(--muted); padding: 6px; }
 body.dark .onb-card { box-shadow: 0 0 0 1px var(--line), 0 20px 50px rgba(0,0,0,.5); }
+.confetti { position: fixed; inset: 0; z-index: 50; pointer-events: none; }
