@@ -3222,7 +3222,7 @@ async function finish() {
     renderReport(data.report, data.score);
     if (data.fixedNow) toast(`✅ ${data.fixedNow} ta xatoingiz tuzatildi deb belgilandi!`, 3500);
     announceBadges();
-    renderTranscript(data.transcript);
+    renderTranscript(data.transcript, data.report?.mistakes);
     renderSpeakStats(data.transcript, data.prevMaxWords);
   } catch {
     $("report").hidden = true;
@@ -3310,7 +3310,9 @@ function renderSpeakStats(list, serverBest) {
   box.firstChild ? box.firstChild.after(row) : box.append(row);
 }
 
-function renderTranscript(list) {
+function renderTranscript(list, mistakes = []) {
+  // ✏️ Hisobotdagi xatolar o'quvchi gapida qizil chiziq bilan belgilanadi (ustiga bosilsa — to'g'risi)
+  const wrongs = (mistakes || []).filter((m) => m?.wrong && m.wrong.length >= 3);
   const box = $("transcript");
   const log = $("trLog");
   log.innerHTML = "";
@@ -3319,7 +3321,18 @@ function renderTranscript(list) {
   box.open = false;
   for (const t of items) {
     const b = el("div", "bubble " + (t.who === "sado" ? "b-sado" : "b-me"));
-    b.append(el("small", "", t.who === "sado" ? "Sado" : "Siz"), el("span", "", t.text.trim()));
+    const span = el("span", "", "");
+    const txt = t.text.trim();
+    const m = t.who === "sado" ? null : wrongs.find((w) => txt.toLowerCase().includes(w.wrong.toLowerCase().replace(/[.!?]+$/, "")));
+    if (m) {
+      const key = m.wrong.replace(/[.!?]+$/, "");
+      const i = txt.toLowerCase().indexOf(key.toLowerCase());
+      const mark = el("mark", "tr-err", txt.slice(i, i + key.length));
+      mark.title = "To'g'risi: " + m.right;
+      mark.addEventListener("click", () => toast("✅ " + m.right, 3500));
+      span.append(document.createTextNode(txt.slice(0, i)), mark, document.createTextNode(txt.slice(i + key.length)));
+    } else span.textContent = txt;
+    b.append(el("small", "", t.who === "sado" ? "Sado" : "Siz"), span);
     log.append(b);
   }
   // 📋 Suhbat matnini nusxalash

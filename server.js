@@ -184,6 +184,8 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
     }
     if (mode === "tutor") {
       const say = tutorOpener(lesson);
+      // 📜 Sado birinchi gapi ham suhbat matnida (hisobot va «Suhbat matni» uchun)
+      sessions.get(id).transcript.push({ who: "sado", text: say.map((x) => x.text).join(" ") });
       const parts = await speakParts(say, { slow: Boolean(req.body?.slow) });
       return res.json({
         session: id,
@@ -197,6 +199,7 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
         parts,
       });
     }
+    sessions.get(id).transcript.push({ who: "sado", text: lesson.opener });
     const tr = req.body?.translate !== false;
     const parts = await speakParts([
       { lang: "en", text: lesson.opener },
