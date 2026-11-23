@@ -135,7 +135,8 @@ function detectUsed(lesson, text, used) {
 // Foydalanuvchi tanlaydigan ovozlar
 const VOICES = { f: process.env.GEMINI_LIVE_VOICE_F || "Kore", m: process.env.GEMINI_LIVE_VOICE_M || "Puck" };
 
-export const liveStats = { topicSwitches: 0 }; // 📊 admin uchun
+export const liveStats = { topicSwitches: 0 };
+let vadSupported = process.env.GEMINI_LIVE_VAD !== "0"; // rad etilsa — keyingi qo'ng'iroqlarda ishlatilmaydi // 📊 admin uchun
 export async function runLive(client, session, lesson, { maxMs, voice, topic }) {
   // ✏️ O'quvchi yozgan mavzu: faqat harf, raqam va oddiy belgilar, 60 belgigacha
   const custom = String(topic || "").startsWith("custom:")
@@ -185,7 +186,9 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
     return close("xato");
   }
 
+  const connect = (useVad) => {
   upstream = new WebSocket(`${WS_URL}?key=${encodeURIComponent(GEMINI_KEY)}`);
+  const myUp = upstream;
   let userTurn = "";
   let sadoTurn = "";
   let userRaw = "", sadoRaw = ""; // asl (kirill) matn — bo'laklar orasidagi so'z chegarasi uchun
@@ -202,6 +205,15 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
           systemInstruction: { parts: [{ text: livePrompt(lesson, topic) + (SELF_LEVEL[session.selfLevel] ? "\n\n" + SELF_LEVEL[session.selfLevel] : "") }] },
           inputAudioTranscription: {},
           outputAudioTranscription: {},
+          // 🗣 O'quvchi gapi tugaganini tezroq sezish: shovqinli joyda (telefon, ko'cha) Gemini
+          // gap tugaganini kutib, Sado javob bermay "qotib" qolardi
+          ...(useVad ? { realtimeInputConfig: {
+            automaticActivityDetection: {
+              startOfSpeechSensitivity: "START_SENSITIVITY_LOW", // fon shovqinini gap deb olmasin
+              endOfSpeechSensitivity: "END_SENSITIVITY_HIGH", // jimlik boshlanishi bilan javob bersin
+              silenceDurationMs: 700,
+            },
+          } } : {}),
         },
       }),
     );
@@ -270,6 +282,13 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
   });
 
   upstream.on("close", (code, reason) => {
+    if (myUp !== upstream) return; // eski (qayta ulangan) ulanish
+    // ⚙️ Gemini sozlamani (realtimeInputConfig) qabul qilmasa — bir marta usiz qayta ulanamiz
+    if (!closed && !ready && useVad) {
+      vadSupported = false;
+      console.error("Gemini Live: VAD sozlamasi rad etildi, usiz qayta ulanamiz:", code, reason?.toString().slice(0, 200));
+      return connect(false);
+    }
     if (!closed) {
       console.error("Gemini Live yopildi:", code, reason?.toString().slice(0, 200));
       if (code !== 1000) send({ type: "error", message: `Ulanish uzildi (${code}). Qaytadan boshlang.` });
@@ -277,10 +296,15 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
     }
   });
   upstream.on("error", (e) => {
+    if (myUp !== upstream) return;
     console.error("Gemini Live xatosi:", e.message);
+    if (!ready && useVad) return; // "close" hodisasi qayta ulanadi
     send({ type: "error", message: "Gemini bilan ulanishda xato." });
     close("xato");
   });
+
+  };
+  connect(vadSupported);
 
   client.on("message", (data, isBinary) => {
     if (closed || !ready || upstream.readyState !== WebSocket.OPEN) return;

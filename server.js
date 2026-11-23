@@ -127,9 +127,24 @@ const lessonOf = (s) => s.custom || getLesson(s.lessonId);
 // ---- API ----
 // Darslar ro'yxati server ishlaguncha o'zgarmaydi — bir marta tayyorlab, siqib qo'yamiz (~80 KB → ~15 KB)
 let lessonsCache = null;
+// 🏷 Server versiyasi (git commit + sana) — ilovada «⚙️ Sozlamalar» ostida ko'rinadi
+let APP_VERSION = "";
+try {
+  const head = fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), ".git", "HEAD"), "utf8").trim();
+  const gitDir = path.join(path.dirname(fileURLToPath(import.meta.url)), ".git");
+  const ref = head.startsWith("ref:") ? head.slice(5).trim() : "";
+  let sha = head;
+  if (ref) {
+    try { sha = fs.readFileSync(path.join(gitDir, ref), "utf8").trim(); }
+    catch { sha = (fs.readFileSync(path.join(gitDir, "packed-refs"), "utf8").split("\n").find((l) => l.endsWith(" " + ref)) || "").split(" ")[0]; }
+  }
+  APP_VERSION = sha.slice(0, 7);
+} catch {}
+app.get("/api/version", (req, res) => res.json({ version: APP_VERSION }));
+
 app.get("/api/lessons", (req, res) => {
   if (!lessonsCache) {
-    const body = Buffer.from(JSON.stringify({ lessons: LESSONS.map(publicLesson), voiceEnabled, liveEnabled, sessionMinutes: SESSION_MINUTES, shareUrl: process.env.SHARE_URL || "" }));
+    const body = Buffer.from(JSON.stringify({ lessons: LESSONS.map(publicLesson), voiceEnabled, liveEnabled, sessionMinutes: SESSION_MINUTES, shareUrl: process.env.SHARE_URL || "", version: APP_VERSION }));
     lessonsCache = { body, gz: zlib.gzipSync(body, { level: 9 }), etag: `"l-${crypto.createHash("sha1").update(body).digest("hex").slice(0, 16)}"` };
   }
   res.setHeader("Content-Type", "application/json; charset=utf-8");
