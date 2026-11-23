@@ -1958,6 +1958,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-makedo",
+    category: "Grammatika gapirib",
+    title: "Make yoki do?",
+    emoji: "🛠️",
+    level: "B1",
+    added: "2026-11-26",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on make vs do collocations: do homework, do the shopping, do exercise, do your best, do a favour, do business; make a mistake, make a decision, make friends, make money, make a plan, make a phone call, make noise, make breakfast. Talk about the student's daily tasks, decisions and plans. Have a natural conversation that makes the student use these collocations a lot. Ask questions, listen, whenever the student mixes make and do, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "What do you usually do on Saturday? Do you do the shopping or make plans with friends?",
+    openerUz: "Shanba kuni odatda nima qilasiz? Xarid qilasizmi yoki do'stlar bilan reja tuzasizmi?",
+    phrases: [
+      { en: "I do my homework in the evening.", uz: "Men uy vazifamni kechqurun qilaman." },
+      { en: "I made a big mistake.", uz: "Katta xato qildim." },
+      { en: "We need to make a decision.", uz: "Biz qaror qabul qilishimiz kerak." },
+      { en: "Can you do me a favour?", uz: "Menga bir yaxshilik qila olasizmi?" },
+      { en: "She makes friends easily.", uz: "U osongina do'st orttiradi." },
+      { en: "I'll do my best.", uz: "Qo'limdan kelganini qilaman." },
+    ],
+  },
+  {
+    id: "gr-edking",
+    category: "Grammatika gapirib",
+    title: "-ed / -ing sifatlar: bored yoki boring?",
+    emoji: "😴",
+    level: "B1",
+    added: "2026-11-26",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on -ed and -ing adjectives: -ed describes how a person feels (bored, interested, tired, excited, surprised, confused, worried), -ing describes the thing or person that causes the feeling (boring, interesting, tiring, exciting, surprising, confusing). Talk about films, lessons, trips and jobs. Have a natural conversation that makes the student use these adjectives a lot. Ask questions, listen, whenever the student mixes them (I am boring), explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "What was the last film you watched? Was it interesting or boring?",
+    openerUz: "Oxirgi ko'rgan filmingiz qaysi? Qiziqarli edimi yoki zerikarli?",
+    phrases: [
+      { en: "The film was really boring.", uz: "Film juda zerikarli edi." },
+      { en: "I was bored, so I left.", uz: "Zerikdim, shuning uchun ketdim." },
+      { en: "I'm interested in history.", uz: "Men tarixga qiziqaman." },
+      { en: "The trip was very tiring.", uz: "Sayohat juda charchatuvchi edi." },
+      { en: "We were excited about the concert.", uz: "Konsertdan hayajonda edik." },
+      { en: "This rule is confusing.", uz: "Bu qoida chalkash." },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -2861,7 +2901,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-tobe", "gr-this", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-frequency", "gr-continuous", "gr-past", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-future", "gr-compare", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-relative", "gr-reported", "gr-passive", "gr-phrasal", "gr-tags", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking"];
+const GR_ORDER = ["gr-tobe", "gr-this", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-frequency", "gr-continuous", "gr-past", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-future", "gr-compare", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-passive", "gr-phrasal", "gr-tags", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking"];
 // Avval daraja guruhi (A1–A2 → B1 → B2), guruh ichida — GR_ORDER tartibi
 const grGroup = (lv) => (/B2/.test(lv || "") ? 2 : /A2-B1|^B1$/.test(lv || "") ? 1 : 0);
 const grRank = (l) => grGroup(l.level) * 100 + (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
@@ -2890,6 +2930,8 @@ const QUIZ = {
   "gr-indefinite": ["I want ___ to drink.|something|anything|nothing", "Is ___ at home?|anyone|anywhere|anything", "___ called me today. My phone was quiet.|Nobody|Anybody|Somebody not", "I looked ___ for my keys.|everywhere|anywhere|nowhere", "There isn't ___ in the fridge.|anything|nothing|something", "___ loves plov.|Everybody|Anybody|Nobody not", "Did you go ___ last weekend?|anywhere|somewhere not|nowhere", "I didn't see ___ at the bus stop.|anybody|nobody|somebody", "There's ___ at the door. Can you open it?|someone|anyone|no one", "I have ___ to do today. I'm bored.|nothing|anything|something not", "Can I get you ___?|anything|nothing|nobody", "She knows ___ about computers. She's an expert.|everything|anything|nothing"],
   "gr-modalperf": ["He's late. He must ___ missed the bus.|have|has|had", "I failed. I should have ___ harder.|studied|study|studying", "She ___ have seen me — I was hiding.|can't|mustn't|shouldn't to", "You could ___ called me! I waited all day.|have|has|of", "They ___ have taken a taxi. I'm not sure.|might|must to|should to", "I shouldn't have ___ so much cake.|eaten|ate|eat", "The road is wet. It must have ___ last night.|rained|rain|raining", "We ___ have left earlier. Now we're late.|should|must|can't", "He looks happy. He must have ___ the exam.|passed|pass|passing", "You ___ have told me! I didn't know.|should|must|might not", "She can't have ___ it alone. It's too heavy.|carried|carry|carrying", "I might have ___ my phone in the taxi.|left|leave|leaving"],
   "gr-linking": ["___ it was cold, we went swimming.|Although|Despite|However", "___ the rain, the match continued.|Despite|Although|Even though", "It's cheap. ___, it's very slow.|However|Although|Despite", "Cities are noisy, ___ villages are quiet.|whereas|despite|however", "In spite ___ being tired, she kept working.|of|that|to", "He was ill. ___, he stayed at home.|Therefore|Although|Despite", "___ he studied hard, he didn't pass.|Even though|In spite of|However", "Despite ___ late, he got the job.|arriving|he arrived|arrive", "The hotel was nice. ___, the food was terrible.|However|Despite|Although", "I like tea, ___ my sister prefers coffee.|while|despite|therefore", "Although ___ expensive, the phone sold well.|it was|being of|despite", "The flight was delayed. As a ___, we missed the meeting.|result|reason|despite"],
+  "gr-makedo": ["I always ___ my homework after dinner.|do|make|have", "Don't worry, everyone ___ mistakes.|makes|does|takes", "We need to ___ a decision today.|make|do|take on", "Can you ___ me a favour?|do|make|give", "She wants to ___ a lot of money.|make|do|win up", "I ___ the shopping on Saturdays.|do|make|go", "He ___ friends very easily.|makes|does|takes", "Please don't ___ so much noise!|make|do|give", "I'll ___ my best in the exam.|do|make|give it", "Let's ___ a plan for the weekend.|make|do|get", "I ___ exercise every morning.|do|make|play", "Could you ___ a phone call for me?|make|do|take on"],
+  "gr-edking": ["The film was so ___ that I fell asleep.|boring|bored|bore", "I'm ___ in learning Korean.|interested|interesting|interest", "The trip was long and ___.|tiring|tired|tire", "We were very ___ about the concert.|excited|exciting|excite", "This grammar rule is ___.|confusing|confused|confuse", "She was ___ when she heard the news.|surprised|surprising|surprise", "History is a very ___ subject.|interesting|interested|interest", "I'm ___ after work. I need to rest.|tired|tiring|tire", "The match was really ___!|exciting|excited|excite", "Are you ___? Let's go for a walk.|bored|boring|bore", "His story was ___. Nobody believed it.|amazing|amazed|amaze", "I was ___ because I didn't understand the task.|confused|confusing|confuse"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink", "My sister ___ English very well.|speaks|speak|speaking", "They ___ live in Tashkent.|don't|doesn't|aren't", "Where ___ he work?|does|do|is", "The shop ___ at nine o'clock.|opens|open|opening", "Water ___ at 100 degrees.|boils|boil|is boil", "My friends ___ like rap music.|don't|doesn't|isn't", "___ your brother study at university?|Does|Do|Is", "He usually ___ his homework in the evening.|does|do|doing"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on", "I was born ___ 2008.|in|on|at", "We have a party ___ Friday evening.|on|in|at", "I usually sleep ___ night.|at|in|on", "The keys are ___ the table.|on|at|in", "The meeting is ___ 3 pm.|at|in|on", "I'll see you ___ the weekend.|at|in|on", "She lives ___ Samarkand.|in|at|on", "My birthday is ___ 5th March.|on|in|at"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do", "Listen! The baby ___ crying.|is|are|be", "We ___ waiting for the bus now.|are|is|am", "What ___ you doing?|are|do|is", "She isn't ___ TV at the moment.|watching|watch|watches", "I ___ working from home this week.|am|is|are", "Why ___ you laughing?|are|is|do", "They ___ playing football right now.|are|is|be", "Be quiet! Grandma ___ sleeping.|is|are|am"],
@@ -2940,6 +2982,8 @@ const KEYWORDS = {
   "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
 };
 const RULES = {
+  "gr-makedo": "do — ish, vazifa, faoliyat: do homework, do the shopping, do exercise, do your best, do a favour.\nmake — yangi narsa yaratish/natija: make a mistake, make a decision, make money, make friends, make a plan, make breakfast.\nI made a mistake. (✗ I did a mistake)\nCan you do me a favour? I'll do my best.",
+  "gr-edking": "-ed — odam nima his qiladi: I'm bored. She's interested. We were tired.\n-ing — narsa/odam qanday ta'sir qiladi: The film is boring. History is interesting. The trip was tiring.\nI'm boring = men zerikarli odamman! (✗ I'm boring, so I left)\nI was bored because the lesson was boring.",
   "gr-modalperf": "O'tmish haqida: modal + have + 3-shakl.\nshould have — afsus/tanqid: I should have studied. You shouldn't have said that.\nmust have — kuchli taxmin: He must have forgotten. can't have — bo'lishi mumkin emas: She can't have seen it.\nmight / could have — ehtimol: They might have missed the bus. could have — imkon bor edi: You could have called me.",
   "gr-linking": "although / even though + gap: Although it was cold, we swam.\ndespite / in spite of + ot yoki -ing: Despite the rain, we went out. In spite of being tired, she worked.\nHowever — yangi gap boshida: It's cheap. However, it's slow.\nwhereas / while — qarama-qarshi: Cities are noisy, whereas villages are quiet. therefore — shu sababli.",
   "gr-pronouns": "Ega (kim?): I, you, he, she, it, we, they. Fe'ldan keyin (kimni? kimga?): me, you, him, her, it, us, them.\nShe helps me. I called him. Can you help us?\nPredlogdan keyin ham: with me, for her, to them.\nHe likes her. (✗ Him likes she)",
