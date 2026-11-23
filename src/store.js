@@ -53,7 +53,7 @@ function user(id) {
   return db.users[id];
 }
 
-export function recordSession(userId, { lessonId, mode, used, total, seconds, report }) {
+export function recordSession(userId, { lessonId, mode, used, total, seconds, report, words = 0 }) {
   const u = user(userId);
   const score = Number.isFinite(report?.score) ? report.score : Math.round((used / Math.max(1, total)) * 100);
   const l = (u.lessons[lessonId] ||= { best: 0, count: 0, last: "" });
@@ -64,6 +64,7 @@ export function recordSession(userId, { lessonId, mode, used, total, seconds, re
   if (!u.days.includes(d)) u.days.push(d);
   u.days = u.days.slice(-400);
   u.seconds += Math.max(0, Math.round(seconds || 0));
+  u.maxWords = Math.max(u.maxWords || 0, words); // 🏆 bir darsda eng ko'p aytilgan so'zlar
   u.history.push({
     at: new Date().toISOString(),
     lessonId,
@@ -161,6 +162,7 @@ export function summary(userId) {
       return { n: cur.length, avg: avg(cur), prevAvg: avg(prev), prevN: prev.length };
     })(),
     remind: Boolean(u.remind),
+    maxWords: u.maxWords || 0,
     remindHour: u.remindHour || null,
     words: (u.words || []).slice(-150).reverse(),
     // 🗓 Oxirgi 7 kun: qaysi kunlari mashq qilingan (eng eskisidan bugungacha)

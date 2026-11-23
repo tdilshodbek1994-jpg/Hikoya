@@ -1396,7 +1396,7 @@ $("delData").addEventListener("click", () => {
     if (!ok) return;
     try {
       await api("api/progress", { method: "DELETE" });
-      for (const k of ["sado-favs", "sado-more", "sado-progress", "sado-flash", "sado-badges"]) localStorage.removeItem(k);
+      for (const k of ["sado-favs", "sado-more", "sado-progress", "sado-flash", "sado-badges", "sado-maxwords"]) localStorage.removeItem(k);
       state.progress = null;
       state.favs = new Set();
       $("setSheet").hidden = true;
@@ -2778,7 +2778,7 @@ async function finish() {
     if (data.fixedNow) toast(`✅ ${data.fixedNow} ta xatoingiz tuzatildi deb belgilandi!`, 3500);
     announceBadges();
     renderTranscript(data.transcript);
-    renderSpeakStats(data.transcript);
+    renderSpeakStats(data.transcript, data.prevMaxWords);
   } catch {
     $("report").hidden = true;
   }
@@ -2843,7 +2843,7 @@ function checkCourseDone(before) {
 
 // 📜 Suhbat matni
 // 🗣 Qancha gapirildi: gaplar va so'zlar soni (ayniqsa erkin suhbat uchun foydali)
-function renderSpeakStats(list) {
+function renderSpeakStats(list, serverBest) {
   const mine = (list || []).filter((t) => t.who === "student" && t.text?.trim());
   const box = $("report");
   if (!mine.length || box.hidden) return;
@@ -2856,7 +2856,8 @@ function renderSpeakStats(list) {
     el("span", "", `📏 eng uzun gap: ${longest} so'z`),
   );
   // 🏆 Bir darsda eng ko'p gapirilgan so'zlar rekordi
-  const best = Number(localStorage.getItem("sado-maxwords")) || 0;
+  // Rekord serverda saqlanadi (boshqa telefondan kirsa ham); eski versiyadagi mahalliy qiymat ham hisobga olinadi
+  const best = Math.max(Number(serverBest) || 0, Number(localStorage.getItem("sado-maxwords")) || 0);
   if (words > best) {
     localStorage.setItem("sado-maxwords", String(words));
     if (best > 0) row.append(el("span", "rec", `🏆 Yangi rekord! (avval ${best})`));

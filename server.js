@@ -316,7 +316,10 @@ app.post("/api/end", express.json(), auth, async (req, res) => {
   }
   // 🔁 Takrorlash darsida ishlatilgan (to'g'ri aytilgan) iboralar — tuzatilgan xato
   const fixedNow = s.lessonId === "review" ? markFixed(req.userId, [...s.used].map((i) => lesson.phrases[i]?.en).filter(Boolean)) : 0;
+  const prevMaxWords = summary(req.userId).maxWords || 0;
+  const words = s.transcript.filter((t) => t.who === "student").reduce((n, t) => n + (t.text.match(/[A-Za-z]+/g) || []).length, 0);
   const score = recordSession(req.userId, {
+    words,
     lessonId: s.lessonId,
     mode: s.mode,
     used,
@@ -324,7 +327,7 @@ app.post("/api/end", express.json(), auth, async (req, res) => {
     seconds: (Date.now() - s.startedAt) / 1000,
     report,
   });
-  res.json({ ok: true, used: [...s.used], score, report, fixedNow, progress: summary(req.userId), transcript: s.transcript.slice(-60) });
+  res.json({ ok: true, used: [...s.used], score, report, fixedNow, prevMaxWords, progress: summary(req.userId), transcript: s.transcript.slice(-60) });
 });
 
 // 🔊 Iborani to'g'ri talaffuz bilan eshittirish (faqat darslardagi iboralar, keshlanadi)
