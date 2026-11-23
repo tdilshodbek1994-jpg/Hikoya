@@ -27,6 +27,8 @@
 const key = new URLSearchParams(location.search).get("key") || "";
 const out = document.getElementById("out");
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const MODES = { live: "📞 Jonli suhbat", tutor: "🇺🇿 Ustoz", chat: "🇬🇧 Inglizcha suhbat" };
+function load() {
 fetch("api/admin/stats", { headers: { "X-Admin-Key": key } })
   .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
   .then(({ ok, d }) => {
@@ -44,12 +46,18 @@ fetch("api/admin/stats", { headers: { "X-Admin-Key": key } })
       <p style="color:var(--muted);font-size:13px;margin:10px 2px 0">💾 Ovoz keshi: ${d.ttsCache.hits} marta qayta ishlatildi (tejaldi), ${d.ttsCache.misses} marta yangi yaratildi</p>
       <h2>📅 Oxirgi 7 kun (darslar)</h2>
       <div class="card"><div class="bars">${d.byDay.map(([k, n]) => `<div class="bar">${n}<i style="height:${(n / max) * 80}px"></i>${k.slice(5)}</div>`).join("")}</div></div>
+      <h2>🎛 Rejimlar</h2>
+      <div class="card">${(d.byMode || []).map((m) => `<div class="row"><span>${esc(MODES[m.mode] || m.mode)} <small style="color:var(--muted)">· o'rtacha ${m.avg} ball</small></span><b>${m.n}</b></div>`).join("") || "<p>Hali dars yo'q</p>"}</div>
       <h2>✏️ Eng ko'p uchraydigan xatolar</h2>
       <div class="card">${(d.mistakes || []).map((m) => `<div class="row"><span><s style="color:#e11d48">${esc(m.wrong)}</s> → <b style="color:#16a34a">${esc(m.right)}</b><br><small style="color:var(--muted)">${esc(m.why)}</small></span><b>${m.n}</b></div>`).join("") || "<p>Hali xato yo'q</p>"}</div>
       <h2>🔥 Eng mashhur mavzular</h2>
-      <div class="card">${d.top.map((t) => `<div class="row"><span>${esc(t.emoji)} ${esc(t.title)}</span><b>${t.n}</b></div>`).join("") || "<p>Hali dars yo'q</p>"}</div>`;
+      <div class="card">${d.top.map((t) => `<div class="row"><span>${esc(t.emoji)} ${esc(t.title)}</span><b>${t.n}</b></div>`).join("") || "<p>Hali dars yo'q</p>"}</div>
+      <p style="color:var(--muted);font-size:12px;text-align:center;margin-top:14px">🔄 Har 60 soniyada avtomatik yangilanadi · oxirgi: ${new Date().toLocaleTimeString("uz-UZ", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</p>`;
   })
   .catch(() => (out.innerHTML = '<p class="err">Server bilan aloqa yo\'q</p>'));
+}
+load();
+setInterval(() => { if (!document.hidden) load(); }, 60000);
 </script>
 </body>
 </html>

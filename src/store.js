@@ -172,6 +172,16 @@ export function adminStats() {
       return [...m.values()].sort((a, b) => b.n - a.n).slice(0, 10);
     })(),
     byDay: [...week].sort().map((k) => [k, byDay[k] || 0]),
+    // 🎛 Rejimlar bo'yicha: nechta dars va o'rtacha ball
+    byMode: (() => {
+      const m = {};
+      for (const h of all) {
+        const k = h.mode || "chat";
+        (m[k] ||= { n: 0, sum: 0 }).n++;
+        m[k].sum += h.score || 0;
+      }
+      return Object.entries(m).map(([mode, v]) => ({ mode, n: v.n, avg: Math.round(v.sum / v.n) })).sort((a, b) => b.n - a.n);
+    })(),
   };
 }
 
