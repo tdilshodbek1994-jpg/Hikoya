@@ -9,7 +9,7 @@ import { verifyInitData } from "./src/telegram.js";
 import { WebSocketServer } from "ws";
 import { liveEnabled, runLive } from "./src/live.js";
 import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies } from "./src/ai.js";
-import { recordSession, summary, adminStats } from "./src/store.js";
+import { recordSession, summary, adminStats, startedToday, countStart, startsTodayTotal } from "./src/store.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -30,13 +30,11 @@ app.set("trust proxy", true);
 
 // ---- Xotiradagi sessiyalar ----
 const sessions = new Map(); // id -> { userId, lessonId, messages, used:Set, turns, expiresAt }
-const daily = new Map(); // `${userId}:${sana}` -> soni
+
 
 setInterval(() => {
   const now = Date.now();
   for (const [id, s] of sessions) if (s.expiresAt + 60_000 < now) sessions.delete(id);
-  const today = new Date().toISOString().slice(0, 10);
-  for (const key of daily.keys()) if (!key.endsWith(today)) daily.delete(key);
 }, 60_000).unref();
 
 // ---- Telegram orqali kirishni tekshirish ----
@@ -108,12 +106,11 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
       error: req.body?.lessonId === "review" ? "Hali xatolar yetarli emas — avval bir nechta dars o'ting." : "Bunday dars yo'q.",
     });
 
-  const key = `${req.userId}:${new Date().toISOString().slice(0, 10)}`;
-  const count = daily.get(key) || 0;
+  const count = startedToday(req.userId);
   if (req.userId !== "dev" && count >= DAILY_SESSIONS) {
     return res.status(429).json({ error: `Bugungi limit tugadi (${DAILY_SESSIONS} ta dars). Ertaga davom etamiz!` });
   }
-  daily.set(key, count + 1);
+  countStart(req.userId);
 
   // "tutor" - o'zbekcha ustoz (standart), "chat" - inglizcha suhbat
   const wanted = req.body?.mode;
@@ -316,11 +313,12 @@ app.get("/api/admin/stats", (req, res) => {
   const s = adminStats();
   s.top = s.top.map(([id, n]) => ({ id, n, title: getLesson(id)?.title || id, emoji: getLesson(id)?.emoji || "" }));
   s.liveNow = [...sessions.values()].filter((x) => Date.now() < x.expiresAt).length;
+  s.startsToday = startsTodayTotal();
   res.json(s);
 });
 
 app.get("/api/progress", auth, (req, res) => {
-  const used = daily.get(`${req.userId}:${new Date().toISOString().slice(0, 10)}`) || 0;
+  const used = startedToday(req.userId);
   res.json({ ...summary(req.userId), limit: req.userId === "dev" ? 0 : DAILY_SESSIONS, startedToday: used });
 });
 

@@ -37,7 +37,7 @@ fetch("api/admin/stats", { headers: { "X-Admin-Key": key } })
         <div class="k"><b>${d.users}</b><span>jami o'quvchi</span></div>
         <div class="k"><b>${d.activeToday}</b><span>bugun faol</span></div>
         <div class="k"><b>${d.activeWeek}</b><span>7 kunda faol</span></div>
-        <div class="k"><b>${d.liveNow}</b><span>hozir darsda</span></div>
+        <div class="k"><b>${d.liveNow}</b><span>hozir darsda · bugun ${d.startsToday} boshlandi</span></div>
         <div class="k"><b>${d.lessons}</b><span>jami darslar (bugun ${d.lessonsToday})</span></div>
         <div class="k"><b>${d.avgScore}</b><span>o'rtacha ball · ${d.minutes} daqiqa</span></div>
       </div>

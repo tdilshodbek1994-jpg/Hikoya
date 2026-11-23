@@ -16,20 +16,34 @@ try {
 
 let timer = null;
 let warned = false;
-function save() {
+let dirty = false;
+function writeNow() {
   clearTimeout(timer);
-  timer = setTimeout(() => {
-    try {
-      fs.mkdirSync(DIR, { recursive: true });
-      const tmp = FILE + ".tmp";
-      fs.writeFileSync(tmp, JSON.stringify(db));
-      fs.renameSync(tmp, FILE);
-    } catch (e) {
-      if (!warned) console.error("Progressni saqlab bo'lmadi:", e.message);
-      warned = true;
-    }
-  }, 500);
+  if (!dirty) return;
+  dirty = false;
+  try {
+    fs.mkdirSync(DIR, { recursive: true });
+    const tmp = FILE + ".tmp";
+    fs.writeFileSync(tmp, JSON.stringify(db));
+    fs.renameSync(tmp, FILE);
+  } catch (e) {
+    if (!warned) console.error("Progressni saqlab bo'lmadi:", e.message);
+    warned = true;
+  }
 }
+function save() {
+  dirty = true;
+  clearTimeout(timer);
+  timer = setTimeout(writeNow, 500);
+}
+// Server to'xtatilganda (systemctl restart) kutilayotgan yozuvlarni darhol saqlaymiz
+for (const sig of ["SIGTERM", "SIGINT"]) {
+  process.once(sig, () => {
+    writeNow();
+    process.exit(0);
+  });
+}
+process.once("beforeExit", writeNow);
 
 // Toshkent vaqti bo'yicha sana (YYYY-MM-DD)
 const today = (d = new Date()) => new Date(d.getTime() + 5 * 3600_000).toISOString().slice(0, 10);
@@ -137,4 +151,20 @@ export function adminStats() {
     top: Object.entries(byLesson).sort((a, b) => b[1] - a[1]).slice(0, 10),
     byDay: [...week].sort().map((k) => [k, byDay[k] || 0]),
   };
+}
+
+// ⏱ Kunlik limit hisobi (server qayta yoqilganda ham saqlanadi)
+export function startedToday(userId) {
+  const u = db.users[userId];
+  return u && u.started?.day === today() ? u.started.n : 0;
+}
+export function countStart(userId) {
+  const u = user(userId);
+  if (u.started?.day !== today()) u.started = { day: today(), n: 0 };
+  u.started.n += 1;
+  save();
+  return u.started.n;
+}
+export function startsTodayTotal() {
+  return Object.values(db.users).reduce((s, u) => s + (u.started?.day === today() ? u.started.n : 0), 0);
 }
