@@ -650,9 +650,16 @@ function renderVisual(lesson) {
     v.items.forEach((it, i) => {
       const c = el("div", "vis-pic");
       c.append(el("small", "", `${i + 1}-rasm`), el("div", "vis-emoji", it.emoji), el("b", "", it.en), el("span", "", it.uz));
+      // ✓ Rasmni tasvirlab bo'lgach bosib belgilash; hammasi tayyor bo'lsa — solishtirishga o'tish eslatmasi
+      c.addEventListener("click", () => {
+        haptic();
+        c.classList.toggle("done");
+        const all = row.querySelectorAll(".vis-pic");
+        if ([...all].every((x) => x.classList.contains("done"))) toast("🎯 Endi solishtiring: «Both pictures show... but...», «whereas...»", 3500);
+      });
       row.append(c);
     });
-    box.append(row);
+    box.append(row, el("small", "vis-tip", "👆 Rasmni tasvirlab bo'lgach, ustiga bosib belgilang"));
   } else if (v.type === "chart") {
     box.append(el("div", "vis-title", "📊 " + v.title));
     const max = Math.max(...v.items.map((x) => x.value));

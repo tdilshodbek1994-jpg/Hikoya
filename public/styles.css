@@ -1118,4 +1118,10 @@ body.dark .ml-mark { background: #5eead4; }
 .q-list li { cursor: pointer; }
 .q-list li.done { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--ok); }
 .q-list li.done::marker { content: "✓  "; color: var(--ok); font-weight: 800; }
-#lesson:has(#visual details[open]) .mascot { width: min(34vw, 130px); }
+#lesson:has(#visual details[open]) .mascot, #lesson:has(#visual .vis-pics) .mascot, #lesson:has(#visual .vis-bar) .mascot { width: min(34vw, 130px); }
+
+/* ✓ CEFR rasmlari: tasvirlangan rasm belgisi */
+.vis-pic { cursor: pointer; position: relative; transition: opacity 0.2s; }
+.vis-pic.done { outline: 2px solid var(--ok); outline-offset: -2px; }
+.vis-pic.done::after { content: "✓"; position: absolute; top: 6px; right: 8px; width: 22px; height: 22px; border-radius: 50%; background: var(--ok); color: #fff; font-size: 13px; font-weight: 800; display: grid; place-items: center; }
+.vis-tip { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; }
