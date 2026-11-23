@@ -51,23 +51,17 @@ function parseJson(text) {
   }
 }
 
-// Bir suhbat bosqichi: o'quvchi gapi -> AI javobi
-export async function chatTurn(session, lesson, studentText) {
-  const remaining = lesson.phrases
-    .map((_, i) => i)
-    .filter((i) => !session.used.has(i));
-
-  session.messages.push({
-    role: "user",
-    content: `Student said: "${studentText}"\n(Target phrases not used yet: ${remaining.length ? remaining.join(", ") : "none - all done, you can wrap up warmly"})`,
-  });
+// Claude'ga bitta so'rov: o'quvchi gapini tarixga qo'shadi, JSON javobni qaytaradi.
+// Refusal bo'lsa null qaytaradi (bosqich tarixdan olib tashlanadi).
+async function askClaude(session, system, userContent) {
+  session.messages.push({ role: "user", content: userContent });
 
   const params = {
     model: CLAUDE_MODEL,
     max_tokens: 4000,
     output_config: { effort: CLAUDE_EFFORT },
     cache_control: { type: "ephemeral" },
-    system: systemPrompt(lesson),
+    system,
     messages: session.messages,
   };
   if (SUPPORTS_FALLBACKS) {
@@ -85,13 +79,7 @@ export async function chatTurn(session, lesson, studentText) {
 
   if (response.stop_reason === "refusal") {
     session.messages.pop();
-    return {
-      reply: "Sorry, let's get back to our conversation. Could you say that another way?",
-      reply_uz: "Kechirasiz, suhbatimizga qaytaylik. Buni boshqacha ayta olasizmi?",
-      used_phrases: [],
-      uz_say: "",
-      mood: "neutral",
-    };
+    return null;
   }
 
   // Javobni (thinking bloklari bilan birga) o'zgartirmasdan tarixga qo'shamiz
@@ -101,18 +89,111 @@ export async function chatTurn(session, lesson, studentText) {
     .filter((b) => b.type === "text")
     .map((b) => b.text)
     .join("");
-  const data = parseJson(text) || { reply: text.trim() };
+  return parseJson(text) || { reply: text.trim() };
+}
 
-  const used = Array.isArray(data.used_phrases)
-    ? data.used_phrases.filter((i) => Number.isInteger(i) && i >= 0 && i < lesson.phrases.length)
+function cleanUsed(list, lesson) {
+  return Array.isArray(list)
+    ? list.filter((i) => Number.isInteger(i) && i >= 0 && i < lesson.phrases.length)
     : [];
+}
 
+const MOODS = ["happy", "neutral", "curious", "surprised"];
+
+// 🇬🇧 Suhbat rejimi: inglizcha rolli suhbat
+export async function chatTurn(session, lesson, studentText) {
+  const remaining = lesson.phrases.map((_, i) => i).filter((i) => !session.used.has(i));
+  const data = await askClaude(
+    session,
+    systemPrompt(lesson),
+    `Student said: "${studentText}"\n(Target phrases not used yet: ${remaining.length ? remaining.join(", ") : "none - all done, you can wrap up warmly"})`,
+  );
+  if (!data) {
+    return {
+      reply: "Sorry, let's get back to our conversation. Could you say that another way?",
+      reply_uz: "Kechirasiz, suhbatimizga qaytaylik. Buni boshqacha ayta olasizmi?",
+      used_phrases: [],
+      uz_say: "",
+      mood: "neutral",
+    };
+  }
   return {
     reply: String(data.reply || "").slice(0, 600) || "Sorry, could you repeat that?",
     reply_uz: String(data.reply_uz || ""),
-    used_phrases: used,
+    used_phrases: cleanUsed(data.used_phrases, lesson),
     uz_say: String(data.uz_say || "").slice(0, 600),
-    mood: ["happy", "neutral", "curious", "surprised"].includes(data.mood) ? data.mood : "neutral",
+    mood: MOODS.includes(data.mood) ? data.mood : "neutral",
+  };
+}
+
+// 🇺🇿 Ustoz rejimi: Sado o'zbekcha gapirib, iboralarni birma-bir o'rgatadi
+export function tutorOpener(lesson) {
+  const p = lesson.phrases[0];
+  return [
+    {
+      lang: "uz",
+      text: `Assalomu alaykum! Men Sado, ingliz tili ustozingizman. Bugun "${lesson.title}" mavzusida 6 ta ibora o'rganamiz. Birinchi ibora: "${p.uz}". Inglizcha bunday deyiladi:`,
+    },
+    { lang: "en", text: p.en },
+    { lang: "uz", text: "Qani, ovoz chiqarib takrorlang!" },
+  ];
+}
+
+function tutorPrompt(lesson) {
+  const list = lesson.phrases.map((p, i) => `${i}. "${p.en}" = "${p.uz}"`).join("\n");
+  const opener = tutorOpener(lesson).map((s) => s.text).join(" ");
+  return `You are Sado, a warm, patient English teacher for Uzbek students inside a Telegram app. You speak UZBEK as your main language and teach English phrases one by one. Everything you say is read aloud.
+
+Lesson topic: ${lesson.title} (${lesson.situation}) Level: about ${lesson.level}.
+Phrases to teach (index. English = Uzbek):
+${list}
+
+You already started the lesson by saying: "${opener}"
+
+How to teach:
+- Speak simple, friendly Uzbek in the Latin alphabet. Short sentences.
+- Teach one phrase at a time: say what it means and when to use it (in Uzbek), say the English phrase, then ask the student to repeat it.
+- When the student says the current phrase correctly (small speech-recognition differences are fine; for phrases with "..." any sensible filled-in words are fine), praise them briefly, mark it as used, and introduce the next phrase that is not used yet.
+- When they say it with a mistake, explain kindly in Uzbek exactly what was wrong (missing word, wrong word, word order), say the correct English again and ask them to repeat. After 3 unsuccessful tries, encourage them and move on to the next phrase.
+- If the student speaks or asks something in Uzbek, answer in Uzbek (briefly), then continue the lesson.
+- If the student says the phrase well, you may sometimes add a tiny real-life example in English, but keep the lesson moving.
+- When all phrases are used, congratulate them warmly in Uzbek and briefly list what they learned.
+
+Output format - put every English word or sentence in its own segment with "lang": "en" so it is pronounced in English; Uzbek goes in "lang": "uz" segments. Never mix English sentences inside an Uzbek segment. Use at most 5 segments and about 60 words in total. Plain text only (no markdown, no emojis).
+
+Answer with ONLY a JSON object, no markdown, in exactly this shape:
+{"say": [{"lang": "uz", "text": "..."}, {"lang": "en", "text": "..."}], "used_phrases": [<indexes of phrases the student said correctly in THIS message>], "current_phrase": <index of the phrase you are teaching now>, "mood": "<one of: happy, neutral, curious, surprised>"}`;
+}
+
+export async function tutorTurn(session, lesson, studentText) {
+  const remaining = lesson.phrases.map((_, i) => i).filter((i) => !session.used.has(i));
+  const data = await askClaude(
+    session,
+    tutorPrompt(lesson),
+    `Student said: "${studentText}"\n(Phrase being taught: ${session.current ?? 0}. Phrases not used yet: ${remaining.length ? remaining.join(", ") : "none - all done, congratulate and finish"})`,
+  );
+  if (!data) {
+    return {
+      say: [{ lang: "uz", text: "Kechirasiz, darsimizga qaytaylik. Iborani yana bir bor aytib ko'ring." }],
+      used_phrases: [],
+      current: session.current ?? 0,
+      mood: "neutral",
+    };
+  }
+  let say = Array.isArray(data.say) ? data.say : [];
+  say = say
+    .filter((x) => x && typeof x.text === "string" && x.text.trim())
+    .slice(0, 6)
+    .map((x) => ({ lang: x.lang === "en" ? "en" : "uz", text: x.text.slice(0, 400) }));
+  if (!say.length) say = [{ lang: "uz", text: String(data.reply || "Yana bir bor aytib ko'ring.").slice(0, 400) }];
+  const cur = Number.isInteger(data.current_phrase) && data.current_phrase >= 0 && data.current_phrase < lesson.phrases.length
+    ? data.current_phrase
+    : session.current ?? 0;
+  return {
+    say,
+    used_phrases: cleanUsed(data.used_phrases, lesson),
+    current: cur,
+    mood: MOODS.includes(data.mood) ? data.mood : "neutral",
   };
 }
 

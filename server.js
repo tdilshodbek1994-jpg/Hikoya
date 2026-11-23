@@ -6,7 +6,7 @@ import express from "express";
 import Anthropic from "@anthropic-ai/sdk";
 import { LESSONS, getLesson, publicLesson } from "./src/lessons.js";
 import { verifyInitData } from "./src/telegram.js";
-import { chatTurn, transcribe, speakParts, voiceEnabled } from "./src/ai.js";
+import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled } from "./src/ai.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -90,6 +90,8 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
   }
   daily.set(key, count + 1);
 
+  // "tutor" - o'zbekcha ustoz (standart), "chat" - inglizcha suhbat
+  const mode = req.body?.mode === "chat" ? "chat" : "tutor";
   const id = crypto.randomUUID();
   sessions.set(id, {
     userId: req.userId,
@@ -97,10 +99,26 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
     messages: [],
     used: new Set(),
     turns: 0,
+    mode,
+    current: 0,
     expiresAt: Date.now() + SESSION_MINUTES * 60_000,
   });
 
   try {
+    if (mode === "tutor") {
+      const say = tutorOpener(lesson);
+      const parts = await speakParts(say);
+      return res.json({
+        session: id,
+        mode,
+        lesson: publicLesson(lesson),
+        seconds: SESSION_MINUTES * 60,
+        reply: say.map((x) => x.text).join(" "),
+        reply_uz: "",
+        current: 0,
+        parts,
+      });
+    }
     const tr = req.body?.translate !== false;
     const parts = await speakParts([
       { lang: "en", text: lesson.opener },
@@ -108,6 +126,7 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
     ]);
     res.json({
       session: id,
+      mode,
       lesson: publicLesson(lesson),
       seconds: SESSION_MINUTES * 60,
       reply: lesson.opener,
@@ -144,6 +163,24 @@ app.post(
       if (!text) return res.json({ heard: "", empty: true });
 
       s.turns += 1;
+      if (s.mode === "tutor") {
+        const t = await tutorTurn(s, lesson, text);
+        for (const i of t.used_phrases) s.used.add(i);
+        s.current = t.current;
+        const parts = await speakParts(t.say);
+        return res.json({
+          heard: text,
+          reply: t.say.map((x) => x.text).join(" "),
+          reply_uz: "",
+          uz_say: "",
+          used_phrases: t.used_phrases,
+          current: t.current,
+          mood: t.mood,
+          used: [...s.used].sort((a, b) => a - b),
+          parts,
+        });
+      }
+
       const result = await chatTurn(s, lesson, text);
       for (const i of result.used_phrases) s.used.add(i);
       // Tartib: o'zbekcha izoh -> inglizcha javob -> (ixtiyoriy) o'zbekcha tarjima

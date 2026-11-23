@@ -165,8 +165,9 @@ $("cancelBtn").addEventListener("click", () => ($("startSheet").hidden = true));
 $("startSheet").addEventListener("click", (e) => {
   if (e.target.id === "startSheet") $("startSheet").hidden = true;
 });
-$("startBtn").addEventListener("click", () => startLesson(state.pendingLesson));
-$("againBtn").addEventListener("click", () => startLesson(state.lesson));
+$("startTutorBtn").addEventListener("click", () => startLesson(state.pendingLesson, "tutor"));
+$("startChatBtn").addEventListener("click", () => startLesson(state.pendingLesson, "chat"));
+$("againBtn").addEventListener("click", () => startLesson(state.lesson, state.lessonMode));
 $("homeBtn").addEventListener("click", () => show("home"));
 
 // ---------------- Audio tayyorlash ----------------
@@ -224,8 +225,9 @@ function rms(analyser, buf) {
 }
 
 // ---------------- Dars ----------------
-async function startLesson(lesson) {
+async function startLesson(lesson, lessonMode = "tutor") {
   if (!lesson) return;
+  state.lessonMode = lessonMode;
   $("startSheet").hidden = true;
   haptic("medium");
   stopAll();
@@ -249,8 +251,14 @@ async function startLesson(lesson) {
   applyMode();
 
   try {
-    const data = await api("api/session", { json: { lessonId: lesson.id, translate: state.tr } });
+    const data = await api("api/session", {
+      json: { lessonId: lesson.id, translate: state.tr, mode: state.lessonMode },
+    });
     state.session = data.session;
+    if (Number.isInteger(data.current)) {
+      state.phraseIdx = data.current;
+      renderPhrase();
+    }
     state.seconds = state.left = data.seconds;
     startTimer();
     setSubs(data.reply, data.reply_uz, "", "");
@@ -354,6 +362,7 @@ function applyMode() {
   $("modeToggle").hidden = text;
   $("textForm").hidden = !text;
   $("holdBtn").hidden = text || state.mode !== "hold";
+  if (state.lessonMode === "tutor" && !text) return applyHint();
   $("hint").textContent = text
     ? "Javobingizni inglizcha yozing."
     : state.mode === "hold"
@@ -377,6 +386,7 @@ $("modeToggle").addEventListener("click", (e) => {
 });
 
 function applyTr() {
+  $("trBtn").hidden = state.lessonMode === "tutor"; // ustoz rejimida Sado o'zi o'zbekcha gapiradi
   $("trBtn").classList.toggle("on", state.tr);
   $("trBtn").textContent = state.tr ? "🇺🇿 Tarjima: yoqiq" : "🇺🇿 Tarjima: o'chiq";
 }
@@ -566,9 +576,14 @@ async function sendTurn(payload) {
       return afterReply();
     }
     applyHint();
+    const tutorCurrent = Number.isInteger(data.current) ? data.current : null;
     setSubs(data.reply, data.reply_uz, data.heard, data.uz_say);
     if (data.uz_say && !state.subs) toast("🇺🇿 " + data.uz_say, 6000);
     markUsed(data.used || []);
+    if (tutorCurrent !== null && tutorCurrent !== state.phraseIdx) {
+      state.phraseIdx = tutorCurrent;
+      renderPhrase();
+    }
     if (data.mood) mascot.setMood(data.mood);
     await playReply(data.parts, data.reply);
     afterReply();
@@ -581,6 +596,10 @@ async function sendTurn(payload) {
 }
 
 function applyHint() {
+  if (state.lessonMode === "tutor" && !state.textOnly) {
+    $("hint").textContent = "Sado aytgan iborani takrorlang yoki o'zbekcha so'rang.";
+    return;
+  }
   $("hint").textContent = state.textOnly
     ? "Javobingizni inglizcha yozing."
     : state.mode === "hold"
