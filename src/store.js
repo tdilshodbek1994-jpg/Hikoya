@@ -118,6 +118,12 @@ export function summary(userId) {
       return best;
     })(),
     ielts: u.history.some((h) => /IELTS\s*(6|7|8|9)/.test(h.level || "")),
+    // 🎯 Taxminiy IELTS band: oxirgi 3 ta IELTS natijasining o'rtachasi (0.5 ga yaxlitlangan)
+    band: (() => {
+      const b = u.history.map((h) => Number((h.level || "").match(/IELTS\s*(\d(?:\.\d)?)/)?.[1])).filter((x) => x >= 1 && x <= 9).slice(-3);
+      if (!b.length) return null;
+      return { value: Math.round((b.reduce((s, x) => s + x, 0) / b.length) * 2) / 2, n: b.length };
+    })(),
     today: u.history.filter((h) => today(new Date(h.at)) === today()).length,
     done: Object.keys(u.lessons).filter((id) => id !== "review").length,
     minutes: Math.round(u.seconds / 60),

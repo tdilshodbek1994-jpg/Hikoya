@@ -720,7 +720,34 @@ function renderDaily() {
 }
 
 // 📅 Haftalik xulosa
+// 🎯 Taxminiy IELTS band (IELTS darslaridagi so'nggi natijalardan)
+function renderBand() {
+  const b = state.progress?.band;
+  const box = $("band");
+  box.hidden = !b;
+  if (!b) return;
+  box.innerHTML = "";
+  const goal = Number(localStorage.getItem("sado-band-goal")) || 6.5;
+  const pct = Math.min(100, Math.round((b.value / goal) * 100));
+  box.append(el("b", "", `🎯 Taxminiy IELTS: ${b.value.toFixed(1)}`), el("span", "", `maqsad ${goal.toFixed(1)} · bosing`));
+  const bar = el("i", "band-bar");
+  bar.style.setProperty("--p", pct + "%");
+  box.append(bar);
+  box.title = `Oxirgi ${b.n} ta IELTS natijasi asosida`;
+}
+$("band").addEventListener("click", () => {
+  // Maqsad bandni almashtirish: 5.5 → 6.0 → 6.5 → 7.0 → 7.5 → 8.0
+  haptic();
+  const G = [5.5, 6, 6.5, 7, 7.5, 8];
+  const cur = Number(localStorage.getItem("sado-band-goal")) || 6.5;
+  const next = G[(G.indexOf(cur) + 1) % G.length];
+  localStorage.setItem("sado-band-goal", String(next));
+  renderBand();
+  toast(`🎯 IELTS maqsadingiz: ${next.toFixed(1)}`);
+});
+
 function renderWeek() {
+  renderBand();
   const w = state.progress?.week;
   const box = $("week");
   if (!w || !w.n) return (box.hidden = true);

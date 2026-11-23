@@ -801,3 +801,9 @@ body:has(#lesson.active) .toast { top: calc(40vh + var(--safe-t)); }
 /* ⏳ Oxirgi daqiqada taymer yengil "urib" turadi */
 .timer.low { animation: timerPulse 1s ease-in-out infinite; }
 @keyframes timerPulse { 50% { transform: scale(1.06); } }
+
+/* 🎯 Taxminiy IELTS band */
+.band { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 8px; width: 100%; text-align: left; padding: 9px 12px 11px; border-top: 1px solid var(--line); font-size: 13.5px; }
+.band span { font-size: 12px; color: var(--muted); }
+.band-bar { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: var(--bg); position: relative; overflow: hidden; }
+.band-bar::after { content: ""; position: absolute; inset: 0; width: var(--p); background: linear-gradient(90deg, #f59e0b, #16a34a); border-radius: 3px; }
