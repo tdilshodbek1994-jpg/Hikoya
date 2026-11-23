@@ -47,6 +47,17 @@ export async function pickLiveModel() {
 
 // ---- Sado'ning xulqi ----
 // Erkin suhbat mavzulari (foydalanuvchi tanlaydi)
+// O'zbekcha salomlashish uchun mavzu nomlari ("Bugun futbol va sport haqida...")
+const FREE_TOPICS_UZ = {
+  football: "futbol va sport",
+  movies: "kino, seriallar va multfilmlar",
+  games: "o'yinlar va texnologiya",
+  future: "orzular, kelajak va kasb",
+  travel: "sayohat va qiziq joylar",
+  music: "musiqa va qo'shiqchilar",
+  food: "taomlar va oshxona",
+  ielts: "IELTS / CEFR imtihoniga tayyorgarlik",
+};
 export const FREE_TOPICS = {
   football: "football and sport",
   movies: "films, series and cartoons",
@@ -58,7 +69,7 @@ export const FREE_TOPICS = {
   ielts: "preparing for IELTS / CEFR exams",
 };
 
-function freePrompt(lesson, topic) {
+function freePrompt(lesson, topic, topicUz = topic) {
   return `You are Sado, a smart, warm and funny bilingual (Uzbek and English) companion and English teacher inside a Telegram app for Uzbek students. This is a LIVE VOICE conversation: talk naturally, like a real friend on the phone.
 
 Language:
@@ -72,11 +83,11 @@ What you do:
 - When the student speaks English with a clear mistake, briefly give the correct version (explain in Uzbek if they are a beginner), then continue.
 - Keep each turn short: 1-3 sentences, then let the student talk. Ask questions to keep the conversation going.
 - Greet the student only once, at the very start. Never repeat your greeting or introduction later, even if the student says hello again: just reply briefly and continue the conversation.
-- Start the conversation yourself now with: "${topic ? `Assalomu alaykum! Men Sado. Bugun ${topic} haqida gaplashamizmi? (then ask one short, fun question about it)` : lesson.opener}"${topic ? `\n- The student chose the topic: ${topic}. Begin with it, but follow the student if they change the subject.` : ""}`;
+- Start the conversation yourself now with: "${topic ? `Assalomu alaykum! Men Sado. Bugun ${topicUz} haqida gaplashamizmi? (then ask one short, fun question about it)` : lesson.opener}"${topic ? `\n- The student chose the topic: ${topic}. Begin with it, but follow the student if they change the subject.` : ""}`;
 }
 
-function livePrompt(lesson, topic) {
-  if (lesson.free) return freePrompt(lesson, topic);
+function livePrompt(lesson, topic, topicUz) {
+  if (lesson.free) return freePrompt(lesson, topic, topicUz);
   const phrases = lesson.phrases.map((p) => `"${p.en}" (${p.uz})`).join("; ");
   return `You are Sado, a warm, friendly English speaking partner for Uzbek students preparing for exams. This is a LIVE VOICE conversation on the phone: speak naturally, like a real person.
 
@@ -149,6 +160,7 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
   const custom = String(topic || "").startsWith("custom:")
     ? String(topic).slice(7).replace(/[^\p{L}\p{N} ,.'‘’\-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 60)
     : "";
+  const topicUz = custom || FREE_TOPICS_UZ[topic] || "";
   topic = custom || FREE_TOPICS[topic] || "";
   const send = (obj) => client.readyState === WebSocket.OPEN && client.send(JSON.stringify(obj));
   let upstream;
@@ -235,7 +247,7 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
             responseModalities: ["AUDIO"],
             speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: VOICES[voice] || LIVE_VOICE } } },
           },
-          systemInstruction: { parts: [{ text: livePrompt(lesson, topic) + (SELF_LEVEL[session.selfLevel] ? "\n\n" + SELF_LEVEL[session.selfLevel] : "") }] },
+          systemInstruction: { parts: [{ text: livePrompt(lesson, topic, topicUz) + (SELF_LEVEL[session.selfLevel] ? "\n\n" + SELF_LEVEL[session.selfLevel] : "") }] },
           inputAudioTranscription: {},
           outputAudioTranscription: {},
           // 🗣 O'quvchi gapi tugaganini tezroq sezish: shovqinli joyda (telefon, ko'cha) Gemini
