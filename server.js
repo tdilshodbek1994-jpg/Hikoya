@@ -10,7 +10,7 @@ import { LESSONS, getLesson, publicLesson } from "./src/lessons.js";
 import { verifyInitData } from "./src/telegram.js";
 import { WebSocketServer } from "ws";
 import { liveEnabled, runLive } from "./src/live.js";
-import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies, sampleAnswer, ttsStats } from "./src/ai.js";
+import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies, sampleAnswer, samplePhrases, ttsStats } from "./src/ai.js";
 import { recordSession, touchDay, summary, adminStats, startedToday, countStart, refundStart, startsTodayTotal, deleteUser, markFixed, setRemind, remindTargets, markReminded } from "./src/store.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -339,7 +339,7 @@ app.get("/api/say", auth, async (req, res) => {
   // Joriy darsda AI aytgan/taklif qilgan inglizcha gaplar (namunalar, ustoz misollari)
   const sess = sessions.get(String(req.query.session || ""));
   const inSession = () => sess && sess.userId === req.userId && sess.sayable?.has(text);
-  if (!PHRASES.has(text) && !own() && !inSession()) return res.status(400).json({ error: "Noma'lum ibora" });
+  if (!PHRASES.has(text) && !own() && !inSession() && !samplePhrases().has(text)) return res.status(400).json({ error: "Noma'lum ibora" });
   const slow = req.query.slow === "1";
   const key = (slow ? "slow:" : "") + text;
   try {

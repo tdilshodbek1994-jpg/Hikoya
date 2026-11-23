@@ -3059,8 +3059,9 @@ function renderReport(r, score) {
           out.append(el("b", "", "💬 Foydali iboralar:"));
           const ul = el("ul", "rep-list");
           for (const ph of d.phrases) {
-            const li = el("li", "");
+            const li = el("li", "rep-word");
             li.append(el("b", "", ph.en), el("span", "muted", " — " + ph.uz));
+            li.addEventListener("click", () => sayPhrase(ph.en).then(() => mascot.setLevel(0)));
             ul.append(li);
           }
           out.append(ul);

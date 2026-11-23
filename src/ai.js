@@ -1,4 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
+import fs from "node:fs";
+import path from "node:path";
 
 const CLAUDE_MODEL = process.env.CLAUDE_MODEL || "claude-opus-5-5";
 const CLAUDE_EFFORT = process.env.CLAUDE_EFFORT || "low"; // suhbat uchun tez javob
@@ -490,7 +492,14 @@ The student is a CHILD (about 7-12 years old). Write every Uzbek text for a chil
 
 // ---- 💡 Javob namunalari (o'quvchi nima deyishni bilmasa) ----
 // 📝 IELTS Part 2: namunaviy javob (Band 7). Har bir kartochka uchun bir marta yaratilib, hammaga keshdan beriladi
+// Diskka saqlanadi — server qayta ishga tushsa ham AI qayta chaqirilmaydi
+const SAMPLE_FILE = path.join(process.env.DATA_DIR || path.resolve("data"), "samples.json");
 const sampleCache = new Map();
+try {
+  for (const [k, v] of Object.entries(JSON.parse(fs.readFileSync(SAMPLE_FILE, "utf8")))) sampleCache.set(k, v);
+} catch {}
+// Namunadagi iboralar Sado ovozida eshittirilishi mumkin
+export const samplePhrases = () => new Set([...sampleCache.values()].flatMap((v) => v.phrases.map((p) => p.en)));
 export async function sampleAnswer(lessonId, cue) {
   if (sampleCache.has(lessonId)) return sampleCache.get(lessonId);
   const params = {
@@ -513,6 +522,12 @@ export async function sampleAnswer(lessonId, cue) {
     phrases: (Array.isArray(data.phrases) ? data.phrases : []).filter((x) => x?.en).slice(0, 5).map((x) => ({ en: String(x.en).slice(0, 150), uz: String(x.uz || "").slice(0, 150) })),
   };
   sampleCache.set(lessonId, out);
+  try {
+    fs.mkdirSync(path.dirname(SAMPLE_FILE), { recursive: true });
+    fs.writeFileSync(SAMPLE_FILE, JSON.stringify(Object.fromEntries(sampleCache)));
+  } catch (e) {
+    console.error("Namunani saqlab bo'lmadi:", e.message);
+  }
   return out;
 }
 
