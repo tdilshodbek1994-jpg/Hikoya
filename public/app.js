@@ -2788,6 +2788,19 @@ function renderTranscript(list) {
   }
 }
 
+// ⬆ Uzun ro'yxatda tepaga qaytish
+let topRaf = 0;
+window.addEventListener("scroll", () => {
+  cancelAnimationFrame(topRaf);
+  topRaf = requestAnimationFrame(() => {
+    $("toTop").hidden = !$("home").classList.contains("active") || window.scrollY < 1200;
+  });
+}, { passive: true });
+$("toTop").addEventListener("click", () => {
+  haptic();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
 // 👥 Do'stni taklif qilish
 $("inviteBtn").addEventListener("click", () => {
   haptic();
