@@ -19,6 +19,7 @@ const state = {
   timer: null,
   mode: localStorage.getItem("sado-mode") || "auto",
   subs: localStorage.getItem("sado-subs") === "1",
+  tr: localStorage.getItem("sado-tr") !== "0", // o'zbekcha tarjimani ovozda aytish
   phase: "idle", // idle | listening | thinking | speaking | ended
   textOnly: false,
 };
@@ -78,9 +79,13 @@ async function api(path, { json, body, headers = {}, method = "POST" } = {}) {
 }
 
 // ---------------- Ekranlar ----------------
+// Sado boshqa ilova ichidan (masalan UzDTM sahifasidan) ochilgan bo'lsa,
+// bosh sahifada ham "orqaga" tugmasi o'sha ilovaga qaytaradi.
+const canExit = history.length > 1 || /^https?:/.test(document.referrer);
+
 function show(id) {
   for (const s of document.querySelectorAll(".screen")) s.classList.toggle("active", s.id === id);
-  const back = id !== "home";
+  const back = id !== "home" || canExit;
   if (inTelegram) back ? tg.BackButton.show() : tg.BackButton.hide();
   else $("backBtn").hidden = !back;
   window.scrollTo(0, 0);
@@ -91,6 +96,8 @@ $("backBtn").addEventListener("click", () => onBack());
 function onBack() {
   if ($("lesson").classList.contains("active")) {
     confirmEnd();
+  } else if ($("home").classList.contains("active")) {
+    if (canExit) history.back();
   } else {
     show("home");
   }
@@ -158,8 +165,9 @@ $("cancelBtn").addEventListener("click", () => ($("startSheet").hidden = true));
 $("startSheet").addEventListener("click", (e) => {
   if (e.target.id === "startSheet") $("startSheet").hidden = true;
 });
-$("startBtn").addEventListener("click", () => startLesson(state.pendingLesson));
-$("againBtn").addEventListener("click", () => startLesson(state.lesson));
+$("startTutorBtn").addEventListener("click", () => startLesson(state.pendingLesson, "tutor"));
+$("startChatBtn").addEventListener("click", () => startLesson(state.pendingLesson, "chat"));
+$("againBtn").addEventListener("click", () => startLesson(state.lesson, state.lessonMode));
 $("homeBtn").addEventListener("click", () => show("home"));
 
 // ---------------- Audio tayyorlash ----------------
@@ -217,8 +225,9 @@ function rms(analyser, buf) {
 }
 
 // ---------------- Dars ----------------
-async function startLesson(lesson) {
+async function startLesson(lesson, lessonMode = "tutor") {
   if (!lesson) return;
+  state.lessonMode = lessonMode;
   $("startSheet").hidden = true;
   haptic("medium");
   stopAll();
@@ -233,6 +242,7 @@ async function startLesson(lesson) {
   renderPhrase();
   applyMode();
   applySubs();
+  applyTr();
   setSubs("", "", "", "");
   setPhase("thinking", "Tayyorlanmoqda...");
   $("hint").textContent = "";
@@ -241,12 +251,18 @@ async function startLesson(lesson) {
   applyMode();
 
   try {
-    const data = await api("api/session", { json: { lessonId: lesson.id } });
+    const data = await api("api/session", {
+      json: { lessonId: lesson.id, translate: state.tr, mode: state.lessonMode },
+    });
     state.session = data.session;
+    if (Number.isInteger(data.current)) {
+      state.phraseIdx = data.current;
+      renderPhrase();
+    }
     state.seconds = state.left = data.seconds;
     startTimer();
     setSubs(data.reply, data.reply_uz, "", "");
-    await playReply(data.audio, data.reply);
+    await playReply(data.parts, data.reply);
     afterReply();
   } catch (e) {
     setPhase("idle", "");
@@ -346,6 +362,7 @@ function applyMode() {
   $("modeToggle").hidden = text;
   $("textForm").hidden = !text;
   $("holdBtn").hidden = text || state.mode !== "hold";
+  if (state.lessonMode === "tutor" && !text) return applyHint();
   $("hint").textContent = text
     ? "Javobingizni inglizcha yozing."
     : state.mode === "hold"
@@ -366,6 +383,19 @@ $("modeToggle").addEventListener("click", (e) => {
   } else if (state.phase === "idle" && state.mode === "auto" && state.session) {
     listenAuto();
   }
+});
+
+function applyTr() {
+  $("trBtn").hidden = state.lessonMode === "tutor"; // ustoz rejimida Sado o'zi o'zbekcha gapiradi
+  $("trBtn").classList.toggle("on", state.tr);
+  $("trBtn").textContent = state.tr ? "🇺🇿 Tarjima: yoqiq" : "🇺🇿 Tarjima: o'chiq";
+}
+$("trBtn").addEventListener("click", () => {
+  haptic();
+  state.tr = !state.tr;
+  localStorage.setItem("sado-tr", state.tr ? "1" : "0");
+  applyTr();
+  toast(state.tr ? "Sado gaplarining o'zbekcha tarjimasini ham aytadi" : "Sado faqat inglizcha gapiradi (xatolar baribir o'zbekcha tushuntiriladi)", 3000);
 });
 
 function applySubs() {
@@ -536,18 +566,26 @@ async function sendTurn(payload) {
   if (!state.session) return;
   setPhase("thinking");
   try {
-    const data = await api(`api/turn?session=${encodeURIComponent(state.session)}`, payload);
+    const data = await api(
+      `api/turn?session=${encodeURIComponent(state.session)}&tr=${state.tr ? 1 : 0}`,
+      payload,
+    );
     if (state.phase === "ended") return;
     if (data.empty) {
       $("hint").textContent = "Eshitmadim, yana bir bor ayting.";
       return afterReply();
     }
     applyHint();
-    setSubs(data.reply, data.reply_uz, data.heard, data.feedback_uz);
-    if (data.feedback_uz && !state.subs) toast("💡 " + data.feedback_uz, 4000);
+    const tutorCurrent = Number.isInteger(data.current) ? data.current : null;
+    setSubs(data.reply, data.reply_uz, data.heard, data.uz_say);
+    if (data.uz_say && !state.subs) toast("🇺🇿 " + data.uz_say, 6000);
     markUsed(data.used || []);
+    if (tutorCurrent !== null && tutorCurrent !== state.phraseIdx) {
+      state.phraseIdx = tutorCurrent;
+      renderPhrase();
+    }
     if (data.mood) mascot.setMood(data.mood);
-    await playReply(data.audio, data.reply);
+    await playReply(data.parts, data.reply);
     afterReply();
   } catch (e) {
     if (state.phase === "ended") return;
@@ -558,6 +596,10 @@ async function sendTurn(payload) {
 }
 
 function applyHint() {
+  if (state.lessonMode === "tutor" && !state.textOnly) {
+    $("hint").textContent = "Sado aytgan iborani takrorlang yoki o'zbekcha so'rang.";
+    return;
+  }
   $("hint").textContent = state.textOnly
     ? "Javobingizni inglizcha yozing."
     : state.mode === "hold"
@@ -581,60 +623,121 @@ function markUsed(list) {
   }
 }
 
-function afterReply() {
+async function afterReply() {
   if (state.phase === "ended") return;
   if (state.used.size >= state.lesson.phrases.length) {
     setTimeout(() => finish(), 600);
     return;
+  }
+  // Sado gapirayotganda mikrofon o'chirilgan edi - endi qayta yoqamiz
+  if (!state.textOnly) {
+    await ensureAudio();
+    if (state.phase === "ended") return;
+    applyMode();
   }
   if (!state.textOnly && state.mode === "auto") listenAuto();
   else setPhase("idle");
 }
 
 // ---------------- Javobni ijro etish ----------------
-async function playReply(b64, text) {
+// parts: [{ lang: "uz"|"en", text, audio }] - ketma-ket ijro etiladi
+async function playReply(parts, fallbackText) {
   if (state.phase === "ended") return;
+  if (!Array.isArray(parts) || !parts.length) parts = [{ lang: "en", text: fallbackText, audio: null }];
+  // Android: mikrofon yoqiq tursa ovoz "qo'ng'iroq" rejimida (quloq dinamigidan, juda past) chiqadi.
+  // Shuning uchun Sado gapirayotganda mikrofonni o'chiramiz; bu aks-sadoning ham oldini oladi.
+  cancelRecording();
+  releaseMic();
+  if (!parts.some((p) => p.audio)) toast("⚠️ Ovoz serverdan kelmadi (TTS)", 4000);
   setPhase("speaking");
-  try {
-    if (b64) await playMp3(b64);
-    else await speakBrowser(text);
-  } catch (e) {
-    console.warn("Ijro:", e);
+  for (const p of parts) {
+    if (state.phase !== "speaking") break; // dars tugatilgan bo'lsa
+    $("statusText").textContent = p.lang === "uz" ? "Sado tushuntirmoqda..." : "Sado gapirmoqda...";
+    try {
+      if (p.audio) await playMp3(p.audio, p.mime);
+      else await speakBrowser(p.text, p.lang);
+    } catch (e) {
+      console.warn("Ijro:", e);
+      toast("⚠️ Ijro xatosi: " + (e?.message || e), 5000);
+    }
   }
   mascot.setLevel(0);
 }
 
-async function playMp3(b64) {
+async function playMp3(b64, mime = "audio/mpeg") {
+  // Android WebView'da AudioContext o'zi to'xtab qolishi mumkin - har safar qayta yoqamiz
+  try {
+    if (audio.ctx.state !== "running") await audio.ctx.resume();
+  } catch {}
   const bin = atob(b64);
   const bytes = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  const buffer = await audio.ctx.decodeAudioData(bytes.buffer);
+  let buffer;
+  try {
+    buffer = await audio.ctx.decodeAudioData(bytes.buffer);
+  } catch {
+    return playViaElement(b64, mime);
+  }
+  if (audio.ctx.state !== "running") {
+    toast("ℹ️ Audio holati: " + audio.ctx.state, 3000);
+    return playViaElement(b64, mime);
+  }
   return new Promise((resolve) => {
+    let raf = 0;
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      cancelAnimationFrame(raf);
+      audio.source = null;
+      resolve();
+    };
     const src = audio.ctx.createBufferSource();
     src.buffer = buffer;
     src.connect(audio.outAnalyser);
     audio.source = src;
     const buf = new Float32Array(audio.outAnalyser.fftSize);
-    let raf = 0;
     const meter = () => {
       mascot.setLevel(Math.min(1, rms(audio.outAnalyser, buf) * 6));
       raf = requestAnimationFrame(meter);
     };
-    src.onended = () => {
-      cancelAnimationFrame(raf);
-      audio.source = null;
-      resolve();
-    };
+    src.onended = finish;
     src.start();
     meter();
+    setTimeout(finish, (buffer.duration + 1.5) * 1000); // onended kelmasa ham davom etamiz
   });
 }
 
-function speakBrowser(text) {
+// Zaxira usul: oddiy <audio> elementi orqali ijro
+function playViaElement(b64, mime = "audio/mpeg") {
+  return new Promise((resolve) => {
+    const el = new Audio(`data:${mime};base64,` + b64);
+    let raf = 0;
+    const fake = (t) => {
+      mascot.setLevel(0.35 + Math.abs(Math.sin(t / 90)) * 0.5);
+      raf = requestAnimationFrame(fake);
+    };
+    const done = () => {
+      cancelAnimationFrame(raf);
+      resolve();
+    };
+    el.onended = done;
+    el.onerror = done;
+    el.play()
+      .then(() => (raf = requestAnimationFrame(fake)))
+      .catch((e) => {
+        toast("⚠️ Telefon ovozni ijro etmadi: " + (e?.name || e), 5000);
+        done();
+      });
+    setTimeout(done, 30000);
+  });
+}
+
+function speakBrowser(text, lang = "en") {
   return new Promise((resolve) => {
     if (!window.speechSynthesis || !text) return setTimeout(resolve, 1200);
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = "en-US";
+    u.lang = lang === "uz" ? "uz-UZ" : "en-US";
     u.rate = 0.95;
     let raf = 0;
     const fake = (t) => {
@@ -709,8 +812,9 @@ document.addEventListener("visibilitychange", () => {
     cancelRecording();
     setPhase("idle");
   } else if (!document.hidden && state.phase === "idle" && state.session && state.mode === "auto" && !state.textOnly) {
-    listenAuto();
+    ensureAudio().then(() => listenAuto());
   }
 });
 
+show("home");
 loadLessons();
