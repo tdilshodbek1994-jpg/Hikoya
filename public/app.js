@@ -546,7 +546,15 @@ function levelTestResult(items, marks, body) {
     row.append(el("span", "", name), bar, el("b", "", `${by[lv][0]}/${by[lv][1]}`));
     box.append(row);
   }
-  box.append(el("small", "qz-n", level === "B2" ? "Zo'r! Endi IELTS/CEFR kurslarida gapirib mustahkamlang." : `Keyingi daraja uchun ${level === "A1" ? "🌱 A1–A2" : level === "A2" ? "🌿 B1" : "🌳 B2"} mavzularidagi testlarni ishlang (Aralash test → daraja tanlang).`));
+  if (level === "B2") box.append(el("small", "qz-n", "Zo'r! Endi IELTS/CEFR kurslarida gapirib mustahkamlang."));
+  else {
+    // ▶ Keyingi daraja mavzularidan testni shu yerning o'zidan boshlash
+    const [key, name] = level === "A1" ? ["beg", "🌱 A1–A2"] : level === "A2" ? ["mid", "🌿 B1"] : ["adv", "🌳 B2"];
+    box.append(el("small", "qz-n", `Keyingi daraja uchun ${name} mavzularini mustahkamlang:`));
+    const go = el("button", "btn primary wide lv-go", `▶ ${name} testini boshlash`);
+    go.addEventListener("click", () => { haptic(); openMixTest(key); });
+    box.append(go);
+  }
   body.append(box);
 }
 
