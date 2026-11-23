@@ -3748,11 +3748,18 @@ function stopRecorder() {
   return new Promise((resolve) => {
     const rec = audio.recorder;
     if (!rec || rec.state === "inactive") return resolve(null);
-    rec.onstop = () => {
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      clearTimeout(guard);
       const type = rec.mimeType || audio.mime || "audio/webm";
-      resolve(new Blob(audio.chunks, { type }));
+      resolve(audio.chunks?.length ? new Blob(audio.chunks, { type }) : null);
     };
-    rec.stop();
+    rec.onstop = finish;
+    // ⏱ Ba'zi Android WebView'larda "onstop" kelmay qoladi — 2 s dan keyin borini yuboramiz (aks holda qotib qolardi)
+    const guard = setTimeout(finish, 2000);
+    try { rec.stop(); } catch { finish(); }
     audio.recorder = null;
   });
 }
