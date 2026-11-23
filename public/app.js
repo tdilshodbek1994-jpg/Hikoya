@@ -185,7 +185,7 @@ function lessonButton(l) {
   const pr = state.progress?.lessons?.[l.id];
   if (pr) {
     b.classList.add("done");
-    b.querySelector(".lesson-sub").textContent = `✅ O'tildi · eng yaxshi: ${pr.best} ball`;
+    b.querySelector(".lesson-sub").textContent = `✅ O'tildi · ${pr.best} ball`;
   }
   b.addEventListener("click", () => openSheet(l));
   return b;
@@ -296,11 +296,31 @@ function renderLessons() {
     list.append(el("p", "note", "Hech narsa topilmadi. Boshqa so'z bilan qidirib ko'ring."));
     return;
   }
+  const done = state.progress?.lessons || {};
+  const partOf = (l) => (l.id.match(/^ielts-p(\d)/) || [])[1];
+  const PART_NAMES = { 1: "Part 1 — qisqa savollar", 2: "Part 2 — kartochka (monolog)", 3: "Part 3 — muhokama" };
   let lastCat = null;
+  let lastPart = null;
   for (const l of items) {
     if (l.category && l.category !== lastCat) {
       lastCat = l.category;
-      list.append(el("div", "cat-title", `${CAT_ICONS[l.category] || "📚"} ${l.category}`));
+      lastPart = null;
+      const head = el("div", "cat-title", `${CAT_ICONS[l.category] || "📚"} ${l.category}`);
+      // Kurslar uchun progress: nechta dars o'tilgani
+      if (/kursi$/.test(l.category)) {
+        const all = state.lessons.filter((x) => x.category === l.category);
+        const n = all.filter((x) => done[x.id]).length;
+        const bar = el("span", "cat-progress");
+        bar.append(el("i", ""), el("em", "", `${n}/${all.length}`));
+        bar.firstChild.style.width = `${Math.round((n / all.length) * 100)}%`;
+        head.append(bar);
+      }
+      list.append(head);
+    }
+    const part = l.category === "IELTS kursi" ? partOf(l) : null;
+    if (part && part !== lastPart) {
+      lastPart = part;
+      list.append(el("div", "part-title", PART_NAMES[part]));
     }
     list.appendChild(lessonButton(l));
   }

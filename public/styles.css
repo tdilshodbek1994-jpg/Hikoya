@@ -323,3 +323,14 @@ body.dark .listen-btn { color: #a5b4fc; background: rgba(165, 180, 252, 0.14); }
 .vocab-card > .muted { text-align: center; display: block; margin-bottom: 10px; }
 .vocab-tabs { display: flex; gap: 8px; margin-bottom: 10px; }
 .rep-saved { margin-top: 12px; font-size: 13.5px; font-weight: 600; color: var(--ok); background: color-mix(in srgb, var(--ok) 10%, transparent); padding: 9px 12px; border-radius: 12px; }
+
+/* ---------- Kurs progressi ---------- */
+.cat-title { display: flex; align-items: center; gap: 10px; }
+.cat-progress { flex: 1; display: flex; align-items: center; gap: 8px; margin-left: 4px; }
+.cat-progress::before { content: ""; }
+.cat-progress { position: relative; height: 6px; border-radius: 3px; background: var(--line); max-width: 140px; }
+.cat-progress i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--ok); }
+.cat-progress em { position: absolute; left: calc(100% + 8px); font-style: normal; font-size: 12.5px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.part-title { font-size: 12.5px; font-weight: 700; color: var(--primary); margin: 4px 6px -4px; text-transform: uppercase; letter-spacing: 0.4px; }
+body.dark .part-title { color: #a5b4fc; }
+#lessonList { scroll-margin-top: calc(70px + var(--safe-t)); }
