@@ -78,9 +78,13 @@ async function api(path, { json, body, headers = {}, method = "POST" } = {}) {
 }
 
 // ---------------- Ekranlar ----------------
+// Sado boshqa ilova ichidan (masalan UzDTM sahifasidan) ochilgan bo'lsa,
+// bosh sahifada ham "orqaga" tugmasi o'sha ilovaga qaytaradi.
+const canExit = history.length > 1 || /^https?:/.test(document.referrer);
+
 function show(id) {
   for (const s of document.querySelectorAll(".screen")) s.classList.toggle("active", s.id === id);
-  const back = id !== "home";
+  const back = id !== "home" || canExit;
   if (inTelegram) back ? tg.BackButton.show() : tg.BackButton.hide();
   else $("backBtn").hidden = !back;
   window.scrollTo(0, 0);
@@ -91,6 +95,8 @@ $("backBtn").addEventListener("click", () => onBack());
 function onBack() {
   if ($("lesson").classList.contains("active")) {
     confirmEnd();
+  } else if ($("home").classList.contains("active")) {
+    if (canExit) history.back();
   } else {
     show("home");
   }
@@ -713,4 +719,5 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
+show("home");
 loadLessons();
