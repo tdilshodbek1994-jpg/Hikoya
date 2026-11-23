@@ -463,7 +463,18 @@ const remindStats = { sent: 0, off: 0 };
 function dailyPhrase() {
   const pool = LESSONS.filter((l) => !l.liveOnly).flatMap((l) => l.phrases.filter((p) => !p.en.includes("...")));
   const dayNo = Math.floor((Date.now() + 5 * 3600_000) / 86400_000);
-  return pool.length ? pool[(dayNo * 7919) % pool.length] : null;
+  // Ilovadagi dailyPick bilan bir xil: "kun|ibora" FNV-1a xeshi eng kichigi
+  const hash = (str) => {
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) h = Math.imul(h ^ str.charCodeAt(i), 16777619);
+    return h >>> 0;
+  };
+  let best = null, bestH = Infinity;
+  for (const p of pool) {
+    const h = hash(`${dayNo}|${p.en}`);
+    if (h < bestH) (bestH = h), (best = p);
+  }
+  return best;
 }
 async function sendReminders() {
   const hour = new Date(Date.now() + 5 * 3600_000).getUTCHours();

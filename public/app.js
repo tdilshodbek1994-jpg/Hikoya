@@ -1119,13 +1119,25 @@ function renderMoreStats() {
 }
 
 // 🌟 Kun iborasi: sanaga qarab har kuni boshqa ibora (hamma uchun bir xil)
+// 🌟 Kun iborasi tanlovi: "kun|ibora" xeshi eng kichik bo'lgani. Yangi dars qo'shilsa ham
+// odatda o'zgarmaydi (ro'yxatdagi tartib raqamiga bog'liq emas). Serverdagi eslatma bilan bir xil.
+function phraseHash(str) {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) h = Math.imul(h ^ str.charCodeAt(i), 16777619);
+  return h >>> 0;
+}
+function dailyPick(pool, dayNo, k = 0) {
+  return pool
+    .map((x) => [phraseHash(`${dayNo}|${x.p.en}`), x])
+    .sort((a, b) => a[0] - b[0])[k % pool.length][1];
+}
 function renderDaily() {
   const box = $("daily");
   const pool = state.lessons.filter((l) => !l.liveOnly).flatMap((l) => l.phrases.filter((p) => !p.en.includes("...")).map((p) => ({ p, l })));
   if (!pool.length) return (box.hidden = true);
   const d = new Date();
   const dayNo = Math.floor((d.getTime() + 5 * 3600_000) / 86400_000); // Toshkent vaqti
-  const { p, l } = pool[(dayNo * 7919 + (state.dailyOff || 0) * 104729) % pool.length];
+  const { p, l } = dailyPick(pool, dayNo, state.dailyOff || 0);
   box.hidden = false;
   box.innerHTML = "";
   const top = el("div", "daily-top");
@@ -1175,7 +1187,7 @@ function renderDaily() {
   box.append(top, en, el("div", "daily-uz", p.uz), row);
   // 🔁 Kechagi ibora: o'zbekchasi ko'rinadi, inglizchasini eslab, bosib tekshirish (takrorlash)
   if (!state.dailyOff) {
-    const y = pool[((dayNo - 1) * 7919) % pool.length].p;
+    const y = dailyPick(pool, dayNo - 1).p;
     if (y.en !== p.en) {
       const rev = el("button", "daily-yday");
       rev.append(el("span", "", "🔁 Kechagi: "), el("b", "", `«${y.uz}»`), el("em", "", " — inglizchasini eslang, keyin bosing"));
