@@ -1357,6 +1357,22 @@ function renderReport(r, score) {
     items.forEach((it) => ul.append(render(it)));
     box.append(ul);
   };
+  // IELTS: 4 ta rasmiy mezon bo'yicha band
+  if (r.criteria) {
+    const NAMES = { fluency: "Ravonlik (Fluency)", vocabulary: "So'z boyligi (Lexical)", grammar: "Grammatika", pronunciation: "Talaffuz" };
+    const box2 = el("div", "crit");
+    for (const [k, name] of Object.entries(NAMES)) {
+      const v = r.criteria[k] || 0;
+      const row = el("div", "crit-row");
+      const bar = el("span", "crit-bar");
+      const fill = el("i", "");
+      fill.style.width = `${(v / 9) * 100}%`;
+      bar.append(fill);
+      row.append(el("span", "crit-name", name), bar, el("b", "", v.toFixed(1)));
+      box2.append(row);
+    }
+    box.append(el("div", "rep-title", "📊 IELTS mezonlari"), box2);
+  }
   section("👍 Yaxshi chiqdi", r.strengths_uz, (t) => el("li", "", t));
   section("✏️ Xatolar ustida ishlaymiz", r.mistakes, (m) => {
     const li = el("li", "rep-mistake");

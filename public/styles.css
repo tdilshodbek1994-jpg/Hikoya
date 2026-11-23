@@ -389,3 +389,10 @@ body.dark .hint-btn { color: #a5b4fc; background: rgba(165, 180, 252, 0.13); }
 .vp-label { opacity: 0.85; font-weight: 600; }
 .vp { padding: 5px 11px; border-radius: 99px; background: rgba(255, 255, 255, 0.18); font-weight: 700; cursor: pointer; }
 .vp.on { background: #fff; color: #4f46e5; }
+
+/* ---------- IELTS mezonlari ---------- */
+.crit { background: var(--bg); border-radius: 14px; padding: 10px 12px; display: grid; gap: 8px; }
+.crit-row { display: grid; grid-template-columns: 1fr 90px 32px; align-items: center; gap: 8px; font-size: 13.5px; }
+.crit-bar { position: relative; height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.crit-bar i { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, #6366f1, #14b8a6); border-radius: 4px; }
+.crit-row b { text-align: right; }

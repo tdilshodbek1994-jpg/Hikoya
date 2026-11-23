@@ -371,7 +371,7 @@ Answer with ONLY a JSON object, no markdown:
  "strengths_uz": ["<up to 2 things done well>"],
  "mistakes": [{"wrong": "<exact student phrase>", "right": "<corrected English>", "why_uz": "<short reason in Uzbek>"}],
  "tips_uz": ["<2 concrete tips for next time>"],
- "new_words": [{"en": "<useful word or phrase from the lesson topic>", "uz": "<translation>"}]}
+ "new_words": [{"en": "<useful word or phrase from the lesson topic>", "uz": "<translation>"}]${isIelts ? ',\n "criteria": {"fluency": <band 1-9, step 0.5>, "vocabulary": <band>, "grammar": <band>, "pronunciation": <band>}' : ""}}
 Rules: at most 5 mistakes (most important first, only real mistakes), at most 5 new_words. If the student said very little, give a low score and encourage them.`;
 
   const params = {
@@ -410,6 +410,11 @@ Rules: at most 5 mistakes (most important first, only real mistakes), at most 5 
       .filter((m) => m && m.wrong && m.right)
       .map((m) => ({ wrong: str(m.wrong, 200), right: str(m.right, 200), why_uz: str(m.why_uz, 250) })),
     tips_uz: arr(data.tips_uz, 3).map((s) => str(s)),
+    criteria: isIelts && data.criteria
+      ? Object.fromEntries(
+          ["fluency", "vocabulary", "grammar", "pronunciation"].map((k) => [k, Math.max(0, Math.min(9, Math.round((Number(data.criteria[k]) || 0) * 2) / 2))]),
+        )
+      : null,
     new_words: arr(data.new_words, 5)
       .filter((w) => w && w.en)
       .map((w) => ({ en: str(w.en, 80), uz: str(w.uz, 80) })),
