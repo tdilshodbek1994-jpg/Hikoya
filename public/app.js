@@ -129,7 +129,16 @@ async function loadLessons() {
 function renderLessons() {
   const list = $("lessonList");
   list.innerHTML = "";
+  const CAT_ICONS = { "Erkin suhbat": "💬", Imtihonlar: "🏆", "Kundalik hayot": "🏠", Sayohat: "✈️", "O'qish va ish": "🎓" };
+  let lastCat = null;
   for (const l of state.lessons) {
+    if (l.category && l.category !== lastCat) {
+      lastCat = l.category;
+      const h = document.createElement("div");
+      h.className = "cat-title";
+      h.textContent = `${CAT_ICONS[l.category] || "📚"} ${l.category}`;
+      list.appendChild(h);
+    }
     const b = document.createElement("button");
     b.className = "lesson";
     b.innerHTML = `
