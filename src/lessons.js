@@ -2318,6 +2318,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-sosuch",
+    category: "Grammatika gapirib",
+    title: "So yoki such? (shunchalik)",
+    emoji: "🤩",
+    level: "B1",
+    added: "2026-11-28",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on so + adjective/adverb (It was so cold. She speaks so fast.), such + a/an + adjective + noun (It was such a good film.), such + adjective + plural/uncountable noun (They are such nice people. It was such bad weather.), and so/such ... that for results (It was so hot that we stayed inside.). Also so many / so much. Ask the student about the best trip, film, meal and the worst day of their life. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "What's the best film you have ever seen? Why was it so good?",
+    openerUz: "Siz ko'rgan eng zo'r film qaysi? Nega u shunchalik yaxshi edi?",
+    phrases: [
+      { en: "It was such a good film!", uz: "Bu shunday zo'r film edi!" },
+      { en: "The weather was so cold.", uz: "Havo shunchalik sovuq edi." },
+      { en: "They are such nice people.", uz: "Ular shunday yoqimli odamlar." },
+      { en: "It was so hot that we stayed inside.", uz: "Shunchalik issiq ediki, uyda qoldik." },
+      { en: "There were so many people there.", uz: "U yerda juda ko'p odam bor edi." },
+      { en: "She speaks English so well.", uz: "U inglizchada juda yaxshi gapiradi." },
+    ],
+  },
+  {
+    id: "gr-better",
+    category: "Grammatika gapirib",
+    title: "Had better / would rather",
+    emoji: "🤔",
+    level: "B1",
+    added: "2026-11-28",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on had better + base verb for strong advice or warnings (You'd better hurry. You'd better not be late.) and would rather + base verb for preferences (I'd rather stay at home. I'd rather not say.), plus would rather ... than (I'd rather walk than take the bus). Explain that both are followed by the verb without to. Give the student everyday situations: an exam tomorrow, a rainy weekend, choosing between two options. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "You have an important exam tomorrow. What had you better do tonight?",
+    openerUz: "Ertaga muhim imtihoningiz bor. Bugun kechqurun nima qilganingiz ma'qul?",
+    phrases: [
+      { en: "You'd better hurry.", uz: "Shoshilganingiz ma'qul." },
+      { en: "You'd better not be late.", uz: "Kechikmaganingiz yaxshi." },
+      { en: "I'd rather stay at home tonight.", uz: "Bugun uyda qolganim ma'qul (afzal)." },
+      { en: "I'd rather walk than take the bus.", uz: "Avtobusga chiqqandan ko'ra piyoda yurganim afzal." },
+      { en: "I'd rather not talk about it.", uz: "Bu haqda gapirmaganim ma'qul." },
+      { en: "We'd better take an umbrella.", uz: "Soyabon olganimiz yaxshi." },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -3281,7 +3321,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-can", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-mine", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adverbs", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-ppvsps", "gr-pastperf", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-tags", "gr-sotoo", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused", "gr-unless", "gr-inversion"];
+const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-can", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-mine", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adverbs", "gr-tooenough", "gr-sosuch", "gr-modals", "gr-better", "gr-usedto", "gr-perfect", "gr-ppvsps", "gr-pastperf", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-tags", "gr-sotoo", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused", "gr-unless", "gr-inversion"];
 // Avval daraja guruhi (A1–A2 → B1 → B2), guruh ichida — GR_ORDER tartibi
 const grGroup = (lv) => (/B2/.test(lv || "") ? 2 : /A2-B1|^B1$/.test(lv || "") ? 1 : 0);
 const grRank = (l) => grGroup(l.level) * 100 + (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
@@ -3328,6 +3368,8 @@ const QUIZ = {
   "gr-sotoo": ["I like tea. — So ___ I.|do|am|like", "I can't swim. — Neither ___ I.|can|do|can't", "I'm tired. — So ___ I.|am|do|is", "I didn't go to the party. — Neither ___ I.|did|do|didn't", "I've been to Samarkand. — So ___ I.|have|am|did", "She loves music. — So ___ her brother.|does|do|is", "I don't eat meat. — ___ do I.|Neither|So|Either", "I was late yesterday. — So ___ I.|was|did|am", "I'll come tomorrow. — So ___ I.|will|do|am", "I haven't finished yet. — Neither ___ I.|have|did|do", "I like coffee. — Really? I ___.|don't|am not|didn't", "We can speak English. — So ___ they.|can|do|are"],
   "gr-can": ["I can ___ very fast.|swim|swims|to swim", "She ___ drive a car. She's only ten.|can't|cans|don't can", "___ you speak Russian?|Can|Do|Are", "Can you cook? — Yes, I ___.|can|do|cook", "My brother can ___ the guitar.|play|plays|playing", "___ I open the window, please?|Can|Do|Am", "He can't ___ English well.|speak|speaks|to speak", "Can she ride a bike? — No, she ___.|can't|doesn't|isn't", "We ___ meet tomorrow at five.|can|cans|are can", "Birds can ___.|fly|flies|flying", "I ___ hear you. Speak louder, please.|can't|don't can|not can", "Can they ___ here today?|come|came|coming"],
   "gr-inversion": ["Never ___ I seen such a beautiful place.|have|I have|did", "Rarely ___ we eat out these days.|do|we|are", "Not only ___ she win, but she also broke the record.|did|she|was", "No sooner had I arrived ___ it started to rain.|than|when|then", "Hardly had we sat down ___ the phone rang.|when|than|then", "Only then ___ I understand the problem.|did|I|have", "Seldom ___ he complain about anything.|does|he|is", "Never before ___ the city been so crowded.|had|did|was", "Not until I got home ___ I notice the mistake.|did|I|had", "Little ___ she know what was about to happen.|did|she|was", "Under no circumstances ___ you open this door.|should|you|you should", "Not only ___ he clever, but he's also kind.|is|he|does"],
+  "gr-sosuch": ["It was ___ a good film!|such|so|very", "The weather was ___ cold.|so|such|such a", "They are ___ nice people.|such|so|such a", "It was so hot ___ we stayed inside.|that|than|then", "There were so ___ people at the concert.|many|much|lot", "She speaks English ___ well.|so|such|such a", "It was ___ bad weather that we cancelled the trip.|such|so|such a", "I've never seen ___ a beautiful view.|such|so|very", "He was ___ tired that he fell asleep.|so|such|such a", "Don't spend so ___ money on clothes.|much|many|lot", "It's ___ an interesting book!|such|so|too", "The test was ___ easy that everyone passed.|so|such|such an"],
+  "gr-better": ["You'd better ___.|hurry|to hurry|hurrying", "You'd better ___ be late.|not|don't|no", "I'd rather ___ at home tonight.|stay|to stay|staying", "I'd rather walk ___ take the bus.|than|that|then", "I'd rather ___ talk about it.|not|don't|no", "We'd ___ take an umbrella. It's going to rain.|better|rather|best", "It's late. We ___ better go home.|had|have|would", "Would you rather ___ tea or coffee?|have|to have|having", "She'd rather ___ alone.|work|works|to work", "You ___ better see a doctor.|'d|'re|'ve", "I'd rather you ___ smoke here.|didn't|don't|not", "He'd better ___ his homework before dinner.|finish|to finish|finishes"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink", "My sister ___ English very well.|speaks|speak|speaking", "They ___ live in Tashkent.|don't|doesn't|aren't", "Where ___ he work?|does|do|is", "The shop ___ at nine o'clock.|opens|open|opening", "Water ___ at 100 degrees.|boils|boil|is boil", "My friends ___ like rap music.|don't|doesn't|isn't", "___ your brother study at university?|Does|Do|Is", "He usually ___ his homework in the evening.|does|do|doing"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on", "I was born ___ 2008.|in|on|at", "We have a party ___ Friday evening.|on|in|at", "I usually sleep ___ night.|at|in|on", "The keys are ___ the table.|on|at|in", "The meeting is ___ 3 pm.|at|in|on", "I'll see you ___ the weekend.|at|in|on", "She lives ___ Samarkand.|in|at|on", "My birthday is ___ 5th March.|on|in|at"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do", "Listen! The baby ___ crying.|is|are|be", "We ___ waiting for the bus now.|are|is|am", "What ___ you doing?|are|do|is", "She isn't ___ TV at the moment.|watching|watch|watches", "I ___ working from home this week.|am|is|are", "Why ___ you laughing?|are|is|do", "They ___ playing football right now.|are|is|be", "Be quiet! Grandma ___ sleeping.|is|are|am"],
@@ -3378,6 +3420,8 @@ const KEYWORDS = {
   "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
 };
 const RULES = {
+  "gr-sosuch": "so + sifat yoki ravish: It was so cold. She speaks so fast.\nsuch + a/an + sifat + ot: It was such a good film. (✗ so a good film)\nsuch + sifat + ko'plik yoki sanalmaydigan ot: such nice people, such bad weather.\nNatija: so/such ... that: It was so hot that we stayed inside. Ko'p: so many people, so much money.",
+  "gr-better": "had better ('d better) + fe'lning o'zi — qilganingiz ma'qul (maslahat, ogohlantirish): You'd better hurry.\nInkor: had better not: You'd better not be late. (✗ hadn't better) (✗ had better to go)\nwould rather ('d rather) + fe'lning o'zi — afzal ko'raman: I'd rather stay at home. I'd rather not say.\nSolishtirish: I'd rather walk than take the bus.",
   "gr-can": "can + fe'lning o'zi — qila olaman / mumkin: I can swim. She can drive.\nHamma shaxsda bir xil: ✗ She cans, ✗ He can drives, ✗ I can to swim.\nInkor: can't (cannot): He can't cook.\nSavol: Can you cook? — Yes, I can. / No, I can't. Ruxsat: Can I come in?",
   "gr-inversion": "Inkor yoki cheklovchi so'z gap boshida kelsa — yordamchi fe'l egadan OLDIN (savoldagidek):\nNever have I seen… Rarely do we… Only then did I understand.\nNot only did she win, but she also… (✗ Not only she won)\nNo sooner had I arrived than… / Hardly had we sat down when…",
   "gr-pastperf": "Past perfect: had + 3-shakl — o'tmishdagi boshqa ishdan OLDIN bo'lgan ish.\nWhen I arrived, the film had already started. (avval film boshlandi, keyin men keldim)\nInkor: hadn't + 3-shakl. Savol: Had you eaten?\nKo'p ishlatiladi: already, just, never, before, after, by the time.",

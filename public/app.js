@@ -811,7 +811,7 @@ function openMixTest(level = localStorage.getItem("sado-mix-lv") || "") {
   }
   requestAnimationFrame(() => { const on = lv.querySelector(".on"); if (on) lv.scrollLeft = Math.max(0, on.offsetLeft + on.offsetWidth - lv.clientWidth + 8); });
   if (level === "pick") return renderMixPicker(gr, $("mixQuiz"));
-  renderQuiz({ id: "gr-mix", quiz }, $("mixQuiz"), `📝 Aralash test · ${quiz.length} ta savoldan 10 tasi`, 10);
+  renderQuiz({ id: "gr-mix", quiz }, $("mixQuiz"), `📝 Aralash test · ${Math.min(10, quiz.length)} ta savol`, 10);
 }
 $("mixClose").addEventListener("click", () => ($("mixSheet").hidden = true));
 $("mixSheet").addEventListener("click", (e) => { if (e.target.id === "mixSheet") $("mixSheet").hidden = true; });
