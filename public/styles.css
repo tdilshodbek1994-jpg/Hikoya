@@ -1199,3 +1199,9 @@ body.dark .ml-mark { background: #5eead4; }
 .ts-n { grid-column: 1; font-size: 11.5px; color: var(--muted); }
 .ts-weak { display: block; width: 100%; margin: 6px 0 8px; color: #fff; background: linear-gradient(135deg, #f97316, #e11d48); border: none; font-weight: 800; }
 .gq-acc { margin-left: auto; } @media (max-width: 360px) { .gq-top span { order: 3; flex-basis: 100%; } }
+/* 📅 Bugungi test banneri */
+.gr-quizbar .gq-daily { display: block; width: 100%; text-align: left; font: inherit; color: #fff; background: linear-gradient(135deg, var(--primary), #0ea5a4); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; box-shadow: 0 6px 16px color-mix(in srgb, var(--primary) 30%, transparent); }
+.gq-daily b { display: block; font-size: 14.5px; }
+.gq-daily small { display: block; font-size: 12px; opacity: 0.9; margin-top: 2px; }
+.gr-quizbar .gq-daily.done { background: color-mix(in srgb, var(--ok) 14%, var(--bg)); color: var(--text); box-shadow: none; border: 1px solid color-mix(in srgb, var(--ok) 40%, transparent); }
+.gq-daily.done small { color: var(--muted); opacity: 1; }

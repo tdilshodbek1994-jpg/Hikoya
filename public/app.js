@@ -436,6 +436,34 @@ function keepScroll(fn) {
   window.scrollTo(0, y);
 }
 
+// 📅 Bugungi test: har kuni 5 ta savol (sana bo'yicha, hamma uchun bir xil), 🔥 seriya
+const dayNum = () => Math.floor((Date.now() + 5 * 3600_000) / 86400_000);
+const dailyTest = () => { try { return JSON.parse(localStorage.getItem("sado-daily-test")) || {}; } catch { return {}; } };
+function dailyTestDone(right, total) {
+  const d = dailyTest();
+  const today = dayNum();
+  if (d.day === today) return; // bugun allaqachon hisoblangan
+  d.streak = d.day === today - 1 ? (d.streak || 0) + 1 : 1;
+  d.day = today;
+  d.score = `${right}/${total}`;
+  localStorage.setItem("sado-daily-test", JSON.stringify(d));
+  toast(`📅 Bugungi test: ${right}/${total} · 🔥 ${d.streak} kun ketma-ket`, 3000);
+}
+function openDailyTest() {
+  state.speedRun = (state.speedRun || 0) + 1;
+  const all = state.lessons
+    .filter((l) => l.category === "Grammatika gapirib")
+    .flatMap((l) => (l.quiz || []).map((q) => ({ ...q, from: l.id })));
+  const day = dayNum();
+  const quiz = all.map((q) => [phraseHash(`${day}|q|${q.text}`), q]).sort((a, b) => a[0] - b[0]).slice(0, 5).map((x) => x[1]);
+  if (!quiz.length) return;
+  state.mixWeak = new Map();
+  $("mixSheet").hidden = false;
+  $("mixLevels").innerHTML = "";
+  const d = dailyTest();
+  renderQuiz({ id: "gr-daily", quiz }, $("mixQuiz"), d.day === day ? `📅 Bugungi test · ✅ ${d.score} (qayta ishlash)` : "📅 Bugungi test · 5 ta savol", 5);
+}
+
 // 🎯 Mavzular bo'yicha aniqlik: eng zaif mavzular tepada
 function openTopicStats() {
   state.speedRun = (state.speedRun || 0) + 1;
@@ -608,6 +636,7 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
   const show = () => {
     body.innerHTML = "";
     if (i >= items.length) {
+      if (lesson.id === "gr-daily") dailyTestDone(right, items.length);
       saveQuiz(lesson.id === "gr-mix" ? `gr-mix${localStorage.getItem("sado-mix-lv") || ""}` : lesson.id, right, items.length); // aralash testda — har daraja uchun alohida
       if (state.lessons.length) keepScroll(renderLessons); // plitkadagi 🧩 va Aralash test 🏆 yangilanadi
       body.append(el("p", "qz-done", right === items.length ? `🎉 ${right}/${items.length} — a'lo! Endi gapirib mustahkamlaymiz.` : right * 2 >= items.length ? `👍 ${right}/${items.length} — yaxshi! To'g'ri shakllarini eshitib takrorlang.` : `💪 ${right}/${items.length} — qoidani yana bir o'qing va qayta urinib ko'ring.`));
@@ -1715,6 +1744,14 @@ function renderLessons() {
             top.append(acc);
           }
           row.append(top);
+          // 📅 Bugungi test banneri
+          const dt = dailyTest();
+          const doneToday = dt.day === dayNum();
+          const alive = doneToday || dt.day === dayNum() - 1;
+          const db = el("button", "gq-daily" + (doneToday ? " done" : ""));
+          db.append(el("b", "", doneToday ? `✅ Bugungi test bajarildi · ${dt.score}` : "📅 Bugungi test — 5 ta savol"), el("small", "", alive && dt.streak ? `🔥 ${dt.streak} kun ketma-ket${doneToday ? " · ertaga yangi savollar" : " — seriyani uzmang!"}` : "Har kuni yangi savollar · seriya yig'ing"));
+          db.addEventListener("click", () => { haptic(); openDailyTest(); });
+          row.append(db);
           const pool = gr.filter((x) => !perfect.includes(x));
           const go = el("button", "", pool.length ? "🎲 Tasodifiy mashq" : "🎉 Yana bir mashq");
           go.addEventListener("click", () => {
