@@ -279,9 +279,40 @@ for (const b of document.querySelectorAll(".vocab-tabs .chip-f")) {
   });
 }
 
+// 📈 So'nggi natijalar: oxirgi 7 ta dars balli ustunlarda
+function renderTrend() {
+  const box = $("trend");
+  const recent = (state.progress?.recent || []).slice(0, 7).reverse();
+  if (recent.length < 2) return (box.hidden = true);
+  box.hidden = false;
+  box.innerHTML = "";
+  const avg = (a) => Math.round(a.reduce((x, r) => x + r.score, 0) / a.length);
+  const half = Math.floor(recent.length / 2);
+  const diff = avg(recent.slice(half)) - avg(recent.slice(0, half));
+  const head = el("div", "trend-head");
+  head.append(
+    el("b", "", "📈 So'nggi natijalar"),
+    el("span", diff > 0 ? "up" : diff < 0 ? "down" : "", diff > 0 ? `▲ +${diff} ball` : diff < 0 ? `▼ ${diff} ball` : "barqaror"),
+  );
+  box.append(head);
+  const bars = el("div", "trend-bars");
+  for (const r of recent) {
+    const l = state.lessons.find((x) => x.id === r.lessonId);
+    const col = el("div", "tb");
+    const bar = el("i", r.score >= 70 ? "hi" : r.score >= 45 ? "mid" : "lo");
+    bar.style.height = `${Math.max(8, r.score)}%`;
+    col.append(el("em", "", String(r.score)), el("span", "tb-track", ""), el("small", "", l?.emoji || "📘"));
+    col.querySelector(".tb-track").append(bar);
+    col.title = `${l?.title || ""} · ${r.level || ""}`;
+    bars.append(col);
+  }
+  box.append(bars);
+}
+
 function renderLessons() {
   renderStats();
   renderVocabBtn();
+  renderTrend();
   renderNext();
   const list = $("lessonList");
   list.innerHTML = "";
