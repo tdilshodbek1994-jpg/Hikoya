@@ -3461,6 +3461,35 @@ $("shareBtn").addEventListener("click", () => {
   else window.open(link, "_blank");
 });
 
+// ✏️ Xato gaplarga qarab mos grammatika darsini topish (oddiy qoidalar bo'yicha)
+function grammarLessonFor(mistakes) {
+  const words = (t) => new Set(String(t || "").toLowerCase().match(/[a-z']+/g) || []);
+  const PREP = ["in", "on", "at", "to", "for", "from", "by", "with", "about"];
+  const rules = [
+    [(w) => /\b(i|you|we|they) (wants|likes|goes|has|does|works|lives|studies)\b|\b(he|she|it) (want|like|go|have|work|live|study)\b|doesn't \w+s\b/.test(w), "gr-simple"],
+    [(w) => /\b(i|he|she|it) were\b|\b(we|you|they) was\b/.test(w), "gr-pastcont"],
+    [(w) => /\b(goed|eated|buyed|catched|thinked|runned|did \w+ed|didn't \w+ed)\b/.test(w), "gr-past"],
+    [(w) => /\b(more (big|good|bad|small|tall|cheap|fast)|gooder|baddest|most (big|good))\b/.test(w), "gr-compare"],
+    // Predlog almashtirilgan (on → in, on → to ...)
+    [(w, r) => { const a = words(w), b = words(r); return PREP.some((x) => a.has(x) !== b.has(x)); }, "gr-prepositions"],
+    // Artikl qo'shilgan/olib tashlangan yoki a ↔ an
+    [(w, r) => { const a = words(w), b = words(r); return ["a", "an", "the"].some((x) => a.has(x) !== b.has(x)); }, "gr-articles"],
+    [(w, r) => /\b(have|has) (been|seen|done|gone|visited|lived)\b/.test(r) && !/\b(have|has)\b/.test(w), "gr-perfect"],
+    [(w, r) => /\bwill\b|going to/.test(r), "gr-future"],
+    [(w, r) => /\b(much|many|some|any|a few|a little)\b/.test(r), "gr-quantity"],
+    [(w, r) => /\bthere (is|are)\b/.test(r), "gr-there"],
+    [(w, r) => /\b(his|her|their|our)\b|'s\b/.test(r), "gr-possessive"],
+    [(w) => /\b(can|should|must|might) \w+s\b|\b(can|should|must) to\b/.test(w), "gr-modals"],
+    [(w, r) => /\?/.test(r) && /\b(do|does|did)\b/.test(r) && !/\b(do|does|did)\b/.test(w), "gr-questions"],
+  ];
+  for (const m of mistakes || []) {
+    const w = String(m.wrong || "").toLowerCase(), r = String(m.right || "").toLowerCase();
+    if (!w || !r) continue;
+    for (const [test, id] of rules) if (test(w, r)) return state.lessons.find((l) => l.id === id) || null;
+  }
+  return null;
+}
+
 // 📝 AI hisobot: ball, daraja, xatolar, maslahatlar, yangi so'zlar
 // 🎉 Konfetti (80+ ball)
 function confetti() {
@@ -3616,6 +3645,9 @@ function renderReport(r, score) {
       grammar: ["Zamonlar va savol tuzishdagi xatolar ballni pasaytiradi. Grammatika darslari aynan shu uchun.", "✏️ Grammatika darslariga o'tish"],
       pronunciation: ["So'zlarni aniq va sekinroq ayting. «Tinglab takrorlash» mashqi talaffuzni tez yaxshilaydi.", "🔁 Darsni qayta o'tish"],
     };
+    // ✏️ Xatolarga qarab aniq grammatika darsi (masalan "I wants" → Present Simple)
+    const grPick = weak === "grammar" ? grammarLessonFor(r.mistakes) : null;
+    if (grPick) ADVICE.grammar[1] = `✏️ Tavsiya: ${grPick.emoji} ${grPick.title.replace(/^\d+\.\s*/, "")}`;
     if (weak && ADVICE[weak]) {
       const w = el("div", "crit-weak");
       w.append(el("b", "", `🎯 Eng zaif tomon: ${NAMES[weak]} — ${r.criteria[weak].toFixed(1)}`), el("span", "", ADVICE[weak][0]));
@@ -3625,6 +3657,10 @@ function renderReport(r, score) {
         const free = state.lessons.find((l) => l.liveOnly);
         if (weak === "fluency" && free && state.liveEnabled) return startLesson(free, "live");
         if (weak === "vocabulary") return $("vocabBtn").click();
+        if (weak === "grammar" && grPick) {
+          show("home");
+          return openSheet(grPick);
+        }
         if (weak === "grammar") {
           show("home");
           state.filter.cat = "Grammatika gapirib";
