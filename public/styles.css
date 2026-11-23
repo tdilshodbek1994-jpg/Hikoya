@@ -1154,3 +1154,5 @@ body.dark .ml-mark { background: #5eead4; }
   .daily-btns { gap: 12px; }
   .daily-go { font-size: 12.5px; }
 }
+/* 📱 Tor ekranda daraja belgisi ixchamroq — dars nomi 3 qatorga tushmasin */
+@media (max-width: 360px) { .lesson-level { font-size: 11px; padding: 3px 7px; white-space: nowrap; } }

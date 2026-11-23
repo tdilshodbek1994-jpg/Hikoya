@@ -763,6 +763,12 @@ function renderChips() {
 // IELTS/CEFR kursidagi birinchi o'tilmagan dars
 function nextLesson() {
   const done = state.progress?.lessons || {};
+  // 🎯 Tanishuvda tanlangan maqsad bo'limi birinchi (masalan CEFR tanlaganga IELTS taklif qilinmasin)
+  const aim = localStorage.getItem("sado-aim");
+  if (aim) {
+    const n = state.lessons.find((l) => l.category === aim && !l.liveOnly && !done[l.id]);
+    if (n) return n;
+  }
   for (const cat of ["IELTS kursi", "CEFR kursi", "Grammatika gapirib"]) {
     const list = state.lessons.filter((l) => l.category === cat);
     if (list.some((l) => done[l.id])) {
