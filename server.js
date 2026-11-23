@@ -123,8 +123,23 @@ function reviewLesson(userId) {
 const lessonOf = (s) => s.custom || getLesson(s.lessonId);
 
 // ---- API ----
+// Darslar ro'yxati server ishlaguncha o'zgarmaydi — bir marta tayyorlab, siqib qo'yamiz (~80 KB → ~15 KB)
+let lessonsCache = null;
 app.get("/api/lessons", (req, res) => {
-  res.json({ lessons: LESSONS.map(publicLesson), voiceEnabled, liveEnabled, sessionMinutes: SESSION_MINUTES, shareUrl: process.env.SHARE_URL || "" });
+  if (!lessonsCache) {
+    const body = Buffer.from(JSON.stringify({ lessons: LESSONS.map(publicLesson), voiceEnabled, liveEnabled, sessionMinutes: SESSION_MINUTES, shareUrl: process.env.SHARE_URL || "" }));
+    lessonsCache = { body, gz: zlib.gzipSync(body, { level: 9 }), etag: `"l-${crypto.createHash("sha1").update(body).digest("hex").slice(0, 16)}"` };
+  }
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Vary", "Accept-Encoding");
+  res.setHeader("ETag", lessonsCache.etag);
+  if (req.headers["if-none-match"] === lessonsCache.etag) return res.status(304).end();
+  if (/\bgzip\b/.test(req.headers["accept-encoding"] || "")) {
+    res.setHeader("Content-Encoding", "gzip");
+    return res.end(lessonsCache.gz);
+  }
+  res.end(lessonsCache.body);
 });
 
 app.post("/api/session", express.json(), auth, async (req, res) => {
