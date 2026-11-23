@@ -959,3 +959,5 @@ body.dark .rep-ml { color: #5eead4; }
 .w-del { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; border-radius: 50%; font-size: 13px; color: var(--muted); background: transparent; }
 .w-del:active { background: color-mix(in srgb, var(--danger) 14%, transparent); color: var(--danger); }
 #vocabList li.removing { opacity: 0.4; }
+
+.vocab-search { width: 100%; margin: 10px 0 2px; padding: 10px 12px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--muted) 30%, transparent); background: var(--bg); color: var(--text); font: inherit; font-size: 15px; }

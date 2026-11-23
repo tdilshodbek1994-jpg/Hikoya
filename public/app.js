@@ -631,11 +631,16 @@ function renderVocab() {
   let items = (state.progress?.words || []).filter((w) => (state.vocabTab === "fix" ? w.type === "fix" : w.type !== "fix"));
   // Tuzatilmagan xatolar tepada, tuzatilganlari pastda
   if (state.vocabTab === "fix") items = [...items.filter((w) => !w.fixed), ...items.filter((w) => w.fixed)];
+  // 🔍 Lug'atda qidirish (ro'yxat uzun bo'lsa ko'rinadi)
+  $("vocabSearch").hidden = items.length < 8 || Boolean(state.flash);
+  const vq = $("vocabSearch").hidden ? "" : $("vocabSearch").value.trim().toLowerCase().replace(/[‘’`ʻʼ]/g, "'");
+  const total = items.length;
+  if (vq) items = items.filter((w) => [w.en, w.uz, w.wrong].some((x) => String(x || "").toLowerCase().replace(/[‘’`ʻʼ]/g, "'").includes(vq)));
   // 🏆 Hamma xato tuzatilgan bo'lsa — tabrik, takrorlash tugmasi "mustahkamlash"ga aylanadi
   const allFixed = state.vocabTab === "fix" && items.length > 0 && items.every((w) => w.fixed);
   $("reviewBtn").textContent = allFixed ? "💪 Tuzatilganlarni mustahkamlash" : "🔁 Xatolarim ustida Sado bilan ishlash";
   if (allFixed) ul.append(el("li", "all-fixed", `🏆 Barcha ${items.length} ta xatoingiz tuzatilgan! Yangi darslarda yangi xatolar chiqsa, shu yerda paydo bo'ladi.`));
-  if (!items.length) ul.append(el("li", "muted", state.vocabTab === "fix" ? "Hozircha xato yo'q 👏" : "Hozircha so'z yo'q"));
+  if (!items.length) ul.append(el("li", "muted", vq && total ? `«${vq}» topilmadi` : state.vocabTab === "fix" ? "Hozircha xato yo'q 👏" : "Hozircha so'z yo'q"));
   for (const w of items) {
     const li = el("li", "rep-word" + (w.type === "fix" ? " rep-mistake" : ""));
     if (w.type === "fix") {
@@ -672,6 +677,8 @@ function renderVocab() {
 }
 
 // 📋 Lug'atni matn ko'rinishida nusxalash (Telegram "Saqlangan xabarlar"ga yoki daftarga)
+$("vocabSearch").addEventListener("input", () => renderVocab());
+
 $("vocabCopy").addEventListener("click", async () => {
   haptic();
   const fix = state.vocabTab === "fix";
@@ -827,6 +834,7 @@ $("vocabSheet").addEventListener("click", (e) => {
 for (const b of document.querySelectorAll(".vocab-tabs .chip-f")) {
   b.addEventListener("click", () => {
     state.vocabTab = b.dataset.t;
+    $("vocabSearch").value = "";
     for (const x of document.querySelectorAll(".vocab-tabs .chip-f")) x.classList.toggle("on", x === b);
     renderVocab();
   });
