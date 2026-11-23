@@ -1,5 +1,5 @@
 import { Mascot } from "./mascot.js";
-import { LiveCall } from "./live.js?v=9";
+import { LiveCall } from "./live.js?v=11";
 
 const tg = window.Telegram?.WebApp;
 const inTelegram = Boolean(tg && tg.initData);
@@ -3027,8 +3027,9 @@ async function startLive(lesson) {
       outAnalyser: audio.outAnalyser,
       onState: (st, level) => {
         if (state.phase === "ended") return;
-        const label = st === "speaking" ? "Sado gapirmoqda · ✋ to'xtatish" : st === "muted" ? "🔇 Mikrofon o'chiq" : "Sizni tinglayapti...";
-        const phase = st === "muted" ? "idle" : st;
+        const label = st === "speaking" ? "Sado gapirmoqda · ✋ to'xtatish" : st === "muted" ? "🔇 Mikrofon o'chiq" : st === "paused" ? "⏸ Ovoz to'xtadi — ekranga bosing" : "Sizni tinglayapti...";
+        const phase = st === "muted" || st === "paused" ? "idle" : st;
+        $("status").classList.toggle("paused", st === "paused");
         if (state.phase !== phase || $("statusText").textContent !== label) setPhase(phase, label);
         mascot.setLevel(level);
       },
@@ -3065,12 +3066,16 @@ async function startLive(lesson) {
       },
     });
     state.live = call;
+    // ⏸ Telefon ovoz tizimini to'xtatsa (ruxsat oynasi, qo'ng'iroq, boshqa ilova) — istalgan bosish uni qayta yoqadi
+    const wake = () => { if (state.live === call && audio.ctx?.state !== "running") audio.ctx.resume().catch(() => {}); };
+    document.addEventListener("pointerdown", wake, true);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) wake(); });
     // 🤫 O'quvchi 15 soniya jim qolsa — Sado o'zi yordam beradi (har jimlikda bir marta, jami 3 marta)
     clearInterval(state.quietTimer);
     state.quietTimer = setInterval(() => {
       if (state.live !== call || call.stopped) return clearInterval(state.quietTimer);
-      if (call.sources.size) quiet.at = Date.now(); // jimlik Sado ovozi tugagandan keyin sanaladi
-      if (!connected || call.muted || call.sources.size || quiet.done || quiet.n >= 3) return;
+      if (call.speaking()) quiet.at = Date.now(); // jimlik Sado ovozi tugagandan keyin sanaladi
+      if (!connected || call.muted || call.speaking() || quiet.done || quiet.n >= 3) return;
       if (Date.now() - quiet.at > 15000 && call.nudge()) {
         quiet.done = true;
         quiet.n++;
@@ -3474,7 +3479,7 @@ $("mascot").addEventListener("click", () => {
   $("replayBtn").click();
 });
 // Holat yozuvini bosish ham Sado'ni to'xtatadi (yozuvda shunday deyilgan)
-$("status").addEventListener("click", () => { if (state.live?.sources?.size) $("mascot").click(); });
+$("status").addEventListener("click", () => { if (state.live?.speaking?.()) $("mascot").click(); });
 
 $("myVoiceBtn").addEventListener("click", (e) => {
   e.stopPropagation();

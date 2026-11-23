@@ -31,7 +31,7 @@ export class LiveCall {
     // oqim uzilmaydi, Gemini esa o'quvchi gapi tugaganini to'g'ri aniqlaydi.
     const sendPcm = (buf) => {
       if (this.ws?.readyState !== WebSocket.OPEN) return;
-      const echo = this.sources.size > 0 || ctx.currentTime < this.playhead + 0.35;
+      const echo = this.speaking(0.35);
       this.ws.send(this.muted || echo ? new ArrayBuffer(buf.byteLength) : buf);
     };
     if (ctx.audioWorklet) {
@@ -102,6 +102,14 @@ export class LiveCall {
     s.onended = () => this.sources.delete(s);
   }
 
+  // 🔊 Sado hozir gapiryaptimi: ijro tugashi kerak bo'lgan vaqt bo'yicha (o'chib qolgan "onended"ga
+  // bog'liq emas). Ovoz tizimi to'xtab qolsa — gapirmayapti deb hisoblaymiz, aks holda mikrofon
+  // abadiy "jim" yuborib, suhbat qotib qolardi.
+  speaking(tail = 0) {
+    if (this.ctx.state !== "running") return false;
+    return this.ctx.currentTime < this.playhead + tail;
+  }
+
   // Mikrofonni vaqtincha o'chirish/yoqish
   setMuted(m) {
     this.muted = m;
@@ -120,7 +128,7 @@ export class LiveCall {
   // ✋ O'quvchi Sado'ni to'xtatdi: ovoz darhol o'chadi, shu javobning qolgan qismi tashlanadi,
   // mikrofon esa darhol ochiladi (exo himoyasi kutmaydi)
   interrupt() {
-    if (!this.sources.size) return false;
+    if (!this.speaking()) return false;
     this.dropping = true;
     this.flush();
     this.playhead = this.ctx.currentTime - 1;
@@ -129,7 +137,21 @@ export class LiveCall {
 
   loop() {
     if (this.stopped) return;
-    const speaking = this.sources.size > 0;
+    // Telefon ovoz tizimini to'xtatib qo'ysa (ruxsat oynasi, boshqa ilova) — qayta yoqamiz
+    if (this.ctx.state === "suspended" && !this.resuming) {
+      this.resuming = true;
+      this.ctx.resume().catch(() => {}).finally(() => (this.resuming = false));
+    }
+    // Bir soniyadan ko'p to'xtab qolsa — o'quvchidan ekranga bosishni so'raymiz (telefon faqat bosish bilan ruxsat beradi)
+    if (this.ctx.state !== "running") {
+      this.pausedSince ||= performance.now();
+      if (performance.now() - this.pausedSince > 1000) {
+        this.onState("paused", 0);
+        this.raf = requestAnimationFrame(this.loop);
+        return;
+      }
+    } else this.pausedSince = 0;
+    const speaking = this.speaking();
     if (!speaking && this.muted) {
       this.onState("muted", 0);
       this.raf = requestAnimationFrame(this.loop);
