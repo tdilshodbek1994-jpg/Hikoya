@@ -482,7 +482,7 @@ body.dark .cue-timer { color: #a5b4fc; }
 .goal-left.low { color: var(--danger); }
 
 /* ---------- Birinchi tanishuv ---------- */
-.onb { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 20px; background: rgba(10, 10, 25, 0.55); animation: fade 0.2s; }
+.onb { position: fixed; inset: 0; z-index: 40; display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; padding: 20px; background: rgba(10, 10, 25, 0.55); animation: fade 0.2s; }
 .onb-card { width: 100%; max-width: 380px; background: var(--card); border-radius: 26px; padding: 22px 18px 14px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,.3); }
 .onb-mascot { width: 130px; height: 130px; margin: 0 auto; position: relative; }
 .onb-slides h2 { margin: 8px 0 6px; font-size: 21px; }

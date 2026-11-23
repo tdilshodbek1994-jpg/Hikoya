@@ -2560,9 +2560,9 @@ function renderSettings() {
         }]]
       : []),
     // 🧭 Yo'nalish (tanishuvdagi maqsad) — "Keyingi dars" va tasodifiy darslar shunga moslanadi
-    ["🧭 Yo'nalish", [["", "Umumiy"], ["IELTS kursi", "IELTS"], ["CEFR kursi", "CEFR"], ["Kundalik hayot", "Kundalik"], ["Bolalar uchun", "Bola"]], () => {
+    ["🧭 Yo'nalish", [["", "Umumiy"], ["IELTS kursi", "IELTS"], ["CEFR kursi", "CEFR"], ["Grammatika gapirib", "Grammatika"], ["Kundalik hayot", "Kundalik"], ["Bolalar uchun", "Bola"]], () => {
       const a = localStorage.getItem("sado-aim") || "";
-      return ["IELTS kursi", "CEFR kursi", "Kundalik hayot", "Bolalar uchun"].includes(a) ? a : "";
+      return ["IELTS kursi", "CEFR kursi", "Grammatika gapirib", "Kundalik hayot", "Bolalar uchun"].includes(a) ? a : "";
     }, (v) => {
       v ? localStorage.setItem("sado-aim", v) : localStorage.removeItem("sado-aim");
       renderNext();
@@ -4822,7 +4822,7 @@ function showOnboarding() {
       // 🎯 Maqsad: bosh sahifa shu bo'limdan ochiladi va birinchi dars shunga mos tanlanadi
       lv.append(el("small", "", "Maqsadingiz nima?"));
       const goals = el("div", "onb-lv-row onb-goals");
-      for (const [k, label] of [["IELTS kursi", "🎓 IELTS"], ["CEFR kursi", "📗 CEFR"], ["Kundalik hayot", "💬 Kundalik"], ["Bolalar uchun", "🧒 Bolalar"]]) {
+      for (const [k, label] of [["IELTS kursi", "🎓 IELTS"], ["CEFR kursi", "📗 CEFR"], ["Grammatika gapirib", "✏️ Grammatika"], ["Kundalik hayot", "💬 Kundalik"], ["Bolalar uchun", "🧒 Bolalar"]]) {
         const b = el("button", "chip-f" + (localStorage.getItem("sado-aim") === k ? " on" : ""), label);
         b.addEventListener("click", () => {
           haptic();
@@ -4849,7 +4849,9 @@ function showOnboarding() {
       renderChips();
       renderLessons();
     }
-    const byGoal = { "IELTS kursi": "ielts-intro", "CEFR kursi": "cefr-1", "Bolalar uchun": "kid-colors" }[goal];
+    // ✏️ Grammatika: darajaga mos boshlang'ich mavzu
+    const grStart = lvl === "adv" ? "gr-perfect" : lvl === "mid" ? "gr-past" : "gr-tobe";
+    const byGoal = { "IELTS kursi": "ielts-intro", "CEFR kursi": "cefr-1", "Bolalar uchun": "kid-colors", "Grammatika gapirib": grStart }[goal];
     const first = byGoal ? state.lessons.find((l) => l.id === byGoal)
       : lvl === "beg" ? state.lessons.find((l) => l.id === "cafe")
       : lvl === "mid" ? state.lessons.find((l) => l.id === "meet")
