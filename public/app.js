@@ -345,6 +345,15 @@ function ruleBody(rule) {
   return box;
 }
 
+// ⭐ Bolalar rejimi: har bir to'g'ri ibora uchun katta yulduz va maqtov
+const KID_PRAISE = ["Zo'r! ⭐", "Barakalla! 🌟", "Juda yaxshi! ✨", "Ofarin! 🎉", "Super! 🚀", "Qoyil! 👏"];
+function kidStar() {
+  const s = el("div", "kid-star");
+  s.append(el("b", "", "⭐"), el("span", "", KID_PRAISE[(state.used.size - 1) % KID_PRAISE.length]));
+  document.body.append(s);
+  setTimeout(() => s.remove(), 1600);
+}
+
 // 🧭 Imtihon qismlari: Sado gapida "Part 2" / "Part 1.2" uchrasa, bosqich oldinga siljiydi
 function renderStages(lesson, idx = 0) {
   const box = $("stages");
@@ -1466,6 +1475,7 @@ async function startLesson(lesson, lessonMode = "tutor") {
   $("lessonTitle").textContent = lesson.title;
   renderPhrase();
   renderVisual(lesson);
+  $("lesson").classList.toggle("kids", lesson.category === "Bolalar uchun");
   renderLessonRule(lesson);
   renderStages(lesson);
   applyMode();
@@ -1516,6 +1526,7 @@ async function startLive(lesson) {
   $("lessonTitle").textContent = lesson.title + " · jonli";
   renderPhrase();
   renderVisual(lesson);
+  $("lesson").classList.toggle("kids", lesson.category === "Bolalar uchun");
   renderLessonRule(lesson);
   renderStages(lesson);
   // Jonli rejimda tugmalar kerak emas: shunchaki gaplashiladi
@@ -1763,7 +1774,9 @@ function renderPhrase() {
     else if (i === state.phraseIdx) el.className = "current";
     seg.appendChild(el);
   });
-  $("countText").textContent = `${lesson.phrases.length} tadan ${used.size} ta ibora`;
+  $("countText").textContent = lesson.category === "Bolalar uchun"
+    ? "⭐".repeat(used.size) + "☆".repeat(Math.max(0, lesson.phrases.length - used.size))
+    : `${lesson.phrases.length} tadan ${used.size} ta ibora`;
   const p = lesson.phrases[state.phraseIdx];
   $("phraseEn").textContent = p.en.replace(/ (\.\.\.)/g, "\u00a0$1"); // "..." yolg'iz keyingi qatorga tushmasin
   $("phraseUz").textContent = p.uz;
@@ -2318,7 +2331,8 @@ function markUsed(list) {
     card.classList.remove("pop");
     void card.offsetWidth;
     card.classList.add("pop");
-    toast(`✅ Ibora qabul qilindi! (${state.used.size}/${state.lesson.phrases.length})`);
+    if (state.lesson.category === "Bolalar uchun") kidStar();
+    else toast(`✅ Ibora qabul qilindi! (${state.used.size}/${state.lesson.phrases.length})`);
   }
 }
 

@@ -862,3 +862,12 @@ body.dark .pill.warn { color: #fbbf24; }
 .plan-list li.done { color: var(--muted); text-decoration: line-through; }
 .plan-list li.done::before { border-color: var(--ok); background: var(--ok); }
 .plan-list li.done::before { content: "✓"; color: #fff; font-size: 11px; font-weight: 800; display: grid; place-items: center; line-height: 1; }
+
+/* 🧒 Bolalar rejimi */
+#lesson.kids .phrase-en { font-size: 24px; }
+#lesson.kids .phrase-uz { font-size: 16px; }
+#lesson.kids .phrase-card { border: 3px solid #fbbf24; }
+.kid-star { position: fixed; left: 50%; top: 27%; transform: translate(-50%, -50%); z-index: 40; display: flex; flex-direction: column; align-items: center; pointer-events: none; animation: kidStar 1.6s ease forwards; }
+.kid-star b { font-size: 96px; line-height: 1; filter: drop-shadow(0 6px 16px rgba(245, 158, 11, 0.5)); }
+.kid-star span { margin-top: 6px; font-size: 22px; font-weight: 800; color: #f59e0b; text-shadow: 0 2px 0 rgba(0, 0, 0, 0.08); }
+@keyframes kidStar { 0% { transform: translate(-50%, -50%) scale(0.3) rotate(-20deg); opacity: 0; } 25% { transform: translate(-50%, -50%) scale(1.15) rotate(8deg); opacity: 1; } 70% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -80%) scale(0.8); opacity: 0; } }
