@@ -1717,6 +1717,9 @@ async function startLive(lesson) {
   $("muteBtn").hidden = false;
   $("hintBtn").hidden = false; // 💡 jonli suhbatda ham javob namunalari
   $("lesson").classList.add("is-live");
+  $("wordsLive").hidden = false;
+  $("wordsLive").dataset.n = "0";
+  $("wordsLive").textContent = "🗣 0 so'z";
   $("replayBtn").hidden = true;
   clearHints();
   setMuteUi(false);
@@ -1906,6 +1909,18 @@ function appendBubble(text) {
   const last = log.lastElementChild;
   if (!last) return;
   last.lastElementChild.textContent += text;
+  // 🗣 Jonli hisoblagich: o'quvchi aytgan inglizcha so'zlar
+  if (last.classList.contains("b-me")) {
+    const n = [...log.querySelectorAll(".b-me span")].reduce((k, x) => k + (x.textContent.match(/[A-Za-z]+/g) || []).length, 0);
+    const w = $("wordsLive");
+    if (n !== Number(w.dataset.n || 0)) {
+      w.dataset.n = n;
+      w.textContent = `🗣 ${n} so'z`;
+      w.classList.remove("bump");
+      void w.offsetWidth;
+      w.classList.add("bump");
+    }
+  }
   log.scrollTop = log.scrollHeight;
 }
 
@@ -2719,6 +2734,7 @@ function stopAll() {
   clearInterval(state.timer);
   clearInterval(state.cueClock);
   $("lesson").classList.remove("is-live");
+  $("wordsLive").hidden = true;
   state.live?.stop();
   state.live = null;
   cancelRecording();
