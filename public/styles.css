@@ -498,3 +498,12 @@ body.dark .onb-card { box-shadow: 0 0 0 1px var(--line), 0 20px 50px rgba(0,0,0,
 .rule { text-align: left; margin-top: 12px; background: color-mix(in srgb, var(--primary) 8%, var(--bg)); border-left: 4px solid var(--primary); border-radius: 12px; padding: 10px 12px; font-size: 14px; line-height: 1.5; }
 .rule b { display: block; margin-bottom: 3px; }
 .rule div { white-space: pre-line; }
+
+/* ---------- Oyna: tugmalar doim ko'rinadi ---------- */
+.sheet-actions { position: sticky; bottom: calc(-16px - var(--safe-b)); margin: 10px -16px calc(-16px - var(--safe-b)); padding: 8px 16px calc(14px + var(--safe-b));
+  background: linear-gradient(to bottom, transparent, var(--card) 14px); }
+.sheet-actions .mode-card { margin-top: 8px; padding: 11px 14px; }
+.sheet-actions .mode-card span { font-size: 12.5px; }
+.sheet-actions .btn.wide { margin-top: 8px; height: 44px; }
+.mode-card { position: relative; }
+.mode-card.rec::after { content: "⭐ Tavsiya"; position: absolute; top: 9px; right: 10px; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 99px; background: #fbbf24; color: #78350f; }

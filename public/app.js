@@ -609,6 +609,14 @@ function openSheet(lesson) {
   $("sheetEmoji").textContent = lesson.emoji;
   renderFavBtn(lesson);
   $("sheetTitle").textContent = lesson.title;
+  // ⭐ Tavsiya etilgan rejim: daraja va o'quvchining o'rtacha baliga qarab
+  const recent = state.progress?.recent || [];
+  const avg = recent.length ? recent.reduce((s, r) => s + (r.score || 0), 0) / recent.length : null;
+  const lvl = String(lesson.level || "");
+  let rec = "chat";
+  if (/^A1|^A2$|^A1-|Har/.test(lvl) || (avg !== null && avg < 50)) rec = "tutor";
+  else if (state.liveEnabled && (/B2|C1/.test(lvl) || (avg !== null && avg >= 70))) rec = "live";
+  for (const [id, m] of [["startLiveBtn", "live"], ["startTutorBtn", "tutor"], ["startChatBtn", "chat"]]) $(id).classList.toggle("rec", m === rec);
   // ✏️ Grammatika qoidasi
   $("sheetRule").hidden = !lesson.rule;
   if (lesson.rule) {
