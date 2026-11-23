@@ -3741,6 +3741,15 @@ function showOnboarding() {
 }
 showOnboarding();
 
+// ℹ️ Versiya va 🔄 yangilash: eski saqlangan darslar ro'yxatini tozalab, ilovani qayta yuklash
+$("appVer").textContent = `Sado v${(document.querySelector('script[src^="app.js"]')?.getAttribute("src") || "").split("v=")[1] || "?"}`;
+$("appRefresh").addEventListener("click", () => {
+  haptic();
+  localStorage.removeItem("sado-lessons");
+  toast("🔄 Yangilanmoqda...", 1500);
+  setTimeout(() => location.reload(), 300);
+});
+
 // 🆕 Nima yangi: versiya o'zgarganda bir marta ko'rsatiladi (yangi foydalanuvchiga emas)
 const NEWS_VERSION = "2026-11-26";
 const NEWS = [
