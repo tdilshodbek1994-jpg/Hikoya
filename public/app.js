@@ -209,7 +209,7 @@ function lessonButton(l) {
     <span class="lesson-level"></span>`;
   b.querySelector(".lesson-emoji").textContent = l.emoji;
   b.querySelector(".lesson-title").textContent = l.title;
-  b.querySelector(".lesson-sub").textContent = `${l.phrases.length} ta ibora · ${state.sessionMinutes} daqiqa`;
+  b.querySelector(".lesson-sub").textContent = `${l.phrases.length} ta ibora · ${l.minutes || state.sessionMinutes} daqiqa`;
   b.querySelector(".lesson-level").textContent = (state.favs.has(l.id) ? "⭐ " : "") + l.level;
   const pr = state.progress?.lessons?.[l.id];
   if (pr) {
@@ -402,7 +402,7 @@ function openSheet(lesson) {
   // Daraja, iboralar soni va oldingi natija
   const meta = $("sheetMeta");
   meta.innerHTML = "";
-  meta.append(el("span", "pill", `📊 ${lesson.level}`), el("span", "pill", `🗂️ ${lesson.phrases.length} ta ibora`), el("span", "pill", `⏱️ ${state.sessionMinutes} daq`));
+  meta.append(el("span", "pill", `📊 ${lesson.level}`), el("span", "pill", `🗂️ ${lesson.phrases.length} ta ibora`), el("span", "pill", `⏱️ ${lesson.minutes || state.sessionMinutes} daq`));
   const pr = state.progress?.lessons?.[lesson.id];
   if (pr) meta.append(el("span", "pill ok", `✅ ${pr.best} ball · ${pr.count} marta`));
   const ul = $("sheetPhrases");

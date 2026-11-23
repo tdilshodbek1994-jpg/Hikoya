@@ -1657,6 +1657,45 @@ export const LESSONS = [
       { en: "It looks great, thanks!", uz: "Zo'r chiqdi, rahmat!" },
     ],
   },
+  // ======== CEFR kursi (qo'shimcha) ========
+  {
+    id: "cefr-7",
+    category: "CEFR kursi",
+    title: "CEFR: Jadval va ma'lumotni tasvirlash",
+    emoji: "📊",
+    level: "B2",
+    role: "a supportive coach and examiner for the Uzbek national CEFR multilevel speaking exam",
+    situation: "Coaching session for the Uzbek national CEFR multilevel English speaking exam: describing data: describe in words a simple chart (for example: 'how students in a school travel to school: 45% by bus, 30% on foot, 15% by car, 10% by bike', or 'popular free-time activities by age group'). Ask the student to describe the main trends, compare the numbers and give a possible reason. After each answer give short feedback in Uzbek (good point, one thing to improve, a stronger sample sentence in English). At the end estimate the CEFR level (A2/B1/B2/C1) and give one tip in Uzbek.",
+    opener: "Imagine a chart about how students travel to school: 45 percent go by bus, 30 percent walk, 15 percent go by car, and 10 percent cycle. Can you describe this chart for me?",
+    openerUz: "Tasavvur qiling: o'quvchilar maktabga qanday borishi haqidagi jadval. Uni tasvirlab bering.",
+    phrases: [
+      { en: "The chart shows ...", uz: "Jadval ... ni ko'rsatadi." },
+      { en: "The majority of students ...", uz: "O'quvchilarning ko'pchiligi ..." },
+      { en: "Almost a third of them ...", uz: "Ularning deyarli uchdan biri ..." },
+      { en: "Only a small number ...", uz: "Faqat oz qismi ..." },
+      { en: "Compared to ..., ...", uz: "... bilan solishtirganda, ..." },
+      { en: "This is probably because ...", uz: "Bu, ehtimol, ... sababli." },
+    ],
+  },
+  {
+    id: "cefr-8",
+    category: "CEFR kursi",
+    title: "CEFR: To'liq sinov imtihoni",
+    emoji: "🎓",
+    level: "B1-C1",
+    role: "a supportive coach and examiner for the Uzbek national CEFR multilevel speaking exam",
+    situation: "Coaching session for the Uzbek national CEFR multilevel English speaking exam: a FULL mock exam in order, one part at a time: Part 1.1 three short personal questions; Part 1.2 compare two situations you describe in words; Part 2 a 2-minute talk on a personal experience topic; Part 3 an opinion task with arguments for and against. Announce each part clearly in English and say in Uzbek what the student must do. Give feedback only at the very end: a level for each part and the overall CEFR level with 3 tips in Uzbek. After each answer give short feedback in Uzbek (good point, one thing to improve, a stronger sample sentence in English). At the end estimate the CEFR level (A2/B1/B2/C1) and give one tip in Uzbek.",
+    opener: "Welcome to your mock CEFR speaking exam. We'll do all parts in order. Let's begin with Part 1. What do you usually do in the morning?",
+    openerUz: "CEFR speaking sinov imtihoniga xush kelibsiz. Barcha qismlarni ketma-ket bajaramiz.",
+    phrases: [
+      { en: "Let me think for a second.", uz: "Bir soniya o'ylab olay." },
+      { en: "In my experience, ...", uz: "Mening tajribamda, ..." },
+      { en: "Whereas ...", uz: "Holbuki ..." },
+      { en: "I'd like to add that ...", uz: "Shuni qo'shimcha qilmoqchimanki, ..." },
+      { en: "On balance, I believe ...", uz: "Hammasini tarozilasam, men ... deb hisoblayman." },
+      { en: "That's all I wanted to say.", uz: "Aytmoqchi bo'lganlarim shu edi." },
+    ],
+  },
 ];
 
 const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Grammatika gapirib", "Kundalik hayot", "Sayohat", "O'qish va ish", "Biznes va IT"];
@@ -1673,6 +1712,12 @@ for (const cat of ["IELTS kursi", "CEFR kursi", "Grammatika gapirib"]) {
   });
 }
 
+// To'liq imtihon mashqlari uzoqroq davom etadi
+for (const id of ["ielts", "cefr", "cefr-8"]) {
+  const l = LESSONS.find((x) => x.id === id);
+  if (l) l.minutes = 15;
+}
+
 export function getLesson(id) {
   return LESSONS.find((l) => l.id === id);
 }
@@ -1685,6 +1730,7 @@ export function publicLesson(l) {
     emoji: l.emoji,
     level: l.level,
     liveOnly: Boolean(l.liveOnly),
+    minutes: l.minutes || 0,
     category: l.category || "",
     phrases: l.phrases,
   };

@@ -108,13 +108,13 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
     transcript: [],
     slow: Boolean(req.body?.slow),
     startedAt: Date.now(),
-    expiresAt: Date.now() + SESSION_MINUTES * 60_000,
+    expiresAt: Date.now() + (lesson.minutes || SESSION_MINUTES) * 60_000,
   });
 
   try {
     if (mode === "live") {
       // Jonli suhbat: ovoz WebSocket orqali (/api/live) keladi
-      return res.json({ session: id, mode, lesson: publicLesson(lesson), seconds: SESSION_MINUTES * 60 });
+      return res.json({ session: id, mode, lesson: publicLesson(lesson), seconds: (lesson.minutes || SESSION_MINUTES) * 60 });
     }
     if (mode === "tutor") {
       const say = tutorOpener(lesson);
@@ -123,7 +123,7 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
         session: id,
         mode,
         lesson: publicLesson(lesson),
-        seconds: SESSION_MINUTES * 60,
+        seconds: (lesson.minutes || SESSION_MINUTES) * 60,
         reply: say.map((x) => x.text).join(" "),
         reply_uz: "",
         current: 0,
@@ -139,7 +139,7 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
       session: id,
       mode,
       lesson: publicLesson(lesson),
-      seconds: SESSION_MINUTES * 60,
+      seconds: (lesson.minutes || SESSION_MINUTES) * 60,
       reply: lesson.opener,
       reply_uz: lesson.openerUz,
       parts,
