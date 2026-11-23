@@ -556,6 +556,7 @@ function renderVocab() {
     if (w.type === "fix") {
       const line = el("div", "");
       line.append(el("s", "rep-wrong", w.wrong || ""), document.createTextNode(" → "), el("b", "rep-right", w.en));
+      if (w.fixed) line.append(el("span", "fixed-badge", "✅ tuzatildi"));
       li.append(line, el("div", "rep-why", w.uz || ""));
     } else {
       li.append(el("b", "", w.en), el("span", "muted", " — " + (w.uz || "")));
@@ -696,7 +697,8 @@ function renderFlash() {
 }
 // 🔁 Shaxsiy dars: xatolar asosida (server lessonId "review" bilan tuzadi)
 $("reviewBtn").addEventListener("click", () => {
-  const fixes = (state.progress?.words || []).filter((w) => w.type === "fix" && w.en).slice(0, 6);
+  const allFix = (state.progress?.words || []).filter((w) => w.type === "fix" && w.en);
+  const fixes = [...allFix.filter((w) => !w.fixed), ...allFix.filter((w) => w.fixed)].slice(0, 6);
   $("vocabSheet").hidden = true;
   startLesson(
     {
@@ -2587,6 +2589,7 @@ async function finish() {
       renderLessons();
     }
     renderReport(data.report, data.score);
+    if (data.fixedNow) toast(`✅ ${data.fixedNow} ta xatoingiz tuzatildi deb belgilandi!`, 3500);
     renderTranscript(data.transcript);
     renderSpeakStats(data.transcript);
   } catch {

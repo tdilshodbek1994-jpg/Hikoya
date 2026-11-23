@@ -11,7 +11,7 @@ import { verifyInitData } from "./src/telegram.js";
 import { WebSocketServer } from "ws";
 import { liveEnabled, runLive } from "./src/live.js";
 import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies, ttsStats } from "./src/ai.js";
-import { recordSession, touchDay, summary, adminStats, startedToday, countStart, refundStart, startsTodayTotal, deleteUser, setRemind, remindTargets, markReminded } from "./src/store.js";
+import { recordSession, touchDay, summary, adminStats, startedToday, countStart, refundStart, startsTodayTotal, deleteUser, markFixed, setRemind, remindTargets, markReminded } from "./src/store.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -105,7 +105,9 @@ function sendError(res, err) {
 
 // 🔁 Shaxsiy dars: o'quvchining saqlangan xatolaridan tuziladi
 function reviewLesson(userId) {
-  const fixes = (summary(userId).words || []).filter((w) => w.type === "fix" && w.en).slice(0, 6);
+  // Hali tuzatilmagan xatolar birinchi navbatda
+  const all = (summary(userId).words || []).filter((w) => w.type === "fix" && w.en);
+  const fixes = [...all.filter((w) => !w.fixed), ...all.filter((w) => w.fixed)].slice(0, 6);
   if (fixes.length < 2) return null;
   return {
     id: "review",
@@ -312,6 +314,8 @@ app.post("/api/end", express.json(), auth, async (req, res) => {
   } catch (err) {
     console.error("Hisobot xatosi:", err?.message || err);
   }
+  // 🔁 Takrorlash darsida ishlatilgan (to'g'ri aytilgan) iboralar — tuzatilgan xato
+  const fixedNow = s.lessonId === "review" ? markFixed(req.userId, [...s.used].map((i) => lesson.phrases[i]?.en).filter(Boolean)) : 0;
   const score = recordSession(req.userId, {
     lessonId: s.lessonId,
     mode: s.mode,
@@ -320,7 +324,7 @@ app.post("/api/end", express.json(), auth, async (req, res) => {
     seconds: (Date.now() - s.startedAt) / 1000,
     report,
   });
-  res.json({ ok: true, used: [...s.used], score, report, progress: summary(req.userId), transcript: s.transcript.slice(-60) });
+  res.json({ ok: true, used: [...s.used], score, report, fixedNow, progress: summary(req.userId), transcript: s.transcript.slice(-60) });
 });
 
 // 🔊 Iborani to'g'ri talaffuz bilan eshittirish (faqat darslardagi iboralar, keshlanadi)

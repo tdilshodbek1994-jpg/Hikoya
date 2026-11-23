@@ -877,3 +877,5 @@ body.dark .pill.warn { color: #fbbf24; }
 #result.kids .rep-level, #result.kids .rep-cmp, #result.kids .speak-stats span:nth-child(3) { display: none; }
 
 .sub-en.wrong { color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, transparent); text-decoration: line-through; }
+
+.fixed-badge { margin-left: 6px; font-size: 11px; font-weight: 700; color: var(--ok); background: color-mix(in srgb, var(--ok) 14%, transparent); padding: 1px 6px; border-radius: 99px; white-space: nowrap; }

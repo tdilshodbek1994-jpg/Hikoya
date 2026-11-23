@@ -239,6 +239,19 @@ export function startsTodayTotal() {
 }
 
 // 🗑 Foydalanuvchi o'z ma'lumotlarini o'chiradi (kunlik limit hisobi saqlanadi)
+// ✅ Takrorlash darsida to'g'ri aytilgan xatolar "tuzatildi" deb belgilanadi
+export function markFixed(userId, ens) {
+  const u = user(userId);
+  const set = new Set(ens.map((x) => String(x).toLowerCase()));
+  let n = 0;
+  for (const w of u.words || []) if (w.type === "fix" && !w.fixed && set.has(w.en.toLowerCase())) {
+    w.fixed = today();
+    n++;
+  }
+  if (n) save();
+  return n;
+}
+
 // 🔔 Kechki eslatma: o'quvchi o'zi yoqadi/o'chiradi
 export function setRemind(userId, on, hour) {
   const u = user(userId);
