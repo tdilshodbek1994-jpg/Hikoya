@@ -1878,6 +1878,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-pronouns",
+    category: "Grammatika gapirib",
+    title: "Olmoshlar: I / me, he / him, they / them",
+    emoji: "👥",
+    level: "A1-A2",
+    added: "2026-11-26",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on subject and object pronouns: I/me, you/you, he/him, she/her, it/it, we/us, they/them (She helps me. I called him. Can you help us?). Talk about the student's friends and family: who helps whom, who calls whom, gifts given and received. Have a natural conversation that makes the student use this grammar a lot. Ask simple questions, listen, whenever the student makes a mistake (especially he/him, she/her, they/them), explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Who is your best friend? How often do you see him or her?",
+    openerUz: "Eng yaqin do'stingiz kim? Uni qanchalik tez-tez ko'rasiz?",
+    phrases: [
+      { en: "My friend always helps me.", uz: "Do'stim menga doim yordam beradi." },
+      { en: "I called him yesterday.", uz: "Kecha unga (erkakka) qo'ng'iroq qildim." },
+      { en: "Can you help us, please?", uz: "Bizga yordam bera olasizmi?" },
+      { en: "I gave her a present.", uz: "Unga (ayolga) sovg'a berdim." },
+      { en: "We visit them every Sunday.", uz: "Biz ularnikiga har yakshanba boramiz." },
+      { en: "She told me a funny story.", uz: "U menga kulgili voqea aytib berdi." },
+    ],
+  },
+  {
+    id: "gr-indefinite",
+    category: "Grammatika gapirib",
+    title: "Something, anyone, nobody, everywhere",
+    emoji: "🔍",
+    level: "A2-B1",
+    added: "2026-11-26",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on indefinite pronouns: some-/any-/no-/every- + -thing/-one/-body/-where (something, anything, nothing, everything, someone, anyone, nobody, everybody, somewhere, anywhere, nowhere, everywhere). some- in positive sentences, any- in questions and negatives, no- with a positive verb (I saw nobody / I didn't see anybody). Talk about a weekend, a party and a lost item. Have a natural conversation that makes the student use this grammar a lot. Ask simple questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Did you do anything interesting last weekend?",
+    openerUz: "O'tgan dam olish kunlari biror qiziq ish qildingizmi?",
+    phrases: [
+      { en: "I want something to drink.", uz: "Biror narsa ichgim keladi." },
+      { en: "Is anyone at home?", uz: "Uyda kimdir bormi?" },
+      { en: "Nobody called me today.", uz: "Bugun hech kim menga qo'ng'iroq qilmadi." },
+      { en: "I looked everywhere for my keys.", uz: "Kalitlarimni hamma joydan qidirdim." },
+      { en: "There's nothing in the fridge.", uz: "Muzlatgichda hech narsa yo'q." },
+      { en: "Everybody loves plov.", uz: "Hamma palovni yaxshi ko'radi." },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -2781,7 +2821,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-tobe", "gr-this", "gr-simple", "gr-there", "gr-possessive", "gr-frequency", "gr-continuous", "gr-past", "gr-pastcont", "gr-questions", "gr-quantity", "gr-articles", "gr-prepositions", "gr-future", "gr-compare", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-relative", "gr-reported", "gr-passive", "gr-phrasal", "gr-tags", "gr-perfcont", "gr-wish"];
+const GR_ORDER = ["gr-tobe", "gr-this", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-frequency", "gr-continuous", "gr-past", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-future", "gr-compare", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-relative", "gr-reported", "gr-passive", "gr-phrasal", "gr-tags", "gr-perfcont", "gr-wish"];
 const grRank = (l) => (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
 LESSONS.sort((a, b) => ORDER.indexOf(a.category) - ORDER.indexOf(b.category) || partRank(a) - partRank(b) || (a.category === "Grammatika gapirib" ? grRank(a) - grRank(b) : 0));
 // Kurs darslarini tartib raqami bilan nomlaymiz
@@ -2804,6 +2844,8 @@ const QUIZ = {
   "gr-tags": ["It's hot today, ___ it?|isn't|is|doesn't", "You like coffee, ___ you?|don't|do|aren't", "She isn't here, ___ she?|is|isn't|does", "They can swim, ___ they?|can't|can|don't", "You didn't call me, ___ you?|did|didn't|do", "He will come, ___ he?|won't|will|doesn't", "We've met before, ___ we?|haven't|have|didn't", "It was a great film, ___ it?|wasn't|was|didn't", "I'm late, ___ I?|aren't|am not|isn't", "Let's go, ___ we?|shall|will|don't", "Your brother lives in Tashkent, ___ he?|doesn't|does|isn't", "You won't tell anyone, ___ you?|will|won't|do"],
   "gr-tobe": ["I ___ a student.|am|is|are", "She ___ my sister.|is|am|are", "We ___ from Tashkent.|are|is|am", "___ you hungry?|Are|Is|Am", "He ___ at home now. He's at work.|isn't|aren't|am not", "It ___ very cold today.|is|are|am", "They ___ my classmates.|are|is|be", "I ___ not tired.|am|is|are", "___ your brother a doctor?|Is|Are|Am", "My parents ___ teachers.|are|is|am", "The weather ___ nice today.|is|are|be", "You ___ late! It's 9 o'clock.|are|is|am"],
   "gr-this": ["___ apples are very sweet.|These|This|That", "Look at ___ bird over there!|that|these|those", "I like ___ shoes in the window.|those|that|this", "How much is ___ bag?|this|these|those", "There are three ___ in the park.|children|childs|childrens", "Many ___ live in Tashkent.|people|peoples|persons", "I have two ___.|boxes|boxs|box", "Two ___ are talking outside.|men|mans|man", "Are ___ your keys on the table?|these|this|that", "___ is my friend Aziz.|This|These|Those", "She has three ___.|brothers|brother|brotheres", "Those ___ are from Samarkand.|women|woman|womans"],
+  "gr-pronouns": ["My friend always helps ___.|me|I|my", "I called ___ yesterday. He was happy.|him|he|his", "Can you help ___, please?|us|we|our", "I gave ___ a present. She loved it.|her|she|hers", "We visit ___ every Sunday.|them|they|their", "___ likes football very much.|He|Him|His", "This gift is for ___.|you|your|yours", "___ are my best friends.|They|Them|Their", "Please call ___ tomorrow. I'm free.|me|I|mine", "She doesn't like ___. He is rude.|him|he|his", "Come with ___! We're going to the park.|us|we|our", "I saw Laylo and talked to ___.|her|she|hers"],
+  "gr-indefinite": ["I want ___ to drink.|something|anything|nothing", "Is ___ at home?|anyone|anywhere|anything", "___ called me today. My phone was quiet.|Nobody|Anybody|Somebody not", "I looked ___ for my keys.|everywhere|anywhere|nowhere", "There isn't ___ in the fridge.|anything|nothing|something", "___ loves plov.|Everybody|Anybody|Nobody not", "Did you go ___ last weekend?|anywhere|somewhere not|nowhere", "I didn't see ___ at the bus stop.|anybody|nobody|somebody", "There's ___ at the door. Can you open it?|someone|anyone|no one", "I have ___ to do today. I'm bored.|nothing|anything|something not", "Can I get you ___?|anything|nothing|nobody", "She knows ___ about computers. She's an expert.|everything|anything|nothing"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink", "My sister ___ English very well.|speaks|speak|speaking", "They ___ live in Tashkent.|don't|doesn't|aren't", "Where ___ he work?|does|do|is", "The shop ___ at nine o'clock.|opens|open|opening", "Water ___ at 100 degrees.|boils|boil|is boil", "My friends ___ like rap music.|don't|doesn't|isn't", "___ your brother study at university?|Does|Do|Is", "He usually ___ his homework in the evening.|does|do|doing"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on", "I was born ___ 2008.|in|on|at", "We have a party ___ Friday evening.|on|in|at", "I usually sleep ___ night.|at|in|on", "The keys are ___ the table.|on|at|in", "The meeting is ___ 3 pm.|at|in|on", "I'll see you ___ the weekend.|at|in|on", "She lives ___ Samarkand.|in|at|on", "My birthday is ___ 5th March.|on|in|at"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do", "Listen! The baby ___ crying.|is|are|be", "We ___ waiting for the bus now.|are|is|am", "What ___ you doing?|are|do|is", "She isn't ___ TV at the moment.|watching|watch|watches", "I ___ working from home this week.|am|is|are", "Why ___ you laughing?|are|is|do", "They ___ playing football right now.|are|is|be", "Be quiet! Grandma ___ sleeping.|is|are|am"],
@@ -2854,6 +2896,8 @@ const KEYWORDS = {
   "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
 };
 const RULES = {
+  "gr-pronouns": "Ega (kim?): I, you, he, she, it, we, they. Fe'ldan keyin (kimni? kimga?): me, you, him, her, it, us, them.\nShe helps me. I called him. Can you help us?\nPredlogdan keyin ham: with me, for her, to them.\nHe likes her. (✗ Him likes she)",
+  "gr-indefinite": "some- — darak gapda: something, someone, somewhere.\nany- — savol va inkorda: anything, anyone, anywhere. Is anyone here? I didn't see anybody.\nno- — fe'l ijobiy bo'ladi: I saw nobody. There's nothing here. (✗ I didn't see nobody)\nevery- — hammasi: everything, everybody, everywhere.",
   "gr-tobe": "I + am: I am a student. (I'm)\nhe / she / it + is: She is a doctor. It is cold. (she's, it's)\nyou / we / they + are: We are friends. (we're, they're)\nInkor: I'm not, isn't, aren't. Savol: Are you OK? Is he at home?",
   "gr-this": "Bitta narsa: this (yaqin — mana bu), that (uzoq — anavi): this book, that car.\nKo'p narsa: these (yaqin), those (uzoq): these books, those cars.\nKo'plik: -s (books), -es (boxes, buses), noto'g'ri: child → children, man → men, woman → women, person → people.\nThese apples are fresh. Those people are tourists.",
   "gr-tooenough": "too + sifat — kerakligidan ortiq (yomon ma'noda): It's too expensive. It's too cold.\nsifat + enough — yetarli: big enough, old enough. Inkor: not tall enough.\nenough + ot: enough money, enough time.\ntoo many + sanaladigan, too much + sanalmaydigan: too many cars, too much sugar.",
