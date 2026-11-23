@@ -58,7 +58,9 @@ if (tg) {
 
 // Tun/kunduz rejimi: Telegram mavzusiga (yoki telefon sozlamasiga) moslashadi va o'zgarsa darhol yangilanadi
 function applyTheme() {
-  const dark = inTelegram ? tg.colorScheme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  const pref = localStorage.getItem("sado-theme") || "auto"; // auto | light | dark
+  const auto = inTelegram ? tg.colorScheme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  const dark = pref === "auto" ? auto : pref === "dark";
   document.body.classList.toggle("dark", dark);
   try {
     const bg = getComputedStyle(document.body).getPropertyValue("--bg").trim();
@@ -122,13 +124,7 @@ function show(id) {
 }
 
 $("backBtn").addEventListener("click", () => onBack());
-$("fontBtn").addEventListener("click", () => {
-  const i = ((Number(localStorage.getItem("sado-font")) || 0) + 1) % FONT_STEPS.length;
-  localStorage.setItem("sado-font", String(i));
-  applyFont();
-  haptic();
-  toast(["Matn: oddiy", "Matn: katta", "Matn: juda katta"][i], 1500);
-});
+
 
 function onBack() {
   if ($("lesson").classList.contains("active")) {
@@ -524,7 +520,11 @@ function renderDaily() {
   box.innerHTML = "";
   const top = el("div", "daily-top");
   top.append(el("span", "daily-tag", "🌟 Kun iborasi"), el("span", "daily-from", `${l.emoji} ${l.title.replace(/^\d+\.\s*/, "")}`));
-  const en = el("button", "daily-en", p.en + "  🔊");
+  // Oxirgi so'z va 🔊 bir qatorda qoladi
+  const words = p.en.split(" ");
+  const last = words.pop();
+  const en = el("button", "daily-en", words.length ? words.join(" ") + " " : "");
+  en.append(el("span", "nowrap", `${last} 🔊`));
   en.addEventListener("click", () => {
     haptic();
     speakBrowser(p.en, "en");
@@ -696,6 +696,7 @@ function renderSettings() {
     ["🐇 Gapirish tezligi", [["0", "🐇 Oddiy"], ["1", "🐢 Sekin"]], () => (state.slow ? "1" : "0"), (v) => { state.slow = v === "1"; localStorage.setItem("sado-slow", v); }],
     ["🇺🇿 O'zbekcha tarjimani aytish", [["1", "Ha"], ["0", "Yo'q"]], () => (state.tr ? "1" : "0"), (v) => { state.tr = v === "1"; localStorage.setItem("sado-tr", v); }],
     ["🎯 Kunlik maqsad", [["1", "1 dars"], ["2", "2 dars"], ["3", "3 dars"]], () => String(state.goal), (v) => { state.goal = Number(v); localStorage.setItem("sado-goal", v); renderGoal(); }],
+    ["🌙 Ko'rinish", [["auto", "Avto"], ["light", "☀️ Kunduzgi"], ["dark", "🌙 Tungi"]], () => localStorage.getItem("sado-theme") || "auto", (v) => { localStorage.setItem("sado-theme", v); applyTheme(); }],
     ["Aa Matn o'lchami", [["0", "Oddiy"], ["1", "Katta"], ["2", "Juda katta"]], () => String((Number(localStorage.getItem("sado-font")) || 0) % 3), (v) => { localStorage.setItem("sado-font", v); applyFont(); }],
   ];
   const box = $("setRows");
