@@ -3159,6 +3159,46 @@ export const LESSONS = [
       { en: "My dad likes football.", uz: "Dadam futbolni yaxshi ko'radi." },
     ],
   },
+  {
+    id: "kid-body",
+    category: "Bolalar uchun",
+    title: "Tana a'zolari",
+    emoji: "🙌",
+    level: "A1",
+    added: "2026-11-28",
+    role: "a kind primary school teacher playing a 'touch your…' game with a child",
+    situation: "Keep every sentence very short and simple (A1, max 8 words), speak like a kind primary school teacher, praise a lot, use lots of Uzbek help when the child is stuck. Play 'Simon says': ask the child to touch their head, nose, ears, eyes, hands and feet, and to say what they have (I have two eyes). Count body parts together.",
+    opener: "Let's play a game! Touch your nose! Where is your nose?",
+    openerUz: "Keling, o'ynaymiz! Burningni ushla! Burning qayerda?",
+    phrases: [
+      { en: "This is my head.", uz: "Bu mening boshim." },
+      { en: "I have two eyes.", uz: "Mening ikkita ko'zim bor." },
+      { en: "Touch your nose!", uz: "Burningni ushla!" },
+      { en: "I can hear with my ears.", uz: "Men quloqlarim bilan eshitaman." },
+      { en: "Clap your hands!", uz: "Qarsak chal!" },
+      { en: "I have ten fingers.", uz: "Mening o'nta barmog'im bor." },
+    ],
+  },
+  {
+    id: "kid-home",
+    category: "Bolalar uchun",
+    title: "Mening uyim",
+    emoji: "🏠",
+    level: "A1",
+    added: "2026-11-28",
+    role: "a kind primary school teacher talking with a child about their home",
+    situation: "Keep every sentence very short and simple (A1, max 8 words), speak like a kind primary school teacher, praise a lot, use lots of Uzbek help when the child is stuck. Talk about the rooms in the child's home (kitchen, bedroom, bathroom, living room), things in them (bed, table, TV, sofa) and what the family does there.",
+    opener: "Tell me about your home! Do you have a big kitchen?",
+    openerUz: "Uying haqida aytib ber! Oshxonangiz kattami?",
+    phrases: [
+      { en: "I live in a house.", uz: "Men hovli uyda yashayman." },
+      { en: "This is my bedroom.", uz: "Bu mening yotoqxonam." },
+      { en: "We eat in the kitchen.", uz: "Biz oshxonada ovqatlanamiz." },
+      { en: "My bed is soft.", uz: "Mening karavotim yumshoq." },
+      { en: "We watch TV on the sofa.", uz: "Biz divanda televizor ko'ramiz." },
+      { en: "I love my home.", uz: "Men uyimni yaxshi ko'raman." },
+    ],
+  },
   // ======== Sayohat (qo'shimcha) ========
   {
     id: "passport",
@@ -3442,6 +3482,9 @@ const KID_PICS = {
   "kid-play": ["⚽", "🤝", "👉", "🚲", "🚗", "🎲"],
   "kid-birthday": ["🎂", "🎈", "🚲", "🍰", "🎁", "🎶"],
   "kid-weather": ["☀️", "🌧️", "🥶", "🧥", "☂️", "❄️"],
+  "kid-family": ["👩", "👦", "👧", "👵", "👨‍👩‍👧‍👦", "👨⚽"],
+  "kid-body": ["🙂", "👀", "👃", "👂", "👏", "🖐️🖐️"],
+  "kid-home": ["🏠", "🛏️", "🍳", "🛌", "🛋️📺", "❤️🏠"],
 };
 // 🔍 Qidiruv uchun inglizcha kalit so'zlar (o'quvchi "coffee", "hospital" deb qidirsa ham dars topilsin)
 const KEYWORDS = {

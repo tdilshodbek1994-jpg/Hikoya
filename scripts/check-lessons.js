@@ -29,6 +29,8 @@ for (const l of LESSONS) {
   const pub = publicLesson(l);
   if (/^ielts-p2/.test(l.id) && !pub.cue) errors.push(`${where}: Part 2 kartochkasi topilmadi ("Describe ... You should say: ...")`);
   if (/^ielts-p[13]/.test(l.id) && !pub.questions?.length) errors.push(`${where}: savollar topilmadi ("Ask these questions one at a time: ...")`);
+  // 🖼 Bolalar darsida har bir ibora uchun rasm (KID_PICS) bo'lsin
+  if (l.category === "Bolalar uchun" && pub.phrases.some((ph) => !ph.pic)) warns.push(`${where}: bolalar darsida rasm (KID_PICS) yo'q yoki to'liq emas`);
   if (l.category === "Grammatika gapirib" && !l.rule) warns.push(`${where}: grammatika qoidasi (RULES) yo'q`);
   // 🔊 Qoidada kamida 2 ta bosiladigan (eshitiladigan) to'liq inglizcha misol bo'lsin — app.js dagi ruleBody() bilan bir xil qoida
   const rule = pub.rule || l.rule;
