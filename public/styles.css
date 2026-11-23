@@ -1298,3 +1298,6 @@ body.dark .acc-tag.hi { color: #4ade80; } body.dark .acc-tag.mid { color: #fbbf2
 
 /* Tor ekranda sahifa chekkasi 10px — chiplar qatori ekrandan chiqmasin */
 @media (max-width: 360px) { .chips { margin-left: -10px; margin-right: -10px; padding-left: 10px; padding-right: 10px; } }
+
+/* ⚡ 60 soniya natijasi: aniqlik va rekord qatori */
+.sp-sum { display: block; margin: 2px 0 10px; }

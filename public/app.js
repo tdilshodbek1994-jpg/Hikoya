@@ -686,6 +686,7 @@ function openSpeedTest() {
   const body = el("div", "qz-body");
   box.append(head, el("small", "qz-n", best ? `🏆 Rekordingiz: ${best} ta` : "Iloji boricha ko'p savolga to'g'ri javob bering"), body);
   let left = 60, score = 0, wrong = 0, busy = false;
+  const missed = []; // ❌ xato savollar — oxirida to'g'ri shakli bilan ko'rsatiladi
   const order = [...pool].sort(() => Math.random() - 0.5);
   let k = 0;
   const run = (state.speedRun = (state.speedRun || 0) + 1);
@@ -694,7 +695,22 @@ function openSpeedTest() {
     body.innerHTML = "";
     const rec = score > best;
     if (rec) localStorage.setItem("sado-speed-best", String(score));
+    const total = score + wrong;
     body.append(el("p", "qz-done", rec && best ? `🎉 Yangi rekord: ${score} ta! (avval ${best})` : `⏱ Vaqt tugadi! ✅ ${score} ta to'g'ri, ❌ ${wrong} ta xato`));
+    // 🏆 Rekord va aniqlik
+    body.append(el("small", "qz-n sp-sum", `${total ? `🎯 Aniqlik: ${Math.round((score / total) * 100)}%` : "Hech bir savolga javob berilmadi"}${!rec && best ? ` · 🏆 Rekord: ${best} ta` : rec && !best && score ? " · 🏆 Birinchi rekordingiz!" : ""}`));
+    // ❌ Xatolar: to'g'ri shakli (bosilsa eshittiriladi)
+    if (missed.length) {
+      const ul = el("div", "qz-missed");
+      ul.append(el("small", "", "To'g'ri shakli:"));
+      for (const t of missed.slice(0, 5)) {
+        const bt = el("button", "rule-ex", t);
+        bt.addEventListener("click", () => { haptic(); sayPhrase(t).then(() => mascot.setLevel(0)); });
+        ul.append(bt);
+      }
+      if (missed.length > 5) ul.append(el("small", "", `…va yana ${missed.length - 5} ta — «🔁 Xatolarim»da takrorlang`));
+      body.append(ul);
+    }
     const again = el("button", "qz-again", "⚡ Yana bir bor");
     again.addEventListener("click", () => { haptic(); openSpeedTest(); });
     body.append(again);
@@ -715,6 +731,7 @@ function openSpeedTest() {
         const ok = o === it.answer;
         haptic(ok ? "light" : "medium");
         ok ? score++ : wrong++;
+        if (!ok) missed.push(`${it.before} ${it.answer === "—" ? "" : it.answer}${it.after}`.replace(/\s+/g, " ").replace(/«[^»]*»\s*→\s*/, "").trim());
         quizMiss(it, it.from, ok);
         scoreEl.textContent = `✅ ${score}`;
         b.classList.add(ok ? "ok" : "bad");
