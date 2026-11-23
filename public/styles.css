@@ -639,3 +639,13 @@ body.dark .shadow-btn { color: #5eead4; }
 /* ✍️ Yozma rejim: iborani bosib javobga qo'yish */
 .phrase-card.can-insert .phrase-en { cursor: pointer; }
 .phrase-card.can-insert .phrase-en::after { content: " ✍️"; font-size: 14px; opacity: 0.55; }
+
+/* ---------- IELTS Part 2: qaydlar va sekundomer ---------- */
+.cue-notes { width: 100%; margin-top: 8px; border: 1px solid color-mix(in srgb, var(--muted) 30%, transparent); border-radius: 12px; padding: 8px 10px; font: inherit; font-size: 14px; background: var(--bg); color: var(--text); resize: vertical; }
+.cue-notes[readonly] { border-style: dashed; color: var(--muted); }
+.cue-clock { font-weight: 800; font-size: 16px; font-variant-numeric: tabular-nums; color: var(--muted); }
+.cue-clock.ok { color: var(--ok); }
+.cue-clock.over { color: var(--danger); }
+/* Tayyorlanish paytida faqat kartochka: ibora kartasi yashirinadi, maskot kichrayadi */
+#lesson:has(#cue:not([hidden]):not(.speaking)) .phrase-card { display: none; }
+#lesson:has(#cue:not([hidden])) .mascot { width: min(36vw, 140px); }

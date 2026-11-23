@@ -1177,6 +1177,9 @@ function resetLiveUi() {
   $("cue").hidden = true;
   $("cue").classList.remove("speaking");
   $("cueReady").hidden = false;
+  clearInterval(state.cueClock);
+  $("cueClock").hidden = true;
+  $("cueNotes").value = "";
   $("retryBtn").hidden = true;
   state.pendingTurn = null;
   state.ttsWarned = false;
@@ -1687,6 +1690,8 @@ function startCuePrep() {
   if (!c || state.cueDone) return false;
   state.cueDone = true;
   $("cue").hidden = false;
+  $("cueNotes").hidden = false;
+  $("cueNotes").readOnly = false;
   $("cueTitle").textContent = c.title;
   const ul = $("cuePoints");
   ul.innerHTML = "";
@@ -1708,6 +1713,23 @@ function endCuePrep() {
   $("cueTimer").classList.remove("low");
   $("cue").classList.add("speaking");
   $("cueReady").hidden = true;
+  $("cueNotes").readOnly = true;
+  $("cueNotes").hidden = !$("cueNotes").value.trim(); // qayd yozilmagan bo'lsa joy egallamasin
+  // ⏱ Gapirish sekundomeri: 1 daqiqadan keyin yashil (yetarli), 2 daqiqadan keyin to'xtash vaqti
+  const clock = $("cueClock");
+  const t0 = Date.now();
+  clock.hidden = false;
+  clock.className = "cue-clock";
+  const tick = () => {
+    const sec = Math.floor((Date.now() - t0) / 1000);
+    clock.textContent = `🎤 ${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
+    clock.classList.toggle("ok", sec >= 60 && sec < 120);
+    clock.classList.toggle("over", sec >= 120);
+    if (sec >= 150 || state.phase === "ended") clearInterval(state.cueClock);
+  };
+  tick();
+  clearInterval(state.cueClock);
+  state.cueClock = setInterval(tick, 1000);
   haptic("medium");
   toast("🎤 Gapiring! 1–2 daqiqa to'xtovsiz gapiring", 2500);
   afterReply();
@@ -1862,6 +1884,7 @@ function speakBrowser(text, lang = "en") {
 // ---------------- Tugatish ----------------
 function stopAll() {
   clearInterval(state.timer);
+  clearInterval(state.cueClock);
   $("lesson").classList.remove("is-live");
   state.live?.stop();
   state.live = null;
