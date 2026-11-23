@@ -4885,21 +4885,34 @@ $("appRefresh").addEventListener("click", () => {
 });
 
 // 🆕 Nima yangi: versiya o'zgarganda bir marta ko'rsatiladi (yangi foydalanuvchiga emas)
-const NEWS_VERSION = "2026-11-27";
+const NEWS_VERSION = "2026-11-23-v2";
+// Har bir yangilik bosilsa — tegishli joy ochiladi
+const toGrammar = () => { state.filter.cat = "Grammatika gapirib"; renderChips(); renderLessons(); scrollToList(true); };
 const NEWS = [
-  "🧪 Grammatika bo'limida yangi «Testlar» paneli: 408 ta savol, 34 ta mavzu",
-  "📅 Bugungi test — har kuni 5 ta savol, 🔥 seriya va do'stlarga 🟩🟥 natijani ulashish",
-  "📊 Daraja testi — grammatika darajangizni (A1–B2) aniqlang",
-  "⚡ 60 soniya tezkor test, 📝 Aralash test (daraja bo'yicha), 🔁 Xatolarim",
-  "🧱 Yangi savol turlari: so'z tartibi, «qaysi gap to'g'ri?», 🔎 xatoni toping",
-  "🎯 Mavzular bo'yicha aniqlik va 📈 o'sish grafigi, 💪 zaif mavzulardan test",
-  "🇺🇿 Jonli suhbatda Sado gapini bosing — o'zbekcha tarjimasi chiqadi",
+  ["✏️ Grammatika: 54 ta mavzu va 648 ta test savoli (for/since, so/such, inversiya va boshqalar)", toGrammar],
+  ["🎯 Aralash testda «Tanlash» — o'zingiz tanlagan mavzulardan yoki ⚠️ zaif mavzularingizdan test", () => { toGrammar(); openMixTest("pick"); }],
+  ["📖 Qoidalarda misollarni ▶ ketma-ket tinglash; xato javobda 💡 aynan xatoingiz tushuntiriladi", () => { toGrammar(); openRules(); }],
+  ["🧩 Lug'atimda so'z testi — o'zbekchasidan inglizchasini toping", () => { $("vocabBtn").click(); }],
+  ["✋ Jonli suhbatda Sado gapirayotganda maskotni bosing — darhol to'xtaydi; endi u o'z ovozini eshitib chalkashmaydi", null],
+  ["▶ Kurslarda «Davom etish» va har bir dars oxirida «➡️ Keyingi dars»", null],
 ];
 function showNews() {
   const seen = localStorage.getItem("sado-news");
   if (seen === NEWS_VERSION) return;
   $("newsList").innerHTML = "";
-  for (const n of NEWS) $("newsList").append(el("li", "", n));
+  for (const [n, fn] of NEWS) {
+    const li = el("li", fn ? "news-go" : "", n);
+    if (fn) {
+      li.append(el("span", "news-arrow", " ›"));
+      li.addEventListener("click", () => {
+        haptic();
+        localStorage.setItem("sado-news", NEWS_VERSION);
+        $("newsSheet").hidden = true;
+        setTimeout(fn, 150);
+      });
+    }
+    $("newsList").append(li);
+  }
   $("newsSheet").hidden = false;
 }
 $("newsClose").addEventListener("click", () => {

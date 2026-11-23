@@ -1324,3 +1324,7 @@ body.dark .acc-tag.hi { color: #4ade80; } body.dark .acc-tag.mid { color: #fbbf2
 /* 🔍 Yordam: savol qidirish */
 .faq-search { width: 100%; box-sizing: border-box; font: inherit; font-size: 15px; padding: 10px 12px; margin: 0 0 8px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--text); }
 .faq-none { margin: 4px 2px 8px; }
+
+/* 🆕 Yangiliklar: bosiladigan bandlar */
+#newsList li.news-go { cursor: pointer; }
+#newsList .news-arrow { color: var(--primary); font-weight: 800; }
