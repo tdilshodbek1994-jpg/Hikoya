@@ -196,7 +196,7 @@ function renderStats() {
   });
 }
 
-const CAT_ICONS = { "Erkin suhbat": "💬", Imtihonlar: "🏆", "IELTS kursi": "📘", "CEFR kursi": "📗", "Grammatika gapirib": "✏️", "Kundalik hayot": "🏠", Sayohat: "✈️", "O'qish va ish": "🎓", "Biznes va IT": "💼" };
+const CAT_ICONS = { "Erkin suhbat": "💬", Imtihonlar: "🏆", "IELTS kursi": "📘", "CEFR kursi": "📗", "Grammatika gapirib": "✏️", "Kundalik hayot": "🏠", Sayohat: "✈️", "O'qish va ish": "🎓", "Biznes va IT": "💼", "Bolalar uchun": "🧒" };
 state.filter = { cat: "", q: "" };
 // ⭐ Sevimli darslar (telefonda saqlanadi)
 state.favs = new Set(JSON.parse(localStorage.getItem("sado-favs") || "[]"));
