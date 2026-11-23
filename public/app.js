@@ -633,6 +633,7 @@ function renderVocab() {
   if (state.vocabTab === "fix") items = [...items.filter((w) => !w.fixed), ...items.filter((w) => w.fixed)];
   // 🔍 Lug'atda qidirish (ro'yxat uzun bo'lsa ko'rinadi)
   $("vocabSearch").hidden = items.length < 8 || Boolean(state.flash);
+  $("flashBtn").textContent = state.vocabTab === "fix" ? "🃏 Xatolarim bo'yicha kartochkalar" : "🃏 Kartochka mashqi";
   const vq = $("vocabSearch").hidden ? "" : $("vocabSearch").value.trim().toLowerCase().replace(/[‘’`ʻʼ]/g, "'");
   const total = items.length;
   if (vq) items = items.filter((w) => [w.en, w.uz, w.wrong].some((x) => String(x || "").toLowerCase().replace(/[‘’`ʻʼ]/g, "'").includes(vq)));
@@ -682,7 +683,10 @@ $("vocabSearch").addEventListener("input", () => renderVocab());
 $("vocabCopy").addEventListener("click", async () => {
   haptic();
   const fix = state.vocabTab === "fix";
-  const items = (state.progress?.words || []).filter((w) => (fix ? w.type === "fix" : w.type !== "fix"));
+  let items = (state.progress?.words || []).filter((w) => (fix ? w.type === "fix" : w.type !== "fix"));
+  // Qidiruv bo'lsa — faqat topilganlar nusxalanadi
+  const vq = $("vocabSearch").hidden ? "" : $("vocabSearch").value.trim().toLowerCase();
+  if (vq) items = items.filter((w) => [w.en, w.uz, w.wrong].some((x) => String(x || "").toLowerCase().includes(vq)));
   const lines = items.map((w, i) => (fix ? `${i + 1}. ❌ ${w.wrong || ""} → ✅ ${w.en}${w.uz ? ` (${w.uz})` : ""}` : `${i + 1}. ${w.en} — ${w.uz || ""}`));
   const text = `${fix ? "✏️ Xatolarim" : "📚 Yangi so'zlarim"} (Sado)\n\n${lines.join("\n")}`;
   try {
@@ -722,8 +726,10 @@ function stopFlash() {
   $("flashBtn").hidden = false;
 }
 function startFlash() {
-  const words = (state.progress?.words || []).filter((w) => w.en && w.uz);
-  if (!words.length) return toast("Lug'atda hali so'z yo'q");
+  // Ochiq bo'lim bo'yicha: "Xatolarim"da — faqat xatolar, "So'zlar"da — faqat so'zlar
+  const fixTab = state.vocabTab === "fix";
+  const words = (state.progress?.words || []).filter((w) => w.en && (fixTab ? w.type === "fix" : w.type !== "fix" && w.uz));
+  if (!words.length) return toast(fixTab ? "Hozircha xato yo'q 👏" : "Lug'atda hali so'z yo'q");
   // 🧠 Leitner usuli: "Bilmadim" deyilgan va yangi so'zlar oldinroq, yaxshi bilinganlar kamroq chiqadi
   const box = flashBoxes();
   const deck = words
