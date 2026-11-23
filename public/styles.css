@@ -1347,3 +1347,6 @@ body.dark .acc-tag.hi { color: #4ade80; } body.dark .acc-tag.mid { color: #fbbf2
 .daily-q-gap.ok { color: var(--ok); }
 .daily-q-opts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .daily-q-opts .qz-opt { min-height: 34px; padding: 5px 12px; font-size: 14px; }
+
+/* 🕘 Oxirgi yozilgan mavzular */
+.chip-f.tp-recent { color: var(--primary); border-color: color-mix(in srgb, var(--primary) 40%, transparent); }

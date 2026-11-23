@@ -2557,8 +2557,12 @@ function openTopicSheet(cur) {
   $("topicInput").value = cur || "";
   const ideas = $("topicIdeas");
   ideas.innerHTML = "";
-  for (const t of TOPIC_IDEAS) {
-    const b = el("button", "chip-f", t);
+  // 🕘 Oxirgi yozilgan mavzular (3 tagacha) — birinchi, keyin g'oyalar
+  let recent = [];
+  try { recent = JSON.parse(localStorage.getItem("sado-topics") || "[]"); } catch {}
+  const recentSet = new Set(recent.map((x) => x.toLowerCase()));
+  for (const t of [...recent, ...TOPIC_IDEAS.filter((x) => !recentSet.has(x.toLowerCase()))]) {
+    const b = el("button", "chip-f" + (recentSet.has(t.toLowerCase()) ? " tp-recent" : ""), recentSet.has(t.toLowerCase()) ? "🕘 " + t : t);
     b.type = "button";
     b.addEventListener("click", () => ($("topicInput").value = t));
     ideas.append(b);
@@ -2571,6 +2575,12 @@ $("topicForm").addEventListener("submit", (e) => {
   const t = $("topicInput").value.replace(/\s+/g, " ").trim().slice(0, 60);
   state.topic = t ? "custom:" + t : "";
   localStorage.setItem("sado-topic", state.topic);
+  if (t) {
+    let recent = [];
+    try { recent = JSON.parse(localStorage.getItem("sado-topics") || "[]"); } catch {}
+    recent = [t, ...recent.filter((x) => x.toLowerCase() !== t.toLowerCase())].slice(0, 3);
+    localStorage.setItem("sado-topics", JSON.stringify(recent));
+  }
   $("topicSheet").hidden = true;
   renderTopicPick();
   if (t) toast(`💬 Mavzu: ${t}. Endi «Gaplashishni boshlash»ni bosing`, 3000);
