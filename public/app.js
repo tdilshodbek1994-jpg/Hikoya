@@ -2252,6 +2252,11 @@ function renderPhrase() {
   const p = lesson.phrases[state.phraseIdx];
   $("phraseEn").textContent = p.en.replace(/ (\.\.\.)/g, "\u00a0$1"); // "..." yolg'iz keyingi qatorga tushmasin
   $("phraseUz").textContent = p.uz;
+  $("phrasePic").hidden = !p.pic;
+  $("phrasePic").textContent = p.pic || "";
+  // Bolalar uchun «Yoddan» murakkab — yashiramiz
+  $("recallBtn").hidden = lesson.category === "Bolalar uchun" || state.lessonMode === "live";
+  $("phraseCard").classList.toggle("recall", localStorage.getItem("sado-recall") === "1" && lesson.category !== "Bolalar uchun");
   const done = used.has(state.phraseIdx);
   $("phraseCard").classList.toggle("done", done);
   $("phraseLabel").textContent = done ? "✓ Aytildi" : $("phraseCard").classList.contains("recall") ? "🙈 Eslab ayting — tekshirish uchun bosing" : "Ovoz chiqarib ayting";

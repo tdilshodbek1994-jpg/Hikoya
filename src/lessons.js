@@ -2493,6 +2493,18 @@ const QUIZ = {
   "gr-reported": ["«I am hungry.» → He said that he ___ hungry.|was|is|were", "«I will call.» → She said she ___ call.|would|will|can", "He asked if I ___ ready.|was|am|were I", "«I can swim.» → She said she ___ swim.|could|can|cans"],
   "gr-passive": ["English ___ spoken all over the world.|is|are|was be", "This mosque was ___ in 1420.|built|build|builded", "The phone was invented ___ Bell.|by|from|with", "The letters ___ sent yesterday.|were|was|are"],
 };
+// 🖼 Bolalar darslari: har bir ibora uchun rasm (emoji) — so'z ma'nosi rasmdan tushuniladi
+const KID_PICS = {
+  "kid-colors": ["🔴", "🔵", "✏️✏️✏️", "🖐️", "🌤️", "🌳"],
+  "kid-animals": ["🐱", "🐶", "🐹", "🦁", "🐒🍌", "🐦"],
+  "kid-me": ["👋", "🔟", "🏫", "👦👧", "🍦", "🤝"],
+  "kid-school": ["📕🖊️", "✏️", "➗", "🚪", "🤔", "👩‍🏫"],
+  "kid-day": ["⏰", "🥣", "🎒", "⚽", "📝", "🛏️"],
+  "kid-food": ["🍎", "🧅", "🍌", "🍚", "🍇", "😋"],
+  "kid-play": ["⚽", "🤝", "👉", "🚲", "🚗", "🎲"],
+  "kid-birthday": ["🎂", "🎈", "🚲", "🍰", "🎁", "🎶"],
+  "kid-weather": ["☀️", "🌧️", "🥶", "🧥", "☂️", "❄️"],
+};
 const RULES = {
   "gr-simple": "Odat va doimiy narsalar: I/you/we/they + fe'l: I work. They live here.\nhe/she/it + fe'l-s: She works. He goes. It rains.\nInkor: don't / doesn't + fe'l: He doesn't like tea. (✗ He doesn't likes)\nSavol: Do you ...? Does she ...? Does he play football?",
   "gr-prepositions": "in — oy, yil, kun qismi, shahar, xona:\nI was born in May. I study in the morning. I live in Tashkent.\non — hafta kuni, sana, narsa ustida:\nSee you on Monday. The cake is on the table.\nat — aniq soat, nuqta joy:\nThe lesson starts at five. I'm at home.",
@@ -2708,6 +2720,6 @@ export function publicLesson(l) {
     plan: PLANS[l.id] || null,
     added: l.added || ADDED[l.id] || "",
     category: l.category || "",
-    phrases: l.phrases,
+    phrases: KID_PICS[l.id] ? l.phrases.map((p, i) => ({ ...p, pic: KID_PICS[l.id][i] || "" })) : l.phrases,
   };
 }
