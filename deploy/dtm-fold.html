@@ -1,0 +1,59 @@
+<script>
+/* Sado: UzDTM bosh sahifasidagi bloklarni bir qatorga yig'ish (bosilsa ochiladi) */
+(function () {
+  var css = document.createElement("style");
+  css.textContent =
+    ".sado-fold{cursor:pointer}" +
+    ".sado-fold:not(.sado-open)>*{display:none!important}" +
+    ".sado-fold::before{content:attr(data-fold);display:block;grid-column:1/-1;flex-basis:100%;width:100%;box-sizing:border-box;" +
+    "font-weight:700;font-size:16px;padding:16px 18px;border-radius:18px;background:#fff;box-shadow:0 2px 12px rgba(20,21,38,.07)}" +
+    ".sado-fold.sado-open::before{margin-bottom:10px}" +
+    ".sado-fold.card::before{background:none;box-shadow:none;padding:2px 0;margin:0}" +
+    ".sado-fold.card.sado-open::before{margin-bottom:8px}";
+  document.head.appendChild(css);
+
+  function setOpen(el, open) {
+    el.classList.toggle("sado-open", open);
+    el.setAttribute("data-fold", el.getAttribute("data-label") + (open ? "   ▴" : "   ▾"));
+  }
+  function mark(el, key, label) {
+    if (!el || el.classList.contains("sado-fold")) return;
+    el.classList.add("sado-fold");
+    el.setAttribute("data-key", key);
+    el.setAttribute("data-label", label);
+    setOpen(el, localStorage.getItem("sado-fold-" + key) === "1");
+  }
+  function findBlock(word, mustHave) {
+    var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    var n;
+    while ((n = w.nextNode())) {
+      if (n.nodeValue.indexOf(word) === -1) continue;
+      var el = n.parentElement;
+      while (el && el !== document.body) {
+        var t = el.textContent;
+        if (mustHave.every(function (m) { return t.indexOf(m) !== -1; })) return el;
+        el = el.parentElement;
+      }
+    }
+    return null;
+  }
+  function scan() {
+    document.querySelectorAll(".home-subj").forEach(function (el) { mark(el, "subj", "📚 Mening fanlarim"); });
+    mark(findBlock("Kechagi", ["Kechagi", "Rejam", "Men qila"]), "quick", "⚡ Tezkor mashqlar");
+  }
+  document.addEventListener("click", function (e) {
+    var f = e.target.closest && e.target.closest(".sado-fold");
+    if (!f) return;
+    if (f.classList.contains("sado-open") && e.target !== f) return; // ichidagi tugmalar odatdagidek ishlaydi
+    e.preventDefault();
+    e.stopPropagation();
+    var open = !f.classList.contains("sado-open");
+    setOpen(f, open);
+    localStorage.setItem("sado-fold-" + f.getAttribute("data-key"), open ? "1" : "0");
+  }, true);
+  var t;
+  new MutationObserver(function () { clearTimeout(t); t = setTimeout(scan, 60); })
+    .observe(document.documentElement, { childList: true, subtree: true });
+  document.addEventListener("DOMContentLoaded", scan);
+})();
+</script>
