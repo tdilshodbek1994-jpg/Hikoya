@@ -141,10 +141,19 @@ export async function chatTurn(session, lesson, studentText) {
 // 🇺🇿 Ustoz rejimi: Sado o'zbekcha gapirib, iboralarni birma-bir o'rgatadi
 export function tutorOpener(lesson) {
   const p = lesson.phrases[0];
+  const n = lesson.phrases.length; // takrorlash darsida 6 tadan kam bo'lishi mumkin
+  if (lesson.category === "Bolalar uchun") {
+    // 🧒 Bolaga "sen" deb, quvnoq salomlashish
+    return [
+      { lang: "uz", text: `Salom, do'stim! Men Sado! Bugun "${lesson.title}" haqida ${n} ta qiziq so'z o'rganamiz. Birinchisi: "${p.uz}". Inglizcha bunday:` },
+      { lang: "en", text: p.en },
+      { lang: "uz", text: "Qani, baland ovozda takrorla!" },
+    ];
+  }
   return [
     {
       lang: "uz",
-      text: `Assalomu alaykum! Men Sado, ingliz tili ustozingizman. Bugun "${lesson.title}" mavzusida 6 ta ibora o'rganamiz. Birinchi ibora: "${p.uz}". Inglizcha bunday deyiladi:`,
+      text: `Assalomu alaykum! Men Sado, ingliz tili ustozingizman. Bugun "${lesson.title}" mavzusida ${n} ta ibora o'rganamiz. Birinchi ibora: "${p.uz}". Inglizcha bunday deyiladi:`,
     },
     { lang: "en", text: p.en },
     { lang: "uz", text: "Qani, ovoz chiqarib takrorlang!" },
