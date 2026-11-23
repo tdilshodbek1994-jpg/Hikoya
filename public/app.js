@@ -2537,7 +2537,10 @@ state.voice = localStorage.getItem("sado-voice") || "f";
 
 // 🗂 Erkin suhbat mavzusi (ixtiyoriy)
 const TOPICS = [["", "🎲 Istalgan"], ["football", "⚽ Futbol"], ["movies", "🎬 Kino"], ["games", "🎮 O'yinlar"], ["future", "🎓 Kelajak"], ["travel", "✈️ Sayohat"], ["music", "🎵 Musiqa"], ["food", "🍲 Taomlar"], ["ielts", "📘 IELTS"]];
-state.topic = localStorage.getItem("sado-topic") || "";
+// 🎲 Ilova har ochilganda erkin suhbat «Istalgan» mavzudan boshlanadi (oldingi tanlov — masalan
+// Musiqa — keyingi kunlarga yopishib qolmasin); faqat shu ochilishda tanlangan mavzu ishlaydi
+state.topic = "";
+localStorage.removeItem("sado-topic");
 function renderTopicPick() {
   const box = $("topicPick");
   box.innerHTML = "";

@@ -3699,6 +3699,46 @@ export const LESSONS = [
       { en: "The boat is on the water.", uz: "Qayiq suvda." },
     ],
   },
+  {
+    id: "kid-days",
+    category: "Bolalar uchun",
+    title: "Hafta kunlari va vaqt",
+    emoji: "🗓️",
+    level: "A1",
+    added: "2026-11-23",
+    role: "a kind primary school teacher talking with a child about the week",
+    situation: "Keep every sentence very short and simple (A1, max 8 words), speak like a kind primary school teacher, praise a lot, use lots of Uzbek help when the child is stuck. Practise the days of the week (Monday to Sunday), today/tomorrow/yesterday, and simple times (It's three o'clock). Ask which day the child likes most and what they do on each day.",
+    opener: "What day is it today?",
+    openerUz: "Bugun haftaning qaysi kuni?",
+    phrases: [
+      { en: "Today is Monday.", uz: "Bugun dushanba." },
+      { en: "Tomorrow is Tuesday.", uz: "Ertaga seshanba." },
+      { en: "My favourite day is Saturday.", uz: "Eng yoqtirgan kunim — shanba." },
+      { en: "It's three o'clock.", uz: "Soat uch." },
+      { en: "I don't go to school on Sunday.", uz: "Yakshanba kuni maktabga bormayman." },
+      { en: "There are seven days in a week.", uz: "Bir haftada yetti kun bor." },
+    ],
+  },
+  {
+    id: "kid-sport",
+    category: "Bolalar uchun",
+    title: "Sport va harakat",
+    emoji: "⚽",
+    level: "A1",
+    added: "2026-11-23",
+    role: "a fun PE teacher playing an action game with a child",
+    situation: "Keep every sentence very short and simple (A1, max 8 words), speak like a kind primary school teacher, praise a lot, use lots of Uzbek help when the child is stuck. Talk about sports the child likes (football, swimming, running, jumping, dancing) and play an action game: ask the child to jump, run on the spot, dance and stop, using simple verbs and 'I can...'.",
+    opener: "Do you like sport? Can you jump? Let's jump three times!",
+    openerUz: "Sportni yaxshi ko'rasanmi? Sakray olasanmi? Keling, uch marta sakraymiz!",
+    phrases: [
+      { en: "I like football.", uz: "Men futbolni yaxshi ko'raman." },
+      { en: "I can run fast.", uz: "Men tez yugura olaman." },
+      { en: "Let's jump!", uz: "Keling, sakraymiz!" },
+      { en: "I can swim.", uz: "Men suza olaman." },
+      { en: "I love dancing.", uz: "Men raqsga tushishni yaxshi ko'raman." },
+      { en: "Stop! Sit down, please.", uz: "To'xta! O'tir, iltimos." },
+    ],
+  },
   // ======== Sayohat (qo'shimcha) ========
   {
     id: "passport",
@@ -4156,6 +4196,8 @@ const KID_PICS = {
   "kid-body": ["🙂", "👀", "👃", "👂", "👏", "🖐️🖐️"],
   "kid-home": ["🏠", "🛏️", "🍳", "🛌", "🛋️📺", "❤️🏠"],
   "kid-transport": ["🚌", "🚗", "🚶", "🚆", "✈️", "⛵"],
+  "kid-days": ["📅", "➡️📅", "🎉", "🕒", "🏠", "7️⃣"],
+  "kid-sport": ["⚽", "🏃", "🦘", "🏊", "💃", "🪑"],
 };
 // 🔍 Qidiruv uchun inglizcha kalit so'zlar (o'quvchi "coffee", "hospital" deb qidirsa ham dars topilsin)
 const KEYWORDS = {
