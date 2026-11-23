@@ -905,3 +905,8 @@ body.dark .invite { color: #a5b4fc; }
 
 /* ⬆ Tepaga */
 .to-top { position: fixed; right: 16px; bottom: calc(20px + var(--safe-b)); z-index: 20; width: 46px; height: 46px; border-radius: 50%; background: var(--primary); color: #fff; font-size: 20px; font-weight: 800; box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35); animation: fade 0.2s ease; }
+
+/* 📌 Toifalar qatori surganda yuqorida yopishib turadi */
+#chips { position: sticky; top: calc(56px + var(--safe-t)); z-index: 4; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(10px); padding-top: 6px; }
+/* ⬆ tugmasi ixchamroq va kartalarni kamroq to'sadi */
+.to-top { width: 40px; height: 40px; font-size: 17px; right: 10px; opacity: 0.92; }

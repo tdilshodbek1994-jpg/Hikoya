@@ -566,7 +566,8 @@ function renderChips() {
       const on = box.querySelector(".chip-f.on");
       if (on) box.scrollTo({ left: on.offsetLeft - (box.clientWidth - on.offsetWidth) / 2, behavior: "smooth" });
       renderLessons();
-      const top = box.getBoundingClientRect().top + window.scrollY - document.querySelector(".topbar").offsetHeight - 4;
+      // Chiplar yopishqoq — ro'yxat boshini chiplar qatori ostiga keltiramiz
+      const top = $("lessonList").getBoundingClientRect().top + window.scrollY - document.querySelector(".topbar").offsetHeight - box.offsetHeight - 6;
       window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
     });
     box.append(b);
