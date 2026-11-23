@@ -118,6 +118,12 @@ export function summary(userId) {
       return best;
     })(),
     ielts: u.history.some((h) => /IELTS\s*(6|7|8|9)/.test(h.level || "")),
+    // 📗 Taxminiy CEFR daraja: oxirgi 3 ta CEFR natijasining o'rtachasi
+    cefr: (() => {
+      const L = ["A1", "A2", "B1", "B2", "C1", "C2"];
+      const v = u.history.map((h) => L.indexOf((h.level || "").match(/\b([ABC][12])\b/)?.[1])).filter((i) => i >= 0).slice(-3);
+      return v.length ? L[Math.round(v.reduce((s, i) => s + i, 0) / v.length)] : null;
+    })(),
     // 🎯 Taxminiy IELTS band: oxirgi 3 ta IELTS natijasining o'rtachasi (0.5 ga yaxlitlangan)
     band: (() => {
       const b = u.history.map((h) => Number((h.level || "").match(/IELTS\s*(\d(?:\.\d)?)/)?.[1])).filter((x) => x >= 1 && x <= 9).slice(-3);

@@ -724,9 +724,20 @@ function renderDaily() {
 function renderBand() {
   const b = state.progress?.band;
   const box = $("band");
-  box.hidden = !b;
-  if (!b) return;
+  const cefr = state.progress?.cefr;
+  box.hidden = !b && !cefr;
   box.innerHTML = "";
+  box.classList.toggle("cefr", !b && Boolean(cefr));
+  // IELTS natijasi bo'lmasa — CEFR zinapoyasi
+  if (!b && cefr) {
+    const L = ["A1", "A2", "B1", "B2", "C1", "C2"];
+    box.append(el("b", "", `📗 Taxminiy daraja: ${cefr}`), el("span", "", "so'nggi darslar bo'yicha"));
+    const ladder = el("div", "cefr-ladder");
+    for (const x of L) ladder.append(el("i", L.indexOf(x) < L.indexOf(cefr) ? "done" : x === cefr ? "on" : "", x));
+    box.append(ladder);
+    return;
+  }
+  if (!b) return;
   const goal = Number(localStorage.getItem("sado-band-goal")) || 6.5;
   const pct = Math.min(100, Math.round((b.value / goal) * 100));
   box.append(el("b", "", `🎯 Taxminiy IELTS: ${b.value.toFixed(1)}`), el("span", "", `maqsad ${goal.toFixed(1)} · bosing`));
@@ -736,6 +747,7 @@ function renderBand() {
   box.title = `Oxirgi ${b.n} ta IELTS natijasi asosida`;
 }
 $("band").addEventListener("click", () => {
+  if ($("band").classList.contains("cefr")) return;
   // Maqsad bandni almashtirish: 5.5 → 6.0 → 6.5 → 7.0 → 7.5 → 8.0
   haptic();
   const G = [5.5, 6, 6.5, 7, 7.5, 8];

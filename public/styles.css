@@ -807,3 +807,10 @@ body:has(#lesson.active) .toast { top: calc(40vh + var(--safe-t)); }
 .band span { font-size: 12px; color: var(--muted); }
 .band-bar { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: var(--bg); position: relative; overflow: hidden; }
 .band-bar::after { content: ""; position: absolute; inset: 0; width: var(--p); background: linear-gradient(90deg, #f59e0b, #16a34a); border-radius: 3px; }
+
+/* 📗 CEFR zinapoyasi */
+.cefr-ladder { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+.cefr-ladder i { font-style: normal; text-align: center; font-size: 11px; font-weight: 700; padding: 3px 0; border-radius: 6px; background: var(--bg); color: var(--muted); }
+.cefr-ladder i.done { background: color-mix(in srgb, var(--ok) 18%, var(--bg)); color: var(--ok); }
+.cefr-ladder i.on { background: var(--primary); color: #fff; }
+.band.cefr { cursor: default; }
