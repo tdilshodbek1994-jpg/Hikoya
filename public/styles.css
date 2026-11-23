@@ -838,3 +838,11 @@ body.dark .pill.warn { color: #fbbf24; }
 /* 🔥 Seriya xavf ostida */
 .goal.risk small { color: #ea580c; font-weight: 700; }
 .goal.risk .goal-ring { animation: timerPulse 1.4s ease-in-out infinite; }
+
+/* 📖 Hisobotdagi qoida eslatmasi */
+.rep-rule { margin-top: 12px; }
+.rep-rule summary { font-weight: 700; cursor: pointer; list-style: none; }
+.rep-rule summary::-webkit-details-marker { display: none; }
+.rep-rule summary::after { content: " ▾"; color: var(--muted); }
+.rep-rule[open] summary::after { content: " ▴"; }
+.rep-rule .rule-body { margin-top: 6px; }

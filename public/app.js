@@ -2824,6 +2824,15 @@ function renderReport(r, score) {
     });
     box.append(b);
   }
+  // 📖 Grammatika darsida xato bo'lsa — qoida shu yerda eslatiladi (bosib ochiladi)
+  if (state.lesson?.rule && (r.mistakes || []).length) {
+    const d = document.createElement("details");
+    d.className = "rule rep-rule";
+    const sm = document.createElement("summary");
+    sm.textContent = "📖 Qoidani yana bir ko'rib chiqing";
+    d.append(sm, ruleBody(state.lesson.rule));
+    box.append(d);
+  }
   section("💡 Keyingi safar", r.tips_uz, (t) => el("li", "", t));
   section("📚 Yangi so'zlar", r.new_words, (w) => {
     const li = el("li", "rep-word");
