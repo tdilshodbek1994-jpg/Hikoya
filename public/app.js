@@ -376,6 +376,16 @@ function ruleBody(rule) {
   return box;
 }
 
+// 🏅 Bir marta olingan yutuq olib qo'yilmaydi (masalan, kursga yangi dars qo'shilsa ham)
+function hasBadge(b, p) {
+  if (b[3](p)) return true;
+  try {
+    return (JSON.parse(localStorage.getItem("sado-badges") || "[]") || []).includes(b[1]);
+  } catch {
+    return false;
+  }
+}
+
 // Ochilmagan yutuqlar uchun [hozirgi, kerakli]
 const BADGE_PROGRESS = {
   Gapdon: (p) => [Math.min(50, p.maxWords || 0), 50],
@@ -403,7 +413,7 @@ const BADGE_PROGRESS = {
 function announceBadges() {
   const p = state.progress;
   if (!p) return;
-  const have = BADGES.filter((b) => b[3](p)).map((b) => b[1]);
+  const have = BADGES.filter((b) => hasBadge(b, p)).map((b) => b[1]);
   let seen;
   try {
     seen = JSON.parse(localStorage.getItem("sado-badges") || "null");
@@ -919,13 +929,13 @@ function renderBadges() {
   if (!p) return (box.hidden = true);
   box.hidden = false;
   box.innerHTML = "";
-  const got = BADGES.filter((b) => b[3](p)).length;
+  const got = BADGES.filter((b) => hasBadge(b, p)).length;
   const head = el("div", "trend-head");
   head.append(el("b", "", "🏅 Yutuqlar"), el("span", "", `${got} / ${BADGES.length}`));
   box.append(head);
   const row = el("div", "badge-row");
   for (const [ico, name, how, test] of BADGES) {
-    const on = test(p);
+    const on = hasBadge([ico, name, how, test], p);
     const b = el("button", "badge" + (on ? " on" : ""));
     b.append(el("span", "badge-ico", ico), el("small", "", name));
     // 📈 Ochilmagan yutuqqa qancha qolgani
@@ -948,7 +958,7 @@ function renderMoreStats() {
   btn.hidden = !p;
   if (!p) return ($("moreStats").hidden = true);
   const open = localStorage.getItem("sado-more") === "1";
-  const got = BADGES.filter((b) => b[3](p)).length;
+  const got = BADGES.filter((b) => hasBadge(b, p)).length;
   btn.innerHTML = "";
   btn.append(el("b", "", "📊 Natijalar"), el("small", "", `🏅 ${got}/${BADGES.length} yutuq ${open ? "▴" : "▾"}`));
   btn.classList.toggle("on", open);
