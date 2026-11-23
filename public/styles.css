@@ -535,3 +535,25 @@ body.dark .onb-card { box-shadow: 0 0 0 1px var(--line), 0 20px 50px rgba(0,0,0,
 .faq-item summary::after { content: "＋"; position: absolute; right: 0; color: var(--muted); }
 .faq-item[open] summary::after { content: "－"; }
 .faq-item p { margin: 0 0 12px; font-size: 14px; color: var(--muted); line-height: 1.5; }
+
+/* ---------- Kichik ekranlar (≤360px kenglik yoki ≤700px balandlik) ---------- */
+.mode-card.rec { padding-right: 84px; }
+@media (max-width: 360px) {
+  .free-hero .hero-mascot { flex-basis: 64px; height: 64px; }
+  .free-text b { font-size: 21px; }
+  .free-text span { font-size: 13px; }
+  .free-hero { padding: 14px 12px; }
+  .screen { padding-left: 10px; padding-right: 10px; }
+  .mode { font-size: 12.5px; gap: 4px; }
+  .bottom-row { gap: 8px; }
+}
+@media (max-height: 700px) {
+  .mascot { width: min(38vw, 150px); }
+  .stage { padding: 0; }
+  .hint { margin-top: 2px; }
+  .help-row { margin-bottom: 6px; }
+  .phrase-card { padding: 10px 10px 12px; }
+  .phrase-en { font-size: 16.5px; }
+  .listen-btn { margin-top: 5px; padding: 4px 10px; }
+  .btn { height: 46px; }
+}
