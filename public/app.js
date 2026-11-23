@@ -1956,7 +1956,14 @@ function renderLessons() {
         const g = state.lessons.filter((x) => x.category === "Grammatika gapirib" && "gr-" + mixLevelOf(x.level) === part);
         extra = ` · ${g.filter((x) => state.progress?.lessons?.[x.id]).length}/${g.length}`;
       }
-      list.append(el("div", "part-title", PART_NAMES[part] + extra));
+      const pt = el("div", "part-title", PART_NAMES[part] + extra);
+      // 🧪 Shu darajadagi mavzulardan aralash test
+      if (String(part).startsWith("gr-")) {
+        const tb = el("button", "pt-test", "🧪 Test ›");
+        tb.addEventListener("click", () => { haptic(); openMixTest(part.slice(3)); });
+        pt.append(tb);
+      }
+      list.append(pt);
     }
     const btn = lessonButton(l);
     const hit = hits.get(l.id);

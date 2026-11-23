@@ -1240,3 +1240,6 @@ body.dark .acc-tag.hi { color: #4ade80; } body.dark .acc-tag.mid { color: #fbbf2
 .qz-dots i.ok { background: var(--ok); }
 .qz-dots i.bad { background: var(--danger); }
 .qz-dots i.cur { background: var(--primary); }
+/* 🧪 Grammatika daraja sarlavhasida test tugmasi */
+.part-title:has(.pt-test) { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.pt-test { font: inherit; font-size: 12px; font-weight: 800; letter-spacing: 0; text-transform: none; color: var(--primary); background: color-mix(in srgb, var(--primary) 12%, transparent); padding: 4px 10px; border-radius: 99px; }
