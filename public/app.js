@@ -409,9 +409,13 @@ function saveQuiz(id, right, total) {
 function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq") {
   box.innerHTML = "";
   // Darsning o'z mashqi bo'lsa — o'shani, aks holda qoida misollaridan avtomatik
-  const items = lesson.quiz?.length
+  // 🎲 Savollar to'plamidan har safar tasodifiy 4 tasi (Qayta bosilganda — yangilari)
+  const pool = lesson.quiz?.length
     ? lesson.quiz.map((q) => { const [before, after] = q.text.split("___"); return { before: before.trimEnd(), after, answer: q.answer, options: q.options }; })
     : lesson.rule ? quizItems(lesson.rule) : [];
+  const QN = 4;
+  const pick = () => (pool.length > QN ? [...pool].sort(() => Math.random() - 0.5).slice(0, QN) : pool);
+  let items = pick();
   box.hidden = items.length < 2;
   if (box.hidden) return;
   let i = 0, right = 0, missed = [];
@@ -435,13 +439,13 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq") {
         }
         body.append(ul);
       }
-      const again = el("button", "qz-again", "🔄 Qayta");
-      again.addEventListener("click", () => { i = 0; right = 0; missed = []; show(); });
+      const again = el("button", "qz-again", pool.length > QN ? "🔄 Yangi savollar" : "🔄 Qayta");
+      again.addEventListener("click", () => { i = 0; right = 0; missed = []; items = pick(); show(); });
       body.append(again);
       return;
     }
     const it = items[i];
-    body.append(el("small", "qz-n", `${i + 1}/${items.length}`));
+    body.append(el("small", "qz-n", `${i + 1}/${items.length}${pool.length > QN ? ` · to'plamda ${pool.length} ta savol` : ""}`));
     const q = el("p", "qz-q");
     q.append(document.createTextNode(it.before + " "), el("span", "qz-gap", "____"), document.createTextNode(it.after));
     body.append(q);
