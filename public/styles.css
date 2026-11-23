@@ -1001,3 +1001,8 @@ body.dark .rep-ml { color: #5eead4; }
 
 .fold-all { display: block; margin: 0 0 4px auto; font-size: 12.5px; font-weight: 600; color: var(--primary); padding: 4px 2px; }
 body.dark .fold-all { color: #a5b4fc; }
+
+.fold-tag { flex: none; font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 99px; margin-left: 4px; }
+.fold-tag.new { background: color-mix(in srgb, #f43f5e 14%, transparent); color: #e11d48; }
+.fold-tag.rep { background: color-mix(in srgb, #f59e0b 16%, transparent); color: #b45309; }
+body.dark .fold-tag.new { color: #fb7185; } body.dark .fold-tag.rep { color: #fbbf24; }

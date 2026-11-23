@@ -1182,6 +1182,16 @@ function renderLessons() {
         head.classList.add("foldable");
         head.classList.toggle("folded", isFolded);
         head.prepend(el("span", "fold-ico", isFolded ? "▸" : "▾"));
+        // Yig'ilgan bo'limda nimalar kutayotganini ko'rsatamiz: 🆕 yangi va 🔁 takrorlash
+        if (isFolded) {
+          const inCat = state.lessons.filter((x) => x.category === cat);
+          const nNew = inCat.filter((x) => state.newIds?.has(x.id) && !done[x.id]).length;
+          const weak = new Set(weakIds());
+          const nRep = inCat.filter((x) => weak.has(x.id)).length;
+          const before = head.querySelector(".cat-progress");
+          if (nNew) head.insertBefore(el("span", "fold-tag new", `🆕${nNew}`), before);
+          if (nRep) head.insertBefore(el("span", "fold-tag rep", `🔁${nRep}`), before);
+        }
         head.addEventListener("click", () => {
           haptic();
           folded.has(cat) ? folded.delete(cat) : folded.add(cat);
