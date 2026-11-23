@@ -1281,6 +1281,17 @@ function markWords(heard) {
   $("phraseLabel").textContent = hits === real.length ? "✓ Hamma so'zlar aytildi" : `${hits}/${real.length} so'z aytildi — qizillarini qo'shing`;
 }
 
+// ✍️ Yozma rejimda iborani bosish — uni javob maydoniga qo'yadi
+$("phraseEn").addEventListener("click", () => {
+  if ($("textForm").hidden || !state.lesson) return;
+  const p = state.lesson.phrases[state.phraseIdx];
+  if (!p) return;
+  haptic();
+  const inp = $("textInput");
+  inp.value = inp.value.trim() ? `${inp.value.trim()} ${p.en}` : p.en;
+  inp.focus();
+});
+
 function nextUnused(from = 0) {
   const n = state.lesson.phrases.length;
   for (let k = 0; k < n; k++) {
@@ -1357,6 +1368,8 @@ function applyMode() {
   const text = state.textOnly;
   $("modeToggle").hidden = text;
   $("textForm").hidden = !text;
+  $("phraseCard").classList.toggle("can-insert", text);
+  applySubs();
   $("holdBtn").hidden = text || state.mode !== "hold";
   if (state.lessonMode === "tutor" && !text) return applyHint();
   $("hint").textContent = text
@@ -1408,9 +1421,11 @@ $("trBtn").addEventListener("click", () => {
   toast(state.tr ? "Sado gaplarining o'zbekcha tarjimasini ham aytadi" : "Sado faqat inglizcha gapiradi (xatolar baribir o'zbekcha tushuntiriladi)", 3000);
 });
 
+// Yozma rejimda yoki ovoz ijro etilmasa subtitr majburan ko'rsatiladi — aks holda Sado gapi umuman ko'rinmay qoladi
 function applySubs() {
-  $("subs").hidden = !state.subs;
-  $("subsBtn").classList.toggle("on", state.subs);
+  const on = state.subs || state.textOnly || state.audioFail;
+  $("subs").hidden = !on;
+  $("subsBtn").classList.toggle("on", on);
 }
 $("subsBtn").addEventListener("click", () => {
   haptic();
@@ -1810,6 +1825,8 @@ function playViaElement(b64, mime = "audio/mpeg") {
       .then(() => (raf = requestAnimationFrame(fake)))
       .catch((e) => {
         // Faqat dars ekranida ogohlantiramiz (hisobot sahifasida ortiqcha xabar chiqmasin)
+        state.audioFail = true;
+        applySubs();
         if ($("lesson").classList.contains("active"))
           toast(e?.name === "NotAllowedError" ? "🔇 Ovozni yoqish uchun ekranga bir marta bosing" : "⚠️ Ovoz ijro etilmadi — Sado gapini subtitrdan o'qing", 4000);
         done();
