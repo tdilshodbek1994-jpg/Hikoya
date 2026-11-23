@@ -30,14 +30,14 @@ export async function listLiveModels() {
 
 export async function pickLiveModel() {
   if (cachedModel) return cachedModel;
-  const names = await listLiveModels();
+  let names = await listLiveModels();
+  // Maxsus (tarjima, transkripsiya, robot, uzoq o'ylaydigan) modellarni chiqarib tashlaymiz,
+  // qolganlardan eng yangi versiyani tanlaymiz.
+  const usable = names.filter((n) => !/transcribe|translate|robotics|genie|thinking/.test(n));
+  const version = (n) => Number((n.match(/gemini-(\d+(?:\.\d+)?)/) || [0, 0])[1]);
   const score = (n) =>
-    (/native-audio/.test(n) ? 100 : 0) +
-    (/live/.test(n) ? 50 : 0) +
-    (/flash/.test(n) ? 10 : 0) -
-    (/preview|exp/.test(n) ? 1 : 0) +
-    Number((n.match(/(\d+(?:\.\d+)?)/) || [0, 0])[1]); // yangi versiya afzal
-  names.sort((a, b) => score(b) - score(a));
+    version(n) * 10 + (/native-audio|live/.test(n) ? 5 : 0) + (/latest/.test(n) ? 1 : 0) - (/preview|exp|\d{2}-\d{4}/.test(n) ? 1 : 0);
+  names = (usable.length ? usable : names).sort((a, b) => score(b) - score(a));
   if (!names.length) throw new Error("Jonli suhbatni qo'llaydigan Gemini modeli topilmadi");
   cachedModel = names[0];
   console.log("Gemini Live modeli:", cachedModel);
