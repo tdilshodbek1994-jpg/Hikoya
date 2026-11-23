@@ -1580,6 +1580,44 @@ export const LESSONS = [
       { en: "The book was written in 1990.", uz: "Kitob 1990-yilda yozilgan." },
     ],
   },
+  {
+    id: "gr-pastcont",
+    category: "Grammatika gapirib",
+    title: "O'tgan davomiy zamon (Past Continuous)",
+    emoji: "⏳",
+    level: "A2-B1",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on grammar: past continuous (was/were + -ing) for actions in progress at a time in the past, and with 'when' / 'while' (I was walking when it started to rain). Talk about what the student was doing yesterday at different times and about a funny or surprising moment. Have a natural conversation that makes the student use this grammar a lot. Ask simple questions, listen, whenever the student makes a mistake with this grammar, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "What were you doing yesterday at eight o'clock in the evening?",
+    openerUz: "Kecha kechqurun soat sakkizda nima qilayotgan edingiz?",
+    phrases: [
+      { en: "I was watching TV.", uz: "Men televizor ko'rayotgan edim." },
+      { en: "We were having dinner.", uz: "Biz kechki ovqat qilayotgan edik." },
+      { en: "What were you doing?", uz: "Siz nima qilayotgan edingiz?" },
+      { en: "I was walking home when it started to rain.", uz: "Uyga ketayotganimda yomg'ir yog'a boshladi." },
+      { en: "While I was cooking, my phone rang.", uz: "Ovqat pishirayotganimda telefonim jiringladi." },
+      { en: "They weren't sleeping.", uz: "Ular uxlamayotgan edi." },
+    ],
+  },
+  {
+    id: "gr-quantity",
+    category: "Grammatika gapirib",
+    title: "Miqdor: much, many, some, any",
+    emoji: "🧮",
+    level: "A2",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on grammar: countable and uncountable nouns with much / many / a lot of / some / any / a few / a little / How much? / How many? Role-play shopping for a family dinner and checking what is in the fridge. Have a natural conversation that makes the student use this grammar a lot. Ask simple questions, listen, whenever the student makes a mistake with this grammar, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "We're cooking dinner tonight! How many eggs do we have in the fridge?",
+    openerUz: "Bugun kechki ovqat tayyorlaymiz! Muzlatgichda nechta tuxum bor?",
+    phrases: [
+      { en: "How many eggs do we need?", uz: "Bizga nechta tuxum kerak?" },
+      { en: "How much sugar is there?", uz: "Qancha shakar bor?" },
+      { en: "There isn't any milk.", uz: "Umuman sut yo'q." },
+      { en: "Let's buy some bread.", uz: "Ozgina non olaylik." },
+      { en: "We have a lot of rice.", uz: "Bizda guruch ko'p." },
+      { en: "I need a few tomatoes.", uz: "Menga bir nechta pomidor kerak." },
+    ],
+  },
   // ======== Kundalik hayot (o'zbekcha hayot) ========
   {
     id: "bazaar",
@@ -2108,7 +2146,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-continuous", "gr-past", "gr-questions", "gr-articles", "gr-future", "gr-compare", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-passive"];
+const GR_ORDER = ["gr-continuous", "gr-past", "gr-pastcont", "gr-questions", "gr-quantity", "gr-articles", "gr-future", "gr-compare", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-passive"];
 const grRank = (l) => (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
 LESSONS.sort((a, b) => ORDER.indexOf(a.category) - ORDER.indexOf(b.category) || partRank(a) - partRank(b) || (a.category === "Grammatika gapirib" ? grRank(a) - grRank(b) : 0));
 // Kurs darslarini tartib raqami bilan nomlaymiz
@@ -2120,6 +2158,8 @@ for (const cat of ["IELTS kursi", "CEFR kursi", "Grammatika gapirib"]) {
 
 // ✏️ Grammatika darslari uchun qisqa qoida (o'zbekcha)
 const RULES = {
+  "gr-pastcont": "O'tmishdagi ma'lum vaqtda davom etayotgan ish: was/were + fe'l-ing.\nI was reading at 8 pm. They were playing football.\nBoshqa ish to'satdan bo'lsa: when + Past Simple: I was walking when it started to rain.\nSavol: What were you doing? Inkor: She wasn't sleeping.",
+  "gr-quantity": "Sanaladigan (apples, eggs): many, a few, How many?\nSanalmaydigan (milk, sugar, rice): much, a little, How much?\nIkkalasiga: a lot of, some (darak gap), any (savol va inkor).\nWe have a lot of rice. There isn't any milk. Do we have any eggs?",
   "gr-continuous": "Hozir bo'layotgan ish: am/is/are + fe'l-ing.\nI am reading. She is working. Are you studying?\nInkor: I'm not watching TV.",
   "gr-past": "O'tgan ish: fe'l + -ed (worked, played) yoki noto'g'ri fe'llar (go → went, see → saw, eat → ate).\nSavol/inkor: did + fe'l: Did you go? I didn't go.",
   "gr-questions": "Savolda yordamchi fe'l oldinga chiqadi: Do/Does/Did + ega + fe'l.\nWhere do you live? (✗ Where you live?)\nWhat does she do? Why did you choose it?",

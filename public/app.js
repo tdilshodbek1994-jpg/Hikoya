@@ -247,13 +247,13 @@ function lessonButton(l) {
 
 // Bo'lim filtrlari (gorizontal chiplar)
 // 📖 Qoidadagi inglizcha misollarni ajratib, bosilganda eshittiramiz
-const EN_HINT = /\b(I|I'm|you|he|she|it|we|they|is|are|am|do|does|did|will|the|a|an|can|was|were|have|has|my|your|to|used|should|must)\b/i;
+const EN_HINT = /\b(I|I'm|you|he|she|it|we|they|is|are|am|do|does|did|will|the|a|an|can|was|were|have|has|my|your|to|used|should|must|there|this|that|any|some|isn't|aren't|wasn't|weren't|don't|doesn't|didn't)\b/i;
 function ruleBody(rule) {
   const box = el("div", "rule-body");
   for (const line of rule.split("\n")) {
     const row = el("div", "");
     let last = 0;
-    for (const m of line.matchAll(/[A-Z][A-Za-z' ,]*[A-Za-z0-9][.?!]/g)) {
+    for (const m of line.matchAll(/[A-Z][A-Za-z0-9' ,]*[A-Za-z0-9][.?!]/g)) {
       const t = m[0];
       // ✗ belgili noto'g'ri misolni o'qitmaymiz
       if (t.split(" ").length < 2 || !EN_HINT.test(t) || /✗\s*$/.test(line.slice(0, m.index))) continue;
