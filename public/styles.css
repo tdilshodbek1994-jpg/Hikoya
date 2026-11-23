@@ -1129,7 +1129,8 @@ body.dark .ml-mark { background: #5eead4; }
 .onb-level small + .onb-lv-row + small { margin-top: 10px; }
 .onb-lv-row.onb-goals { flex-wrap: wrap; }
 /* 📒 Lug'at: kartochka va tinglash bir qatorda */
-.vocab-acts { display: flex; gap: 8px; }
+.vocab-acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.vocab-acts > #flashBtn { flex-basis: 100%; } /* asosiy tugma alohida qatorda, Tinglash va Test — ostida yonma-yon */
 .vocab-acts > .btn { flex: 1; margin-top: 0; min-width: 0; padding-left: 8px; padding-right: 8px; white-space: nowrap; }
 .vocab-acts > [hidden] { display: none; }
 .vocab-play { margin-top: 0; }

@@ -898,7 +898,7 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
     if (i >= items.length) {
       if (lesson.id === "gr-level") levelTestResult(items, marks, body);
       // 📈 Natijalar tarixi (oxirgi 30 ta test)
-      try {
+      if (!lesson.noStats) try {
         const h = JSON.parse(localStorage.getItem("sado-qz-hist") || "[]");
         h.push({ t: lesson.id, r: right, n: items.length, d: dayNum() });
         localStorage.setItem("sado-qz-hist", JSON.stringify(h.slice(-30)));
@@ -920,9 +920,11 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
         body.append(el("div", "qz-marks", marks.join("")));
         state.dailyShareBtn = sh;
       }
-      saveQuiz(lesson.id === "gr-mix" ? `gr-mix${localStorage.getItem("sado-mix-lv") || ""}` : lesson.id, right, items.length); // aralash testda — har daraja uchun alohida
-      if (state.lessons.length) keepScroll(renderLessons); // plitkadagi 🧩 va Aralash test 🏆 yangilanadi
-      const doneLine = (el("p", "qz-done", right === items.length ? `🎉 ${right}/${items.length} — a'lo! Endi gapirib mustahkamlaymiz.` : right * 2 >= items.length ? `👍 ${right}/${items.length} — yaxshi! To'g'ri shakllarini eshitib takrorlang.` : `💪 ${right}/${items.length} — qoidani yana bir o'qing va qayta urinib ko'ring.`));
+      if (!lesson.noStats) saveQuiz(lesson.id === "gr-mix" ? `gr-mix${localStorage.getItem("sado-mix-lv") || ""}` : lesson.id, right, items.length); // aralash testda — har daraja uchun alohida
+      if (state.lessons.length && !lesson.noStats) keepScroll(renderLessons); // plitkadagi 🧩 va Aralash test 🏆 yangilanadi
+      const doneLine = lesson.noStats
+        ? el("p", "qz-done", right === items.length ? `🎉 ${right}/${items.length} — hammasini bilasiz!` : `${right * 2 >= items.length ? "👍" : "💪"} ${right}/${items.length} — xato qilinganlarini eshitib, kartochkalarda takrorlang.`)
+        : (el("p", "qz-done", right === items.length ? `🎉 ${right}/${items.length} — a'lo! Endi gapirib mustahkamlaymiz.` : right * 2 >= items.length ? `👍 ${right}/${items.length} — yaxshi! To'g'ri shakllarini eshitib takrorlang.` : `💪 ${right}/${items.length} — qoidani yana bir o'qing va qayta urinib ko'ring.`));
       body.append(doneLine);
       if (lesson.id === "gr-daily" && state.dailyShareBtn) body.append(state.dailyShareBtn), (state.dailyShareBtn = null);
       // 🔁 Xatolarim: ro'yxat qanchaga qisqardi
@@ -939,7 +941,7 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
           bt.addEventListener("click", () => { haptic(); sayPhrase(t).then(() => mascot.setLevel(0)); });
           ul.append(bt);
         }
-        if (missed.length > 5) ul.append(el("small", "", `…va yana ${missed.length - 5} ta — «🔁 Xatolarim»da takrorlang`));
+        if (missed.length > 5) ul.append(el("small", "", lesson.noStats ? `…va yana ${missed.length - 5} ta` : `…va yana ${missed.length - 5} ta — «🔁 Xatolarim»da takrorlang`));
         body.append(ul);
       }
       // 📝 Aralash test: xato qilingan mavzular — mos darsga o'tish
@@ -998,7 +1000,7 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
           haptic(ok ? "light" : "medium");
           if (ok) right++;
           else if (it.from) (state.mixWeak ||= new Map()).set(it.from, (state.mixWeak.get(it.from) || 0) + 1);
-          quizMiss(it, lesson.id, ok);
+          if (lesson.noStats) lesson.onAnswer?.(it, ok); else quizMiss(it, lesson.id, ok);
           marks.push(ok ? "🟩" : "🟥");
           b.classList.add(ok ? "ok" : "bad");
           line.children[it.badIdx].classList.add("found");
@@ -1025,7 +1027,7 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
         const ok = got === it.right;
         if (ok) right++;
         else if (it.from) (state.mixWeak ||= new Map()).set(it.from, (state.mixWeak.get(it.from) || 0) + 1);
-        quizMiss(it, lesson.id, ok);
+        if (lesson.noStats) lesson.onAnswer?.(it, ok); else quizMiss(it, lesson.id, ok);
         marks.push(ok ? "🟩" : "🟥");
         line.classList.add(ok ? "ok" : "bad");
         haptic(ok ? "light" : "medium");
@@ -1078,7 +1080,7 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
         opts.dataset.done = "1";
         haptic();
         const ok = o === (it.mode === "pick" ? it.right : it.answer);
-        quizMiss(it, lesson.id, ok);
+        if (lesson.noStats) lesson.onAnswer?.(it, ok); else quizMiss(it, lesson.id, ok);
         marks.push(ok ? "🟩" : "🟥");
         if (ok) right++;
         else if (it.from) (state.mixWeak ||= new Map()).set(it.from, (state.mixWeak.get(it.from) || 0) + 1);
@@ -1495,6 +1497,7 @@ function renderVocab() {
   $("vocabSearch").hidden = items.length < 8 || Boolean(state.flash);
   $("vocabPlay").hidden = items.length < 2 || Boolean(state.flash);
   $("flashBtn").textContent = "🃏 Kartochkalar";
+  $("vocabQuiz").hidden = items.filter((w) => w.en && w.uz).length < 3 || Boolean(state.flash);
   const vq = $("vocabSearch").hidden ? "" : $("vocabSearch").value.trim().toLowerCase().replace(/[‘’`ʻʼ]/g, "'");
   const total = items.length;
   if (vq) items = items.filter((w) => [w.en, w.uz, w.wrong].some((x) => String(x || "").toLowerCase().replace(/[‘’`ʻʼ]/g, "'").includes(vq)));
@@ -1653,11 +1656,36 @@ function startFlash() {
   $("vocabList").hidden = true;
   $("vocabCopy").hidden = true;
   $("flashBtn").hidden = true;
+  $("vocabQuiz").hidden = true;
   stopVocabPlay();
   $("vocabPlay").hidden = true;
   $("reviewBtn").hidden = true;
   $("flash").hidden = false;
   renderFlash();
+}
+// 🧩 Lug'at testi: o'zbekchasi beriladi, 3 ta inglizcha variantdan to'g'risini tanlash
+// (grammatika statistikasiga aralashmaydi; natija kartochkalardagi "bilaman" qutilariga yoziladi)
+function startVocabQuiz() {
+  const fixTab = state.vocabTab === "fix";
+  const words = (state.progress?.words || []).filter((w) => w.en && w.uz && (fixTab ? w.type === "fix" : w.type !== "fix"));
+  const uniq = [...new Map(words.map((w) => [w.en.toLowerCase(), w])).values()];
+  if (uniq.length < 3) return toast("Test uchun lug'atda kamida 3 ta so'z kerak");
+  const quiz = uniq.map((w) => {
+    const others = uniq.filter((x) => x !== w).sort(() => Math.random() - 0.5).slice(0, 2).map((x) => x.en);
+    return { text: `«${w.uz}» → ___`, answer: w.en, options: [w.en, ...others], from: "" };
+  });
+  stopVocabPlay();
+  $("vocabSheet").hidden = true;
+  $("mixLevels").innerHTML = "";
+  $("mixSheet").hidden = false;
+  state.mixWeak = new Map();
+  const onAnswer = (it, ok) => {
+    const box = flashBoxes();
+    const k = it.answer.toLowerCase();
+    box[k] = ok ? Math.min(5, (box[k] || 0) + 1) : 0;
+    localStorage.setItem("sado-flash", JSON.stringify(box));
+  };
+  renderQuiz({ id: "vocab-quiz", quiz, noStats: true, onAnswer }, $("mixQuiz"), `🧩 So'z testi · ${Math.min(10, quiz.length)} ta savol`, Math.min(10, quiz.length));
 }
 function flashBoxes() {
   try {
@@ -1744,6 +1772,7 @@ $("reviewBtn").addEventListener("click", () => {
   );
 });
 
+$("vocabQuiz").addEventListener("click", () => { haptic(); startVocabQuiz(); });
 $("flashBtn").addEventListener("click", () => {
   haptic();
   startFlash();
