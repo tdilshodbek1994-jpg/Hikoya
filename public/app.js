@@ -197,7 +197,7 @@ function applyLessons(data) {
   state.liveEnabled = Boolean(data.liveEnabled);
   state.sessionMinutes = data.sessionMinutes;
   state.shareUrl = data.shareUrl || "";
-  if (data.version) $("appVer").textContent = `${$("appVer").textContent.split(" · ")[0]} · server ${data.version}`;
+  if (data.version) $("appVer").textContent = `${$("appVer").textContent.split(" · ")[0]} · server ${data.version}${data.updated ? ` (${data.updated})` : ""}`;
   renderChips();
   renderLessons();
 }

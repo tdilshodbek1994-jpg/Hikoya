@@ -128,7 +128,7 @@ const lessonOf = (s) => s.custom || getLesson(s.lessonId);
 // Darslar ro'yxati server ishlaguncha o'zgarmaydi — bir marta tayyorlab, siqib qo'yamiz (~80 KB → ~15 KB)
 let lessonsCache = null;
 // 🏷 Server versiyasi (git commit + sana) — ilovada «⚙️ Sozlamalar» ostida ko'rinadi
-let APP_VERSION = "";
+let APP_VERSION = "", APP_UPDATED = "";
 try {
   const head = fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), ".git", "HEAD"), "utf8").trim();
   const gitDir = path.join(path.dirname(fileURLToPath(import.meta.url)), ".git");
@@ -139,10 +139,14 @@ try {
     catch { sha = (fs.readFileSync(path.join(gitDir, "packed-refs"), "utf8").split("\n").find((l) => l.endsWith(" " + ref)) || "").split(" ")[0]; }
   }
   APP_VERSION = sha.slice(0, 7);
+  // Yangilanish vaqti: update-sado.sh (git reset) HEAD/ref faylini yangilaydi — shu vaqt (Toshkent)
+  const refFile = ref && fs.existsSync(path.join(gitDir, ref)) ? path.join(gitDir, ref) : path.join(gitDir, "HEAD");
+  const t = new Date(Math.max(fs.statSync(refFile).mtimeMs, fs.statSync(path.join(gitDir, "HEAD")).mtimeMs) + 5 * 3600_000);
+  APP_UPDATED = `${String(t.getUTCDate()).padStart(2, "0")}.${String(t.getUTCMonth() + 1).padStart(2, "0")} ${String(t.getUTCHours()).padStart(2, "0")}:${String(t.getUTCMinutes()).padStart(2, "0")}`;
 } catch {}
 // Ilova versiyasi (index.html dagi app.js?v=...) — telefondagi eski nusxa o'zini yangilashi uchun
 const appBuild = () => { try { return Number((fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), "public", "index.html"), "utf8").match(/app\.js\?v=(\d+)/) || [])[1]) || 0; } catch { return 0; } };
-app.get("/api/version", (req, res) => { res.setHeader("Cache-Control", "no-store"); res.json({ version: APP_VERSION, build: appBuild() }); });
+app.get("/api/version", (req, res) => { res.setHeader("Cache-Control", "no-store"); res.json({ version: APP_VERSION, updated: APP_UPDATED, build: appBuild() }); });
 
 // 🧹 Telefonda keshda qolib ketgan ESKI ilova (X-Sado-Build yubormaydi) — brauzerga keshni tozalashni
 // buyuramiz: keyingi ochilishda yangi versiya yuklanadi. (Faqat HTTP kesh; localStorage, kirish ma'lumotlari saqlanadi)
@@ -151,7 +155,7 @@ const clearStale = (req, res) => { if (!req.get("X-Sado-Build")) res.setHeader("
 app.get("/api/lessons", (req, res) => {
   clearStale(req, res);
   if (!lessonsCache) {
-    const body = Buffer.from(JSON.stringify({ lessons: LESSONS.map(publicLesson), voiceEnabled, liveEnabled, sessionMinutes: SESSION_MINUTES, shareUrl: process.env.SHARE_URL || "", version: APP_VERSION }));
+    const body = Buffer.from(JSON.stringify({ lessons: LESSONS.map(publicLesson), voiceEnabled, liveEnabled, sessionMinutes: SESSION_MINUTES, shareUrl: process.env.SHARE_URL || "", version: APP_VERSION, updated: APP_UPDATED }));
     lessonsCache = { body, gz: zlib.gzipSync(body, { level: 9 }), etag: `"l-${crypto.createHash("sha1").update(body).digest("hex").slice(0, 16)}"` };
   }
   res.setHeader("Content-Type", "application/json; charset=utf-8");
