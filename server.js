@@ -309,7 +309,9 @@ const PHRASES = new Set(LESSONS.flatMap((l) => l.phrases.map((p) => p.en)));
 const sayCache = new Map();
 app.get("/api/say", auth, async (req, res) => {
   const text = String(req.query.text || "");
-  if (!PHRASES.has(text)) return res.status(400).json({ error: "Noma'lum ibora" });
+  // Faqat darslardagi iboralar yoki o'quvchining o'z lug'atidagi so'zlar (TTS xarajatini cheklash uchun)
+  const own = () => text.length <= 120 && (summary(req.userId).words || []).some((w) => w.en === text);
+  if (!PHRASES.has(text) && !own()) return res.status(400).json({ error: "Noma'lum ibora" });
   const slow = req.query.slow === "1";
   const key = (slow ? "slow:" : "") + text;
   try {

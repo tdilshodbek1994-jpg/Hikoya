@@ -470,7 +470,7 @@ function renderVocab() {
     } else {
       li.append(el("b", "", w.en), el("span", "muted", " — " + (w.uz || "")));
     }
-    li.addEventListener("click", () => speakBrowser(w.en, "en"));
+    li.addEventListener("click", () => sayPhrase(w.en).then(() => mascot.setLevel(0)));
     ul.append(li);
   }
   $("vocabCopy").hidden = !items.length || Boolean(state.flash);
@@ -577,7 +577,7 @@ function renderFlash() {
   card.addEventListener("click", () => {
     if (!f.open) {
       f.open = true;
-      speakBrowser(w.en, "en");
+      sayPhrase(w.en).then(() => mascot.setLevel(0));
       renderFlash();
     }
   });
@@ -2747,7 +2747,7 @@ function renderReport(r, score) {
     line.append(el("s", "rep-wrong", m.wrong), document.createTextNode(" → "), el("b", "rep-right", m.right));
     li.append(line, el("div", "rep-why", m.why_uz || ""));
     li.classList.add("rep-word"); // bosilganda to'g'ri variant eshittiriladi
-    li.addEventListener("click", () => speakBrowser(m.right, "en"));
+    li.addEventListener("click", () => sayPhrase(m.right).then(() => mascot.setLevel(0)));
     return li;
   });
   // 🔁 Xatolar 2 tadan ko'p bo'lsa — darhol shular ustida qisqa mashq
@@ -2763,7 +2763,7 @@ function renderReport(r, score) {
   section("📚 Yangi so'zlar", r.new_words, (w) => {
     const li = el("li", "rep-word");
     li.append(el("b", "", w.en), el("span", "muted", " — " + (w.uz || "")));
-    li.addEventListener("click", () => speakBrowser(w.en, "en"));
+    li.addEventListener("click", () => sayPhrase(w.en).then(() => mascot.setLevel(0)));
     return li;
   });
   if ((r.new_words || []).length || (r.mistakes || []).length)
