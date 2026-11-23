@@ -117,9 +117,25 @@ export async function runLive(client, session, lesson, { maxMs, voice }) {
     try { client.close(); } catch {}
   };
 
+  let ready = false; // Gemini sozlamani qabul qilguncha ovoz yubormaymiz
   const timer = setTimeout(() => close("vaqt tugadi"), maxMs);
+  // Oxirgi daqiqa: Sado suhbatni o'zi chiroyli yakunlasin
+  const wrapTimer = setTimeout(() => {
+    send({ type: "wrapup" });
+    if (upstream?.readyState === WebSocket.OPEN && ready) {
+      upstream.send(
+        JSON.stringify({
+          clientContent: {
+            turns: [{ role: "user", parts: [{ text: "(System: about one minute is left in this call. After the student finishes their current thought, wrap up warmly: in Uzbek, briefly say what they did well and one thing to practise next time, then say goodbye.)" }] }],
+            turnComplete: true,
+          },
+        }),
+      );
+    }
+  }, Math.max(0, maxMs - 60_000));
   client.on("close", () => {
     clearTimeout(timer);
+    clearTimeout(wrapTimer);
     closed = true;
     try { upstream?.close(); } catch {}
   });
@@ -136,7 +152,6 @@ export async function runLive(client, session, lesson, { maxMs, voice }) {
   upstream = new WebSocket(`${WS_URL}?key=${encodeURIComponent(GEMINI_KEY)}`);
   let userTurn = "";
   let sadoTurn = "";
-  let ready = false; // Gemini sozlamani qabul qilguncha ovoz yubormaymiz
 
   upstream.on("open", () => {
     upstream.send(

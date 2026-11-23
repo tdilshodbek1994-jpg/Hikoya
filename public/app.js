@@ -836,6 +836,9 @@ async function startLive(lesson) {
           if (lastSpeaker !== m.type) addBubble(m.type);
           lastSpeaker = m.type;
           appendBubble(m.text);
+        } else if (m.type === "wrapup") {
+          toast("⏳ 1 daqiqa qoldi — Sado suhbatni yakunlaydi", 4000);
+          haptic("medium");
         } else if (m.type === "used") {
           markUsed(m.found || []);
         } else if (m.type === "error") {
