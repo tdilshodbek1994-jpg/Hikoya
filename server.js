@@ -77,14 +77,36 @@ function sendError(res, err) {
   res.status(500).json({ error: "Serverda xatolik yuz berdi." });
 }
 
+// 🔁 Shaxsiy dars: o'quvchining saqlangan xatolaridan tuziladi
+function reviewLesson(userId) {
+  const fixes = (summary(userId).words || []).filter((w) => w.type === "fix" && w.en).slice(0, 6);
+  if (fixes.length < 2) return null;
+  return {
+    id: "review",
+    category: "Shaxsiy",
+    title: "Xatolarim ustida ishlash",
+    emoji: "🔁",
+    level: "Shaxsiy",
+    role: "a kind personal English tutor reviewing the student's own past mistakes",
+    situation: `Help the student fix their own past mistakes. For each one, show the wrong version, explain briefly in Uzbek, and have them say the correct sentence and then use it in a new sentence of their own. Past mistakes: ${fixes.map((f) => `"${f.wrong}" -> "${f.en}"`).join("; ")}.`,
+    opener: `Let's practise the sentences you found tricky before. First: how do we say this correctly — "${fixes[0].wrong}"?`,
+    openerUz: "Keling, avval qiynalgan gaplaringizni mashq qilamiz.",
+    phrases: fixes.map((f) => ({ en: f.en, uz: f.wrong ? `Xato edi: ${f.wrong}` : f.uz })),
+  };
+}
+const lessonOf = (s) => s.custom || getLesson(s.lessonId);
+
 // ---- API ----
 app.get("/api/lessons", (req, res) => {
   res.json({ lessons: LESSONS.map(publicLesson), voiceEnabled, liveEnabled, sessionMinutes: SESSION_MINUTES, shareUrl: process.env.SHARE_URL || "" });
 });
 
 app.post("/api/session", express.json(), auth, async (req, res) => {
-  const lesson = getLesson(String(req.body?.lessonId || ""));
-  if (!lesson) return res.status(400).json({ error: "Bunday dars yo'q." });
+  const lesson = String(req.body?.lessonId) === "review" ? reviewLesson(req.userId) : getLesson(String(req.body?.lessonId || ""));
+  if (!lesson)
+    return res.status(400).json({
+      error: req.body?.lessonId === "review" ? "Hali xatolar yetarli emas — avval bir nechta dars o'ting." : "Bunday dars yo'q.",
+    });
 
   const key = `${req.userId}:${new Date().toISOString().slice(0, 10)}`;
   const count = daily.get(key) || 0;
@@ -106,6 +128,7 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
     mode,
     current: 0,
     transcript: [],
+    custom: lesson.id === "review" ? lesson : null,
     slow: Boolean(req.body?.slow),
     startedAt: Date.now(),
     expiresAt: Date.now() + (lesson.minutes || SESSION_MINUTES) * 60_000,
@@ -161,7 +184,7 @@ app.post(
     if (s.busy) return res.status(409).json({ error: "Oldingi javob hali tayyorlanmoqda." });
     if (s.turns >= MAX_TURNS) return res.status(429).json({ error: "Bu darsda gaplar soni tugadi." });
 
-    const lesson = getLesson(s.lessonId);
+    const lesson = lessonOf(s);
     if (req.query.slow !== undefined) s.slow = req.query.slow === "1";
     s.busy = true;
     try {
@@ -226,7 +249,7 @@ app.post("/api/end", express.json(), auth, async (req, res) => {
   sessions.delete(id);
   if (s.ended) return res.json({ ok: true, used: [...s.used], report: null, progress: summary(req.userId) });
   s.ended = true;
-  const lesson = getLesson(s.lessonId);
+  const lesson = lessonOf(s);
   const used = s.used.size;
   const total = lesson.phrases.length;
   let report = null;
@@ -278,7 +301,7 @@ app.post("/api/hint", express.json(), auth, async (req, res) => {
   if (s.hints > 20) return res.status(429).json({ error: "Bu darsda yordam soni tugadi." });
   const lastSado = [...s.transcript].reverse().find((t) => t.who === "sado")?.text;
   try {
-    res.json({ hints: await suggestReplies(getLesson(s.lessonId), lastSado, s.used) });
+    res.json({ hints: await suggestReplies(lessonOf(s), lastSado, s.used) });
   } catch (err) {
     sendError(res, err);
   }
@@ -329,7 +352,7 @@ server.on("upgrade", (req, socket, head) => {
   }
   s.liveStarted = true; // bitta sessiya - bitta ulanish
   wss.handleUpgrade(req, socket, head, (ws) => {
-    runLive(ws, s, getLesson(s.lessonId), { maxMs: s.expiresAt - Date.now(), voice: url.searchParams.get("voice") }).catch((e) => {
+    runLive(ws, s, lessonOf(s), { maxMs: s.expiresAt - Date.now(), voice: url.searchParams.get("voice") }).catch((e) => {
       console.error("Jonli suhbat xatosi:", e);
       try { ws.close(); } catch {}
     });

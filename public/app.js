@@ -314,6 +314,8 @@ function renderVocabBtn() {
   btn.textContent = `📒 Mening lug'atim · ${n} ta so'z · ${f} ta xato  ›`;
 }
 function renderVocab() {
+  const fixes = (state.progress?.words || []).filter((w) => w.type === "fix" && w.en);
+  $("reviewBtn").hidden = state.vocabTab !== "fix" || fixes.length < 2 || Boolean(state.flash);
   const ul = $("vocabList");
   ul.innerHTML = "";
   const items = (state.progress?.words || []).filter((w) => (state.vocabTab === "fix" ? w.type === "fix" : w.type !== "fix"));
@@ -355,6 +357,7 @@ function startFlash() {
   state.flash = { deck, i: 0, known: 0, open: false };
   $("vocabList").hidden = true;
   $("flashBtn").hidden = true;
+  $("reviewBtn").hidden = true;
   $("flash").hidden = false;
   renderFlash();
 }
@@ -403,6 +406,22 @@ function renderFlash() {
     renderFlash();
   }
 }
+// 🔁 Shaxsiy dars: xatolar asosida (server lessonId "review" bilan tuzadi)
+$("reviewBtn").addEventListener("click", () => {
+  const fixes = (state.progress?.words || []).filter((w) => w.type === "fix" && w.en).slice(0, 6);
+  $("vocabSheet").hidden = true;
+  startLesson(
+    {
+      id: "review",
+      title: "Xatolarim ustida ishlash",
+      emoji: "🔁",
+      level: "Shaxsiy",
+      phrases: fixes.map((f) => ({ en: f.en, uz: `Xato edi: ${f.wrong || ""}` })),
+    },
+    "chat",
+  );
+});
+
 $("flashBtn").addEventListener("click", () => {
   haptic();
   startFlash();
