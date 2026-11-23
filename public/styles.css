@@ -24,7 +24,8 @@ body.dark {
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { margin: 0; height: 100%; }
+html { height: 100%; }
+body { margin: 0; min-height: 100%; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   background: var(--bg);
@@ -76,21 +77,7 @@ svg { display: block; }
 .hero-mascot { flex: 0 0 92px; height: 92px; position: relative; }
 .hero-mascot .mascot-glow { display: none; }
 
-/* 💬 Erkin suhbat tugmasi */
-.free-cta {
-  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; margin: 0 0 14px;
-  background: var(--card); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow);
-  box-shadow: var(--shadow), inset 0 0 0 2px color-mix(in srgb, var(--primary) 35%, transparent);
-  transition: transform 0.12s ease;
-}
-.free-cta:active { transform: scale(0.98); }
-.free-emoji { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; font-size: 26px; background: linear-gradient(135deg, #4f46e5, #14b8a6); }
-.free-info { flex: 1; min-width: 0; display: grid; gap: 2px; }
-.free-info b { font-size: 16px; }
-.free-info small { color: var(--muted); font-size: 13px; }
-.free-go { font-size: 28px; color: var(--primary); font-weight: 700; padding: 0 4px; }
-
-.lesson-list { display: grid; gap: 10px; }
+.lesson-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
 .lesson {
   display: flex; align-items: center; gap: 12px; text-align: left; width: 100%;
   background: var(--card); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow);
@@ -221,13 +208,14 @@ body.dark .lesson-level { color: #5eead4; }
 
 /* ---------- Sheet / toast ---------- */
 .sheet { position: fixed; inset: 0; z-index: 20; background: rgba(10, 10, 25, 0.45); display: flex; align-items: flex-end; animation: fade 0.2s; }
-.sheet-card { width: 100%; max-width: 560px; margin: 0 auto; background: var(--card); border-radius: 24px 24px 0 0; padding: 20px 16px calc(16px + var(--safe-b)); text-align: center; }
+.sheet-card { max-height: 92vh; overflow-y: auto; width: 100%; max-width: 560px; margin: 0 auto; background: var(--card); border-radius: 24px 24px 0 0; padding: 20px 16px calc(16px + var(--safe-b)); text-align: center; }
 .sheet-emoji { font-size: 42px; }
 .sheet-card h3 { margin: 6px 0 4px; font-size: 20px; }
 .sheet-phrases { list-style: none; padding: 0; margin: 12px 0 6px; text-align: left; display: grid; gap: 5px; font-size: 14px; }
 .sheet-phrases li { background: var(--bg); border-radius: 10px; padding: 8px 10px; }
 .sheet-phrases li span { color: var(--muted); display: block; font-size: 12.5px; }
-.toast { position: fixed; left: 50%; bottom: calc(24px + var(--safe-b)); transform: translateX(-50%); z-index: 30; background: #141526; color: #fff; padding: 10px 16px; border-radius: 14px; font-size: 14px; max-width: 90vw; text-align: center; box-shadow: var(--shadow); animation: fade 0.2s; }
+body.dark .toast { background: #f1f2fa; color: #141526; }
+.toast { position: fixed; left: 50%; bottom: calc(96px + var(--safe-b)); transform: translateX(-50%); z-index: 30; background: #141526; color: #fff; padding: 10px 16px; border-radius: 14px; font-size: 14px; max-width: 90vw; text-align: center; box-shadow: var(--shadow); animation: fade 0.2s; }
 
 @media (max-height: 680px) {
   .mascot { width: min(48vw, 190px); }
@@ -239,3 +227,1141 @@ body.dark .lesson-level { color: #5eead4; }
 .mode-card span { display: block; color: var(--muted); font-size: 13.5px; margin-top: 3px; line-height: 1.35; }
 .mode-card.primary { background: linear-gradient(135deg, #4f46e5, #6366f1); color: #fff; box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3); }
 .mode-card.primary span { color: rgba(255, 255, 255, 0.9); }
+.mode-card.live { background: linear-gradient(135deg, #14b8a6, #0ea5e9); color: #fff; box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3); }
+.mode-card.live span { color: rgba(255, 255, 255, 0.92); }
+.cat-title { font-weight: 800; font-size: 15px; color: var(--muted); margin: 10px 4px -2px; letter-spacing: 0.2px; }
+.cat-title:first-child { margin-top: 0; }
+
+/* ---------- Erkin suhbat: katta banner ---------- */
+.free-hero {
+  display: block; width: 100%; text-align: left; position: relative; overflow: hidden;
+  padding: 18px 16px 18px; margin: 6px 0 18px; border-radius: 26px;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 45%, #14b8a6 100%);
+  color: #fff; box-shadow: 0 14px 34px rgba(79, 70, 229, 0.35);
+  transition: transform 0.12s ease;
+}
+.free-hero:active { transform: scale(0.985); }
+.free-hero::after {
+  content: ""; position: absolute; right: -60px; top: -60px; width: 200px; height: 200px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.25), transparent 70%);
+}
+.free-badge { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.3px; background: rgba(255,255,255,0.2); padding: 5px 11px; border-radius: 99px; }
+.free-row { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+.free-hero .hero-mascot { flex: 0 0 112px; height: 112px; }
+.free-text b { display: block; font-size: 25px; line-height: 1.15; font-weight: 800; }
+.free-text span { display: block; font-size: 14px; line-height: 1.4; opacity: 0.95; margin-top: 6px; }
+.free-cta {
+  display: block; margin-top: 14px; text-align: center; padding: 13px; border-radius: 16px;
+  background: #fff; color: #4f46e5; font-weight: 800; font-size: 16.5px;
+  animation: ctaPulse 2.2s ease-in-out infinite;
+}
+@keyframes ctaPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.55); } 50% { box-shadow: 0 0 0 8px rgba(255,255,255,0); } }
+
+/* ---------- Progress ---------- */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: -6px 0 16px; }
+.stat { background: var(--card); border-radius: 16px; padding: 10px 6px; text-align: center; box-shadow: var(--shadow); }
+.stat b { display: block; font-size: 18px; }
+.stat span { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+.lesson.done .lesson-sub { color: var(--ok); font-weight: 600; }
+.lesson.done .lesson-emoji { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--ok) 55%, transparent); }
+
+/* ---------- Hisobot ---------- */
+.report { text-align: left; margin-top: 14px; }
+.rep-loading { display: flex; align-items: center; gap: 10px; justify-content: center; color: var(--muted); padding: 14px; background: var(--bg); border-radius: 14px; }
+.spin { width: 16px; height: 16px; border: 2.5px solid var(--line); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+.rep-score-row { display: flex; align-items: center; gap: 14px; background: var(--bg); border-radius: 18px; padding: 14px; }
+.rep-score {
+  --p: 0; flex: none; width: 74px; height: 74px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 24px; font-weight: 800;
+  background: radial-gradient(closest-side, var(--card) 78%, transparent 80% 100%), conic-gradient(var(--ring, var(--primary)) calc(var(--p) * 1%), var(--line) 0);
+}
+.rep-level { font-weight: 800; font-size: 18px; color: var(--primary); }
+.rep-summary { font-size: 14px; color: var(--muted); margin-top: 3px; line-height: 1.35; }
+.rep-title { font-weight: 800; font-size: 15px; margin: 14px 2px 6px; }
+.rep-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.rep-list li { background: var(--bg); border-radius: 12px; padding: 9px 11px; font-size: 14px; line-height: 1.4; }
+.rep-wrong { color: var(--danger); }
+.rep-right { color: var(--ok); }
+.rep-why { color: var(--muted); font-size: 13px; margin-top: 2px; }
+.rep-word { cursor: pointer; }
+.rep-word::after { content: " 🔊"; }
+
+/* ---------- Qidiruv, filtrlar, keyingi dars ---------- */
+.search-wrap { margin: 0 0 10px; }
+.search-wrap input {
+  width: 100%; border: 1.5px solid var(--line); background: var(--card); color: var(--text);
+  border-radius: 14px; padding: 12px 14px; font: inherit; font-size: 15px; outline: none;
+  -webkit-user-select: text; user-select: text;
+}
+.search-wrap input:focus { border-color: var(--primary); }
+.chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 12px; margin: 0 -14px 4px; padding-left: 14px; padding-right: 14px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip-f { flex: none; white-space: nowrap; font-size: 13.5px; font-weight: 600; padding: 8px 13px; border-radius: 99px; background: var(--card); color: var(--muted); box-shadow: var(--shadow); }
+.chip-f.on { background: var(--primary); color: #fff; }
+.next-box { margin: 0 0 14px; }
+.next-label { font-weight: 800; font-size: 14px; color: var(--primary); margin: 0 4px 6px; }
+.next-box .lesson { box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 45%, transparent), var(--shadow); }
+body.dark .free-hero { box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45); }
+body.dark .brand-tag { color: #a5b4fc; background: rgba(165, 180, 252, 0.14); }
+
+.listen-btn { margin-top: 8px; font-size: 13.5px; font-weight: 700; color: var(--primary); background: color-mix(in srgb, var(--primary) 10%, transparent); padding: 6px 12px; border-radius: 99px; }
+.listen-btn.busy { opacity: 0.55; }
+body.dark .listen-btn { color: #a5b4fc; background: rgba(165, 180, 252, 0.14); }
+
+/* ---------- Jonli suhbat ---------- */
+.chatlog { display: flex; flex-direction: column; gap: 8px; max-height: 34vh; overflow-y: auto; padding: 2px 2px 10px; margin-bottom: 8px; -webkit-user-select: text; user-select: text; }
+.bubble { max-width: 85%; padding: 9px 12px; border-radius: 16px; font-size: 15px; line-height: 1.4; box-shadow: var(--shadow); }
+.bubble small { display: block; font-size: 11.5px; font-weight: 700; opacity: 0.7; margin-bottom: 2px; }
+.b-sado { align-self: flex-start; background: var(--card); border-bottom-left-radius: 6px; }
+.b-me { align-self: flex-end; background: var(--primary); color: #fff; border-bottom-right-radius: 6px; }
+.mute-btn { width: 100%; height: 48px; border-radius: 16px; font-weight: 700; font-size: 14.5px; background: var(--card); box-shadow: var(--shadow); color: var(--ok); }
+.mute-btn.muted { color: var(--danger); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--danger) 45%, transparent); }
+
+/* ---------- Lug'at ---------- */
+.vocab-btn { width: 100%; text-align: left; margin: -6px 0 14px; padding: 13px 14px; border-radius: 16px; background: var(--card); box-shadow: var(--shadow); font-weight: 700; font-size: 14.5px; color: var(--text); }
+.vocab-card { text-align: left; max-height: 85vh; overflow-y: auto; }
+.vocab-card h3 { text-align: center; }
+.vocab-card > .muted { text-align: center; display: block; margin-bottom: 10px; }
+.vocab-tabs { display: flex; gap: 8px; margin-bottom: 10px; }
+.rep-saved { margin-top: 12px; font-size: 13.5px; font-weight: 600; color: var(--ok); background: color-mix(in srgb, var(--ok) 10%, transparent); padding: 9px 12px; border-radius: 12px; }
+
+/* ---------- Kurs progressi ---------- */
+.cat-title { display: flex; align-items: center; gap: 10px; }
+.cat-progress { flex: 1; display: flex; align-items: center; gap: 8px; margin-left: 4px; }
+.cat-progress::before { content: ""; }
+.cat-progress { position: relative; height: 6px; border-radius: 3px; background: var(--line); max-width: 140px; }
+.cat-progress i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--ok); }
+.cat-progress em { position: absolute; left: calc(100% + 8px); font-style: normal; font-size: 12.5px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.part-title { font-size: 12.5px; font-weight: 700; color: var(--primary); margin: 4px 6px -4px; text-transform: uppercase; letter-spacing: 0.4px; }
+body.dark .part-title { color: #a5b4fc; }
+#lessonList { scroll-margin-top: calc(70px + var(--safe-t)); }
+
+/* ---------- Dars oynasi ---------- */
+.sheet-meta { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 8px; }
+.pill { font-size: 12.5px; font-weight: 600; padding: 5px 10px; border-radius: 99px; background: var(--bg); color: var(--muted); }
+.pill.ok { color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, transparent); }
+.sheet-phrases li { cursor: pointer; position: relative; padding-right: 30px; }
+.sheet-phrases li:not(.more)::after { content: "🔊"; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 13px; opacity: 0.6; }
+.sheet-phrases li.more { text-align: center; font-weight: 700; color: var(--primary); padding-right: 10px; }
+body.dark .sheet-phrases li.more { color: #a5b4fc; }
+.sheet-card { max-height: 92vh; overflow-y: auto; }
+
+/* ---------- Yordam (namunalar) ---------- */
+.hint-btn { display: block; margin: 0 auto 10px; font-size: 13.5px; font-weight: 700; color: var(--primary); background: color-mix(in srgb, var(--primary) 9%, transparent); padding: 8px 14px; border-radius: 99px; }
+body.dark .hint-btn { color: #a5b4fc; background: rgba(165, 180, 252, 0.13); }
+.hint-box { background: var(--card); border-radius: var(--radius); padding: 10px 12px; box-shadow: var(--shadow); margin-bottom: 10px; display: grid; gap: 6px; }
+.hint-title { font-size: 12.5px; color: var(--muted); font-weight: 600; }
+.hint-item { background: var(--bg); border-radius: 12px; padding: 8px 10px; cursor: pointer; }
+.hint-item b { display: block; font-size: 15px; }
+.hint-item span { display: block; font-size: 13px; color: var(--muted); }
+.hint-item b::after { content: " 🔊"; font-size: 12px; opacity: 0.6; }
+
+/* ---------- So'nggi natijalar ---------- */
+.trend { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 12px 14px 10px; margin: -6px 0 14px; }
+.trend-head { display: flex; justify-content: space-between; align-items: center; font-size: 14.5px; }
+.trend-head span { font-size: 12.5px; font-weight: 700; color: var(--muted); }
+.trend-head .up { color: var(--ok); }
+.trend-head .down { color: var(--danger); }
+.trend-bars { display: flex; gap: 8px; align-items: flex-end; margin-top: 8px; }
+.tb { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.tb em { font-style: normal; font-size: 11.5px; font-weight: 700; color: var(--muted); }
+.tb-track { position: relative; width: 100%; max-width: 26px; height: 64px; border-radius: 8px; background: var(--bg); overflow: hidden; display: block; }
+.tb-track i { position: absolute; left: 0; right: 0; bottom: 0; border-radius: 8px; }
+.tb-track i.hi { background: var(--ok); }
+.tb-track i.mid { background: #f59e0b; }
+.tb-track i.lo { background: var(--danger); }
+.tb small { font-size: 14px; }
+
+.btn.share { background: linear-gradient(135deg, #14b8a6, #0ea5e9); color: #fff; box-shadow: 0 8px 20px rgba(14, 165, 233, 0.28); margin-top: 14px; }
+
+/* ---------- Kunlik maqsad ---------- */
+.goal { width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 12px 14px; margin: -6px 0 10px; }
+.goal-ring {
+  --p: 0; flex: none; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 14px;
+  background: radial-gradient(closest-side, var(--card) 74%, transparent 76% 100%), conic-gradient(#f59e0b calc(var(--p) * 1%), var(--line) 0);
+}
+.goal.done .goal-ring { background: radial-gradient(closest-side, var(--card) 74%, transparent 76% 100%), conic-gradient(var(--ok) 100%, var(--line) 0); }
+.goal-text b { display: block; font-size: 15px; }
+.goal-text small { display: block; font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.goal.done { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--ok) 45%, transparent), var(--shadow); }
+
+/* ---------- Ovoz tanlash ---------- */
+.voice-pick { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 10px; font-size: 13px; }
+.vp-label { opacity: 0.85; font-weight: 600; }
+.vp { padding: 5px 11px; border-radius: 99px; background: rgba(255, 255, 255, 0.18); font-weight: 700; cursor: pointer; }
+.vp.on { background: #fff; color: #4f46e5; }
+
+/* ---------- IELTS mezonlari ---------- */
+.crit { background: var(--bg); border-radius: 14px; padding: 10px 12px; display: grid; gap: 8px; }
+.crit-row { display: grid; grid-template-columns: 1fr 90px 32px; align-items: center; gap: 8px; font-size: 13.5px; }
+.crit-bar { position: relative; height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.crit-bar i { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, #6366f1, #14b8a6); border-radius: 4px; }
+.crit-row b { text-align: right; }
+
+.help-row { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.help-row .hint-btn { margin: 0; }
+
+.fav-btn { font-size: 13px; font-weight: 700; color: var(--muted); padding: 5px 12px; border-radius: 99px; background: var(--bg); }
+.fav-btn.on { color: #b45309; background: rgba(245, 158, 11, 0.16); }
+body.dark .fav-btn.on { color: #fbbf24; }
+
+/* ---------- Kartochka mashqi ---------- */
+.flash { display: grid; gap: 10px; margin: 6px 0 4px; }
+.flash-count { text-align: center; font-size: 13px; font-weight: 700; color: var(--muted); }
+.flash-card { min-height: 150px; border-radius: 20px; padding: 18px; display: grid; place-content: center; gap: 10px; text-align: center; cursor: pointer;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 14%, var(--card)), color-mix(in srgb, #14b8a6 12%, var(--card))); box-shadow: var(--shadow); }
+.flash-q { font-size: 19px; font-weight: 800; }
+.flash-a { font-size: 15px; color: var(--muted); }
+.flash-card.open .flash-a { font-size: 20px; font-weight: 800; color: var(--primary); }
+body.dark .flash-card.open .flash-a { color: #a5b4fc; }
+.flash-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.btn.ok { background: var(--ok); color: #fff; }
+.flash-done { text-align: center; font-size: 18px; font-weight: 800; padding: 14px 0; }
+
+/* ---------- Yutuqlar ---------- */
+.badges { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 12px 14px; margin: -6px 0 14px; }
+.badge-row { display: flex; gap: 10px; overflow-x: auto; margin-top: 10px; padding-bottom: 2px; scrollbar-width: none; }
+.badge-row::-webkit-scrollbar { display: none; }
+.badge { flex: none; width: 70px; display: flex; flex-direction: column; align-items: center; gap: 4px; opacity: 0.45; filter: grayscale(1); }
+.badge.on { opacity: 1; filter: none; }
+.badge-ico { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; font-size: 24px; background: var(--bg); }
+.badge.on .badge-ico { background: linear-gradient(135deg, #fde68a, #f59e0b); box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35); }
+.badge small { font-size: 11px; font-weight: 600; text-align: center; line-height: 1.2; color: var(--muted); }
+
+/* ---------- Batafsil statistika (yig'iladigan) ---------- */
+.more-stats { margin: -6px 0 14px; }
+.more-stats summary { list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 8px; cursor: pointer;
+  background: var(--card); border-radius: 16px; box-shadow: var(--shadow); padding: 13px 14px; font-weight: 700; font-size: 14.5px; }
+.more-stats summary::-webkit-details-marker { display: none; }
+.more-stats summary em { font-style: normal; font-size: 12.5px; color: var(--muted); }
+.more-stats summary em::after { content: "  ▾"; }
+.more-stats[open] summary em::after { content: "  ▴"; }
+.more-stats[open] summary { margin-bottom: 18px; }
+.more-stats .trend, .more-stats .badges { margin: 0 0 10px; }
+
+/* ---------- Suhbat matni ---------- */
+.transcript { margin-top: 12px; text-align: left; }
+.transcript summary { cursor: pointer; font-weight: 700; font-size: 14.5px; padding: 12px; border-radius: 14px; background: var(--bg); list-style: none; text-align: center; }
+.transcript summary::-webkit-details-marker { display: none; }
+.tr-log { max-height: 50vh; margin-top: 10px; }
+
+/* ---------- Kun iborasi ---------- */
+.daily { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 12px 14px; margin: -6px 0 14px;
+  border-left: 4px solid #f59e0b; }
+.daily-top { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.daily-tag { font-size: 12.5px; font-weight: 800; color: #b45309; }
+body.dark .daily-tag { color: #fbbf24; }
+.daily-from { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.daily-en { display: block; text-align: left; font-size: 18px; font-weight: 800; margin-top: 6px; color: var(--text); }
+.daily-uz { font-size: 13.5px; color: var(--muted); margin-top: 2px; }
+.daily-go { margin-top: 8px; font-size: 13px; font-weight: 700; color: var(--primary); }
+body.dark .daily-go { color: #a5b4fc; }
+.daily-en, .daily-go { padding: 0; }
+.hint-btn.retry, body.dark .hint-btn.retry { color: #fff; background: var(--danger); }
+.chip-f.rnd { background: linear-gradient(135deg, #f59e0b, #f97316); color: #fff; }
+.btn.next { background: linear-gradient(135deg, #16a34a, #14b8a6); color: #fff; box-shadow: 0 8px 20px rgba(22, 163, 74, 0.28); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 14px; }
+
+/* ---------- Matn o'lchami ---------- */
+body { zoom: var(--zoom, 1); }
+.font-btn { margin-left: auto; font-weight: 800; font-size: 15px; width: auto; padding: 0 10px; background: var(--card); box-shadow: var(--shadow); }
+.cat-title { padding-right: 44px; }
+html, body { overflow-x: clip; }
+
+/* ---------- IELTS Part 2 kartochkasi ---------- */
+.cue { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px; margin-bottom: 10px; border: 2px dashed color-mix(in srgb, var(--primary) 45%, transparent); }
+.cue-head { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+.cue-timer { font-weight: 800; font-size: 18px; font-variant-numeric: tabular-nums; color: var(--primary); }
+.cue-timer.low { color: var(--danger); }
+body.dark .cue-timer { color: #a5b4fc; }
+.cue-title { font-size: 17px; font-weight: 800; margin-top: 8px; line-height: 1.3; }
+.cue-say { font-size: 13px; color: var(--muted); margin-top: 6px; }
+.cue-points { margin: 4px 0 8px; padding-left: 20px; font-size: 15px; line-height: 1.5; }
+.cue-tip { font-size: 13px; color: var(--muted); background: var(--bg); border-radius: 10px; padding: 8px 10px; }
+.cue.speaking .cue-tip, .cue.speaking .cue-timer { display: none; }
+.goal-left { margin-left: auto; flex: none; font-size: 12px; font-weight: 700; color: var(--muted); background: var(--bg); padding: 5px 9px; border-radius: 99px; }
+.goal-left.low { color: var(--danger); }
+
+/* ---------- Birinchi tanishuv ---------- */
+.onb { position: fixed; inset: 0; z-index: 40; display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; padding: 20px; background: rgba(10, 10, 25, 0.55); animation: fade 0.2s; }
+.onb-card { width: 100%; max-width: 380px; background: var(--card); border-radius: 26px; padding: 22px 18px 14px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,.3); }
+.onb-mascot { width: 130px; height: 130px; margin: 0 auto; position: relative; }
+.onb-slides h2 { margin: 8px 0 6px; font-size: 21px; }
+.onb-slides p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.5; white-space: pre-line; min-height: 92px; }
+.onb-dots { display: flex; justify-content: center; gap: 6px; margin: 12px 0 4px; }
+.onb-dots i { width: 8px; height: 8px; border-radius: 4px; background: var(--line); transition: width 0.2s; }
+.onb-dots i.on { width: 22px; background: var(--primary); }
+.onb-skip { margin-top: 8px; font-size: 13px; color: var(--muted); padding: 6px; }
+body.dark .onb-card { box-shadow: 0 0 0 1px var(--line), 0 20px 50px rgba(0,0,0,.5); }
+.confetti { position: fixed; inset: 0; z-index: 50; pointer-events: none; }
+.hit { margin-top: 5px; font-size: 12.5px; color: var(--muted); background: color-mix(in srgb, #f59e0b 12%, transparent); border-radius: 8px; padding: 4px 7px; }
+.hit b { color: var(--text); }
+.rule { text-align: left; margin-top: 12px; background: color-mix(in srgb, var(--primary) 8%, var(--bg)); border-left: 4px solid var(--primary); border-radius: 12px; padding: 10px 12px; font-size: 14px; line-height: 1.5; }
+.rule b { display: block; margin-bottom: 3px; }
+.rule div { white-space: pre-line; }
+
+/* ---------- Oyna: tugmalar doim ko'rinadi ---------- */
+.sheet-actions { position: sticky; bottom: calc(-16px - var(--safe-b)); margin: 10px -16px calc(-16px - var(--safe-b)); padding: 8px 16px calc(14px + var(--safe-b));
+  background: linear-gradient(to bottom, transparent, var(--card) 14px); }
+.sheet-actions .mode-card { margin-top: 8px; padding: 11px 14px; }
+.sheet-actions .mode-card span { font-size: 12.5px; }
+.sheet-actions .btn.wide { margin-top: 8px; height: 44px; }
+.mode-card { position: relative; }
+.mode-card.rec::after { content: "⭐ Tavsiya"; position: absolute; top: 9px; right: 10px; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 99px; background: #fbbf24; color: #78350f; }
+.hold-btn.pressed { animation: recPulse 1.2s ease-in-out infinite; }
+@keyframes recPulse { 50% { box-shadow: 0 0 0 8px rgba(22, 163, 74, 0.25); } }
+.toast { pointer-events: none; }
+.toast { bottom: auto; top: calc(66px + var(--safe-t)); }
+.mic-steps { text-align: left; margin: 10px 0 6px; padding-left: 22px; font-size: 14.5px; line-height: 1.6; }
+.rep-cmp { margin-top: 6px; font-size: 12.5px; font-weight: 800; color: var(--muted); }
+.rep-cmp.up { color: var(--ok); }
+.rep-cmp.down { color: #f59e0b; }
+
+/* ---------- Kurs sertifikati ---------- */
+.cert { margin-top: 14px; padding: 18px 16px 12px; border-radius: 20px; text-align: center; color: #78350f;
+  background: linear-gradient(135deg, #fef3c7, #fde68a 60%, #fbbf24); box-shadow: 0 10px 26px rgba(245, 158, 11, 0.3); border: 2px solid #f59e0b; }
+.cert-ico { font-size: 44px; }
+.cert-t { font-weight: 800; font-size: 19px; margin-top: 4px; }
+.cert-c { font-weight: 800; font-size: 22px; color: #92400e; margin-top: 2px; }
+.cert-s { font-size: 13.5px; margin-top: 4px; }
+.cert .btn.share { margin-top: 12px; }
+
+/* ---------- Yordam ---------- */
+.help-btn { margin-left: 6px; width: 36px; padding: 0; }
+.help-card { text-align: left; }
+.help-card h3 { text-align: center; }
+.faq-item { background: var(--bg); border-radius: 14px; margin-top: 8px; padding: 0 12px; }
+.faq-item summary { cursor: pointer; font-weight: 700; font-size: 15px; padding: 12px 0; list-style: none; position: relative; padding-right: 20px; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: "＋"; position: absolute; right: 0; color: var(--muted); }
+.faq-item[open] summary::after { content: "－"; }
+.faq-item p { margin: 0 0 12px; font-size: 14px; color: var(--muted); line-height: 1.5; }
+
+/* ---------- Kichik ekranlar (≤360px kenglik yoki ≤700px balandlik) ---------- */
+.mode-card.rec { padding-right: 84px; }
+@media (max-width: 360px) {
+  .free-hero .hero-mascot { flex-basis: 64px; height: 64px; }
+  .free-text b { font-size: 21px; }
+  .free-text span { font-size: 13px; }
+  .free-hero { padding: 14px 12px; }
+  .screen { padding-left: 10px; padding-right: 10px; }
+  .mode { font-size: 12.5px; gap: 4px; }
+  .bottom-row { gap: 8px; }
+}
+@media (max-height: 700px) {
+  .mascot { width: min(38vw, 150px); }
+  .stage { padding: 0; }
+  .hint { margin-top: 2px; }
+  .help-row { margin-bottom: 6px; }
+  .phrase-card { padding: 10px 10px 12px; }
+  .phrase-en { font-size: 16.5px; }
+  .listen-btn { margin-top: 5px; padding: 4px 10px; }
+  .btn { height: 46px; }
+}
+.news-list { text-align: left; margin: 10px 0 4px; padding: 0; list-style: none; display: grid; gap: 6px; }
+.news-list li { background: var(--bg); border-radius: 12px; padding: 9px 11px; font-size: 14px; line-height: 1.4; }
+
+/* ---------- Erkin suhbat mavzulari ---------- */
+.topic-pick { display: flex; gap: 6px; overflow-x: auto; margin: 12px -16px 0; padding: 0 16px 2px; scrollbar-width: none; }
+.topic-pick::-webkit-scrollbar { display: none; }
+.tp { flex: none; font-size: 13px; font-weight: 700; padding: 6px 11px; border-radius: 99px; background: rgba(255, 255, 255, 0.18); cursor: pointer; white-space: nowrap; }
+.tp.on { background: #fff; color: #4f46e5; }
+.w-ok { color: var(--ok); }
+.w-miss { color: var(--danger); text-decoration: underline wavy; text-underline-offset: 4px; }
+
+/* ---------- Sozlamalar ---------- */
+.set-card { text-align: left; }
+.set-card h3 { text-align: center; }
+.set-row { margin-top: 14px; }
+.set-title { font-weight: 700; font-size: 14.5px; margin-bottom: 6px; }
+.seg { display: flex; gap: 4px; background: var(--bg); border-radius: 14px; padding: 4px; }
+.seg-b { flex: 1; padding: 9px 4px; border-radius: 10px; font-size: 13.5px; font-weight: 700; color: var(--muted); }
+.seg-b.on { background: var(--card); color: var(--primary); box-shadow: var(--shadow); }
+body.dark .seg-b.on { color: #a5b4fc; }
+.set-first { margin-left: auto; }
+.nowrap { white-space: nowrap; display: inline-block; }
+.del-btn { display: block; margin: 12px auto 0; font-size: 13px; font-weight: 700; color: var(--danger); padding: 6px; }
+
+/* ---------- Tinglab takrorlash ---------- */
+.shadow-btn { display: block; width: 100%; margin-top: 12px; padding: 11px; border-radius: 14px; font-weight: 800; font-size: 14.5px; color: #0f766e; background: color-mix(in srgb, #14b8a6 14%, transparent); }
+body.dark .shadow-btn { color: #5eead4; }
+.shadow { margin-top: 12px; padding: 16px 14px 12px; border-radius: 18px; text-align: center; background: linear-gradient(135deg, color-mix(in srgb, #14b8a6 16%, var(--card)), color-mix(in srgb, var(--primary) 12%, var(--card))); }
+.shadow-n { font-size: 12.5px; font-weight: 700; color: var(--muted); }
+.shadow-en { font-size: 20px; font-weight: 800; margin-top: 6px; }
+.shadow-uz { font-size: 14px; color: var(--muted); margin-top: 3px; }
+.shadow-st { margin-top: 10px; font-weight: 800; color: var(--primary); }
+.shadow-st.go { color: var(--ok); animation: pulse 1s ease-in-out infinite; }
+.shadow-stop { margin-top: 10px; font-size: 13px; font-weight: 700; color: var(--muted); padding: 6px 12px; border-radius: 99px; background: var(--card); }
+.week { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: -6px 0 14px; padding: 11px 14px; border-radius: 16px; background: var(--card); box-shadow: var(--shadow); font-size: 14px; }
+.week span { flex: none; font-size: 12.5px; font-weight: 800; color: var(--muted); }
+.week .up { color: var(--ok); }
+.week .down { color: #f59e0b; }
+
+/* ---------- "Bugun" kartasi: maqsad + statistika + hafta bitta joyda ---------- */
+.today-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); margin: -6px 0 12px; overflow: hidden; }
+.today-card:empty, .today-card:not(:has(> :not([hidden]))) { display: none; }
+.today-card .goal { margin: 0; box-shadow: none; border-radius: 0; padding: 12px 14px 8px; background: transparent; }
+.today-card .goal.done { box-shadow: none; }
+.today-card .stats { margin: 0; padding: 0 10px 8px; gap: 6px; }
+.today-card .stat { box-shadow: none; background: var(--bg); padding: 7px 4px; border-radius: 12px; }
+.today-card .stat b { font-size: 16px; }
+.today-card .week { margin: 0; box-shadow: none; border-radius: 0; border-top: 1px solid var(--line); background: transparent; padding: 9px 14px; font-size: 13.5px; }
+.today-card .goal-ring { width: 46px; height: 46px; font-size: 13px; }
+
+/* ---------- Plitkalar: lug'at + natijalar ---------- */
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: -6px 0 12px; }
+.tiles:not(:has(> :not([hidden]))) { display: none; }
+.tile { margin: 0 !important; text-align: left; padding: 11px 13px; border-radius: 16px; background: var(--card); box-shadow: var(--shadow); color: var(--text); }
+.tile b { display: block; font-size: 15px; }
+.tile small { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+.tile.on { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--primary) 45%, transparent), var(--shadow); }
+.tiles > :only-child { grid-column: 1 / -1; }
+.more-stats { margin: -2px 0 12px; }
+
+/* ---------- Jonli suhbat: suhbat uzaysa ham boshqaruv ko'rinib tursin ---------- */
+#lesson.is-live:has(#chatlog .bubble) .mascot { width: min(40vw, 150px); transition: width 0.3s ease; }
+#lesson.is-live:has(#chatlog .bubble) .hint { display: none; }
+#lesson.is-live .mute-btn { margin-top: 4px; }
+#lesson.is-live .help-row { margin-top: 2px; }
+#lesson.is-live .hint-item b::after { content: none; }
+#lesson.is-live .hint-item { cursor: default; }
+
+.rep-mistake.rep-word::after { content: none; }
+.rep-mistake.rep-word .rep-right::after { content: " 🔊"; font-size: 12px; opacity: 0.7; }
+.rep-fixbtn { margin-top: 10px; font-size: 14.5px; }
+
+/* ---------- Qoida: bosiladigan misollar ---------- */
+.rule-body > div { margin-top: 3px; }
+.rule-ex { display: inline; font: inherit; font-weight: 700; color: color-mix(in srgb, var(--primary) 65%, var(--text)); background: color-mix(in srgb, var(--primary) 10%, transparent); padding: 0 5px; border-radius: 6px; margin: 1px 0; cursor: pointer; }
+.rule-ex:active { background: color-mix(in srgb, var(--primary) 22%, transparent); }
+.rule-tip { display: block; margin-top: 6px; font-size: 12px; color: var(--muted); }
+
+/* ✍️ Yozma rejim: iborani bosib javobga qo'yish */
+.phrase-card.can-insert .phrase-en { cursor: pointer; }
+.phrase-card.can-insert .phrase-en::after { content: " ✍️"; font-size: 14px; opacity: 0.55; }
+
+/* ---------- IELTS Part 2: qaydlar va sekundomer ---------- */
+.cue-notes { width: 100%; margin-top: 8px; border: 1px solid color-mix(in srgb, var(--muted) 30%, transparent); border-radius: 12px; padding: 8px 10px; font: inherit; font-size: 14px; background: var(--bg); color: var(--text); resize: vertical; }
+.cue-notes[readonly] { border-style: dashed; color: var(--muted); }
+.cue-clock { font-weight: 800; font-size: 16px; font-variant-numeric: tabular-nums; color: var(--muted); }
+.cue-clock.ok { color: var(--ok); }
+.cue-clock.over { color: var(--danger); }
+/* Tayyorlanish paytida faqat kartochka: ibora kartasi yashirinadi, maskot kichrayadi */
+#lesson:has(#cue:not([hidden]):not(.speaking)) .phrase-card { display: none; }
+#lesson:has(#cue:not([hidden])) .mascot { width: min(36vw, 140px); }
+
+/* Uch tugmali rejim tanlagich: "Yozish" ixchamroq */
+.mode[data-mode="text"] { flex: 0 0 auto; padding: 10px 12px; }
+/* Dars ekranida xabarlar sarlavha va taymerni yopmasin — maskot ustida chiqadi */
+body:has(#lesson.active) .toast { top: calc(40vh + var(--safe-t)); }
+
+/* ---------- CEFR: rasm va jadval kartasi ---------- */
+.visual { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 12px 14px; margin-bottom: 10px; }
+.vis-title { font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+.vis-pics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.vis-pic { background: var(--bg); border-radius: 12px; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; }
+.vis-pic small { font-size: 11px; color: var(--muted); font-weight: 600; }
+.vis-emoji { font-size: 30px; line-height: 1.2; letter-spacing: 2px; }
+.vis-pic b { font-size: 13.5px; line-height: 1.3; }
+.vis-pic span { font-size: 12px; color: var(--muted); line-height: 1.3; }
+.vis-bar { display: grid; grid-template-columns: 92px 1fr 40px; align-items: center; gap: 8px; font-size: 13.5px; margin: 5px 0; }
+.vis-track { height: 12px; background: var(--bg); border-radius: 6px; overflow: hidden; }
+.vis-track i { display: block; height: 100%; background: linear-gradient(90deg, var(--primary), #0ea5e9); border-radius: 6px; }
+.vis-bar b { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ---------- ✏️ O'z mavzuim ---------- */
+.tp-custom { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.topic-card input { width: 100%; margin: 10px 0 8px; padding: 12px 14px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--muted) 30%, transparent); background: var(--bg); color: var(--text); font: inherit; font-size: 16px; }
+.topic-ideas { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.topic-ideas .chip-f { font-size: 13px; padding: 6px 10px; }
+.topic-card .btn + .btn { margin-top: 8px; }
+/* Yolg'iz so'z (🔥, "ball") keyingi qatorga tushmasin */
+.goal, .today-card, .week, .daily { text-wrap: pretty; }
+.free-hero { overflow: clip; } /* ichki elementlar bannerni yon tomonga surib yubormasin */
+.tiles:has(> [hidden]) > :not([hidden]) { grid-column: 1 / -1; } /* bitta plitka qolsa to'liq eni */
+
+.vocab-copy { margin-top: 10px; font-size: 14px; }
+
+/* 🔊 Ovozni tekshirish */
+.sound-test { margin: 4px 0 8px; }
+.sound-ask { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 14px; }
+.sound-ask > span { width: 100%; font-weight: 600; }
+.sound-tips { margin: 0; padding-left: 20px; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
+
+/* 🔊 belgisi oldidagi so'zga yopishib tursin (yolg'iz qatorga tushmasin) */
+.rep-word::after, .hint-item b::after { content: "\00a0🔊"; }
+.rep-mistake.rep-word .rep-right::after { content: "\00a0🔊"; }
+.rep-mistake.rep-word::after { content: none; }
+.tr-copy { margin-top: 8px; font-size: 14px; }
+
+/* 📖 Dars ichidagi qoida kartasi */
+.lesson-rule { margin-top: 0; margin-bottom: 10px; animation: fade 0.2s ease; }
+#ruleBtn.on { background: var(--primary); color: #fff; }
+
+.search-free { margin-top: 4px; }
+#lessonList { min-height: 72vh; align-content: start; } /* qidiruvda natija kam bo'lsa ham qidiruv maydoni tepaga chiqa olsin */
+
+/* 🎯 IELTS: eng zaif mezon */
+.crit-weak { margin-top: 10px; padding: 10px 12px; border-radius: 14px; background: color-mix(in srgb, #f59e0b 12%, var(--bg)); border-left: 4px solid #f59e0b; font-size: 13.5px; line-height: 1.45; }
+.crit-weak b { display: block; margin-bottom: 3px; font-size: 14px; }
+.crit-weak .btn { margin-top: 8px; font-size: 14px; }
+#chips { scroll-margin-top: calc(64px + var(--safe-t)); }
+
+.faq-act { margin: 0 12px 12px; padding: 8px 14px; font-size: 13.5px; }
+/* Maskot bargi ibora kartasi ustiga chiqib "Tinglash"ni yopmasin */
+.phrase-card, .visual, .lesson-rule, .cue { position: relative; z-index: 2; }
+/* Barcha rejimlarda "Tugatish" va "Subtitrlar" ekran pastida doim ko'rinib tursin */
+#lesson:not(.is-live) .mascot { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+
+/* 🇬🇧 Ustoz gapidagi inglizcha qism */
+.sub-en { display: inline; font: inherit; font-weight: 700; color: color-mix(in srgb, var(--primary) 70%, var(--text)); background: color-mix(in srgb, var(--primary) 10%, transparent); padding: 0 5px; border-radius: 6px; cursor: pointer; }
+.sub-en::after { content: "\00a0🔊"; font-size: 11px; opacity: 0.6; }
+
+/* ▶️ O'z ovozini eshitish */
+.my-voice { display: inline-block; margin-left: 4px; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: color-mix(in srgb, var(--ok) 14%, transparent); color: var(--ok); vertical-align: 1px; }
+.my-voice.busy { opacity: 0.6; }
+
+/* Dars boshqaruvi (yozish, rejim, bosib gapirish, mikrofon, tugatish) ekran pastida birga turadi */
+#lesson .controls { position: sticky; bottom: 0; z-index: 5; margin: 6px -14px 0; padding: 12px 14px calc(10px + var(--safe-b)); background: linear-gradient(to top, var(--bg) 82%, transparent); display: flex; flex-direction: column; gap: 8px; }
+#lesson .controls > * { margin-top: 0 !important; margin-bottom: 0 !important; }
+@media (max-width: 360px) { #lesson .controls { margin-left: -10px; margin-right: -10px; padding-left: 10px; padding-right: 10px; } }
+
+/* IELTS Part 2 gapirish paytida: ibora kartasi ixcham, maskot kichik — holat yozuvi ko'rinib tursin */
+#lesson:has(#cue.speaking:not([hidden])) .phrase-card .phrase-uz,
+#lesson:has(#cue.speaking:not([hidden])) .phrase-card .listen-btn { display: none; }
+#lesson:has(#cue.speaking:not([hidden])) .phrase-en { font-size: 16px; }
+#lesson:has(#cue.speaking:not([hidden])) .mascot { width: min(26vw, 100px); }
+#lesson:has(#cue.speaking:not([hidden])) .cue-points { margin-bottom: 4px; }
+
+/* 🎧 Tinglab takrorlash: nuqtalar, vaqt chizig'i, tugmalar */
+.shadow-dots { display: flex; justify-content: center; gap: 5px; margin-bottom: 6px; }
+.shadow-dots i { width: 8px; height: 8px; border-radius: 50%; background: color-mix(in srgb, var(--muted) 35%, transparent); }
+.shadow-dots i.done { background: var(--ok); }
+.shadow-dots i.on { background: var(--primary); width: 18px; border-radius: 4px; }
+.shadow-bar { height: 6px; margin: 8px auto 4px; max-width: 220px; border-radius: 3px; background: color-mix(in srgb, var(--muted) 20%, transparent); overflow: hidden; visibility: hidden; }
+.shadow-bar.run { visibility: visible; }
+.shadow-bar i { display: block; height: 100%; width: 100%; background: var(--ok); transform-origin: left; }
+.shadow-bar.run i { animation: shadowbar linear forwards; }
+@keyframes shadowbar { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+.shadow-btns { display: flex; justify-content: center; gap: 8px; margin-top: 6px; }
+.shadow-btns .shadow-stop { margin-top: 0; }
+
+/* 🏅 Yutuqlar: hammasi ko'rinsin (yon tomonga yashirinmasin) */
+.badge-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px 4px; overflow: visible; }
+.badge { width: auto; }
+/* 📈 Ustunni bosish */
+.tb { cursor: pointer; }
+.tb.sel .tb-track { box-shadow: 0 0 0 2px var(--primary); }
+.trend-info { margin-top: 8px; font-size: 13px; font-weight: 600; background: var(--bg); border-radius: 10px; padding: 7px 10px; }
+
+.fail-note { margin-top: 8px; font-size: 13px; font-weight: 600; color: var(--ok); }
+
+/* ⏳ Kunlik limit tugadi */
+.limit-note { text-align: left; padding: 10px 12px; border-radius: 14px; background: color-mix(in srgb, #f59e0b 14%, var(--bg)); border-left: 4px solid #f59e0b; font-size: 13.5px; line-height: 1.45; margin-bottom: 8px; }
+.limit-note b { display: block; margin-bottom: 2px; font-size: 14.5px; }
+.mode-card.locked { opacity: 0.45; filter: grayscale(0.6); pointer-events: none; }
+
+/* 🧭 Imtihon bosqichlari */
+.stages { display: flex; align-items: center; gap: 4px; margin-bottom: 8px; position: relative; z-index: 2; }
+.stages .st { flex: none; font-size: 12px; font-weight: 700; padding: 4px 9px; border-radius: 99px; background: var(--card); color: var(--muted); box-shadow: var(--shadow); }
+.stages .st.on { background: var(--primary); color: #fff; }
+.stages .st.done { color: var(--ok); }
+.stages .st-line { flex: 1; height: 2px; min-width: 6px; background: color-mix(in srgb, var(--muted) 30%, transparent); }
+.stages .st-line.done { background: var(--ok); }
+
+/* 🎓 Sertifikat: ism va sana, keyingi kurs */
+.cert-who { margin-top: 6px; font-size: 13px; font-weight: 700; color: #92400e; letter-spacing: 0.3px; border-top: 1px dashed rgba(146, 64, 14, 0.35); padding-top: 6px; }
+.cert-next { margin-top: 8px; background: rgba(255, 255, 255, 0.7) !important; color: #92400e !important; }
+
+/* 🌟 Kun iborasi: tugmalar qatori */
+.daily-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.daily-more { color: var(--muted) !important; }
+.daily-en.busy { opacity: 0.6; }
+
+/* 👆 Ibora kartasini surish animatsiyasi */
+.phrase-card { touch-action: pan-y; }
+.phrase-card.swipe-l .phrase-body { animation: swipeL 0.25s ease; }
+.phrase-card.swipe-r .phrase-body { animation: swipeR 0.25s ease; }
+@keyframes swipeL { from { transform: translateX(24px); opacity: 0.3; } to { transform: none; opacity: 1; } }
+@keyframes swipeR { from { transform: translateX(-24px); opacity: 0.3; } to { transform: none; opacity: 1; } }
+
+/* 🔁 Past ballli dars */
+.lesson.done.weak .lesson-sub { color: #d97706; font-weight: 600; }
+.lesson.done.weak .lesson-emoji { box-shadow: inset 0 0 0 2px #f59e0b; }
+
+/* 🪜 Yengilroq rejim taklifi */
+.rep-easier { margin-top: 10px; padding: 10px 12px; border-radius: 14px; background: color-mix(in srgb, var(--primary) 8%, var(--bg)); font-size: 13.5px; line-height: 1.45; }
+.rep-easier .btn { margin-top: 8px; font-size: 14px; }
+
+/* 🎚 Tanishuvda daraja tanlash */
+.onb-level { margin-top: 12px; }
+.onb-level small { display: block; font-weight: 700; margin-bottom: 6px; color: var(--muted); }
+.onb-lv-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.onb-lv-row .chip-f { font-size: 13px; }
+
+/* ⏳ Oxirgi daqiqada taymer yengil "urib" turadi */
+.timer.low { animation: timerPulse 1s ease-in-out infinite; }
+@keyframes timerPulse { 50% { transform: scale(1.06); } }
+
+/* 🎯 Taxminiy IELTS band */
+.band { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 8px; width: 100%; text-align: left; padding: 9px 12px 11px; border-top: 1px solid var(--line); font-size: 13.5px; }
+.band span { font-size: 12px; color: var(--muted); }
+.band-bar { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: var(--bg); position: relative; overflow: hidden; }
+.band-bar::after { content: ""; position: absolute; inset: 0; width: var(--p); background: linear-gradient(90deg, #f59e0b, #16a34a); border-radius: 3px; }
+
+/* 📗 CEFR zinapoyasi */
+.cefr-ladder { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+.cefr-ladder i { font-style: normal; text-align: center; font-size: 11px; font-weight: 700; padding: 3px 0; border-radius: 6px; background: var(--bg); color: var(--muted); }
+.cefr-ladder i.done { background: color-mix(in srgb, var(--ok) 18%, var(--bg)); color: var(--ok); }
+.cefr-ladder i.on { background: var(--primary); color: #fff; }
+.band.cefr { cursor: default; }
+
+/* 🗓 7 kunlik mini kalendar */
+.week { flex-wrap: wrap; }
+.days7 { flex-basis: 100%; display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 6px; }
+.days7 i { font-style: normal; text-align: center; font-size: 11px; font-weight: 700; padding: 4px 0; border-radius: 8px; background: var(--bg); color: var(--muted); }
+.days7 i.on { background: color-mix(in srgb, var(--ok) 20%, var(--bg)); color: var(--ok); }
+.days7 i.on::before { content: "✓ "; }
+.days7 i.today { box-shadow: inset 0 0 0 1.5px var(--primary); }
+
+/* 🗣 Gapirish statistikasi */
+.speak-stats { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.speak-stats span { font-size: 12.5px; font-weight: 600; padding: 5px 10px; border-radius: 99px; background: var(--bg); }
+
+.pill.warn { background: color-mix(in srgb, #f59e0b 16%, var(--bg)); color: #b45309; font-weight: 700; }
+body.dark .pill.warn { color: #fbbf24; }
+
+/* 🧠 Yodlanganlar */
+.flash-mastery-t { font-size: 13px; font-weight: 700; margin: 4px 0 6px; text-align: center; }
+.flash-mastery { height: 8px; border-radius: 4px; background: var(--bg); overflow: hidden; margin-bottom: 12px; }
+.flash-mastery i { display: block; height: 100%; background: linear-gradient(90deg, var(--primary), var(--ok)); border-radius: 4px; }
+
+/* 🔥 Seriya xavf ostida */
+.goal.risk small { color: #ea580c; font-weight: 700; }
+.goal.risk .goal-ring { animation: timerPulse 1.4s ease-in-out infinite; }
+
+/* 📖 Hisobotdagi qoida eslatmasi */
+.rep-rule { margin-top: 12px; }
+.rep-rule summary { font-weight: 700; cursor: pointer; list-style: none; }
+.rep-rule summary::-webkit-details-marker { display: none; }
+.rep-rule summary::after { content: " ▾"; color: var(--muted); }
+.rep-rule[open] summary::after { content: " ▴"; }
+.rep-rule .rule-body { margin-top: 6px; }
+
+/* ❓ Part 3 savollari */
+.vis-q summary { font-weight: 700; font-size: 14px; cursor: pointer; list-style: none; }
+.vis-q summary::-webkit-details-marker { display: none; }
+.vis-q summary::after { content: " ▾"; color: var(--muted); }
+.vis-q[open] summary::after { content: " ▴"; }
+.vis-q ol { margin: 8px 0 6px; padding-left: 20px; font-size: 14px; line-height: 1.5; }
+.vis-q small { display: block; font-size: 12px; color: var(--muted); }
+
+/* 📋 CEFR javob rejasi */
+.plan-list { list-style: none; margin: 8px 0 6px; padding: 0; display: grid; gap: 5px; }
+.plan-list li { font-size: 14px; padding: 6px 10px 6px 32px; border-radius: 10px; background: var(--bg); position: relative; cursor: pointer; }
+.plan-list li::before { content: ""; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; border-radius: 4px; border: 2px solid var(--muted); }
+.plan-list li.done { color: var(--muted); text-decoration: line-through; }
+.plan-list li.done::before { border-color: var(--ok); background: var(--ok); }
+.plan-list li.done::before { content: "✓"; color: #fff; font-size: 11px; font-weight: 800; display: grid; place-items: center; line-height: 1; }
+
+/* 🧒 Bolalar rejimi */
+#lesson.kids .phrase-en { font-size: 24px; }
+#lesson.kids .phrase-uz { font-size: 16px; }
+#lesson.kids .phrase-card { border: 3px solid #fbbf24; }
+.kid-star { position: fixed; left: 50%; top: 27%; transform: translate(-50%, -50%); z-index: 40; display: flex; flex-direction: column; align-items: center; pointer-events: none; animation: kidStar 1.6s ease forwards; }
+.kid-star b { font-size: 96px; line-height: 1; filter: drop-shadow(0 6px 16px rgba(245, 158, 11, 0.5)); }
+.kid-star span { margin-top: 6px; font-size: 22px; font-weight: 800; color: #f59e0b; text-shadow: 0 2px 0 rgba(0, 0, 0, 0.08); }
+@keyframes kidStar { 0% { transform: translate(-50%, -50%) scale(0.3) rotate(-20deg); opacity: 0; } 25% { transform: translate(-50%, -50%) scale(1.15) rotate(8deg); opacity: 1; } 70% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -80%) scale(0.8); opacity: 0; } }
+
+/* 🧒 Bolalar natijasi: katta yulduzlar, ball va daraja ixcham */
+#result.kids #resultSub { font-size: 34px; letter-spacing: 4px; color: #f59e0b; }
+#result.kids .rep-level, #result.kids .rep-cmp, #result.kids .speak-stats span:nth-child(3) { display: none; }
+
+.sub-en.wrong { color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, transparent); text-decoration: line-through; }
+
+.fixed-badge { margin-left: 6px; font-size: 11px; font-weight: 700; color: var(--ok); background: color-mix(in srgb, var(--ok) 14%, transparent); padding: 1px 6px; border-radius: 99px; white-space: nowrap; }
+
+.rep-list li.all-fixed { background: color-mix(in srgb, var(--ok) 14%, var(--bg)); color: var(--ok); font-weight: 700; text-align: center; }
+.badge-row { grid-template-columns: repeat(5, 1fr); } .badge small { font-size: 10.5px; }
+
+/* 🏅 Yangi yutuq */
+.new-badge { margin-top: 12px; padding: 10px 12px; border-radius: 16px; background: linear-gradient(135deg, #fef3c7, #fde68a); color: #78350f; text-align: left; animation: pop 0.5s ease; }
+.nb-row { display: flex; align-items: center; gap: 10px; }
+.nb-row + .nb-row { margin-top: 8px; }
+.nb-ico { font-size: 32px; }
+.nb-row b { display: block; font-size: 15px; }
+.nb-row small { font-size: 12.5px; opacity: 0.85; }
+
+.badge-bar { display: block; width: 36px; height: 4px; border-radius: 2px; background: color-mix(in srgb, var(--muted) 25%, transparent); position: relative; overflow: hidden; }
+.badge-bar::after { content: ""; position: absolute; inset: 0; width: var(--p); background: #f59e0b; border-radius: 2px; }
+.badge:not(.on) .badge-bar { opacity: 1; } .badge:not(.on):has(.badge-bar) { opacity: 0.7; }
+
+.new-tag { margin-left: 6px; font-size: 11px; font-weight: 800; color: #fff; background: linear-gradient(135deg, #f43f5e, #f59e0b); padding: 1px 7px; border-radius: 99px; vertical-align: 2px; white-space: nowrap; }
+
+/* 👥 Taklif qilish */
+.invite { display: block; width: 100%; margin: 18px 0 6px; padding: 12px 14px; border-radius: 16px; background: var(--card); box-shadow: var(--shadow); font-weight: 700; font-size: 15px; text-align: center; color: var(--primary); }
+.invite small { display: block; margin-top: 2px; font-size: 12px; font-weight: 500; color: var(--muted); }
+body.dark .invite { color: #a5b4fc; }
+#setInvite { margin-bottom: 8px; }
+
+/* ⬆ Tepaga */
+.to-top { position: fixed; right: 16px; bottom: calc(20px + var(--safe-b)); z-index: 20; width: 46px; height: 46px; border-radius: 50%; background: var(--primary); color: #fff; font-size: 20px; font-weight: 800; box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35); animation: fade 0.2s ease; }
+
+/* 📌 Toifalar qatori surganda yuqorida yopishib turadi */
+#chips { position: sticky; top: calc(56px + var(--safe-t)); z-index: 4; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(10px); padding-top: 6px; }
+/* ⬆ tugmasi ixchamroq va kartalarni kamroq to'sadi */
+.to-top { width: 40px; height: 40px; font-size: 17px; right: 10px; opacity: 0.92; }
+/* Yutuqlar to'ri tor ekranda kesilmasin */
+.badge { min-width: 0; }
+.badge small { overflow-wrap: anywhere; }
+@media (max-width: 360px) {
+  .badges { padding-left: 10px; padding-right: 10px; }
+  .badge-row { gap: 8px 2px; }
+  .badge-ico { width: 38px; height: 38px; font-size: 20px; }
+  .badge small { font-size: 9.5px; }
+  .badge-bar { width: 30px; }
+}
+.badge small { overflow-wrap: normal; }
+@media (max-width: 360px) { .badge small { font-size: 9px; letter-spacing: -0.2px; } .badge { overflow: visible; } }
+.phrase-card.can-insert .phrase-en::after { content: "\00a0✍️"; }
+body:has(#lesson.active) .toast { top: max(40vh, calc(290px + var(--safe-t))); }
+/* Xabar paydo bo'lganda markazdan siljimasin (umumiy "fade" animatsiyasi transformni bekor qilardi) */
+.toast { animation: toastIn 0.2s ease; }
+@keyframes toastIn { from { opacity: 0; transform: translate(-50%, 6px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+/* ℹ️ IELTS mezon tushuntirishi */
+.crit-row { cursor: pointer; }
+.crit-en { color: var(--muted); font-size: 11.5px; }
+@media (max-width: 360px) { .crit-en { display: none; } }
+.crit-info { font-size: 12.5px; line-height: 1.45; color: var(--muted); background: var(--card); border-radius: 10px; padding: 7px 9px; margin: 2px 0 6px; }
+.crit-hint { display: block; margin-top: 5px; font-size: 11.5px; color: var(--muted); }
+
+.rep-ml { display: inline-block; margin-top: 3px; font-size: 12.5px; font-weight: 700; color: #0f766e; background: color-mix(in srgb, #14b8a6 14%, transparent); padding: 2px 8px; border-radius: 99px; }
+body.dark .rep-ml { color: #5eead4; }
+
+/* 📝 Namunaviy javob */
+.sample-btn { margin-top: 12px; font-size: 14px; }
+.sample-box { margin-top: 8px; padding: 10px 12px; border-radius: 14px; background: var(--bg); font-size: 14px; line-height: 1.55; -webkit-user-select: text; user-select: text; }
+.sample-box p { margin: 0 0 8px; }
+.sample-box > b { display: block; margin: 6px 0 4px; font-size: 13.5px; }
+.sample-box .rep-list li { background: var(--card); padding: 6px 10px; }
+
+.daily-btns { display: inline-flex; gap: 10px; }
+.daily-go:disabled { opacity: 1; color: var(--ok) !important; }
+
+/* 📒 Ibora yonidagi "saqlash" tugmasi (🔊 belgisi o'rniga chapga suriladi) */
+.sheet-phrases li:has(.ph-keep) { padding-right: 70px; }
+.sheet-phrases li:has(.ph-keep)::after { right: 46px; }
+.ph-keep { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; font-size: 16px; font-weight: 800; color: var(--primary); background: color-mix(in srgb, var(--primary) 10%, transparent); }
+.ph-keep.on { color: var(--ok); background: color-mix(in srgb, var(--ok) 14%, transparent); }
+
+/* ✕ Lug'atdan o'chirish */
+#vocabList li { position: relative; padding-right: 40px; }
+.w-del { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; border-radius: 50%; font-size: 13px; color: var(--muted); background: transparent; }
+.w-del:active { background: color-mix(in srgb, var(--danger) 14%, transparent); color: var(--danger); }
+#vocabList li.removing { opacity: 0.4; }
+
+.vocab-search { width: 100%; margin: 10px 0 2px; padding: 10px 12px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--muted) 30%, transparent); background: var(--bg); color: var(--text); font: inherit; font-size: 15px; }
+
+/* 🔄 Natijada boshqa mavzular */
+.again-topics { margin: 10px 0 4px; text-align: left; }
+.again-topics small { display: block; font-size: 12.5px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+.again-topics .topic-pick { margin: 0; padding: 0 0 2px; flex-wrap: wrap; overflow: visible; }
+.again-topics .tp { background: var(--bg); color: var(--text); border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent); }
+
+/* 🗣 Jonli so'z hisoblagichi */
+.words-live { font-weight: 700; color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, transparent); white-space: nowrap; }
+.words-live.bump { animation: pop 0.35s ease; }
+
+.speak-stats span.rec { background: linear-gradient(135deg, #fde68a, #f59e0b); color: #78350f; }
+.speak-stats span.rec-old { color: var(--muted); }
+
+/* 12 ta yutuq — 4 ustun, 3 qator */
+.badge-row { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 360px) { .badge-row { grid-template-columns: repeat(4, 1fr); } .badge small { font-size: 10px; } }
+/* Sozlamalar: tugma yozuvlari bir qatorda qolsin */
+.seg-b { white-space: nowrap; }
+@media (max-width: 360px) { .seg-b { font-size: 12.5px; padding-left: 4px; padding-right: 4px; } }
+.set-title em { font-style: normal; font-weight: 500; font-size: 12px; color: var(--muted); }
+.onb-lv-row { flex-wrap: nowrap; } .onb-lv-row .chip-f { white-space: nowrap; padding-left: 10px; padding-right: 10px; }
+.onb-lv-row { gap: 5px; } @media (max-width: 360px) { .onb-lv-row .chip-f { font-size: 12px; padding: 6px 8px; } .onb-card { padding-left: 14px; padding-right: 14px; } }
+/* 🙈 Tarjima yashirin: xira, bosilsa ochiladi */
+.phrase-card.hide-uz .phrase-uz:not(.shown) { filter: blur(5px); cursor: pointer; user-select: none; position: relative; }
+.phrase-card.hide-uz .phrase-uz:not(.shown)::after { content: " 👆"; filter: none; }
+.phrase-card.hide-uz .phrase-uz.shown { animation: fade 0.2s ease; }
+.phrase-card.hide-uz .phrase-uz:not(.shown) { filter: none; color: transparent; text-shadow: 0 0 7px color-mix(in srgb, var(--muted) 90%, transparent); }
+.phrase-card.hide-uz .phrase-uz:not(.shown)::after { content: "  👆 tarjima"; color: var(--primary); text-shadow: none; font-size: 12px; font-weight: 700; }
+
+.next-label { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.next-course { font-size: 12px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+
+/* ▾ Bo'limlarni yig'ish */
+.cat-title.foldable { cursor: pointer; user-select: none; }
+.fold-ico { display: inline-block; width: 14px; margin-right: 2px; font-size: 11px; color: var(--muted); }
+.cat-title.folded { opacity: 0.85; margin-bottom: 4px; }
+
+.fold-all { display: block; max-width: 100%; white-space: normal; text-align: right; margin: 0 0 4px auto; font-size: 12.5px; font-weight: 600; color: var(--primary); padding: 4px 2px; }
+body.dark .fold-all { color: #a5b4fc; }
+
+.fold-tag { flex: none; font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 99px; margin-left: 4px; }
+.fold-tag.new { background: color-mix(in srgb, #f43f5e 14%, transparent); color: #e11d48; }
+.fold-tag.rep { background: color-mix(in srgb, #f59e0b 16%, transparent); color: #b45309; }
+body.dark .fold-tag.new { color: #fb7185; } body.dark .fold-tag.rep { color: #fbbf24; }
+/* Bo'lim sarlavhasi bir qatorda; tor ekranda progress chizig'i qolgan joyni oladi */
+.cat-title { white-space: nowrap; }
+@media (max-width: 360px) { .cat-title { font-size: 14px; gap: 6px; } .cat-title .cat-progress { min-width: 0; } .fold-tag { padding: 1px 4px; margin-left: 0; } }
+
+/* Tor ekranda dars sarlavhasi chiplari faqat belgi bilan (taymer kesilmasin) */
+@media (max-width: 360px) { .lesson-head .chip-txt { display: none; } .lesson-head { gap: 6px; } }
+/* 🧩 Grammatika: tez mashq */
+.quiz { text-align: left; margin-top: 10px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; font-size: 14px; }
+.qz-body { margin-top: 6px; }
+.qz-n { color: var(--muted); font-size: 12px; }
+.qz-q { margin: 4px 0 8px; font-size: 15px; line-height: 1.5; }
+.qz-gap { display: inline-block; min-width: 44px; text-align: center; border-bottom: 2px dashed var(--primary); color: var(--primary); font-weight: 700; }
+.qz-gap.ok { color: var(--ok); border-color: var(--ok); }
+
+.qz-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.qz-opt, .qz-again { font: inherit; font-weight: 600; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--text); cursor: pointer; min-height: 40px; }
+.qz-opt.ok { background: color-mix(in srgb, var(--ok) 18%, var(--bg)); border-color: var(--ok); }
+.qz-opt.bad { background: color-mix(in srgb, var(--danger) 18%, var(--bg)); border-color: var(--danger); }
+.qz-done { margin: 2px 0 8px; font-weight: 600; }
+.qz-missed { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-bottom: 8px; }
+.qz-missed small { width: 100%; color: var(--muted); }
+/* 🙈 Yoddan rejimi: inglizcha ibora xira, bosilsa yoki aytilsa ochiladi */
+.phrase-acts { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.phrase-acts .listen-btn { margin-top: 8px; }
+.recall-btn { color: var(--muted); background: color-mix(in srgb, var(--muted) 12%, transparent); }
+.recall-btn.on { color: var(--primary); background: color-mix(in srgb, var(--primary) 16%, transparent); }
+.phrase-card.recall:not(.done) .phrase-en:not(.shown) { filter: blur(7px); cursor: pointer; user-select: none; }
+/* Yoddan rejimida o'zbekchasi doim ko'rinadi (aks holda ikkalasi ham yashirin qoladi) */
+.phrase-card.recall:not(.done) .phrase-uz:not(.shown) { color: inherit; text-shadow: none; cursor: default; }
+.phrase-card.recall:not(.done) .phrase-uz:not(.shown)::after { content: none; }
+.phrase-card.recall .phrase-en.shown { animation: fade 0.2s ease; }
+/* 🇺🇿 Jonli suhbat: Sado gapining tarjimasi */
+.b-sado { cursor: pointer; }
+.b-tr-ico { font-style: normal; font-weight: 600; color: var(--primary); opacity: 0.9; }
+.b-tr { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--line); font-size: 13.5px; color: var(--muted); animation: fade 0.2s ease; }
+/* ❓ Dars oynasida IELTS savollari */
+.sheet-qs { text-align: left; margin-top: 10px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; font-size: 14px; }
+.sheet-qs summary { font-weight: 700; cursor: pointer; }
+.sheet-qs ol { margin: 8px 0 4px; padding-left: 22px; display: grid; gap: 4px; }
+.sheet-qs .rule-ex { display: block; width: fit-content; max-width: 100%; text-align: left; padding: 3px 7px; }
+/* 🧩 Grammatika bo'limi: mashqlar qatori */
+.gr-quizbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -2px 2px 8px; font-size: 13px; color: var(--muted); font-weight: 600; flex-wrap: wrap; }
+.gr-quizbar button { font: inherit; font-weight: 700; color: var(--primary); background: color-mix(in srgb, var(--primary) 12%, transparent); border-radius: 99px; padding: 6px 12px; min-height: 34px; }
+.sheet-qs ul.plain { margin: 6px 0 4px; padding-left: 20px; display: grid; gap: 3px; }
+.sheet-cue { margin: 8px 0 2px; font-weight: 700; }
+/* 🗂️ Hisobot: iboralar ro'yxati sarlavhasi va eshitish */
+.result-list li.res-title { display: block; background: none; padding: 4px 2px 0; font-weight: 700; font-size: 15px; cursor: default; }
+.result-list li.res-title small { display: block; font-weight: 500; font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.result-list li:not(.res-title) { cursor: pointer; }
+.result-list li > div { flex: 1; min-width: 0; }
+.result-list .res-say { flex: none; opacity: 0.55; font-size: 14px; align-self: center; }
+.result-list li.busy .res-say { opacity: 1; animation: pulse 0.8s ease infinite; }
+.count-words { margin-left: 4px; color: var(--ok); font-weight: 700; }
+/* 🎭 Dars oynasi: vaziyat */
+.sheet-scene { text-align: left; margin: 10px 0 0; padding: 9px 12px; border-radius: 12px; background: color-mix(in srgb, var(--primary) 7%, var(--card)); font-size: 13.5px; line-height: 1.45; color: var(--text); }
+.sheet-scene b { color: var(--primary); }
+/* 🖼 Bolalar: ibora rasmi */
+.phrase-pic { font-size: 40px; line-height: 1.1; margin: 2px 0 4px; animation: picIn 0.35s ease; }
+@keyframes picIn { from { transform: scale(0.6); opacity: 0; } }
+/* 🎧 Lug'at: hammasini tinglash */
+.vocab-card #vocabList { margin-top: 10px; }
+.vocab-play { margin-top: 8px; }
+.vocab-play.on { color: var(--danger); }
+#vocabList li.playing { outline: 2px solid var(--primary); outline-offset: -2px; background: color-mix(in srgb, var(--primary) 10%, var(--bg)); }
+.btn.vocab-play.on { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 60%, transparent); }
+.trend-info:not([hidden]) { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+.trend-again { flex: none; font: inherit; font-size: 12.5px; font-weight: 700; color: var(--primary); background: color-mix(in srgb, var(--primary) 12%, transparent); border-radius: 99px; padding: 5px 10px; }
+/* ✅ Part 2 kartochka bandlari: bosib belgilash */
+.cue-points li { cursor: pointer; border-radius: 6px; transition: color 0.2s; }
+.cue-points li.done { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--ok); }
+.cue-points li.done::marker { content: "✓  "; color: var(--ok); font-weight: 800; }
+/* Uzun dars nomi — 2 qatorgacha (qisqartirilib "Esd..." bo'lib qolmasin) */
+.head-left { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.2; font-size: 15px; }
+/* ℹ️ Sozlamalar: versiya va yangilash */
+.app-ver { margin-top: 6px; text-align: center; font-size: 12px; color: var(--muted); }
+.app-ver button { font: inherit; font-weight: 700; color: var(--primary); padding: 4px; }
+/* ⬆️ "Yuqoriga" tugmasi oxirgi matnni yopmasin */
+#homeNote { padding: 0 56px 56px; }
+/* ⓘ Multilevel shkalasi */
+button.rep-ml { font: inherit; font-size: 12.5px; font-weight: 700; text-align: left; cursor: pointer; }
+.ml-scale { margin-top: 8px; animation: fade 0.2s ease; }
+.ml-bar { position: relative; display: flex; gap: 2px; border-radius: 10px; overflow: visible; }
+.ml-seg { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 5px 2px; background: color-mix(in srgb, var(--muted) 14%, transparent); font-size: 11px; min-width: 0; }
+.ml-seg:first-child { border-radius: 8px 0 0 8px; }
+.ml-seg:last-child { border-radius: 0 8px 8px 0; }
+.ml-seg b { font-size: 11px; white-space: nowrap; }
+.ml-seg small { color: var(--muted); font-size: 10.5px; }
+.ml-seg.on { background: color-mix(in srgb, #14b8a6 28%, transparent); }
+.ml-mark { position: absolute; top: -5px; width: 3px; height: calc(100% + 10px); background: #0f766e; border-radius: 2px; transform: translateX(-50%); }
+body.dark .ml-mark { background: #5eead4; }
+.ml-note { display: block; margin-top: 6px; color: var(--muted); font-size: 11.5px; line-height: 1.35; }
+/* 📖 Darsdagi qoida: yopish tugmasi va ochiq paytda kichikroq maskot (Sado gapi ko'rinib tursin) */
+.lesson-rule { position: relative; }
+.rule-close { position: absolute; top: 6px; right: 8px; width: 28px; height: 28px; border-radius: 50%; font-size: 13px; color: var(--muted); background: color-mix(in srgb, var(--muted) 12%, transparent); }
+#lesson:has(#lessonRule:not([hidden])) .mascot { width: min(34vw, 130px); }
+#lessonRule:not([hidden]) { max-height: 24vh; overflow-y: auto; overscroll-behavior: contain; }
+/* Yordam: ＋/－ belgisi ikki qatorli savolda ham o'rtada */
+.faq-item summary::after { top: 50%; transform: translateY(-50%); }
+.res-pic { font-size: 18px; }
+/* 🔁 Kun iborasi: kechagi iborani takrorlash */
+.daily-yday { display: block; width: 100%; text-align: left; margin-top: 10px; padding: 8px 10px; border-radius: 10px; font: inherit; font-size: 13px; color: var(--text); background: color-mix(in srgb, var(--muted) 10%, transparent); line-height: 1.4; }
+.daily-yday em { font-style: normal; color: var(--muted); }
+.daily-yday.open em { color: var(--primary); font-weight: 700; }
+/* ✏️ Suhbat matnida xato joy */
+.tr-err { background: none; color: inherit; text-decoration: underline wavy #f87171; text-underline-offset: 3px; cursor: pointer; }
+.tr-log .b-sado { cursor: default; }
+.b-me .tr-err { text-decoration-color: #fde047; }
+.hint-item.picked { outline: 2px solid var(--primary); outline-offset: -2px; }
+/* ❓ Darsdagi IELTS savollari: bosib belgilash; ro'yxat ochiq paytda maskot kichikroq */
+.q-list li { cursor: pointer; }
+.q-list li.done { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--ok); }
+.q-list li.done::marker { content: "✓  "; color: var(--ok); font-weight: 800; }
+#lesson:has(#visual details[open]) .mascot, #lesson:has(#visual .vis-pics) .mascot, #lesson:has(#visual .vis-bar) .mascot { width: min(34vw, 130px); }
+
+/* ✓ CEFR rasmlari: tasvirlangan rasm belgisi */
+.vis-pic { cursor: pointer; position: relative; transition: opacity 0.2s; }
+.vis-pic.done { outline: 2px solid var(--ok); outline-offset: -2px; }
+.vis-pic.done::after { content: "✓"; position: absolute; top: 6px; right: 8px; width: 22px; height: 22px; border-radius: 50%; background: var(--ok); color: #fff; font-size: 13px; font-weight: 800; display: grid; place-items: center; }
+.vis-tip { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; }
+/* 🎯 Tanishuv: maqsad tanlovi */
+.onb-level small + .onb-lv-row + small { margin-top: 10px; }
+.onb-lv-row.onb-goals { flex-wrap: wrap; }
+/* 📒 Lug'at: kartochka va tinglash bir qatorda */
+.vocab-acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.vocab-acts > #flashBtn { flex-basis: 100%; } /* asosiy tugma alohida qatorda, Tinglash va Test — ostida yonma-yon */
+.vocab-acts > .btn { flex: 1; margin-top: 0; min-width: 0; padding-left: 8px; padding-right: 8px; white-space: nowrap; }
+.vocab-acts > [hidden] { display: none; }
+.vocab-play { margin-top: 0; }
+/* Ibora kartasida (masalan, takrorlash darsidagi xato gaplar) birinchi harf bosh harf */
+#phraseEn::first-letter { text-transform: uppercase; }
+.lesson-sub.kid-stars { color: #d97706; font-weight: 700; letter-spacing: 1px; }
+.search-count { margin: 2px 4px 8px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.rep-grlink { display: inline-block; margin-top: 6px; font: inherit; font-size: 12.5px; font-weight: 700; color: var(--primary); background: color-mix(in srgb, var(--primary) 10%, transparent); padding: 4px 10px; border-radius: 99px; }
+/* 🎯 Xatolarim: eng ko'p xato mavzusi */
+#vocabList .fix-focus { cursor: pointer; display: block; text-align: left; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, var(--primary) 10%, var(--bg)); border: 1px dashed color-mix(in srgb, var(--primary) 45%, transparent); }
+#vocabList .fix-focus b { display: block; font-size: 14px; color: var(--primary); }
+#vocabList .fix-focus span { font-size: 12.5px; color: var(--muted); }
+/* ▶️ Bugungi maqsad: boshlash tugmasi */
+.goal-go { margin-left: auto; flex: none; font-size: 13px; font-weight: 800; color: #fff; background: var(--primary); padding: 7px 12px; border-radius: 99px; box-shadow: 0 4px 12px color-mix(in srgb, var(--primary) 35%, transparent); }
+.goal-go + .goal-left { margin-left: 0; }
+.goal.risk .goal-go { background: #f97316; }
+/* 📱 Tor ekran: Kun iborasi sarlavhasi va tugmalari qatorga bo'linib ketmasin */
+.daily-tag, .daily-go { white-space: nowrap; }
+.daily-from { min-width: 0; }
+@media (max-width: 360px) {
+  .daily-row { flex-wrap: wrap; row-gap: 2px; }
+  .daily-btns { gap: 12px; }
+  .daily-go { font-size: 12.5px; }
+}
+/* 📱 Tor ekranda daraja belgisi ixchamroq — dars nomi 3 qatorga tushmasin */
+@media (max-width: 360px) { .lesson-level { font-size: 11px; padding: 3px 7px; white-space: nowrap; } }
+/* 📝 Aralash grammatika testi */
+.gr-qbtns { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+.mix-quiz { margin-top: 0; border: none; background: none; padding: 4px 2px 10px; }
+.mix-quiz > b { font-size: 16px; }
+.mix-quiz .qz-q { font-size: 17px; }
+.qz-topics { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 10px; }
+.qz-topics small { width: 100%; color: var(--muted); }
+.mix-quiz, .mix-quiz .qz-missed .rule-ex { text-align: left; }
+/* ✅ "Qaysi gap to'g'ri?" savoli: gaplar ustma-ust, to'liq eni */
+.qz-pick { color: var(--primary); }
+.qz-sents { flex-direction: column; }
+.qz-sents .qz-opt { width: 100%; text-align: left; border-radius: 12px; padding: 10px 14px; font-weight: 600; }
+/* 💡 Testda xato bo'lsa: qoida izohi va Keyingi tugmasi */
+.qz-why { margin-top: 10px; padding: 8px 10px; border-radius: 10px; font-size: 13.5px; line-height: 1.45; text-align: left; background: color-mix(in srgb, #f59e0b 14%, var(--bg)); border-left: 3px solid #f59e0b; animation: fade 0.2s ease; }
+.qz-next { display: block; margin: 10px 0 0 auto; font: inherit; font-weight: 800; font-size: 14px; color: #fff; background: var(--primary); padding: 8px 18px; border-radius: 99px; }
+.gr-quizbar button.gr-miss { color: #c2410c; background: color-mix(in srgb, #f97316 14%, transparent); } body.dark .gr-quizbar button.gr-miss { color: #fdba74; }
+.mix-levels { display: flex; gap: 6px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; justify-content: flex-start; margin-bottom: 6px; } .mix-levels:empty { display: none; } .mix-levels .chip-f { font-size: 13px; white-space: nowrap; flex-shrink: 0; }
+@media (max-width: 360px) { .mix-levels { gap: 4px; } .mix-levels .chip-f { font-size: 12px; padding: 6px 9px; white-space: nowrap; } }
+/* ⚡ 60 soniyalik test */
+.sp-head { display: flex; align-items: center; gap: 10px; font-size: 16px; }
+.sp-head .sp-time { margin-left: auto; font-variant-numeric: tabular-nums; color: var(--primary); }
+.sp-head .sp-time.low { color: var(--danger); }
+.sp-head .sp-score { color: var(--ok); font-variant-numeric: tabular-nums; }
+/* 🧪 Grammatika testlari paneli */
+.gr-quizbar { display: block; background: var(--card); border-radius: 16px; padding: 10px 12px 12px; box-shadow: var(--shadow); margin: 0 0 12px; }
+.gq-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.gq-top b { font-size: 15px; color: var(--text); }
+.gq-top span { font-size: 12px; color: var(--muted); font-weight: 600; }
+.gr-quizbar .gr-qbtns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.gr-quizbar .gr-qbtns button { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; text-align: left; border-radius: 12px; padding: 9px 11px; min-height: 52px; line-height: 1.2; }
+.gr-quizbar .gr-qbtns button small { font-size: 11.5px; font-weight: 700; opacity: 0.8; margin-top: 2px; }
+/* 🎯 Mavzular bo'yicha aniqlik */
+.gq-acc { font: inherit; font-size: 12.5px; font-weight: 800; color: var(--primary); background: color-mix(in srgb, var(--primary) 12%, transparent); padding: 3px 9px; border-radius: 99px; }
+.ts-list { display: grid; gap: 6px; margin: 10px 0 6px; }
+.ts-row { display: grid; grid-template-columns: 1fr 70px 40px; align-items: center; column-gap: 8px; text-align: left; font: inherit; padding: 8px 10px; border-radius: 12px; background: var(--bg); color: var(--text); }
+.ts-name { font-size: 13.5px; font-weight: 700; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ts-bar { height: 8px; border-radius: 99px; background: color-mix(in srgb, var(--muted) 18%, transparent); overflow: hidden; }
+.ts-bar i { display: block; height: 100%; border-radius: 99px; }
+.ts-bar i.hi { background: var(--ok); } .ts-bar i.mid { background: #f59e0b; } .ts-bar i.lo { background: var(--danger); }
+.ts-p { font-size: 13px; text-align: right; }
+.ts-n { grid-column: 1; font-size: 11.5px; color: var(--muted); }
+.ts-weak { display: block; width: 100%; margin: 6px 0 8px; color: #fff; background: linear-gradient(135deg, #f97316, #e11d48); border: none; font-weight: 800; }
+.gq-acc { margin-left: auto; } @media (max-width: 360px) { .gq-top span { order: 3; flex-basis: 100%; } }
+/* 📅 Bugungi test banneri */
+.gr-quizbar .gq-daily { display: block; width: 100%; text-align: left; font: inherit; color: #fff; background: linear-gradient(135deg, var(--primary), #0ea5a4); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; box-shadow: 0 6px 16px color-mix(in srgb, var(--primary) 30%, transparent); }
+.gq-daily b { display: block; font-size: 14.5px; }
+.gq-daily small { display: block; font-size: 12px; opacity: 0.9; margin-top: 2px; }
+.gr-quizbar .gq-daily.done { background: color-mix(in srgb, var(--ok) 14%, var(--bg)); color: var(--text); box-shadow: none; border: 1px solid color-mix(in srgb, var(--ok) 40%, transparent); }
+.gq-daily.done small { color: var(--muted); opacity: 1; }
+.qz-marks { font-size: 26px; letter-spacing: 3px; margin: 2px 0 8px; }
+.mix-quiz .qz-share { color: #fff; background: linear-gradient(135deg, var(--primary), #0ea5a4); border: none; margin-right: 8px; }
+.mix-quiz .qz-share { margin-bottom: 10px; }
+/* 📅 Kun iborasi kartasida bugungi test havolasi */
+.daily-test { display: block; width: 100%; text-align: left; margin-top: 8px; padding: 8px 10px; border-radius: 10px; font: inherit; font-size: 13px; font-weight: 700; color: var(--primary); background: color-mix(in srgb, var(--primary) 10%, transparent); }
+body.dark .daily-test { color: #a5b4fc; }
+.daily-test.done { color: var(--ok); background: color-mix(in srgb, var(--ok) 10%, transparent); }
+body.dark .daily-test.done { color: #4ade80; }
+/* 🧱 So'zlarni tartibga solish */
+.qz-line { min-height: 48px; display: flex; flex-wrap: wrap; gap: 6px; padding: 8px; margin-bottom: 8px; border-radius: 12px; border: 2px dashed color-mix(in srgb, var(--primary) 40%, transparent); }
+.qz-line.ok { border-color: var(--ok); border-style: solid; background: color-mix(in srgb, var(--ok) 10%, transparent); }
+.qz-line.bad { border-color: var(--danger); border-style: solid; background: color-mix(in srgb, var(--danger) 8%, transparent); }
+.qz-w { padding: 7px 12px; min-height: 36px; }
+.qz-line .qz-w { background: color-mix(in srgb, var(--primary) 14%, var(--bg)); border-color: color-mix(in srgb, var(--primary) 40%, transparent); }
+.qz-tools { display: flex; gap: 8px; margin-top: 10px; }
+.qz-tool { font: inherit; font-size: 13px; font-weight: 700; color: var(--muted); background: color-mix(in srgb, var(--muted) 12%, transparent); padding: 6px 12px; border-radius: 99px; }
+.qz-tool.used { color: var(--primary); }
+/* 🎯 Grammatika plitkasida mavzu aniqligi */
+.acc-tag { display: inline-block; font-size: 11.5px; font-weight: 800; padding: 1px 7px; border-radius: 99px; white-space: nowrap; }
+.acc-tag.hi { color: #15803d; background: color-mix(in srgb, #22c55e 18%, transparent); }
+.acc-tag.mid { color: #b45309; background: color-mix(in srgb, #f59e0b 18%, transparent); }
+.acc-tag.lo { color: #b91c1c; background: color-mix(in srgb, #ef4444 15%, transparent); }
+body.dark .acc-tag.hi { color: #4ade80; } body.dark .acc-tag.mid { color: #fbbf24; } body.dark .acc-tag.lo { color: #f87171; }
+.lesson.mastered .lesson-emoji { box-shadow: 0 0 0 2px #22c55e inset; }
+/* 📊 Daraja testi natijasi */
+.lv-result { margin: 6px 0 10px; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, var(--primary) 8%, var(--bg)); display: grid; gap: 6px; }
+.lv-result > b { font-size: 16px; }
+.lv-row { display: grid; grid-template-columns: 70px 1fr 38px; align-items: center; gap: 8px; font-size: 13px; }
+.lv-row b { text-align: right; }
+/* ●●○○ Test yo'l chizig'i */
+.qz-dots { display: flex; gap: 4px; margin: 4px 0 2px; }
+.qz-dots i { flex: 1; height: 5px; border-radius: 99px; background: color-mix(in srgb, var(--muted) 22%, transparent); }
+.qz-dots i.ok { background: var(--ok); }
+.qz-dots i.bad { background: var(--danger); }
+.qz-dots i.cur { background: var(--primary); }
+/* 🧪 Grammatika daraja sarlavhasida test tugmasi */
+.part-title:has(.pt-test) { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.pt-test { white-space: nowrap; flex-shrink: 0; font: inherit; font-size: 12px; font-weight: 800; letter-spacing: 0; text-transform: none; color: var(--primary); background: color-mix(in srgb, var(--primary) 12%, transparent); padding: 4px 10px; border-radius: 99px; }
+/* 📈 Testlar tarixi */
+.qh { margin: 10px 0 4px; padding: 10px 12px; border-radius: 12px; background: var(--bg); display: grid; grid-template-columns: 1fr auto; row-gap: 8px; }
+.qh-head { font-size: 13px; font-weight: 700; }
+.qh-diff { font-size: 12.5px; font-weight: 800; color: var(--muted); }
+.qh-diff.up { color: var(--ok); } .qh-diff.down { color: var(--danger); }
+.qh-bars { grid-column: 1 / -1; display: flex; align-items: flex-end; gap: 4px; height: 56px; }
+.qh-bars i { flex: 1; border-radius: 4px 4px 2px 2px; min-width: 6px; }
+.qh-bars i.hi { background: var(--ok); } .qh-bars i.mid { background: #f59e0b; } .qh-bars i.lo { background: var(--danger); }
+/* 🔎 Xatoni toping */
+.qz-spot { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 8px; }
+.qz-sw { font: inherit; font-size: 16px; font-weight: 600; color: var(--text); background: var(--bg); border: 1px solid var(--line); padding: 6px 10px; border-radius: 10px; }
+.qz-sw.found { text-decoration: line-through; text-decoration-color: var(--danger); text-decoration-thickness: 2px; }
+.qz-sw.ok { background: color-mix(in srgb, var(--ok) 18%, var(--bg)); border-color: var(--ok); }
+.qz-sw.bad { background: color-mix(in srgb, var(--danger) 15%, var(--bg)); border-color: var(--danger); }
+.qz-why.qz-good { border-left-color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, var(--bg)); }
+.qz-again + .qz-full { margin-left: 8px; }
+.qz-full { color: var(--primary); }
+/* 📖 Qoidalar ma'lumotnomasi */
+.rules-search { display: block; width: 100%; margin: 8px 0; }
+.rules-list { display: grid; gap: 6px; }
+.rules-list .part-title { margin: 6px 2px 0; }
+.rule-item { background: var(--bg); border-radius: 12px; padding: 0 12px; }
+.rule-item summary { cursor: pointer; font-weight: 700; font-size: 14.5px; padding: 10px 0; }
+.rule-item[open] { padding-bottom: 10px; }
+.rule-item .rule-body { font-size: 13.5px; line-height: 1.5; }
+.rule-item .rep-grlink { margin-top: 8px; }
+/* Testlar panelida oxirgi toq tugma — to'liq eni */
+.gr-quizbar .gr-qbtns > button:last-child:nth-child(odd) { grid-column: 1 / -1; }
+
+/* 🎯 Mavzu tanlab test */
+.mp-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 12px; max-height: 46vh; overflow-y: auto; }
+.mp-grp { flex-basis: 100%; font: inherit; font-size: 12px; font-weight: 800; color: var(--primary); background: none; border: 0; padding: 4px 2px 0; text-align: left; }
+.mp-tools { display: flex; gap: 6px; margin-top: 8px; }
+.mp-tool { font: inherit; font-size: 12px; font-weight: 700; padding: 6px 11px; border-radius: 99px; border: 0; color: var(--text); background: color-mix(in srgb, var(--muted) 16%, transparent); white-space: nowrap; }
+.mp-tool:disabled { opacity: .5; }
+.mp-item { font: inherit; font-size: 13px; font-weight: 600; text-align: left; padding: 7px 11px; border-radius: 99px; border: 1.5px solid var(--line, rgba(127,127,127,.25)); background: transparent; color: var(--text); }
+.mp-item.on { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 14%, transparent); color: var(--primary); }
+.mp-go { width: 100%; }
+.mp-go:disabled { opacity: .55; }
+/* 📈 Ustunlar ustida foiz (telefonda title ko'rinmaydi) */
+.qh-bars { margin-top: 14px; }
+.qh-bars i { position: relative; }
+.qh-bars i em { position: absolute; left: 0; right: 0; top: -15px; text-align: center; font-style: normal; font-size: 10px; font-weight: 800; color: var(--muted); line-height: 1; }
+.ts-new { background: color-mix(in srgb, var(--primary) 14%, transparent) !important; color: var(--primary) !important; box-shadow: none !important; margin-top: 8px; }
+
+/* 👀 Subtitr ko'rinib turganda maskot kichrayadi — Sado gapi pastki tugmalar ortida qolmaydi */
+#lesson:not(.is-live):has(#subs:not([hidden]) #subAi:not(:empty)) .mascot { width: min(40vw, 160px); transition: width 0.3s ease; }
+
+/* ▶ Kursni davom ettirish */
+.cat-continue { display: flex; align-items: center; gap: 10px; width: 100%; margin: 2px 0 12px; padding: 12px 14px; border: 0; border-radius: 16px; font: inherit; text-align: left; color: #fff; background: linear-gradient(135deg, #4f46e5, #6366f1); box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25); }
+.cat-continue span { flex-shrink: 0; font-size: 13px; font-weight: 800; padding: 4px 10px; border-radius: 99px; background: rgba(255, 255, 255, 0.2); }
+.cat-continue b { font-size: 15px; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+/* Tor ekranda sahifa chekkasi 10px — chiplar qatori ekrandan chiqmasin */
+@media (max-width: 360px) { .chips { margin-left: -10px; margin-right: -10px; padding-left: 10px; padding-right: 10px; } }
+
+/* ⚡ 60 soniya natijasi: aniqlik va rekord qatori */
+.sp-sum { display: block; margin: 2px 0 10px; }
+
+/* 📊 Daraja testi natijasi: keyingi daraja testi tugmasi */
+.lv-go { margin-top: 10px; padding: 11px 14px; font-size: 14.5px; }
+
+/* 🔁 Xatolarim: ro'yxat qanchaga qisqardi */
+.miss-left { margin: 6px 0 4px; font-weight: 700; color: var(--ok); }
+.miss-left.done { font-size: 14px; }
+
+/* ▶ Qoidadagi misollarni ketma-ket tinglash */
+.rule-all { display: inline-block; margin-top: 8px; font: inherit; font-size: 13px; font-weight: 700; color: var(--primary); background: color-mix(in srgb, var(--primary) 12%, transparent); border: 0; border-radius: 99px; padding: 6px 12px; }
+.rule-all.on { color: #fff; background: var(--primary); }
+.rule-ex.now { outline: 2px solid var(--primary); outline-offset: 1px; }
+
+/* 📅 Bugungi testdan keyin davom ettirish */
+.qz-again + .qz-more { display: table; margin: 8px 0 0; color: var(--primary); border-color: color-mix(in srgb, var(--primary) 40%, transparent); }
+
+/* 📋 Part 2 reja andozasi */
+.cue-tpl { display: inline-block; margin: 8px 0 6px; font: inherit; font-size: 13px; font-weight: 700; color: var(--primary); background: color-mix(in srgb, var(--primary) 12%, transparent); border: 0; border-radius: 99px; padding: 6px 12px; }
+
+/* 🔍 Yordam: savol qidirish */
+.faq-search { width: 100%; box-sizing: border-box; font: inherit; font-size: 15px; padding: 10px 12px; margin: 0 0 8px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--text); }
+.faq-none { margin: 4px 2px 8px; }
+
+/* 🆕 Yangiliklar: bosiladigan bandlar */
+#newsList li.news-go { cursor: pointer; }
+#newsList .news-arrow { color: var(--primary); font-weight: 800; }
+
+/* ⚙️ 5+ variantli tanlov (masalan Yo'nalish) ikki qatorga bo'linadi — ekrandan chiqmaydi */
+.seg:has(> .seg-b:nth-child(5)) { flex-wrap: wrap; }
+.seg:has(> .seg-b:nth-child(5)) > .seg-b { flex: 1 1 30%; }
+
+/* 📖 Qoidalar: mavzu aniqligi */
+.rule-acc { margin-left: 6px; font-size: 12px; font-weight: 800; padding: 1px 7px; border-radius: 99px; vertical-align: 1px; }
+.rule-acc.hi { color: var(--ok); background: color-mix(in srgb, var(--ok) 14%, transparent); }
+.rule-acc.mid { color: #d97706; background: color-mix(in srgb, #f59e0b 16%, transparent); }
+.rule-acc.lo { color: var(--danger); background: color-mix(in srgb, var(--danger) 14%, transparent); }
+.rules-sort { margin: 0 0 8px; font-size: 13px; }
+
+/* 🧩 Kun iborasi: tezkor savol */
+.daily-q { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, var(--primary) 7%, var(--bg)); }
+.daily-q-text { font-size: 14.5px; font-weight: 600; line-height: 1.45; }
+.daily-q-gap { color: var(--primary); padding: 0 2px; }
+.daily-q-gap.ok { color: var(--ok); }
+.daily-q-opts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.daily-q-opts .qz-opt { min-height: 34px; padding: 5px 12px; font-size: 14px; }
+
+/* 🕘 Oxirgi yozilgan mavzular */
+.chip-f.tp-recent { color: var(--primary); border-color: color-mix(in srgb, var(--primary) 40%, transparent); }
+
+/* ⏸ Ovoz tizimi to'xtab qolgan: ko'zga tashlanadigan ogohlantirish */
+#status.paused { color: #c2410c; background: color-mix(in srgb, #f97316 16%, transparent); padding: 6px 12px; border-radius: 99px; font-weight: 800; animation: pausedBlink 1.4s ease-in-out infinite; }
+@keyframes pausedBlink { 50% { opacity: 0.6; } }
+body.dark #status.paused { color: #fdba74; }
+#status.paused #statusText { color: inherit; }
+
+/* ⚡ Ekrandan tashqaridagi dars kartalari keyinroq chiziladi (185+ dars — sekin telefonda tezroq) */
+.lesson-list > .lesson { content-visibility: auto; contain-intrinsic-size: auto 84px; }
+
+/* 📝 Namunaviy javob: tinglash va o'qilayotgan paragraf */
+.sample-box > p.now { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 6px; }
+.sample-box .sample-play { margin: 0 0 8px; }
+.sample-box .rep-word { display: flex; align-items: center; gap: 8px; }
+.sample-box .rep-word .ph-keep { position: static; transform: none; margin-left: auto; flex-shrink: 0; }

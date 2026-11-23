@@ -1,0 +1,318 @@
+// O'quvchilar progressini saqlash (oddiy JSON fayl). Fayl yozib bo'lmasa, xotirada ishlayveradi.
+import fs from "node:fs";
+import path from "node:path";
+
+const DIR = process.env.DATA_DIR || path.resolve("data");
+const FILE = path.join(DIR, "progress.json");
+const MAX_HISTORY = 200;
+
+let db = { users: {} };
+try {
+  db = JSON.parse(fs.readFileSync(FILE, "utf8"));
+  if (!db.users) db = { users: {} };
+} catch {
+  // birinchi ishga tushish
+}
+
+let timer = null;
+let warned = false;
+let dirty = false;
+function writeNow() {
+  clearTimeout(timer);
+  if (!dirty) return;
+  dirty = false;
+  try {
+    fs.mkdirSync(DIR, { recursive: true });
+    const tmp = FILE + ".tmp";
+    fs.writeFileSync(tmp, JSON.stringify(db));
+    fs.renameSync(tmp, FILE);
+  } catch (e) {
+    if (!warned) console.error("Progressni saqlab bo'lmadi:", e.message);
+    warned = true;
+  }
+}
+function save() {
+  dirty = true;
+  clearTimeout(timer);
+  timer = setTimeout(writeNow, 500);
+}
+// Server to'xtatilganda (systemctl restart) kutilayotgan yozuvlarni darhol saqlaymiz
+for (const sig of ["SIGTERM", "SIGINT"]) {
+  process.once(sig, () => {
+    writeNow();
+    process.exit(0);
+  });
+}
+process.once("beforeExit", writeNow);
+
+// Toshkent vaqti bo'yicha sana (YYYY-MM-DD)
+const today = (d = new Date()) => new Date(d.getTime() + 5 * 3600_000).toISOString().slice(0, 10);
+
+function user(id) {
+  db.users[id] ||= { lessons: {}, history: [], days: [], seconds: 0 };
+  return db.users[id];
+}
+
+export function recordSession(userId, { lessonId, mode, used, total, seconds, report, words = 0 }) {
+  const u = user(userId);
+  const score = Number.isFinite(report?.score) ? report.score : Math.round((used / Math.max(1, total)) * 100);
+  const l = (u.lessons[lessonId] ||= { best: 0, count: 0, last: "" });
+  l.best = Math.max(l.best, score);
+  l.count += 1;
+  l.last = today();
+  const d = today();
+  if (!u.days.includes(d)) u.days.push(d);
+  u.days = u.days.slice(-400);
+  u.seconds += Math.max(0, Math.round(seconds || 0));
+  u.maxWords = Math.max(u.maxWords || 0, words); // 🏆 bir darsda eng ko'p aytilgan so'zlar
+  u.history.push({
+    at: new Date().toISOString(),
+    lessonId,
+    mode,
+    used,
+    total,
+    score,
+    level: report?.level || "",
+    ...(Number.isFinite(report?.ml_score) ? { ml: report.ml_score } : {}),
+  });
+  u.history = u.history.slice(-MAX_HISTORY);
+  // 📒 Lug'at: yangi so'zlar va tuzatilgan xatolar
+  u.words ||= [];
+  const add = (w) => {
+    if (!w.en || u.words.some((x) => x.en.toLowerCase() === w.en.toLowerCase())) return;
+    u.words.push({ ...w, at: today() });
+  };
+  for (const w of report?.new_words || []) add({ en: w.en, uz: w.uz || "", type: "word" });
+  for (const m of report?.mistakes || []) add({ en: m.right, uz: m.why_uz || "", wrong: m.wrong, type: "fix" });
+  u.words = u.words.slice(-300);
+  save();
+  return score;
+}
+
+// 🔥 Ballsiz faollik (masalan, tugatilmagan erkin suhbat): faqat kun va daqiqalar yoziladi — seriya uzilmaydi
+export function touchDay(userId, seconds = 0) {
+  const u = user(userId);
+  const d = today();
+  if (!u.days.includes(d)) u.days.push(d);
+  u.days = u.days.slice(-400);
+  u.seconds += Math.max(0, Math.round(seconds || 0));
+  save();
+}
+
+function streak(days) {
+  const set = new Set(days);
+  let n = 0;
+  let d = new Date();
+  if (!set.has(today(d))) d = new Date(d.getTime() - 86400_000); // bugun hali mashq qilmagan bo'lsa, kechadan sanaymiz
+  while (set.has(today(d))) {
+    n += 1;
+    d = new Date(d.getTime() - 86400_000);
+  }
+  return n;
+}
+
+export function summary(userId) {
+  const u = user(userId);
+  const lessons = {};
+  for (const [id, l] of Object.entries(u.lessons)) lessons[id] = { best: l.best, count: l.count, last: l.last || "" };
+  return {
+    streak: streak(u.days),
+    best: u.history.reduce((m, h) => Math.max(m, h.score || 0), 0),
+    bestStreak: (() => {
+      // Eng uzun ketma-ket kunlar seriyasi
+      const ds = [...new Set(u.days)].sort();
+      let best = 0, cur = 0, prev = null;
+      for (const d of ds) {
+        cur = prev && (Date.parse(d) - Date.parse(prev)) === 86400_000 ? cur + 1 : 1;
+        best = Math.max(best, cur);
+        prev = d;
+      }
+      return best;
+    })(),
+    ielts: u.history.some((h) => /IELTS\s*(6|7|8|9)/.test(h.level || "")),
+    // 📗 Taxminiy CEFR daraja: oxirgi 3 ta CEFR natijasining o'rtachasi
+    cefr: (() => {
+      const L = ["A1", "A2", "B1", "B2", "C1", "C2"];
+      const v = u.history.map((h) => L.indexOf((h.level || "").match(/\b([ABC][12])\b/)?.[1])).filter((i) => i >= 0).slice(-3);
+      return v.length ? L[Math.round(v.reduce((s, i) => s + i, 0) / v.length)] : null;
+    })(),
+    // 🇺🇿 Taxminiy Multilevel: oxirgi 3 ta CEFR natijasining o'rtachasi (0–75)
+    ml: (() => {
+      const v = u.history.filter((h) => Number.isFinite(h.ml)).slice(-3).map((h) => h.ml);
+      return v.length ? Math.round(v.reduce((a, b) => a + b, 0) / v.length) : null;
+    })(),
+    // 🎯 Taxminiy IELTS band: oxirgi 3 ta IELTS natijasining o'rtachasi (0.5 ga yaxlitlangan)
+    band: (() => {
+      const b = u.history.map((h) => Number((h.level || "").match(/IELTS\s*(\d(?:\.\d)?)/)?.[1])).filter((x) => x >= 1 && x <= 9).slice(-3);
+      if (!b.length) return null;
+      return { value: Math.round((b.reduce((s, x) => s + x, 0) / b.length) * 2) / 2, n: b.length };
+    })(),
+    today: u.history.filter((h) => today(new Date(h.at)) === today()).length,
+    done: Object.keys(u.lessons).filter((id) => id !== "review").length,
+    minutes: Math.round(u.seconds / 60),
+    lessons,
+    recent: u.history.slice(-10).reverse(),
+    week: (() => {
+      // Oxirgi 7 kun va undan oldingi 7 kun
+      const now = Date.now();
+      const inRange = (h, a, b) => { const t = Date.parse(h.at); return t > now - b * 86400_000 && t <= now - a * 86400_000; };
+      const avg = (a) => (a.length ? Math.round(a.reduce((s, h) => s + (h.score || 0), 0) / a.length) : null);
+      const cur = u.history.filter((h) => inRange(h, 0, 7));
+      const prev = u.history.filter((h) => inRange(h, 7, 14));
+      return { n: cur.length, avg: avg(cur), prevAvg: avg(prev), prevN: prev.length };
+    })(),
+    remind: Boolean(u.remind),
+    maxWords: u.maxWords || 0,
+    remindHour: u.remindHour || null,
+    words: (u.words || []).slice(-150).reverse(),
+    // 🗓 Oxirgi 7 kun: qaysi kunlari mashq qilingan (eng eskisidan bugungacha)
+    days7: Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(Date.now() - (6 - i) * 86400_000);
+      return { d: today(d), on: u.days.includes(today(d)) };
+    }),
+  };
+}
+
+// 📊 Admin uchun umumiy statistika (shaxsiy ma'lumotsiz)
+export function adminStats() {
+  const users = Object.values(db.users);
+  const d = today();
+  const week = new Set(Array.from({ length: 7 }, (_, i) => today(new Date(Date.now() - i * 86400_000))));
+  const all = users.flatMap((u) => u.history);
+  const byLesson = {};
+  for (const h of all) byLesson[h.lessonId] = (byLesson[h.lessonId] || 0) + 1;
+  const byDay = {};
+  for (const h of all) {
+    const k = today(new Date(h.at));
+    if (week.has(k)) byDay[k] = (byDay[k] || 0) + 1;
+  }
+  return {
+    users: users.length,
+    remindOn: users.filter((u) => u.remind).length,
+    activeToday: users.filter((u) => u.days.includes(d)).length,
+    activeWeek: users.filter((u) => u.days.some((x) => week.has(x))).length,
+    // 🔁 Qaytib kelayotganlar va bugun birinchi marta kelganlar
+    returning: users.filter((u) => new Set(u.days).size >= 2).length,
+    newToday: users.filter((u) => u.days.length && [...u.days].sort()[0] === d).length,
+    lessons: all.length,
+    lessonsToday: all.filter((h) => today(new Date(h.at)) === d).length,
+    avgScore: all.length ? Math.round(all.reduce((s, h) => s + (h.score || 0), 0) / all.length) : 0,
+    minutes: Math.round(users.reduce((s, u) => s + (u.seconds || 0), 0) / 60),
+    top: Object.entries(byLesson).sort((a, b) => b[1] - a[1]).slice(0, 10),
+    mistakes: (() => {
+      // Eng ko'p uchraydigan tuzatishlar (to'g'ri variant bo'yicha guruhlanadi)
+      const m = new Map();
+      for (const u of users)
+        for (const w of u.words || []) {
+          if (w.type !== "fix") continue;
+          const k = w.en.toLowerCase().trim();
+          const e = m.get(k) || { right: w.en, wrong: w.wrong || "", why: w.uz || "", n: 0 };
+          e.n++;
+          m.set(k, e);
+        }
+      return [...m.values()].sort((a, b) => b.n - a.n).slice(0, 10);
+    })(),
+    byDay: [...week].sort().map((k) => [k, byDay[k] || 0]),
+    // 🕐 Soatlar bo'yicha (Toshkent vaqti): o'quvchilar qachon ko'proq mashq qiladi
+    byHour: (() => {
+      const h = Array(24).fill(0);
+      for (const x of all) {
+        const t = Date.parse(x.at);
+        if (t) h[new Date(t + 5 * 3600_000).getUTCHours()]++;
+      }
+      return h;
+    })(),
+    // 🎛 Rejimlar bo'yicha: nechta dars va o'rtacha ball
+    byMode: (() => {
+      const m = {};
+      for (const h of all) {
+        const k = h.mode || "chat";
+        (m[k] ||= { n: 0, sum: 0 }).n++;
+        m[k].sum += h.score || 0;
+      }
+      return Object.entries(m).map(([mode, v]) => ({ mode, n: v.n, avg: Math.round(v.sum / v.n) })).sort((a, b) => b.n - a.n);
+    })(),
+  };
+}
+
+// ⏱ Kunlik limit hisobi (server qayta yoqilganda ham saqlanadi)
+export function startedToday(userId) {
+  const u = db.users[userId];
+  return u && u.started?.day === today() ? u.started.n : 0;
+}
+export function countStart(userId) {
+  const u = user(userId);
+  if (u.started?.day !== today()) u.started = { day: today(), n: 0 };
+  u.started.n += 1;
+  save();
+  return u.started.n;
+}
+// Suhbat umuman boshlanmagan bo'lsa (masalan, jonli ulanish xatosi) — kunlik limitni qaytaramiz
+export function refundStart(userId) {
+  const u = db.users[userId];
+  if (!u || u.started?.day !== today() || u.started.n <= 0) return;
+  u.started.n -= 1;
+  save();
+}
+export function startsTodayTotal() {
+  return Object.values(db.users).reduce((s, u) => s + (u.started?.day === today() ? u.started.n : 0), 0);
+}
+
+// 🗑 Foydalanuvchi o'z ma'lumotlarini o'chiradi (kunlik limit hisobi saqlanadi)
+// 📒 O'quvchi o'zi saqlagan ibora (masalan, kun iborasi)
+export function addWord(userId, en, uz) {
+  const u = user(userId);
+  u.words ||= [];
+  if (u.words.some((w) => w.en.toLowerCase() === en.toLowerCase())) return false;
+  u.words.push({ en, uz, type: "word", at: today() });
+  u.words = u.words.slice(-300);
+  save();
+  return true;
+}
+
+export function removeWord(userId, en) {
+  const u = user(userId);
+  const n = (u.words || []).length;
+  u.words = (u.words || []).filter((w) => w.en !== en);
+  if (u.words.length !== n) save();
+  return u.words.length !== n;
+}
+
+// ✅ Takrorlash darsida to'g'ri aytilgan xatolar "tuzatildi" deb belgilanadi
+export function markFixed(userId, ens) {
+  const u = user(userId);
+  const set = new Set(ens.map((x) => String(x).toLowerCase()));
+  let n = 0;
+  for (const w of u.words || []) if (w.type === "fix" && !w.fixed && set.has(w.en.toLowerCase())) {
+    w.fixed = today();
+    n++;
+  }
+  if (n) save();
+  return n;
+}
+
+// 🔔 Kechki eslatma: o'quvchi o'zi yoqadi/o'chiradi
+export function setRemind(userId, on, hour) {
+  const u = user(userId);
+  u.remind = Boolean(on);
+  if ([18, 19, 20, 21, 22].includes(hour)) u.remindHour = hour;
+  save();
+}
+// Bugun eslatma kerak bo'lgan o'quvchilar: eslatma yoqilgan, seriyasi bor, bugun dars yo'q, bugun hali yozilmagan
+export function remindTargets(hour, defHour = 20) {
+  const d = today();
+  return Object.entries(db.users)
+    .filter(([id, u]) => u.remind && (u.remindHour || defHour) === hour && /^\d+$/.test(id) && u.lastRemind !== d && !u.days.includes(d) && streak(u.days) > 0)
+    .map(([id, u]) => ({ id, streak: streak(u.days) }));
+}
+export function markReminded(userId) {
+  user(userId).lastRemind = today();
+  save();
+}
+
+export function deleteUser(userId) {
+  const u = db.users[userId];
+  if (!u) return;
+  db.users[userId] = { lessons: {}, history: [], days: [], seconds: 0, words: [], started: u.started };
+  save();
+}

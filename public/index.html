@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
   <title>Sado — ingliz tilida gaplashish</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="styles.css?v=6" />
+  <link rel="stylesheet" href="styles.css?v=230" />
 </head>
 <body>
   <header class="topbar">
@@ -17,32 +17,57 @@
       <span class="brand-name">Sado</span>
       <span class="brand-tag">Speaking</span>
     </div>
+    <button class="icon-btn font-btn help-btn set-first" id="setBtn" aria-label="Sozlamalar">⚙️</button>
+    <button class="icon-btn font-btn help-btn" id="helpBtn" aria-label="Yordam">?</button>
   </header>
 
   <!-- 1. Darslar ro'yxati -->
   <main id="home" class="screen active">
-    <section class="hero">
-      <div class="hero-mascot" id="heroMascot"></div>
-      <div>
-        <h1>Ingliz tilida gaplashamiz!</h1>
-        <p>Vaziyatni tanlang. Sado bilan ovoz chiqarib gaplashing, 6 ta iborani ishlating.</p>
-      </div>
-    </section>
-    <button class="free-cta" id="freeBtn">
-      <span class="free-emoji">💬</span>
-      <span class="free-info"><b>Erkin suhbat</b><small>Istalgan mavzuda o'zbekcha yoki inglizcha gaplashing</small></span>
-      <span class="free-go">›</span>
+    <button class="hero free-hero" id="freeHero">
+      <span class="free-badge">✨ YANGI · Jonli AI</span>
+      <span class="free-row">
+        <span class="hero-mascot" id="heroMascot"></span>
+        <span class="free-text">
+          <b>💬 Erkin suhbat</b>
+          <span>Sado bilan istalgan mavzuda gaplashing: o'zbekcha ham, inglizcha ham. Xuddi do'st bilan gaplashgandek!</span>
+        </span>
+      </span>
+      <span class="free-cta">📞 Gaplashishni boshlash</span>
+      <span class="topic-pick" id="topicPick"></span>
     </button>
+    <div class="daily" id="daily" hidden></div>
+    <div class="today-card" id="todayCard">
+      <button class="goal" id="goal" hidden></button>
+      <div class="stats" id="stats" hidden></div>
+      <div class="week" id="week" hidden></div>
+      <button class="band" id="band" hidden></button>
+    </div>
+    <div class="tiles">
+      <button class="vocab-btn tile" id="vocabBtn" hidden></button>
+      <button class="tile" id="moreBtn" hidden></button>
+    </div>
+    <div class="more-stats" id="moreStats" hidden>
+      <div class="trend" id="trend" hidden></div>
+      <div class="badges" id="badges" hidden></div>
+    </div>
+    <div class="next-box" id="nextBox" hidden></div>
+    <div class="search-wrap"><input id="searchInput" type="search" placeholder="🔍 Mavzu yoki ibora qidirish..." autocomplete="off" /></div>
+    <div class="chips" id="chips"></div>
     <div class="lesson-list" id="lessonList">
       <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
     </div>
+    <button class="invite" id="inviteBtn">👥 Do'stingizni Sado'ga taklif qiling<small>Birga mashq qilish qiziqroq — havolani yuboring</small></button>
     <p class="note" id="homeNote"></p>
+    <button class="to-top" id="toTop" aria-label="Tepaga" hidden>⬆</button>
   </main>
 
   <!-- 2. Dars (suhbat) -->
   <main id="lesson" class="screen">
     <div class="lesson-head">
-      <div class="head-left"><b>Sado AI</b> <span class="muted" id="lessonTitle"></span></div>
+      <div class="head-left"><b id="lessonTitle"></b></div>
+      <span class="chip words-live" id="wordsLive" hidden>🗣 0</span>
+      <button class="chip" id="ruleBtn" hidden>📖<span class="chip-txt"> Qoida</span></button>
+      <button class="chip" id="slowBtn">🐇 Oddiy</button>
       <button class="chip" id="trBtn">🇺🇿 Tarjima</button>
       <div class="timer" id="timer">
         <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" class="t-bg"/><circle cx="10" cy="10" r="8" class="t-fg" id="timerRing"/></svg>
@@ -50,17 +75,32 @@
       </div>
     </div>
 
+    <div class="cue" id="cue" hidden>
+      <div class="cue-head"><b>📝 IELTS Part 2 kartochkasi</b><span class="cue-timer" id="cueTimer">1:00</span><span class="cue-clock" id="cueClock" hidden></span></div>
+      <div class="cue-title" id="cueTitle"></div>
+      <div class="cue-say" id="cueSay">You should say:</div>
+      <ul class="cue-points" id="cuePoints"></ul>
+      <div class="cue-tip">💡 1 daqiqa o'ylab oling. Tayyor bo'lgach, 1–2 daqiqa to'xtovsiz gapiring.</div>
+      <textarea class="cue-notes" id="cueNotes" rows="3" placeholder="📝 Qisqa qaydlar yozing (imtihonda ham ruxsat etiladi): kalit so'zlar, reja..."></textarea>
+      <button class="btn primary wide" id="cueReady">🎤 Tayyorman — gapirishni boshlash</button>
+    </div>
+
+    <div class="stages" id="stages" hidden></div>
+    <div class="visual" id="visual" hidden></div>
+    <div class="rule lesson-rule" id="lessonRule" hidden></div>
+
     <div class="phrase-card" id="phraseCard">
       <div class="progress-row">
         <div class="segments" id="segments"></div>
-        <span class="count" id="countText">6 tadan 0 ta ibora</span>
+        <span class="count" id="countText">6 tadan 0 ta ibora</span><span class="count count-words" id="countWords" hidden></span>
       </div>
       <div class="phrase-nav">
         <button class="nav-btn" id="prevPhrase" aria-label="Oldingi ibora">‹</button>
         <div class="phrase-body">
           <div class="label" id="phraseLabel">Ovoz chiqarib ayting</div>
-          <div class="phrase-en" id="phraseEn"></div>
+          <div class="phrase-pic" id="phrasePic" hidden></div><div class="phrase-en" id="phraseEn"></div>
           <div class="phrase-uz" id="phraseUz"></div>
+          <div class="phrase-acts"><button class="listen-btn" id="listenBtn" aria-label="Iborani tinglash">🔊 Tinglash</button><button class="listen-btn recall-btn" id="recallBtn" aria-pressed="false" title="Inglizchasini yashirib, o'zbekchasidan eslab aytish">🙈 Yoddan</button></div>
         </div>
         <button class="nav-btn" id="nextPhrase" aria-label="Keyingi ibora">›</button>
       </div>
@@ -72,12 +112,23 @@
       <div class="hint" id="hint">Shunchaki gapiring — Sado tinglayapti.</div>
     </div>
 
+    <div class="chatlog" id="chatlog" hidden></div>
+
     <div class="subs" id="subs" hidden>
       <div class="sub sub-ai"><b>Sado:</b> <span id="subAi"></span><div class="sub-uz" id="subAiUz"></div></div>
-      <div class="sub sub-me" id="subMeWrap" hidden><b>Siz:</b> <span id="subMe"></span></div>
+      <div class="sub sub-me" id="subMeWrap" hidden><b>Siz:</b> <span id="subMe"></span> <button class="my-voice" id="myVoiceBtn" hidden>▶️ Ovozim</button></div>
       <div class="sub sub-fix" id="subFixWrap" hidden>🇺🇿 <span id="subFix"></span></div>
     </div>
 
+    <div class="help-row">
+      <button class="hint-btn retry" id="retryBtn" hidden>🔄 Qayta yuborish</button>
+      <button class="hint-btn" id="replayBtn" hidden>🔁 Qayta eshitish</button>
+      <button class="hint-btn" id="hintBtn" hidden>💡 Nima deyishni bilmayapman</button>
+      <button class="hint-btn" id="topicBtn" hidden>🔀 Boshqa mavzu</button>
+    </div>
+    <div class="hint-box" id="hintBox" hidden></div>
+
+    <div class="controls" id="controls">
     <form class="text-reply" id="textForm" hidden>
       <input id="textInput" autocomplete="off" placeholder="Inglizcha yozing..." />
       <button type="submit">Yuborish</button>
@@ -92,6 +143,7 @@
         <svg viewBox="0 0 24 24"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12m0-6.5v-1a1.5 1.5 0 0 1 3 0V12m0-5.5a1.5 1.5 0 0 1 3 0V12m0-3.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-1.5a6 6 0 0 1-4.9-2.6L5 15.5a1.6 1.6 0 0 1 2.6-1.8L8 14"/></svg>
         Bosib gapirish
       </button>
+      <button class="mode" data-mode="text" role="tab">✍️ Yozish</button>
     </div>
 
     <button class="hold-btn" id="holdBtn" hidden>
@@ -99,9 +151,12 @@
       <span>Bosib turing va gapiring</span>
     </button>
 
+    <button class="mute-btn" id="muteBtn" hidden>🎙️ Mikrofon yoniq · o'chirish</button>
+
     <div class="bottom-row">
       <button class="btn ghost" id="subsBtn">Subtitrlar</button>
       <button class="btn danger" id="endBtn">✕ Tugatish</button>
+    </div>
     </div>
   </main>
 
@@ -111,7 +166,15 @@
       <div class="result-mascot" id="resultMascot"></div>
       <h2 id="resultTitle">Barakalla!</h2>
       <p class="muted" id="resultSub"></p>
+      <div class="cert" id="cert" hidden></div>
+      <div class="report" id="report" hidden></div>
+      <details class="transcript" id="transcript" hidden>
+        <summary>📜 Suhbat matnini ko'rish</summary>
+        <div class="chatlog tr-log" id="trLog"></div>
+      </details>
       <ul class="result-list" id="resultList"></ul>
+      <button class="btn share wide" id="shareBtn" hidden>📤 Natijani ulashish</button>
+      <button class="btn next wide" id="nextBtn" hidden></button>
       <button class="btn primary wide" id="againBtn">Qaytadan mashq qilish</button>
       <button class="btn ghost wide" id="homeBtn">Boshqa mavzu tanlash</button>
     </div>
@@ -122,8 +185,22 @@
     <div class="sheet-card">
       <div class="sheet-emoji" id="sheetEmoji">☕</div>
       <h3 id="sheetTitle"></h3>
+      <button class="fav-btn" id="favBtn">☆ Sevimlilarga qo'shish</button>
       <p class="muted">Qanday o'rganamiz? Mikrofonga ruxsat bering.</p>
+      <div class="sheet-meta" id="sheetMeta"></div>
+      <p class="sheet-scene" id="sheetScene" hidden></p>
+      <div class="rule" id="sheetRule" hidden></div>
+      <div class="quiz" id="sheetQuiz" hidden></div>
+      <details class="sheet-qs" id="sheetQs" hidden></details>
+      <button class="shadow-btn" id="shadowBtn">🎧 Tinglab takrorlash mashqi</button>
+      <div class="shadow" id="shadow" hidden></div>
       <ul class="sheet-phrases" id="sheetPhrases"></ul>
+      <div class="sheet-actions">
+      <div class="limit-note" id="limitNote" hidden></div>
+      <button class="mode-card live" id="startLiveBtn" hidden>
+        <b>📞 Jonli suhbat</b>
+        <span>Sado bilan telefonda gaplashgandek: o'zi gapiradi, savol beradi, darhol javob qaytaradi.</span>
+      </button>
       <button class="mode-card primary" id="startTutorBtn">
         <b>🇺🇿 Ustoz bilan o'rganish</b>
         <span>Sado o'zbekcha tushuntiradi, iboralarni birma-bir takrorlatadi. Boshlovchilar uchun.</span>
@@ -133,11 +210,103 @@
         <span>Sado inglizcha suhbatlashadi, xatolarni o'zbekcha tushuntiradi.</span>
       </button>
       <button class="btn ghost wide" id="cancelBtn">Bekor qilish</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sheet" id="vocabSheet" hidden>
+    <div class="sheet-card vocab-card">
+      <h3>📒 Mening lug'atim</h3>
+      <p class="muted">Darslardagi yangi so'zlar va tuzatilgan xatolaringiz. Bosing — talaffuzini eshitasiz.</p>
+      <div class="vocab-tabs"><button class="chip-f on" data-t="word">📚 So'zlar</button><button class="chip-f" data-t="fix">✏️ Xatolarim</button></div>
+      <div class="vocab-acts">
+        <button class="btn primary wide" id="flashBtn">🃏 Kartochkalar</button>
+        <button class="btn ghost wide vocab-play" id="vocabPlay" hidden>🎧 Tinglash</button>
+        <button class="btn ghost wide vocab-play" id="vocabQuiz" hidden>🧩 Test</button>
+      </div>
+      <button class="btn next wide" id="reviewBtn" hidden>🔁 Xatolarim ustida Sado bilan ishlash</button>
+      <div class="flash" id="flash" hidden></div>
+      <input class="vocab-search" id="vocabSearch" type="search" placeholder="🔍 So'z qidirish (inglizcha yoki o'zbekcha)" hidden />
+      <ul class="rep-list" id="vocabList"></ul>
+      <button class="btn ghost wide vocab-copy" id="vocabCopy" hidden>📋 Ro'yxatni nusxalash (daftarga yoki chatga)</button>
+      <button class="btn ghost wide" id="vocabClose">Yopish</button>
+    </div>
+  </div>
+
+  <div class="onb" id="onb" hidden>
+    <div class="onb-card">
+      <div class="onb-mascot" id="onbMascot"></div>
+      <div class="onb-slides" id="onbSlides"></div>
+      <div class="onb-dots" id="onbDots"></div>
+      <button class="btn primary wide" id="onbNext">Keyingisi ›</button>
+      <button class="onb-skip" id="onbSkip">O'tkazib yuborish</button>
+    </div>
+  </div>
+
+  <div class="sheet" id="micSheet" hidden>
+    <div class="sheet-card mic-card">
+      <div class="sheet-emoji">🎙️</div>
+      <h3>Mikrofonga ruxsat kerak</h3>
+      <p class="muted">Sado sizni eshitishi uchun Telegram'ga mikrofon ruxsatini bering:</p>
+      <ol class="mic-steps" id="micSteps"></ol>
+      <button class="btn primary wide" id="micRetry">🔄 Qayta urinish</button>
+      <button class="btn ghost wide" id="micText">✍️ Hozircha yozib javob beraman</button>
+    </div>
+  </div>
+
+  <div class="sheet" id="topicSheet" hidden>
+    <form class="sheet-card topic-card" id="topicForm">
+      <div class="sheet-emoji">✏️</div>
+      <h3>O'z mavzuingiz</h3>
+      <p class="muted">Sado bilan nima haqida gaplashmoqchisiz? O'zbekcha yoki inglizcha yozing.</p>
+      <input id="topicInput" maxlength="60" autocomplete="off" placeholder="Masalan: shaxmat, kosmos..." />
+      <div class="topic-ideas" id="topicIdeas"></div>
+      <button class="btn primary wide" type="submit">💬 Saqlash</button>
+      <button class="btn ghost wide" type="button" id="topicCancel">Bekor qilish</button>
+    </form>
+  </div>
+
+  <div class="sheet" id="mixSheet" hidden>
+    <div class="sheet-card">
+      <div class="mix-levels" id="mixLevels"></div>
+      <div class="quiz mix-quiz" id="mixQuiz"></div>
+      <button class="btn ghost wide" id="mixClose">Yopish</button>
+    </div>
+  </div>
+
+  <div class="sheet" id="helpSheet" hidden>
+    <div class="sheet-card help-card">
+      <h3>❓ Yordam</h3>
+      <div id="faq"></div>
+      <button class="btn ghost wide" id="onbAgain">👋 Tanishuvni qayta ko'rish</button>
+      <button class="btn primary wide" id="helpClose">Tushunarli</button>
+    </div>
+  </div>
+
+  <div class="sheet" id="newsSheet" hidden>
+    <div class="sheet-card news-card">
+      <div class="sheet-emoji">🆕</div>
+      <h3>Sado'da nima yangi?</h3>
+      <ul class="news-list" id="newsList"></ul>
+      <button class="btn primary wide" id="newsClose">Zo'r, ko'rdim!</button>
+    </div>
+  </div>
+
+  <div class="sheet" id="setSheet" hidden>
+    <div class="sheet-card set-card">
+      <h3>⚙️ Sozlamalar</h3>
+      <div id="setRows"></div>
+      <button class="btn ghost wide sound-test" id="soundTest">🔊 Ovozni tekshirish</button>
+      <div class="sound-ask" id="soundAsk" hidden></div>
+      <button class="btn ghost wide" id="setInvite">👥 Do'stni taklif qilish</button>
+      <button class="btn primary wide" id="setClose">Saqlash</button>
+      <button class="del-btn" id="delData">🗑 Ma'lumotlarimni o'chirish</button>
+      <div class="app-ver"><span id="appVer"></span> · <button id="appRefresh">🔄 Yangilash</button></div>
     </div>
   </div>
 
   <div class="toast" id="toast" hidden></div>
 
-  <script type="module" src="app.js?v=8"></script>
+  <script type="module" src="app.js?v=304"></script>
 </body>
 </html>
