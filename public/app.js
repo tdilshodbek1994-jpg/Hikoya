@@ -719,6 +719,19 @@ function renderMixPicker(gr, box) {
   box.append(el("b", "", "🎯 Qaysi mavzulardan test tuzay?"));
   const list = el("div", "mp-list");
   const go = el("button", "btn primary wide mp-go");
+  const items = new Map();
+  const paint = () => { for (const [id, b] of items) b.classList.toggle("on", sel.has(id)); upd(); };
+  // ⚡ Tezkor tanlash: zaif mavzular (aniqlik < 70%) yoki tozalash
+  const tools = el("div", "mp-tools");
+  const by = quizStats().by || {};
+  const weak = gr.filter((l) => by[l.id]?.all >= 3 && by[l.id].ok / by[l.id].all < 0.7).map((l) => l.id);
+  const wk = el("button", "mp-tool", weak.length ? `⚠️ Zaif mavzularim (${weak.length})` : "⚠️ Zaif mavzu hali yo'q");
+  wk.disabled = !weak.length;
+  wk.addEventListener("click", () => { haptic(); sel.clear(); weak.forEach((id) => sel.add(id)); paint(); });
+  const clr = el("button", "mp-tool", "✕ Tozalash");
+  clr.addEventListener("click", () => { haptic(); sel.clear(); paint(); });
+  tools.append(wk, clr);
+  box.append(tools);
   const upd = () => {
     const n = gr.filter((l) => sel.has(l.id)).reduce((a, l) => a + (l.quiz?.length || 0), 0);
     go.textContent = sel.size ? `▶ Boshlash · ${sel.size} ta mavzu, ${Math.min(10, n)} ta savol` : "Kamida bitta mavzuni belgilang";
@@ -727,9 +740,17 @@ function renderMixPicker(gr, box) {
   let grp = "";
   for (const l of gr) {
     const g = mixLevelOf(l.level);
-    if (g !== grp) { grp = g; list.append(el("div", "mp-grp", MIX_LEVELS.find(([k]) => k === g)[1])); }
+    if (g !== grp) {
+      grp = g;
+      // Guruh sarlavhasi — butun darajani belgilash / olib tashlash
+      const ids = gr.filter((x) => mixLevelOf(x.level) === g).map((x) => x.id);
+      const h = el("button", "mp-grp", `${MIX_LEVELS.find(([k]) => k === g)[1]} · hammasi`);
+      h.addEventListener("click", () => { haptic(); const all = ids.every((id) => sel.has(id)); ids.forEach((id) => (all ? sel.delete(id) : sel.add(id))); paint(); });
+      list.append(h);
+    }
     const b = el("button", "mp-item" + (sel.has(l.id) ? " on" : ""), `${l.emoji || "✏️"} ${l.title.replace(/^\d+\.\s*/, "")}`);
-    b.addEventListener("click", () => { haptic(); sel.has(l.id) ? sel.delete(l.id) : sel.add(l.id); b.classList.toggle("on"); upd(); });
+    items.set(l.id, b);
+    b.addEventListener("click", () => { haptic(); sel.has(l.id) ? sel.delete(l.id) : sel.add(l.id); paint(); });
     list.append(b);
   }
   go.addEventListener("click", () => {
@@ -760,6 +781,7 @@ function openMixTest(level = localStorage.getItem("sado-mix-lv") || "") {
     b.addEventListener("click", () => { haptic(); openMixTest(k); });
     lv.append(b);
   }
+  requestAnimationFrame(() => { const on = lv.querySelector(".on"); if (on) lv.scrollLeft = Math.max(0, on.offsetLeft + on.offsetWidth - lv.clientWidth + 8); });
   if (level === "pick") return renderMixPicker(gr, $("mixQuiz"));
   renderQuiz({ id: "gr-mix", quiz }, $("mixQuiz"), `📝 Aralash test · ${quiz.length} ta savoldan 10 tasi`, 10);
 }
