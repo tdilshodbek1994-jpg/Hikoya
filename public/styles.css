@@ -1328,3 +1328,7 @@ body.dark .acc-tag.hi { color: #4ade80; } body.dark .acc-tag.mid { color: #fbbf2
 /* 🆕 Yangiliklar: bosiladigan bandlar */
 #newsList li.news-go { cursor: pointer; }
 #newsList .news-arrow { color: var(--primary); font-weight: 800; }
+
+/* ⚙️ 5+ variantli tanlov (masalan Yo'nalish) ikki qatorga bo'linadi — ekrandan chiqmaydi */
+.seg:has(> .seg-b:nth-child(5)) { flex-wrap: wrap; }
+.seg:has(> .seg-b:nth-child(5)) > .seg-b { flex: 1 1 30%; }

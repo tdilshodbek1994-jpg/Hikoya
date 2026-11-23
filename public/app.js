@@ -649,7 +649,7 @@ function openTopicStats() {
       haptic();
       const quiz = weak.flatMap((x) => (x.l.quiz || []).map((q) => ({ ...q, from: x.l.id })));
       state.mixWeak = new Map();
-      renderQuiz({ id: "gr-weak", quiz }, $("mixQuiz"), `💪 Zaif mavzular · ${weak.length} ta mavzu`, Math.min(10, quiz.length));
+      renderQuiz({ id: "gr-weak", quiz }, $("mixQuiz"), `💪 Zaif mavzular · ${weak.length} ta mavzu`, Math.min(mixLen(), quiz.length));
     });
     box.append(wb);
   }
@@ -663,7 +663,7 @@ function openTopicStats() {
       const pick = [...fresh].sort(() => Math.random() - 0.5).slice(0, 5);
       const quiz = pick.flatMap((l) => l.quiz.map((q) => ({ ...q, from: l.id })));
       state.mixWeak = new Map();
-      renderQuiz({ id: "gr-new", quiz }, $("mixQuiz"), `🆕 Yangi mavzular: ${pick.map((l) => l.emoji).join(" ")}`, Math.min(10, quiz.length));
+      renderQuiz({ id: "gr-new", quiz }, $("mixQuiz"), `🆕 Yangi mavzular: ${pick.map((l) => l.emoji).join(" ")}`, Math.min(mixLen(), quiz.length));
     });
     box.append(nb);
   }
@@ -766,6 +766,8 @@ function openSpeedTest() {
 
 // 📝 Aralash grammatika testi (barcha darslar savollaridan)
 // Daraja guruhlari: boshlang'ich (A1–A2), o'rta (A2-B1, B1), yuqori (B1-B2)
+// 📝 Aralash test uzunligi (⚙️ Sozlamalarda: 10 yoki 20 savol)
+const mixLen = () => (localStorage.getItem("sado-mix-n") === "20" ? 20 : 10);
 const MIX_LEVELS = [["", "Hammasi"], ["beg", "🌱 A1–A2"], ["mid", "🌿 B1"], ["adv", "🌳 B2"], ["pick", "🎯 Tanlash"]];
 // 🎯 O'zi tanlagan mavzulardan test
 const mixPicked = () => { try { return JSON.parse(localStorage.getItem("sado-mix-pick") || "[]"); } catch { return []; } };
@@ -790,7 +792,7 @@ function renderMixPicker(gr, box) {
   box.append(tools);
   const upd = () => {
     const n = gr.filter((l) => sel.has(l.id)).reduce((a, l) => a + (l.quiz?.length || 0), 0);
-    go.textContent = sel.size ? `▶ Boshlash · ${sel.size} ta mavzu, ${Math.min(10, n)} ta savol` : "Kamida bitta mavzuni belgilang";
+    go.textContent = sel.size ? `▶ Boshlash · ${sel.size} ta mavzu, ${Math.min(mixLen(), n)} ta savol` : "Kamida bitta mavzuni belgilang";
     go.disabled = !sel.size;
   };
   let grp = "";
@@ -814,7 +816,7 @@ function renderMixPicker(gr, box) {
     const ids = gr.filter((l) => sel.has(l.id)).map((l) => l.id);
     localStorage.setItem("sado-mix-pick", JSON.stringify(ids));
     const quiz = gr.filter((l) => sel.has(l.id)).flatMap((l) => (l.quiz || []).map((q) => ({ ...q, from: l.id })));
-    renderQuiz({ id: "gr-mix", quiz }, box, `🎯 ${ids.length} ta mavzudan test · ${Math.min(10, quiz.length)} ta savol`, 10);
+    renderQuiz({ id: "gr-mix", quiz }, box, `🎯 ${ids.length} ta mavzudan test · ${Math.min(mixLen(), quiz.length)} ta savol`, mixLen());
   });
   upd();
   box.append(list, go);
@@ -839,7 +841,7 @@ function openMixTest(level = localStorage.getItem("sado-mix-lv") || "") {
   }
   requestAnimationFrame(() => { const on = lv.querySelector(".on"); if (on) lv.scrollLeft = Math.max(0, on.offsetLeft + on.offsetWidth - lv.clientWidth + 8); });
   if (level === "pick") return renderMixPicker(gr, $("mixQuiz"));
-  renderQuiz({ id: "gr-mix", quiz }, $("mixQuiz"), `📝 Aralash test · ${Math.min(10, quiz.length)} ta savol`, 10);
+  renderQuiz({ id: "gr-mix", quiz }, $("mixQuiz"), `📝 Aralash test · ${Math.min(mixLen(), quiz.length)} ta savol`, mixLen());
 }
 $("mixClose").addEventListener("click", () => ($("mixSheet").hidden = true));
 $("mixSheet").addEventListener("click", (e) => { if (e.target.id === "mixSheet") $("mixSheet").hidden = true; });
@@ -2570,6 +2572,7 @@ function renderSettings() {
       v ? localStorage.setItem("sado-aim", v) : localStorage.removeItem("sado-aim");
       renderNext();
     }],
+    ["📝 Aralash test uzunligi", [["10", "10 ta savol"], ["20", "20 ta savol"]], () => String(mixLen()), (v) => { localStorage.setItem("sado-mix-n", v); if (state.lessons.length) keepScroll(renderLessons); }],
     ["🎯 Kunlik maqsad", [["1", "1 dars"], ["2", "2 dars"], ["3", "3 dars"]], () => String(state.goal), (v) => { state.goal = Number(v); localStorage.setItem("sado-goal", v); renderGoal(); }],
     ["🌙 Ko'rinish", [["auto", "Avto"], ["light", "☀️ Kunduzgi"], ["dark", "🌙 Tungi"]], () => localStorage.getItem("sado-theme") || "auto", (v) => { localStorage.setItem("sado-theme", v); applyTheme(); }],
     ["Aa Matn o'lchami", [["0", "Oddiy"], ["1", "Katta"], ["2", "Juda katta"]], () => String((Number(localStorage.getItem("sado-font")) || 0) % 3), (v) => { localStorage.setItem("sado-font", v); applyFont(); }],
