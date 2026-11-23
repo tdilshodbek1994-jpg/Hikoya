@@ -616,3 +616,12 @@ body.dark .shadow-btn { color: #5eead4; }
 .tile.on { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--primary) 45%, transparent), var(--shadow); }
 .tiles > :only-child { grid-column: 1 / -1; }
 .more-stats { margin: -2px 0 12px; }
+
+/* ---------- Jonli suhbat: suhbat uzaysa ham boshqaruv ko'rinib tursin ---------- */
+#lesson.is-live:has(#chatlog .bubble) .mascot { width: min(40vw, 150px); transition: width 0.3s ease; }
+#lesson.is-live:has(#chatlog .bubble) .hint { display: none; }
+#lesson.is-live .bottom-row { position: sticky; bottom: 0; z-index: 5; margin: 8px -14px 0; padding: 10px 14px calc(10px + var(--safe-b)); background: linear-gradient(to top, var(--bg) 70%, transparent); }
+#lesson.is-live .mute-btn { margin-top: 4px; }
+#lesson.is-live .help-row { margin-top: 2px; }
+#lesson.is-live .hint-item b::after { content: none; }
+#lesson.is-live .hint-item { cursor: default; }

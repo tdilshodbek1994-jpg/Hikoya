@@ -1035,7 +1035,8 @@ async function startLive(lesson) {
   $("chatlog").innerHTML = "";
   $("subsBtn").classList.add("on");
   $("muteBtn").hidden = false;
-  $("hintBtn").hidden = true;
+  $("hintBtn").hidden = false; // 💡 jonli suhbatda ham javob namunalari
+  $("lesson").classList.add("is-live");
   $("replayBtn").hidden = true;
   clearHints();
   setMuteUi(false);
@@ -1118,11 +1119,13 @@ $("hintBtn").addEventListener("click", async () => {
   try {
     const { hints } = await api(`api/hint?session=${encodeURIComponent(state.session)}`, { json: {} });
     box.innerHTML = "";
-    box.append(el("div", "hint-title", "Shunday deyishingiz mumkin (bosing — eshitasiz):"));
+    // Jonli qo'ng'iroqda namunani ovoz bilan ijro etmaymiz — Sado uni o'quvchi gapi deb eshitib qoladi
+    const live = Boolean(state.live);
+    box.append(el("div", "hint-title", live ? "Shulardan birini ovoz chiqarib ayting:" : "Shunday deyishingiz mumkin (bosing — eshitasiz):"));
     for (const h of hints || []) {
       const d = el("div", "hint-item");
       d.append(el("b", "", h.en), el("span", "", h.uz));
-      d.addEventListener("click", () => speakBrowser(h.en, "en"));
+      if (!live) d.addEventListener("click", () => speakBrowser(h.en, "en"));
       box.append(d);
     }
     if (!hints?.length) box.append(el("div", "muted", "Hozircha namuna topilmadi."));
@@ -1175,6 +1178,7 @@ function addBubble(who) {
   const b = el("div", "bubble " + (who === "sado" ? "b-sado" : "b-me"));
   b.append(el("small", "", who === "sado" ? "Sado" : "Siz"), el("span", "", ""));
   log.append(b);
+  if (who !== "sado" && state.live) clearHints(); // o'quvchi javob berdi — namunalar yopiladi
   while (log.children.length > 40) log.firstChild.remove();
 }
 function appendBubble(text) {
@@ -1808,6 +1812,7 @@ function speakBrowser(text, lang = "en") {
 // ---------------- Tugatish ----------------
 function stopAll() {
   clearInterval(state.timer);
+  $("lesson").classList.remove("is-live");
   state.live?.stop();
   state.live = null;
   cancelRecording();
