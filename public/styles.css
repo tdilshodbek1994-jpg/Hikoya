@@ -1025,3 +1025,5 @@ body.dark .fold-tag.new { color: #fb7185; } body.dark .fold-tag.rep { color: #fb
 .qz-opt.ok { background: color-mix(in srgb, var(--ok) 18%, var(--bg)); border-color: var(--ok); }
 .qz-opt.bad { background: color-mix(in srgb, var(--danger) 18%, var(--bg)); border-color: var(--danger); }
 .qz-done { margin: 2px 0 8px; font-weight: 600; }
+.qz-missed { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-bottom: 8px; }
+.qz-missed small { width: 100%; color: var(--muted); }

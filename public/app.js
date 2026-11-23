@@ -345,6 +345,9 @@ function lessonButton(l) {
       b.querySelector(".lesson-sub").textContent = `✅ ${pr.best} ball · 🔁 ${daysSince(pr.last)} kun oldin`;
     }
   }
+  // 🧩 Grammatika mashqining eng yaxshi natijasi
+  const qz = quizBest()[l.id];
+  if (qz) b.querySelector(".lesson-sub").textContent += ` · 🧩 ${qz}`;
   b.addEventListener("click", () => openSheet(l));
   return b;
 }
@@ -370,6 +373,12 @@ function quizItems(rule) {
   }
   return items.slice(0, 4);
 }
+const quizBest = () => { try { return JSON.parse(localStorage.getItem("sado-quiz") || "{}"); } catch { return {}; } };
+function saveQuiz(id, right, total) {
+  const all = quizBest();
+  const prev = Number(String(all[id] || "0").split("/")[0]);
+  if (right >= prev) { all[id] = `${right}/${total}`; localStorage.setItem("sado-quiz", JSON.stringify(all)); }
+}
 function renderQuiz(lesson) {
   const box = $("sheetQuiz");
   box.innerHTML = "";
@@ -379,16 +388,29 @@ function renderQuiz(lesson) {
     : lesson.rule ? quizItems(lesson.rule) : [];
   box.hidden = items.length < 2;
   if (box.hidden) return;
-  let i = 0, right = 0;
+  let i = 0, right = 0, missed = [];
   const head = el("b", "", "🧩 Tez mashq");
   const body = el("div", "qz-body");
   box.append(head, body);
   const show = () => {
     body.innerHTML = "";
     if (i >= items.length) {
-      body.append(el("p", "qz-done", right === items.length ? `🎉 ${right}/${items.length} — a'lo! Endi gapirib mustahkamlaymiz.` : `✅ ${right}/${items.length} — qoidani yana bir ko'rib chiqing va darsni boshlang.`));
+      saveQuiz(lesson.id, right, items.length);
+      if (state.lessons.length) renderLessons();
+      body.append(el("p", "qz-done", right === items.length ? `🎉 ${right}/${items.length} — a'lo! Endi gapirib mustahkamlaymiz.` : right * 2 >= items.length ? `👍 ${right}/${items.length} — yaxshi! Xatolarni ko'rib, darsni boshlang.` : `💪 ${right}/${items.length} — qoidani yana bir o'qing va qayta urinib ko'ring.`));
+      // ❌ Xato qilingan gaplarning to'g'ri shakli — eshitish mumkin
+      if (missed.length) {
+        const ul = el("div", "qz-missed");
+        ul.append(el("small", "", "To'g'ri shakli:"));
+        for (const t of missed) {
+          const bt = el("button", "rule-ex", t);
+          bt.addEventListener("click", () => { haptic(); sayPhrase(t).then(() => mascot.setLevel(0)); });
+          ul.append(bt);
+        }
+        body.append(ul);
+      }
       const again = el("button", "qz-again", "🔄 Qayta");
-      again.addEventListener("click", () => { i = 0; right = 0; show(); });
+      again.addEventListener("click", () => { i = 0; right = 0; missed = []; show(); });
       body.append(again);
       return;
     }
@@ -406,6 +428,7 @@ function renderQuiz(lesson) {
         haptic();
         const ok = o === it.answer;
         if (ok) right++;
+        else missed.push(`${it.before} ${it.answer === "—" ? "" : it.answer}${it.after}`.replace(/\s+/g, " ").replace(/«[^»]*»\s*→\s*/, "").trim());
         btn.classList.add(ok ? "ok" : "bad");
         if (!ok) [...opts.children].find((b) => b.textContent === it.answer)?.classList.add("ok");
         q.querySelector(".qz-gap").textContent = it.answer;
