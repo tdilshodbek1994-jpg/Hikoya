@@ -196,6 +196,7 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
     }
     if (msg.setupComplete) {
       ready = true;
+      session.liveReady = true; // kunlik limit faqat haqiqiy suhbat uchun hisoblanadi
       send({ type: "ready", model });
       // Sado birinchi bo'lib gapirsin
       upstream.send(

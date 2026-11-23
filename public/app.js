@@ -1336,6 +1336,9 @@ function liveFailed(msg) {
     ? "Internetni tekshirib, bir ozdan keyin qayta urinib ko'ring."
     : "Internetni tekshirib, qayta urinib ko'ring. Agar takrorlansa, darsni «🇬🇧 Inglizcha suhbat» yoki «🇺🇿 Ustoz» rejimida o'ting.";
   $("resultSub").textContent = (msg ? msg + " " : "") + tip;
+  // Server ulanmagan suhbatni kunlik limitdan qaytaradi
+  if (state.progress) state.progress.startedToday = Math.max(0, (state.progress.startedToday || 1) - 1);
+  $("resultSub").append(el("div", "fail-note", "✅ Bu urinish kunlik limitdan hisoblanmadi."));
   $("resultList").hidden = true;
   $("nextBtn").hidden = true;
   $("againBtn").textContent = "🔄 Qayta urinish";

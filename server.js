@@ -9,7 +9,7 @@ import { verifyInitData } from "./src/telegram.js";
 import { WebSocketServer } from "ws";
 import { liveEnabled, runLive } from "./src/live.js";
 import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies, ttsStats } from "./src/ai.js";
-import { recordSession, summary, adminStats, startedToday, countStart, startsTodayTotal, deleteUser } from "./src/store.js";
+import { recordSession, summary, adminStats, startedToday, countStart, refundStart, startsTodayTotal, deleteUser } from "./src/store.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -358,6 +358,13 @@ server.on("upgrade", (req, socket, head) => {
   }
   s.liveStarted = true; // bitta sessiya - bitta ulanish
   wss.handleUpgrade(req, socket, head, (ws) => {
+    // Sado umuman ulanmagan bo'lsa: kunlik limit qaytariladi, sessiya yopiladi
+    ws.on("close", () => {
+      if (s.liveReady || s.refunded) return;
+      s.refunded = true;
+      refundStart(s.userId);
+      sessions.delete(url.searchParams.get("session") || "");
+    });
     runLive(ws, s, lessonOf(s), { maxMs: s.expiresAt - Date.now(), voice: url.searchParams.get("voice"), topic: url.searchParams.get("topic") }).catch((e) => {
       console.error("Jonli suhbat xatosi:", e);
       try { ws.close(); } catch {}

@@ -187,6 +187,13 @@ export function countStart(userId) {
   save();
   return u.started.n;
 }
+// Suhbat umuman boshlanmagan bo'lsa (masalan, jonli ulanish xatosi) — kunlik limitni qaytaramiz
+export function refundStart(userId) {
+  const u = db.users[userId];
+  if (!u || u.started?.day !== today() || u.started.n <= 0) return;
+  u.started.n -= 1;
+  save();
+}
 export function startsTodayTotal() {
   return Object.values(db.users).reduce((s, u) => s + (u.started?.day === today() ? u.started.n : 0), 0);
 }
