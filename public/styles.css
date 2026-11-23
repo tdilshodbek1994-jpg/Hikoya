@@ -1059,3 +1059,6 @@ body.dark .fold-tag.new { color: #fb7185; } body.dark .fold-tag.rep { color: #fb
 .result-list .res-say { flex: none; opacity: 0.55; font-size: 14px; align-self: center; }
 .result-list li.busy .res-say { opacity: 1; animation: pulse 0.8s ease infinite; }
 .count-words { margin-left: 4px; color: var(--ok); font-weight: 700; }
+/* 🎭 Dars oynasi: vaziyat */
+.sheet-scene { text-align: left; margin: 10px 0 0; padding: 9px 12px; border-radius: 12px; background: color-mix(in srgb, var(--primary) 7%, var(--card)); font-size: 13.5px; line-height: 1.45; color: var(--text); }
+.sheet-scene b { color: var(--primary); }

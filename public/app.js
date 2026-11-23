@@ -1387,6 +1387,10 @@ function openSheet(lesson) {
   if (self === "beg" || /^A1|^A2$|^A1-|Har/.test(lvl) || (avg !== null && avg < 50)) rec = "tutor";
   else if (state.liveEnabled && (self === "adv" || /B2|C1/.test(lvl) || (avg !== null && avg >= 70))) rec = "live";
   for (const [id, m] of [["startLiveBtn", "live"], ["startTutorBtn", "tutor"], ["startChatBtn", "chat"]]) $(id).classList.toggle("rec", m === rec);
+  // 🎭 Vaziyat: Sado suhbatni qanday boshlaydi (o'zbekcha) — o'quvchi rolni oldindan biladi
+  $("sheetScene").hidden = !lesson.openerUz || Boolean(lesson.rule);
+  $("sheetScene").innerHTML = "";
+  if (lesson.openerUz && !lesson.rule) $("sheetScene").append(el("b", "", "🎭 Sado boshlaydi: "), document.createTextNode(`«${lesson.openerUz}»`));
   // ✏️ Grammatika qoidasi
   $("sheetRule").hidden = !lesson.rule;
   if (lesson.rule) {
