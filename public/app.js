@@ -2907,7 +2907,14 @@ function renderReport(r, score) {
   // Ballga qarab rang: past — to'q sariq, o'rta — ko'k, yuqori — yashil
   ring.style.setProperty("--ring", r.score >= 75 ? "#16a34a" : r.score >= 50 ? "var(--primary)" : "#f59e0b");
   const right = el("div", "rep-top-text");
-  right.append(el("div", "rep-level", r.level || ""), el("div", "rep-summary", r.summary_uz || ""));
+  right.append(el("div", "rep-level", r.level || ""));
+  // 🇺🇿 Milliy CEFR (Multilevel) imtihon shkalasi: 0–75
+  const ml = Number(r.ml_score);
+  if (Number.isFinite(ml) && ml >= 0 && ml <= 75) {
+    const next = ml < 38 ? [38, "B1"] : ml < 51 ? [51, "B2"] : ml < 65 ? [65, "C1"] : null;
+    right.append(el("div", "rep-ml", `🇺🇿 Multilevel: ~${Math.round(ml)}/75${next ? ` · ${next[1]} gacha ${next[0] - Math.round(ml)} ball` : " · C1 🎉"}`));
+  }
+  right.append(el("div", "rep-summary", r.summary_uz || ""));
   // 📈 Avvalgi natija bilan solishtirish
   if (state.prevBest != null) {
     const d = r.score - state.prevBest;

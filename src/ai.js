@@ -424,6 +424,8 @@ export async function lessonReport(lesson, transcript, { used, total, mode }) {
     .join("\n");
   if (!lines.includes("STUDENT:")) return null;
   const isIelts = /ielts/i.test(lesson.id + lesson.title + (lesson.category || ""));
+  const isCefr = !isIelts && /^cefr/i.test(lesson.id); // milliy CEFR (Multilevel) imtihoni
+
 
   const system = `You are an experienced English speaking examiner for Uzbek students. You write short, kind, practical feedback in simple Uzbek (Latin alphabet). Judge only the STUDENT's English (ignore their Uzbek sentences; speech-recognition may cause small spelling glitches - ignore those).
 
@@ -434,7 +436,7 @@ Answer with ONLY a JSON object, no markdown:
  "strengths_uz": ["<up to 2 things done well>"],
  "mistakes": [{"wrong": "<exact student phrase>", "right": "<corrected English>", "why_uz": "<short reason in Uzbek>"}],
  "tips_uz": ["<2 concrete tips for next time>"],
- "new_words": [{"en": "<useful word or phrase from the lesson topic>", "uz": "<translation>"}]${isIelts ? ',\n "criteria": {"fluency": <band 1-9, step 0.5>, "vocabulary": <band>, "grammar": <band>, "pronunciation": <band>}' : ""}}
+ "new_words": [{"en": "<useful word or phrase from the lesson topic>", "uz": "<translation>"}]${isIelts ? ',\n "criteria": {"fluency": <band 1-9, step 0.5>, "vocabulary": <band>, "grammar": <band>, "pronunciation": <band>}' : ""}${isCefr ? ',\n "ml_score": <estimated Uzbek national CEFR Multilevel speaking score 0-75: below 38 = A2 or lower, 38-50 = B1, 51-64 = B2, 65-75 = C1; must match the level>' : ""}}
 Rules: at most 5 mistakes (most important first, only real mistakes), at most 5 new_words. If the student said very little, give a low score and encourage them.${lesson.category === "Bolalar uchun" ? `
 The student is a CHILD (about 7-12 years old). Write every Uzbek text for a child: very simple words, warm and playful, address them with "sen", praise effort first, one short sentence per item, at most 2 mistakes (only the most important), at most 3 very simple new_words. Be generous with the score.` : ""}`;
 
@@ -482,6 +484,7 @@ The student is a CHILD (about 7-12 years old). Write every Uzbek text for a chil
     new_words: arr(data.new_words, 5)
       .filter((w) => w && w.en)
       .map((w) => ({ en: str(w.en, 80), uz: str(w.uz, 80) })),
+    ml_score: isCefr && Number.isFinite(Number(data.ml_score)) ? Math.max(0, Math.min(75, Math.round(Number(data.ml_score)))) : null,
   };
 }
 
