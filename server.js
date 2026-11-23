@@ -393,9 +393,11 @@ app.delete("/api/word", express.json(), auth, (req, res) => {
 app.post("/api/sample", express.json(), auth, async (req, res) => {
   const lesson = getLesson(String(req.body?.lessonId || ""));
   const pub = lesson && publicLesson(lesson);
-  if (!pub?.cue && !pub?.questions) return res.status(400).json({ error: "Bu dars uchun namunaviy javob yo'q" });
+  // CEFR topshiriqlari (to'liq sinovdan tashqari) — topshiriq matni Sado ochilish gapidan olinadi
+  const task = /^cefr-\d+$/.test(lesson?.id || "") && lesson.id !== "cefr-8" ? lesson.opener : null;
+  if (!pub?.cue && !pub?.questions && !task) return res.status(400).json({ error: "Bu dars uchun namunaviy javob yo'q" });
   try {
-    const out = await sampleAnswer(lesson.id, pub.cue, pub.questions);
+    const out = await sampleAnswer(lesson.id, pub.cue, pub.questions, task);
     if (!out) return res.status(503).json({ error: "Namuna tayyorlab bo'lmadi" });
     res.json(out);
   } catch (err) {
