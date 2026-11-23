@@ -1251,3 +1251,10 @@ body.dark .acc-tag.hi { color: #4ade80; } body.dark .acc-tag.mid { color: #fbbf2
 .qh-bars { grid-column: 1 / -1; display: flex; align-items: flex-end; gap: 4px; height: 56px; }
 .qh-bars i { flex: 1; border-radius: 4px 4px 2px 2px; min-width: 6px; }
 .qh-bars i.hi { background: var(--ok); } .qh-bars i.mid { background: #f59e0b; } .qh-bars i.lo { background: var(--danger); }
+/* 🔎 Xatoni toping */
+.qz-spot { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 8px; }
+.qz-sw { font: inherit; font-size: 16px; font-weight: 600; color: var(--text); background: var(--bg); border: 1px solid var(--line); padding: 6px 10px; border-radius: 10px; }
+.qz-sw.found { text-decoration: line-through; text-decoration-color: var(--danger); text-decoration-thickness: 2px; }
+.qz-sw.ok { background: color-mix(in srgb, var(--ok) 18%, var(--bg)); border-color: var(--ok); }
+.qz-sw.bad { background: color-mix(in srgb, var(--danger) 15%, var(--bg)); border-color: var(--danger); }
+.qz-why.qz-good { border-left-color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, var(--bg)); }

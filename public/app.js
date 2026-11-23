@@ -711,8 +711,19 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
     for (let t = 0; t < 5 && mixed.join(" ") === full; t++) mixed = [...words].sort(() => Math.random() - 0.5);
     return { ...it, mode: "order", words, mixed, right: full };
   };
+  // 🔎 "Xatoni toping": noto'g'ri variant qo'yilgan gapda xato so'zni bosish (bitta so'zli variantlar)
+  const asSpot = (it) => {
+    if (/«/.test(it.before) || /[—–]/.test(it.before + it.after)) return it;
+    const wrong = it.options.filter((o) => o !== it.answer && !/\s|—/.test(o) && o.length > 1);
+    if (!wrong.length || /\s|—/.test(it.answer)) return it;
+    const bad = wrong[Math.floor(Math.random() * wrong.length)];
+    const beforeW = it.before.trim() ? it.before.trim().split(/\s+/) : [];
+    const words = [...beforeW, bad + (it.after.match(/^[.,?!]+/)?.[0] || ""), ...it.after.replace(/^[.,?!]+/, "").trim().split(/\s+/).filter(Boolean)];
+    if (words.length < 3 || words.length > 10) return it;
+    return { ...it, mode: "spot", words, badIdx: beforeW.length, right: sent(it, it.answer) };
+  };
   const pick = () => (pool.length > QN ? [...pool].sort(() => Math.random() - 0.5).slice(0, QN) : lesson.ordered ? [...pool] : [...pool].sort(() => Math.random() - 0.5))
-    .map((it, k) => (pool.length > QN && k % 3 === 2 ? asPick(it) : pool.length > QN && k % 3 === 1 ? asOrder(it) : it)); // 2-savol — so'z tartibi, 3-savol — gap tanlash
+    .map((it, k) => (pool.length <= QN ? it : k % 4 === 1 ? asOrder(it) : k % 4 === 2 ? asPick(it) : k % 4 === 3 ? asSpot(it) : it)); // bo'sh joy → so'z tartibi → gap tanlash → xatoni topish
   let items = pick();
   box.hidden = items.length < (lesson.id === "gr-miss" ? 1 : 2);
   if (box.hidden) return;
@@ -793,6 +804,34 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
       const dots = el("div", "qz-dots");
       items.forEach((_, k) => dots.append(el("i", k < marks.length ? (marks[k] === "🟩" ? "ok" : "bad") : k === i ? "cur" : "")));
       body.append(dots);
+    }
+    if (it.mode === "spot") {
+      body.append(el("p", "qz-q", ""));
+      body.lastChild.append(el("b", "qz-pick", "🔎 Xatoni toping — noto'g'ri so'zni bosing"));
+      const line = el("div", "qz-spot");
+      it.words.forEach((w, k) => {
+        const b = el("button", "qz-sw", w);
+        b.addEventListener("click", () => {
+          if (line.dataset.done) return;
+          line.dataset.done = "1";
+          const ok = k === it.badIdx;
+          haptic(ok ? "light" : "medium");
+          if (ok) right++;
+          else if (it.from) (state.mixWeak ||= new Map()).set(it.from, (state.mixWeak.get(it.from) || 0) + 1);
+          quizMiss(it, lesson.id, ok);
+          marks.push(ok ? "🟩" : "🟥");
+          b.classList.add(ok ? "ok" : "bad");
+          line.children[it.badIdx].classList.add("found");
+          body.append(el("div", ok ? "qz-why qz-good" : "qz-why", "✅ To'g'risi: " + it.right));
+          if (!ok) missed.push(it.right);
+          const nx = el("button", "qz-next", i < items.length - 1 ? "Keyingi ›" : "Natija ›");
+          nx.addEventListener("click", () => { haptic(); i++; show(); });
+          body.append(nx);
+        });
+        line.append(b);
+      });
+      body.append(line);
+      return;
     }
     if (it.mode === "order") {
       body.append(el("p", "qz-q", ""));
