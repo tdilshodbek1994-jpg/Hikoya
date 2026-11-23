@@ -1146,6 +1146,9 @@ function renderLessons() {
   const PART_NAMES = { 1: "Part 1 — qisqa savollar", 2: "Part 2 — kartochka (monolog)", 3: "Part 3 — muhokama" };
   let lastCat = null;
   let lastPart = null;
+  const canFold = !state.filter.q && !state.filter.cat;
+  let folded;
+  try { folded = new Set(JSON.parse(localStorage.getItem("sado-folded") || "[]")); } catch { folded = new Set(); }
   for (const l of items) {
     if (l.category && l.category !== lastCat) {
       lastCat = l.category;
@@ -1160,8 +1163,23 @@ function renderLessons() {
         bar.firstChild.style.width = `${Math.round((n / all.length) * 100)}%`;
         head.append(bar);
       }
+      // ▾/▸ "Hammasi" ko'rinishida bo'limni yig'ish/ochish (qidiruv va filtrda doim ochiq)
+      if (canFold) {
+        const cat = l.category;
+        const isFolded = folded.has(cat);
+        head.classList.add("foldable");
+        head.classList.toggle("folded", isFolded);
+        head.prepend(el("span", "fold-ico", isFolded ? "▸" : "▾"));
+        head.addEventListener("click", () => {
+          haptic();
+          folded.has(cat) ? folded.delete(cat) : folded.add(cat);
+          localStorage.setItem("sado-folded", JSON.stringify([...folded]));
+          renderLessons();
+        });
+      }
       list.append(head);
     }
+    if (canFold && folded.has(l.category)) continue;
     const part = l.category === "IELTS kursi" ? partOf(l) : null;
     if (part && part !== lastPart) {
       lastPart = part;
