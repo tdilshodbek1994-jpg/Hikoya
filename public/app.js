@@ -243,6 +243,34 @@ function lessonButton(l) {
 }
 
 // Bo'lim filtrlari (gorizontal chiplar)
+// 📖 Qoidadagi inglizcha misollarni ajratib, bosilganda eshittiramiz
+const EN_HINT = /\b(I|I'm|you|he|she|it|we|they|is|are|am|do|does|did|will|the|a|an|can|was|were|have|has|my|your|to|used|should|must)\b/i;
+function ruleBody(rule) {
+  const box = el("div", "rule-body");
+  for (const line of rule.split("\n")) {
+    const row = el("div", "");
+    let last = 0;
+    for (const m of line.matchAll(/[A-Z][A-Za-z' ,]*[A-Za-z0-9][.?!]/g)) {
+      const t = m[0];
+      // ✗ belgili noto'g'ri misolni o'qitmaymiz
+      if (t.split(" ").length < 2 || !EN_HINT.test(t) || /✗\s*$/.test(line.slice(0, m.index))) continue;
+      row.append(document.createTextNode(line.slice(last, m.index)));
+      const ex = el("button", "rule-ex", t);
+      ex.addEventListener("click", (e) => {
+        e.stopPropagation();
+        haptic();
+        speakBrowser(t, "en");
+      });
+      row.append(ex);
+      last = m.index + t.length;
+    }
+    row.append(document.createTextNode(line.slice(last)));
+    box.append(row);
+  }
+  if (box.querySelector(".rule-ex")) box.append(el("small", "rule-tip", "🔊 Misolni bosing — talaffuzini eshitasiz"));
+  return box;
+}
+
 function renderChips() {
   const box = $("chips");
   if (!box) return;
@@ -267,9 +295,12 @@ function renderChips() {
       haptic();
       state.filter.cat = c;
       renderChips();
-      box.querySelector(".chip-f.on")?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      // Tanlangan chipni gorizontal markazga olamiz, sahifani esa chiplar qatori panel ostida ko'rinadigan qilib suramiz
+      const on = box.querySelector(".chip-f.on");
+      if (on) box.scrollTo({ left: on.offsetLeft - (box.clientWidth - on.offsetWidth) / 2, behavior: "smooth" });
       renderLessons();
-      $("lessonList").scrollIntoView({ behavior: "smooth", block: "start" });
+      const top = box.getBoundingClientRect().top + window.scrollY - document.querySelector(".topbar").offsetHeight - 4;
+      window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
     });
     box.append(b);
   });
@@ -643,7 +674,7 @@ function openSheet(lesson) {
   $("sheetRule").hidden = !lesson.rule;
   if (lesson.rule) {
     $("sheetRule").innerHTML = "";
-    $("sheetRule").append(el("b", "", "📖 Qoida"), el("div", "", lesson.rule));
+    $("sheetRule").append(el("b", "", "📖 Qoida"), ruleBody(lesson.rule));
   }
   // Daraja, iboralar soni va oldingi natija
   const meta = $("sheetMeta");

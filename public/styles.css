@@ -629,3 +629,9 @@ body.dark .shadow-btn { color: #5eead4; }
 .rep-mistake.rep-word::after { content: none; }
 .rep-mistake.rep-word .rep-right::after { content: " 🔊"; font-size: 12px; opacity: 0.7; }
 .rep-fixbtn { margin-top: 10px; font-size: 14.5px; }
+
+/* ---------- Qoida: bosiladigan misollar ---------- */
+.rule-body > div { margin-top: 3px; }
+.rule-ex { display: inline; font: inherit; font-weight: 700; color: color-mix(in srgb, var(--primary) 65%, var(--text)); background: color-mix(in srgb, var(--primary) 10%, transparent); padding: 0 5px; border-radius: 6px; margin: 1px 0; cursor: pointer; }
+.rule-ex:active { background: color-mix(in srgb, var(--primary) 22%, transparent); }
+.rule-tip { display: block; margin-top: 6px; font-size: 12px; color: var(--muted); }
