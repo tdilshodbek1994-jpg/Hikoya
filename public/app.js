@@ -2149,6 +2149,15 @@ function renderLessons() {
     if (p) hits.set(l.id, p);
     return Boolean(p);
   });
+  // 🔍 Qidiruvda: nomi/mavzusi mos kelgan darslar birinchi, faqat iborasida topilganlar keyin
+  // (bo'limlar guruhlangan holda qoladi — sarlavha takrorlanmasin)
+  if (q) {
+    const catOrder = [...new Set(items.map((l) => l.category))];
+    const catRank = (c) => (items.some((l) => l.category === c && !hits.has(l.id)) ? 0 : 1);
+    const pos = new Map(items.map((l, i) => [l.id, i]));
+    items.sort((a, b) => catRank(a.category) - catRank(b.category) || catOrder.indexOf(a.category) - catOrder.indexOf(b.category)
+      || (hits.has(a.id) ? 1 : 0) - (hits.has(b.id) ? 1 : 0) || pos.get(a.id) - pos.get(b.id));
+  }
   // 🔍 Qidiruvda nechta dars topilgani
   if (q && items.length) list.append(el("p", "search-count", `🔍 «${state.filter.q.trim()}» — ${items.length} ta dars topildi`));
   if (!items.length) {
