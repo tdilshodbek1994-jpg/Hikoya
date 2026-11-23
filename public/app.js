@@ -406,6 +406,23 @@ function saveQuiz(id, right, total) {
   const prev = Number(String(all[id] || "0").split("/")[0]);
   if (right >= prev) { all[id] = `${right}/${total}`; localStorage.setItem("sado-quiz", JSON.stringify(all)); }
 }
+// 🔁 Xato qilingan test savollari (localStorage): xato — qo'shiladi, keyin to'g'ri javob — o'chiriladi
+const quizMisses = () => { try { return JSON.parse(localStorage.getItem("sado-qz-miss") || "[]"); } catch { return []; } };
+function quizMiss(it, lessonId, ok) {
+  if (!it.options) return;
+  const text = `${it.before} ___${it.after}`;
+  let list = quizMisses().filter((q) => q.text !== text);
+  if (!ok) list.unshift({ text, answer: it.answer, options: it.options, from: it.from || lessonId });
+  localStorage.setItem("sado-qz-miss", JSON.stringify(list.slice(0, 60)));
+}
+function openMissTest() {
+  const quiz = quizMisses();
+  if (!quiz.length) return toast("👏 Xato savollar yo'q");
+  state.mixWeak = new Map();
+  $("mixSheet").hidden = false;
+  renderQuiz({ id: "gr-miss", quiz }, $("mixQuiz"), `🔁 Xato savollarim · ${quiz.length} ta`, Math.min(10, quiz.length));
+}
+
 // 📝 Aralash grammatika testi (barcha darslar savollaridan)
 function openMixTest() {
   const quiz = state.lessons.filter((l) => l.category === "Grammatika gapirib").flatMap((l) => (l.quiz || []).map((q) => ({ ...q, from: l.id })));
@@ -435,7 +452,7 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
   const pick = () => (pool.length > QN ? [...pool].sort(() => Math.random() - 0.5).slice(0, QN) : [...pool])
     .map((it, k) => (pool.length > QN && k % 3 === 2 ? asPick(it) : it)); // har 3-savol — gap tanlash
   let items = pick();
-  box.hidden = items.length < 2;
+  box.hidden = items.length < (lesson.id === "gr-miss" ? 1 : 2);
   if (box.hidden) return;
   let i = 0, right = 0, missed = [];
   const head = el("b", "", title);
@@ -472,7 +489,10 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
         body.append(tl);
       }
       const again = el("button", "qz-again", pool.length > QN ? "🔄 Yangi savollar" : "🔄 Qayta");
-      again.addEventListener("click", () => { i = 0; right = 0; missed = []; state.mixWeak = new Map(); items = pick(); show(); });
+      again.addEventListener("click", () => {
+        if (lesson.id === "gr-miss") return openMissTest(); // ro'yxat yangilangan — qolgan xatolar bilan qayta
+        i = 0; right = 0; missed = []; state.mixWeak = new Map(); items = pick(); show();
+      });
       body.append(again);
       return;
     }
@@ -490,6 +510,7 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
         opts.dataset.done = "1";
         haptic();
         const ok = o === (it.mode === "pick" ? it.right : it.answer);
+        quizMiss(it, lesson.id, ok);
         if (ok) right++;
         else if (it.from) (state.mixWeak ||= new Map()).set(it.from, (state.mixWeak.get(it.from) || 0) + 1);
         if (!ok) missed.push(`${it.before} ${it.answer === "—" ? "" : it.answer}${it.after}`.replace(/\s+/g, " ").replace(/«[^»]*»\s*→\s*/, "").trim());
@@ -1553,6 +1574,12 @@ function renderLessons() {
           mix.addEventListener("click", () => { haptic(); openMixTest(); });
           const btns = el("span", "gr-qbtns");
           btns.append(mix, go);
+          const nMiss = quizMisses().length;
+          if (nMiss) {
+            const mb = el("button", "gr-miss", `🔁 Xato savollarim (${nMiss})`);
+            mb.addEventListener("click", () => { haptic(); openMissTest(); });
+            btns.append(mb);
+          }
           row.append(btns);
           list.append(row);
         }
