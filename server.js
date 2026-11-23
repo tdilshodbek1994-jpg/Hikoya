@@ -248,6 +248,25 @@ app.post("/api/end", express.json(), auth, async (req, res) => {
   res.json({ ok: true, used: [...s.used], score, report, progress: summary(req.userId) });
 });
 
+// 🔊 Iborani to'g'ri talaffuz bilan eshittirish (faqat darslardagi iboralar, keshlanadi)
+const PHRASES = new Set(LESSONS.flatMap((l) => l.phrases.map((p) => p.en)));
+const sayCache = new Map();
+app.get("/api/say", auth, async (req, res) => {
+  const text = String(req.query.text || "");
+  if (!PHRASES.has(text)) return res.status(400).json({ error: "Noma'lum ibora" });
+  try {
+    if (!sayCache.has(text)) {
+      const [part] = await speakParts([{ lang: "en", text: text.replace(/\.\.\./g, "something") }]);
+      if (!part?.audio) return res.status(503).json({ error: "Ovoz xizmati ishlamayapti" });
+      sayCache.set(text, part);
+      if (sayCache.size > 400) sayCache.delete(sayCache.keys().next().value);
+    }
+    res.json(sayCache.get(text));
+  } catch (err) {
+    sendError(res, err);
+  }
+});
+
 app.get("/api/progress", auth, (req, res) => {
   res.json(summary(req.userId));
 });

@@ -549,6 +549,32 @@ function nextUnused(from = 0) {
   return state.phraseIdx;
 }
 
+// 🔊 Iborani to'g'ri talaffuzda eshitish (mikrofon vaqtincha to'xtaydi)
+const sayCache = new Map();
+$("listenBtn").addEventListener("click", async () => {
+  if (state.phase === "thinking" || state.phase === "speaking" || state.listenBusy) return;
+  const p = state.lesson.phrases[state.phraseIdx];
+  state.listenBusy = true;
+  $("listenBtn").classList.add("busy");
+  haptic();
+  const wasListening = state.phase === "listening";
+  if (wasListening) cancelRecording();
+  try {
+    ensureCtx();
+    let part = sayCache.get(p.en);
+    if (!part) {
+      part = await api(`api/say?text=${encodeURIComponent(p.en)}`, { method: "GET" }).catch(() => null);
+      if (part?.audio) sayCache.set(p.en, part);
+    }
+    if (part?.audio) await playMp3(part.audio, part.mime);
+    else await speakBrowser(p.en.replace(/\.\.\./g, "something"), "en");
+  } catch {}
+  mascot.setLevel(0);
+  state.listenBusy = false;
+  $("listenBtn").classList.remove("busy");
+  if (wasListening && state.phase === "listening" && state.mode === "auto") listenAuto();
+});
+
 $("prevPhrase").addEventListener("click", () => {
   const n = state.lesson.phrases.length;
   state.phraseIdx = (state.phraseIdx - 1 + n) % n;
