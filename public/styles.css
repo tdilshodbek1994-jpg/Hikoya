@@ -1113,3 +1113,4 @@ body.dark .ml-mark { background: #5eead4; }
 .tr-err { background: none; color: inherit; text-decoration: underline wavy #f87171; text-underline-offset: 3px; cursor: pointer; }
 .tr-log .b-sado { cursor: default; }
 .b-me .tr-err { text-decoration-color: #fde047; }
+.hint-item.picked { outline: 2px solid var(--primary); outline-offset: -2px; }

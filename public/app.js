@@ -2190,11 +2190,22 @@ $("hintBtn").addEventListener("click", async () => {
     box.innerHTML = "";
     // Jonli qo'ng'iroqda namunani ovoz bilan ijro etmaymiz — Sado uni o'quvchi gapi deb eshitib qoladi
     const live = Boolean(state.live);
-    box.append(el("div", "hint-title", live ? "Shulardan birini ovoz chiqarib ayting:" : "Shunday deyishingiz mumkin (bosing — eshitasiz):"));
+    const typing = !live && !$("textForm").hidden;
+    box.append(el("div", "hint-title", live ? "Shulardan birini ovoz chiqarib ayting:" : typing ? "Bosing — eshitasiz va javob maydoniga tushadi (o'zgartirib yuboring):" : "Shunday deyishingiz mumkin (bosing — eshitasiz):"));
     for (const h of hints || []) {
       const d = el("div", "hint-item");
       d.append(el("b", "", h.en), el("span", "", h.uz));
-      if (!live) d.addEventListener("click", () => sayPhrase(h.en).then(() => mascot.setLevel(0)));
+      if (!live)
+        d.addEventListener("click", () => {
+          haptic();
+          // ✍️ Yozma rejimda namuna javob maydoniga qo'yiladi — o'quvchi uni o'ziga moslab yuboradi
+          if (!$("textForm").hidden) {
+            $("textInput").value = h.en;
+            $("textInput").focus();
+            for (const x of box.querySelectorAll(".hint-item")) x.classList.toggle("picked", x === d);
+          }
+          sayPhrase(h.en).then(() => mascot.setLevel(0));
+        });
       box.append(d);
     }
     if (!hints?.length) box.append(el("div", "muted", "Hozircha namuna topilmadi."));
