@@ -1253,9 +1253,21 @@ function renderDaily() {
       toast(e.message);
     }
   });
+  // 📤 Kun iborasini do'stlarga ulashish
+  const share = el("button", "daily-go daily-more daily-share", "📤");
+  share.title = "Do'stlarga ulashish";
+  share.addEventListener("click", () => {
+    haptic();
+    const text = `🌟 Bugungi inglizcha ibora:\n${p.en}\n🇺🇿 ${p.uz}\n\nSado bilan har kuni bitta ibora o'rganing 👇`;
+    const url = state.shareUrl || "https://t.me";
+    const link = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+    if (inTelegram && tg.openTelegramLink) tg.openTelegramLink(link);
+    else if (navigator.share) navigator.share({ text: text + (state.shareUrl ? "\n" + state.shareUrl : "") }).catch(() => {});
+    else window.open(link, "_blank");
+  });
   const row = el("div", "daily-row");
   const right = el("span", "daily-btns");
-  right.append(keep, more);
+  right.append(keep, more, share);
   row.append(go, right);
   box.append(top, en, el("div", "daily-uz", p.uz), row);
   // 🔁 Kechagi ibora: o'zbekchasi ko'rinadi, inglizchasini eslab, bosib tekshirish (takrorlash)

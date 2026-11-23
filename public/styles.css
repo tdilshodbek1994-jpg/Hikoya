@@ -1146,3 +1146,11 @@ body.dark .ml-mark { background: #5eead4; }
 .goal-go { margin-left: auto; flex: none; font-size: 13px; font-weight: 800; color: #fff; background: var(--primary); padding: 7px 12px; border-radius: 99px; box-shadow: 0 4px 12px color-mix(in srgb, var(--primary) 35%, transparent); }
 .goal-go + .goal-left { margin-left: 0; }
 .goal.risk .goal-go { background: #f97316; }
+/* 📱 Tor ekran: Kun iborasi sarlavhasi va tugmalari qatorga bo'linib ketmasin */
+.daily-tag, .daily-go { white-space: nowrap; }
+.daily-from { min-width: 0; }
+@media (max-width: 360px) {
+  .daily-row { flex-wrap: wrap; row-gap: 2px; }
+  .daily-btns { gap: 12px; }
+  .daily-go { font-size: 12.5px; }
+}
