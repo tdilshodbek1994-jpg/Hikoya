@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
   <title>Sado — ingliz tilida gaplashish</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="styles.css?v=14" />
+  <link rel="stylesheet" href="styles.css?v=15" />
 </head>
 <body>
   <header class="topbar">
@@ -33,6 +33,7 @@
       <span class="free-cta">📞 Gaplashishni boshlash</span>
     </button>
     <div class="stats" id="stats" hidden></div>
+    <button class="vocab-btn" id="vocabBtn" hidden></button>
     <div class="next-box" id="nextBox" hidden></div>
     <div class="search-wrap"><input id="searchInput" type="search" placeholder="🔍 Mavzu yoki ibora qidirish..." autocomplete="off" /></div>
     <div class="chips" id="chips"></div>
@@ -149,8 +150,18 @@
     </div>
   </div>
 
+  <div class="sheet" id="vocabSheet" hidden>
+    <div class="sheet-card vocab-card">
+      <h3>📒 Mening lug'atim</h3>
+      <p class="muted">Darslardagi yangi so'zlar va tuzatilgan xatolaringiz. Bosing — talaffuzini eshitasiz.</p>
+      <div class="vocab-tabs"><button class="chip-f on" data-t="word">📚 So'zlar</button><button class="chip-f" data-t="fix">✏️ Xatolarim</button></div>
+      <ul class="rep-list" id="vocabList"></ul>
+      <button class="btn ghost wide" id="vocabClose">Yopish</button>
+    </div>
+  </div>
+
   <div class="toast" id="toast" hidden></div>
 
-  <script type="module" src="app.js?v=14"></script>
+  <script type="module" src="app.js?v=15"></script>
 </body>
 </html>

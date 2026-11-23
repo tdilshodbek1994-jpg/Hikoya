@@ -234,8 +234,54 @@ function renderNext() {
   box.append(lessonButton(n));
 }
 
+// 📒 Lug'atim
+state.vocabTab = "word";
+function renderVocabBtn() {
+  const words = state.progress?.words || [];
+  const btn = $("vocabBtn");
+  btn.hidden = !words.length;
+  const n = words.filter((w) => w.type !== "fix").length;
+  const f = words.length - n;
+  btn.textContent = `📒 Mening lug'atim · ${n} ta so'z · ${f} ta xato  ›`;
+}
+function renderVocab() {
+  const ul = $("vocabList");
+  ul.innerHTML = "";
+  const items = (state.progress?.words || []).filter((w) => (state.vocabTab === "fix" ? w.type === "fix" : w.type !== "fix"));
+  if (!items.length) ul.append(el("li", "muted", state.vocabTab === "fix" ? "Hozircha xato yo'q 👏" : "Hozircha so'z yo'q"));
+  for (const w of items) {
+    const li = el("li", "rep-word");
+    if (w.type === "fix") {
+      const line = el("div", "");
+      line.append(el("s", "rep-wrong", w.wrong || ""), document.createTextNode(" → "), el("b", "rep-right", w.en));
+      li.append(line, el("div", "rep-why", w.uz || ""));
+    } else {
+      li.append(el("b", "", w.en), el("span", "muted", " — " + (w.uz || "")));
+    }
+    li.addEventListener("click", () => speakBrowser(w.en, "en"));
+    ul.append(li);
+  }
+}
+$("vocabBtn").addEventListener("click", () => {
+  haptic();
+  renderVocab();
+  $("vocabSheet").hidden = false;
+});
+$("vocabClose").addEventListener("click", () => ($("vocabSheet").hidden = true));
+$("vocabSheet").addEventListener("click", (e) => {
+  if (e.target.id === "vocabSheet") $("vocabSheet").hidden = true;
+});
+for (const b of document.querySelectorAll(".vocab-tabs .chip-f")) {
+  b.addEventListener("click", () => {
+    state.vocabTab = b.dataset.t;
+    for (const x of document.querySelectorAll(".vocab-tabs .chip-f")) x.classList.toggle("on", x === b);
+    renderVocab();
+  });
+}
+
 function renderLessons() {
   renderStats();
+  renderVocabBtn();
   renderNext();
   const list = $("lessonList");
   list.innerHTML = "";
@@ -1131,6 +1177,8 @@ function renderReport(r, score) {
     return li;
   });
   section("💡 Keyingi safar", r.tips_uz, (t) => el("li", "", t));
+  if ((r.new_words || []).length || (r.mistakes || []).length)
+    box.append(el("div", "rep-saved", "📒 Yangi so'zlar va xatolar lug'atingizga saqlandi"));
   section("📚 Yangi so'zlar", r.new_words, (w) => {
     const li = el("li", "rep-word");
     li.append(el("b", "", w.en), el("span", "muted", " — " + (w.uz || "")));

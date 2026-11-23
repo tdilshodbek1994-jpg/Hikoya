@@ -60,6 +60,15 @@ export function recordSession(userId, { lessonId, mode, used, total, seconds, re
     level: report?.level || "",
   });
   u.history = u.history.slice(-MAX_HISTORY);
+  // 📒 Lug'at: yangi so'zlar va tuzatilgan xatolar
+  u.words ||= [];
+  const add = (w) => {
+    if (!w.en || u.words.some((x) => x.en.toLowerCase() === w.en.toLowerCase())) return;
+    u.words.push({ ...w, at: today() });
+  };
+  for (const w of report?.new_words || []) add({ en: w.en, uz: w.uz || "", type: "word" });
+  for (const m of report?.mistakes || []) add({ en: m.right, uz: m.why_uz || "", wrong: m.wrong, type: "fix" });
+  u.words = u.words.slice(-300);
   save();
   return score;
 }
@@ -86,5 +95,6 @@ export function summary(userId) {
     minutes: Math.round(u.seconds / 60),
     lessons,
     recent: u.history.slice(-10).reverse(),
+    words: (u.words || []).slice(-150).reverse(),
   };
 }
