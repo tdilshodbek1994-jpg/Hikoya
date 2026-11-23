@@ -146,7 +146,30 @@ function confirmEnd() {
 }
 
 // ---------------- Darslar ro'yxati ----------------
+// 🆕 Oxirgi kirishdan keyin qo'shilgan darslar (birinchi kirishda hech narsa "yangi" emas)
+function trackNewLessons(lessons) {
+  const ids = lessons.map((l) => l.id);
+  let known = null;
+  try { known = JSON.parse(localStorage.getItem("sado-known") || "null"); } catch {}
+  if (!Array.isArray(known)) {
+    localStorage.setItem("sado-known", JSON.stringify(ids));
+    state.newIds = new Set();
+    return;
+  }
+  const k = new Set(known);
+  // Yangi darslar 14 kun davomida "yangi" bo'lib turadi
+  let fresh = {};
+  try { fresh = JSON.parse(localStorage.getItem("sado-fresh") || "{}"); } catch {}
+  const now = Date.now();
+  for (const id of ids) if (!k.has(id) && !fresh[id]) fresh[id] = now;
+  for (const id of Object.keys(fresh)) if (now - fresh[id] > 14 * 86400_000 || !ids.includes(id)) delete fresh[id];
+  localStorage.setItem("sado-fresh", JSON.stringify(fresh));
+  localStorage.setItem("sado-known", JSON.stringify(ids));
+  state.newIds = new Set(Object.keys(fresh));
+}
+
 function applyLessons(data) {
+  trackNewLessons(data.lessons);
   state.lessons = data.lessons;
   state.voiceEnabled = data.voiceEnabled;
   state.liveEnabled = Boolean(data.liveEnabled);
@@ -301,6 +324,7 @@ function lessonButton(l) {
   b.querySelector(".lesson-sub").textContent = `${l.phrases.length} ta ibora · ${l.minutes || state.sessionMinutes} daqiqa`;
   b.querySelector(".lesson-level").textContent = (state.favs.has(l.id) ? "⭐ " : "") + l.level;
   const pr = state.progress?.lessons?.[l.id];
+  if (!pr && state.newIds?.has(l.id)) b.querySelector(".lesson-title").append(el("span", "new-tag", "🆕 Yangi"));
   if (pr) {
     b.classList.add("done");
     b.querySelector(".lesson-sub").textContent = `✅ O'tildi · ${pr.best} ball`;
@@ -519,6 +543,9 @@ function renderChips() {
   });
   box.append(rnd);
   const favChip = state.favs.size ? [["__fav", `⭐ Sevimlilar (${state.favs.size})`]] : [];
+  const newN = state.lessons.filter((l) => state.newIds?.has(l.id) && !state.progress?.lessons?.[l.id]).length;
+  if (newN) favChip.unshift(["__new", `🆕 Yangi (${newN})`]);
+  if (!newN && state.filter.cat === "__new") state.filter.cat = "";
   const weakN = weakIds().length;
   if (weakN) favChip.push(["__weak", `🔁 Takrorlash (${weakN})`]);
   if (!weakN && state.filter.cat === "__weak") state.filter.cat = "";
@@ -988,7 +1015,7 @@ function renderLessons() {
   const hits = new Map(); // dars id -> topilgan ibora
   const items = state.lessons.filter((l) => {
     if (l.liveOnly) return false;
-    if (state.filter.cat && !(state.filter.cat === "__fav" ? state.favs.has(l.id) : state.filter.cat === "__weak" ? weakIds().includes(l.id) : l.category === state.filter.cat)) return false;
+    if (state.filter.cat && !(state.filter.cat === "__fav" ? state.favs.has(l.id) : state.filter.cat === "__weak" ? weakIds().includes(l.id) : state.filter.cat === "__new" ? state.newIds?.has(l.id) && !state.progress?.lessons?.[l.id] : l.category === state.filter.cat)) return false;
     if (!q) return true;
     if (norm(l.title + " " + l.category).includes(q)) return true;
     const p = l.phrases.find((x) => norm(x.en + " " + x.uz).includes(q));

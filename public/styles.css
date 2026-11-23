@@ -894,3 +894,5 @@ body.dark .pill.warn { color: #fbbf24; }
 .badge-bar { display: block; width: 36px; height: 4px; border-radius: 2px; background: color-mix(in srgb, var(--muted) 25%, transparent); position: relative; overflow: hidden; }
 .badge-bar::after { content: ""; position: absolute; inset: 0; width: var(--p); background: #f59e0b; border-radius: 2px; }
 .badge:not(.on) .badge-bar { opacity: 1; } .badge:not(.on):has(.badge-bar) { opacity: 0.7; }
+
+.new-tag { margin-left: 6px; font-size: 11px; font-weight: 800; color: #fff; background: linear-gradient(135deg, #f43f5e, #f59e0b); padding: 1px 7px; border-radius: 99px; vertical-align: 2px; white-space: nowrap; }
