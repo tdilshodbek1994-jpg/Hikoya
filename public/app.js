@@ -245,6 +245,11 @@ async function loadProgress() {
 }
 
 // 🎯 Kunlik maqsad: bugun nechta dars (maqsadni bosib 1 → 2 → 3 ga almashtirish mumkin)
+// 🔧 Oldingi versiyada tanishuvdagi maqsad (bo'lim nomi) ham "sado-goal"ga yozilgan edi — "sado-aim"ga ko'chiramiz
+if (localStorage.getItem("sado-goal") && !/^[123]$/.test(localStorage.getItem("sado-goal"))) {
+  localStorage.setItem("sado-aim", localStorage.getItem("sado-goal"));
+  localStorage.removeItem("sado-goal");
+}
 state.goal = Number(localStorage.getItem("sado-goal")) || 1;
 function renderGoal() {
   const p = state.progress;
@@ -263,6 +268,19 @@ function renderGoal() {
     el("small", "", done ? "Ertaga ham davom eting — seriya uzilmasin 🔥" : `Kuniga ${state.goal} ta dars · bosing — maqsadni o'zgartirish`),
   );
   box.append(ring, txt);
+  // ▶️ Maqsad bajarilmagan bo'lsa — bir bosishda keyingi darsni ochish
+  if (!done) {
+    const go = el("span", "goal-go", "▶️ Boshlash"); // #goal o'zi tugma — ichida <button> bo'lmasin
+    go.setAttribute("role", "button");
+    go.addEventListener("click", (e) => {
+      e.stopPropagation(); // kartani bosish maqsadni o'zgartiradi — bu tugma emas
+      haptic("medium");
+      const nx = nextLesson();
+      if (nx) openSheet(nx);
+      else document.querySelector(".chip-f.rnd")?.click();
+    });
+    box.append(go);
+  }
   // 🔥 Kechqurun (18:00 dan keyin) seriya bor-u bugun dars yo'q — uzilib qolmasin deb eslatamiz
   const hour = new Date(Date.now() + 5 * 3600_000).getUTCHours();
   if (p.streak > 0 && !n && hour >= 18) {
@@ -705,7 +723,7 @@ function renderChips() {
     const done = state.progress?.lessons || {};
     // Tanlangan bo'lim ichidan; aks holda — bolalar darslarisiz (maqsad "Bolalar" bo'lmasa)
     const cat = state.filter.cat && !state.filter.cat.startsWith("__") ? state.filter.cat : "";
-    const kidsGoal = localStorage.getItem("sado-goal") === "Bolalar uchun";
+    const kidsGoal = localStorage.getItem("sado-aim") === "Bolalar uchun";
     let all = state.lessons.filter((l) => !l.liveOnly && (cat ? l.category === cat : kidsGoal || l.category !== "Bolalar uchun"));
     // Boshlovchiga juda qiyin (B2+) darslar tushmasin
     if (localStorage.getItem("sado-level") === "beg" && all.some((l) => !isHard(l))) all = all.filter((l) => !isHard(l));
@@ -3926,10 +3944,10 @@ function showOnboarding() {
       lv.append(el("small", "", "Maqsadingiz nima?"));
       const goals = el("div", "onb-lv-row onb-goals");
       for (const [k, label] of [["IELTS kursi", "🎓 IELTS"], ["CEFR kursi", "📗 CEFR"], ["Kundalik hayot", "💬 Kundalik"], ["Bolalar uchun", "🧒 Bolalar"]]) {
-        const b = el("button", "chip-f" + (localStorage.getItem("sado-goal") === k ? " on" : ""), label);
+        const b = el("button", "chip-f" + (localStorage.getItem("sado-aim") === k ? " on" : ""), label);
         b.addEventListener("click", () => {
           haptic();
-          localStorage.setItem("sado-goal", k);
+          localStorage.setItem("sado-aim", k);
           for (const x of goals.children) x.classList.toggle("on", x === b);
         });
         goals.append(b);
@@ -3946,7 +3964,7 @@ function showOnboarding() {
     // Daraja tanlangan bo'lsa — mos birinchi darsni darhol taklif qilamiz
     const lvl = localStorage.getItem("sado-level");
     renderNext(); // "Shu yerdan boshlang" darajaga moslanadi
-    const goal = localStorage.getItem("sado-goal");
+    const goal = localStorage.getItem("sado-aim");
     if (goal && state.lessons.some((l) => l.category === goal)) {
       state.filter.cat = goal;
       renderChips();

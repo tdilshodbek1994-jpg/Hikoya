@@ -1142,3 +1142,7 @@ body.dark .ml-mark { background: #5eead4; }
 #vocabList .fix-focus { cursor: pointer; display: block; text-align: left; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, var(--primary) 10%, var(--bg)); border: 1px dashed color-mix(in srgb, var(--primary) 45%, transparent); }
 #vocabList .fix-focus b { display: block; font-size: 14px; color: var(--primary); }
 #vocabList .fix-focus span { font-size: 12.5px; color: var(--muted); }
+/* ▶️ Bugungi maqsad: boshlash tugmasi */
+.goal-go { margin-left: auto; flex: none; font-size: 13px; font-weight: 800; color: #fff; background: var(--primary); padding: 7px 12px; border-radius: 99px; box-shadow: 0 4px 12px color-mix(in srgb, var(--primary) 35%, transparent); }
+.goal-go + .goal-left { margin-left: 0; }
+.goal.risk .goal-go { background: #f97316; }
