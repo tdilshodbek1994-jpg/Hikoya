@@ -955,7 +955,7 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
         }
         body.append(tl);
       }
-      const again = el("button", "qz-again", lesson.id === "gr-miss" ? "🔁 Qolganlarini ishlash" : pool.length > QN || lesson.id === "gr-level" ? "🔄 Yangi savollar" : "🔄 Qayta");
+      const again = el("button", "qz-again", lesson.id === "gr-miss" ? "🔁 Qolganlarini ishlash" : lesson.id === "gr-daily" ? "🔄 Yana mashq (natija o'zgarmaydi)" : pool.length > QN || lesson.id === "gr-level" ? "🔄 Yangi savollar" : "🔄 Qayta");
       if (lesson.id === "gr-miss" && !quizMisses().length) again.hidden = true; // tuzatadigan xato qolmadi
       again.addEventListener("click", () => {
         if (lesson.id === "gr-miss") return openMissTest(); // ro'yxat yangilangan — qolgan xatolar bilan qayta
@@ -963,6 +963,12 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
         i = 0; right = 0; missed = []; marks = []; state.mixWeak = new Map(); items = pick(); show();
       });
       body.append(again);
+      // 📝 Bugungi 5 ta savoldan keyin — mashqni davom ettirish
+      if (lesson.id === "gr-daily") {
+        const more = el("button", "qz-again qz-more", "📝 Yana 10 ta savol");
+        more.addEventListener("click", () => { haptic(); openMixTest(); });
+        body.append(more);
+      }
       // 📋 Mavzuning barcha savollari bilan to'liq test (dars mashqida)
       if (/^gr-/.test(lesson.id) && !/^gr-(mix|miss|daily|level|weak)$/.test(lesson.id) && pool.length > QN && QN < pool.length) {
         const full = el("button", "qz-again qz-full", `📋 To'liq test (${pool.length} ta)`);
