@@ -785,6 +785,9 @@ const BADGES = [
   ["🧠", "So'z ustasi", "Lug'atga 30 ta so'z yig'ing", (p) => (p.words || []).length >= 30],
   ["🏆", "IELTS 6+", "IELTS darsida 6.0+ band oling", (p) => p.ielts],
   ["⚡", "Hafta qahramoni", "7 kun ketma-ket mashq qiling", (p) => (p.bestStreak || p.streak) >= 7],
+  ["🛠", "Xato tuzatuvchi", "5 ta xatoingizni tuzating", (p) => (p.words || []).filter((w) => w.fixed).length >= 5],
+  ["🃏", "Kartochka ustasi", "Kartochkalarda 10 ta so'zni yodlang", () => Object.values(flashBoxes()).filter((n) => n >= 3).length >= 10],
+  ["🌍", "Har tomonlama", "5 xil bo'limdan dars o'ting", (p) => new Set(Object.keys(p.lessons || {}).map((id) => state.lessons.find((l) => l.id === id)?.category).filter(Boolean)).size >= 5],
 ];
 function renderBadges() {
   const p = state.progress;
