@@ -525,10 +525,32 @@ function openTopicStats() {
   const box = $("mixQuiz");
   box.innerHTML = "";
   box.append(el("b", "", `🎯 Aniqlik: ${st.all ? Math.round((st.ok / st.all) * 100) : 0}% · ${st.all} ta javob`));
+  // 📈 Oxirgi testlar natijasi (ustunlar) va o'sish
+  let hist = [];
+  try { hist = JSON.parse(localStorage.getItem("sado-qz-hist") || "[]").slice(-12); } catch {}
+  if (hist.length >= 2) {
+    const NAMES = { "gr-mix": "Aralash", "gr-daily": "Bugungi", "gr-level": "Daraja", "gr-miss": "Xatolar", "gr-weak": "Zaif mavzular" };
+    const pc = hist.map((x) => Math.round((x.r / x.n) * 100));
+    const half = Math.floor(pc.length / 2);
+    const avg = (a) => a.reduce((s, v) => s + v, 0) / a.length;
+    const diff = Math.round(avg(pc.slice(half)) - avg(pc.slice(0, half)));
+    const wrap = el("div", "qh");
+    wrap.append(el("div", "qh-head", `📈 Oxirgi ${pc.length} ta test`), el("span", "qh-diff " + (diff > 0 ? "up" : diff < 0 ? "down" : ""), diff > 0 ? `▲ +${diff}%` : diff < 0 ? `▼ ${diff}%` : "barqaror"));
+    const bars = el("div", "qh-bars");
+    hist.forEach((x, k) => {
+      const col = el("i", pc[k] >= 80 ? "hi" : pc[k] >= 50 ? "mid" : "lo");
+      col.style.height = `${Math.max(6, pc[k])}%`;
+      const lname = NAMES[x.t] || state.lessons.find((l) => l.id === x.t)?.title.replace(/^\d+\.\s*/, "") || "Mashq";
+      col.title = `${lname}: ${x.r}/${x.n}`;
+      bars.append(col);
+    });
+    wrap.append(bars);
+    box.append(wrap);
+  }
   const rows = Object.entries(st.by || {})
     .map(([id, t]) => ({ l: state.lessons.find((x) => x.id === id), p: Math.round((t.ok / t.all) * 100), t }))
     .filter((x) => x.l)
-    .sort((a, b) => a.p - b.p || b.t.all - a.t.all);
+    .sort((a, b) => (a.t.all >= 2 ? 0 : 1) - (b.t.all >= 2 ? 0 : 1) || a.p - b.p || b.t.all - a.t.all); // 1 ta javobli mavzular pastroqda
   if (!rows.length) box.append(el("p", "qz-done", "Hali mavzular bo'yicha ma'lumot yo'q — bir nechta test ishlang."));
   const ul = el("div", "ts-list");
   for (const { l, p, t } of rows) {
@@ -543,7 +565,9 @@ function openTopicStats() {
   }
   box.append(ul);
   // 💪 Eng zaif 3 mavzudan (80% dan past) test
-  const weak = rows.filter((x) => x.p < 80).slice(0, 3);
+  // Kamida 2 ta javobli mavzular afzal (bitta tasodifiy xato — ishonchli emas)
+  const solid = rows.filter((x) => x.p < 80 && x.t.all >= 2);
+  const weak = (solid.length ? solid : rows.filter((x) => x.p < 80)).slice(0, 3);
   if (weak.length) {
     const wb = el("button", "qz-again ts-weak", `💪 Zaif mavzulardan test: ${weak.map((x) => x.l.emoji).join(" ")}`);
     wb.addEventListener("click", () => {
@@ -700,6 +724,12 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
     body.innerHTML = "";
     if (i >= items.length) {
       if (lesson.id === "gr-level") levelTestResult(items, marks, body);
+      // 📈 Natijalar tarixi (oxirgi 30 ta test)
+      try {
+        const h = JSON.parse(localStorage.getItem("sado-qz-hist") || "[]");
+        h.push({ t: lesson.id, r: right, n: items.length, d: dayNum() });
+        localStorage.setItem("sado-qz-hist", JSON.stringify(h.slice(-30)));
+      } catch {}
       if (lesson.id === "gr-daily") {
         dailyTestDone(right, items.length);
         // 📤 Natijani kvadratchalar bilan ulashish (javoblar oshkor qilinmaydi)

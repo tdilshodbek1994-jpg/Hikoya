@@ -1243,3 +1243,11 @@ body.dark .acc-tag.hi { color: #4ade80; } body.dark .acc-tag.mid { color: #fbbf2
 /* 🧪 Grammatika daraja sarlavhasida test tugmasi */
 .part-title:has(.pt-test) { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .pt-test { font: inherit; font-size: 12px; font-weight: 800; letter-spacing: 0; text-transform: none; color: var(--primary); background: color-mix(in srgb, var(--primary) 12%, transparent); padding: 4px 10px; border-radius: 99px; }
+/* 📈 Testlar tarixi */
+.qh { margin: 10px 0 4px; padding: 10px 12px; border-radius: 12px; background: var(--bg); display: grid; grid-template-columns: 1fr auto; row-gap: 8px; }
+.qh-head { font-size: 13px; font-weight: 700; }
+.qh-diff { font-size: 12.5px; font-weight: 800; color: var(--muted); }
+.qh-diff.up { color: var(--ok); } .qh-diff.down { color: var(--danger); }
+.qh-bars { grid-column: 1 / -1; display: flex; align-items: flex-end; gap: 4px; height: 56px; }
+.qh-bars i { flex: 1; border-radius: 4px 4px 2px 2px; min-width: 6px; }
+.qh-bars i.hi { background: var(--ok); } .qh-bars i.mid { background: #f59e0b; } .qh-bars i.lo { background: var(--danger); }
