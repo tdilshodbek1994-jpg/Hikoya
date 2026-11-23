@@ -2518,6 +2518,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-saytell",
+    category: "Grammatika gapirib",
+    title: "Say yoki tell?",
+    emoji: "🗨️",
+    level: "A2-B1",
+    added: "2026-11-23",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on say vs tell: say + something (She said hello. He said that he was tired.), say something to someone (He said goodbye to me), tell + person + something (She told me a secret. Tell me your name.), and fixed phrases: tell a story, tell a joke, tell the truth, tell a lie, say sorry, say thank you. Uzbek speakers often say 'He said me' — correct it to 'He told me' or 'He said to me'. Ask about the last thing a friend told them, a funny story and when they told a lie. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "What is the funniest thing a friend has ever told you?",
+    openerUz: "Do'stingiz sizga aytgan eng kulgili narsa nima bo'lgan?",
+    phrases: [
+      { en: "My friend told me a great joke.", uz: "Do'stim menga zo'r latifa aytdi." },
+      { en: "He said that he was tired.", uz: "U charchaganini aytdi." },
+      { en: "Can you tell me the time?", uz: "Soat necha ekanini aytib bera olasizmi?" },
+      { en: "Always tell the truth.", uz: "Doim rost gapiring." },
+      { en: "She said goodbye to everyone.", uz: "U hamma bilan xayrlashdi." },
+      { en: "Don't forget to say thank you.", uz: "Rahmat aytishni unutmang." },
+    ],
+  },
+  {
+    id: "gr-verbprep",
+    category: "Grammatika gapirib",
+    title: "Fe'l + predlog: listen to, wait for",
+    emoji: "🧷",
+    level: "B1",
+    added: "2026-11-23",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on verbs that need a fixed preposition: listen to, wait for, look at, look for, depend on, belong to, agree with, think about, worry about, talk to, arrive at/in, pay for, apologise for. Uzbek speakers often drop or change the preposition (I listen music, I'm waiting the bus, It depends of) — correct it. Ask about music they listen to, what they worry about, who they agree with and what their plans depend on. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "What kind of music do you listen to when you study?",
+    openerUz: "O'qiyotganingizda qanday musiqa tinglaysiz?",
+    phrases: [
+      { en: "I listen to music every day.", uz: "Har kuni musiqa tinglayman." },
+      { en: "I'm waiting for the bus.", uz: "Avtobusni kutyapman." },
+      { en: "It depends on the weather.", uz: "Bu ob-havoga bog'liq." },
+      { en: "I agree with you.", uz: "Siz bilan roziman." },
+      { en: "Don't worry about the exam.", uz: "Imtihon haqida xavotir olmang." },
+      { en: "Who does this bag belong to?", uz: "Bu sumka kimniki?" },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -3701,7 +3741,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-can", "gr-wouldlike", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-mine", "gr-reflexive", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adjorder", "gr-adverbs", "gr-tooenough", "gr-sosuch", "gr-modals", "gr-might", "gr-better", "gr-usedto", "gr-perfect", "gr-forsince", "gr-ppvsps", "gr-pastperf", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-tags", "gr-sotoo", "gr-both", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused", "gr-unless", "gr-inversion"];
+const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-can", "gr-wouldlike", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-mine", "gr-reflexive", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adjorder", "gr-adverbs", "gr-tooenough", "gr-sosuch", "gr-modals", "gr-might", "gr-better", "gr-usedto", "gr-perfect", "gr-forsince", "gr-ppvsps", "gr-pastperf", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-saytell", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-verbprep", "gr-tags", "gr-sotoo", "gr-both", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused", "gr-unless", "gr-inversion"];
 // Avval daraja guruhi (A1–A2 → B1 → B2), guruh ichida — GR_ORDER tartibi
 const grGroup = (lv) => (/B2/.test(lv || "") ? 2 : /A2-B1|^B1$/.test(lv || "") ? 1 : 0);
 const grRank = (l) => grGroup(l.level) * 100 + (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
@@ -3756,6 +3796,8 @@ const QUIZ = {
   "gr-both": ["I like ___ tea and coffee.|both|either|neither", "You can have ___ tea or coffee.|either|both|neither", "___ my brother nor my sister smokes.|Neither|Either|Both", "___ of them are doctors.|Both|Either|Neither", "Neither of us ___ late.|was|wasn't|weren't", "I don't like ___ of these films.|either|neither|both", "Both Aziz ___ Laylo speak English.|and|or|nor", "Either you ___ I will call her.|or|and|nor", "Neither the bus ___ the train was on time.|nor|or|and", "We can meet ___ on Monday or on Tuesday.|either|both|neither", "___ answer is correct — they're both wrong.|Neither|Either|Both", "Both of my parents ___ teachers.|are|is|be"],
   "gr-wouldlike": ["I ___ a coffee, please.|'d like|like|likes", "I ___ coffee. I drink it every morning.|like|'d like|would like", "Would you like some tea? — Yes, ___.|please|I like|I would", "I'd like ___ London one day.|to visit|visit|visiting", "___ you like some water?|Would|Do|Are", "She ___ chocolate. It's her favourite.|likes|'d like|would like", "What would you like ___ this weekend?|to do|do|doing", "Would you like a sandwich? — No, ___.|thank you|I don't like|I wouldn't", "We'd like ___ a table for two.|to book|book|booking", "Do you ___ football?|like|would like|'d like", "I'd like ___ water, please.|some|any|a", "My brother ___ to be a pilot.|would like|like|likes"],
   "gr-might": ["It ___ rain later. Take an umbrella.|might|must|will to", "She ___ be at home now. I'm not sure.|may|can|must to", "He ___ not come to the party.|might|could|can", "We ___ go to the park if it's sunny.|could|must|should to", "I might ___ at home tonight.|stay|to stay|staying", "Take a coat. It ___ get cold.|may|can|must to", "They ___ be late — there's a lot of traffic.|might|can|will to", "I'm not sure. I ___ go to the cinema.|may|will|must", "She may ___ the answer.|know|to know|knows", "It might ___ sunny tomorrow.|be|is|being", "You ___ want to bring some water.|might|must to|can to", "Don't wait for me. I ___ be very late.|might|can|should"],
+  "gr-saytell": ["She ___ me a funny story.|told|said|says", "He ___ that he was tired.|said|told|tell", "Can you ___ me the time?|tell|say|said", "Always ___ the truth.|tell|say|speak", "She ___ goodbye to everyone.|said|told|tell", "Don't forget to ___ thank you.|say|tell|speak", "My grandmother ___ us a story every night.|tells|says|speaks", "What did he ___ to you?|say|tell|told", "Please ___ me how to get there.|tell|say|speak", "He ___ me that the shop was closed.|told|said|says", "I want to ___ sorry.|say|tell|told", "Did she ___ you about the party?|tell|say|said"],
+  "gr-verbprep": ["I listen ___ music every day.|to|—|at", "I'm waiting ___ the bus.|for|—|to", "It depends ___ the weather.|on|of|from", "I agree ___ you.|with|to|on", "Don't worry ___ the exam.|about|for|on", "Who does this bag belong ___?|to|for|with", "Look ___ this photo!|at|to|on", "I'm looking ___ my keys. Have you seen them?|for|at|to", "I need to talk ___ my teacher.|to|at|for", "We arrived ___ the airport at six.|at|to|in to", "How much did you pay ___ the tickets?|for|to|on", "What are you thinking ___?|about|on|for"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink", "My sister ___ English very well.|speaks|speak|speaking", "They ___ live in Tashkent.|don't|doesn't|aren't", "Where ___ he work?|does|do|is", "The shop ___ at nine o'clock.|opens|open|opening", "Water ___ at 100 degrees.|boils|boil|is boil", "My friends ___ like rap music.|don't|doesn't|isn't", "___ your brother study at university?|Does|Do|Is", "He usually ___ his homework in the evening.|does|do|doing"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on", "I was born ___ 2008.|in|on|at", "We have a party ___ Friday evening.|on|in|at", "I usually sleep ___ night.|at|in|on", "The keys are ___ the table.|on|at|in", "The meeting is ___ 3 pm.|at|in|on", "I'll see you ___ the weekend.|at|in|on", "She lives ___ Samarkand.|in|at|on", "My birthday is ___ 5th March.|on|in|at"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do", "Listen! The baby ___ crying.|is|are|be", "We ___ waiting for the bus now.|are|is|am", "What ___ you doing?|are|do|is", "She isn't ___ TV at the moment.|watching|watch|watches", "I ___ working from home this week.|am|is|are", "Why ___ you laughing?|are|is|do", "They ___ playing football right now.|are|is|be", "Be quiet! Grandma ___ sleeping.|is|are|am"],
@@ -3810,6 +3852,8 @@ const KEYWORDS = {
   "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
 };
 const RULES = {
+  "gr-saytell": "say + nima: She said hello. He said that he was tired.\nsay ... to + kimga: He said goodbye to me.\ntell + kimga + nima: She told me a secret. Tell me your name. (✗ He said me)\nIboralar: tell a story, tell the truth, tell a joke — say sorry, say thank you.",
+  "gr-verbprep": "Ba'zi fe'llar doim o'z predlogi bilan keladi: listen to, wait for, look at, depend on, belong to.\nI listen to music. I'm waiting for the bus. (✗ I listen music) (✗ waiting the bus)\nIt depends on the weather. (✗ depends of) I agree with you.\nworry about, think about, talk to, pay for, apologise for.",
   "gr-wouldlike": "like — umuman yoqtiraman: I like coffee. She likes music.\nwould like ('d like) — hozir xohlayman (muloyim): I'd like a coffee, please.\nTaklif: Would you like some tea? — Yes, please. / No, thank you.\nwould like to + fe'l: I'd like to visit London. (✗ I'd like visit)",
   "gr-might": "may / might / could + fe'lning o'zi — balki, ehtimol: It might rain later. She may be at home.\nInkor: may not / might not: He might not come. (✗ could not — bu \"qila olmadi\" ma'nosida)\nTaklif sifatida: We could go to the park.\nAniq bo'lsa — will: It will rain. (✗ It might to rain)",
   "gr-reflexive": "O'zlik olmoshlari: myself, yourself, himself, herself, itself, ourselves, yourselves, themselves.\nIsh egasining o'ziga qaytsa: I cut myself. She taught herself English.\nby myself = yolg'iz, yordamsiz: I live by myself.\nIkki kishi bir-biriga: They love each other. (✗ hisself) (✗ theirselves)",
