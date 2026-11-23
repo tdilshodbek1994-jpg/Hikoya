@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
   <title>Sado — ingliz tilida gaplashish</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="styles.css?v=13" />
+  <link rel="stylesheet" href="styles.css?v=14" />
 </head>
 <body>
   <header class="topbar">
@@ -76,6 +76,8 @@
       <div class="hint" id="hint">Shunchaki gapiring — Sado tinglayapti.</div>
     </div>
 
+    <div class="chatlog" id="chatlog" hidden></div>
+
     <div class="subs" id="subs" hidden>
       <div class="sub sub-ai"><b>Sado:</b> <span id="subAi"></span><div class="sub-uz" id="subAiUz"></div></div>
       <div class="sub sub-me" id="subMeWrap" hidden><b>Siz:</b> <span id="subMe"></span></div>
@@ -102,6 +104,8 @@
       <svg viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
       <span>Bosib turing va gapiring</span>
     </button>
+
+    <button class="mute-btn" id="muteBtn" hidden>🎙️ Mikrofon yoqiq — o'chirish uchun bosing</button>
 
     <div class="bottom-row">
       <button class="btn ghost" id="subsBtn">Subtitrlar</button>
@@ -147,6 +151,6 @@
 
   <div class="toast" id="toast" hidden></div>
 
-  <script type="module" src="app.js?v=13"></script>
+  <script type="module" src="app.js?v=14"></script>
 </body>
 </html>

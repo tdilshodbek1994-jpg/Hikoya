@@ -1,5 +1,5 @@
 import { Mascot } from "./mascot.js";
-import { LiveCall } from "./live.js?v=1";
+import { LiveCall } from "./live.js?v=2";
 
 const tg = window.Telegram?.WebApp;
 const inTelegram = Boolean(tg && tg.initData);
@@ -379,6 +379,7 @@ async function startLesson(lesson, lessonMode = "tutor") {
   if (!lesson) return;
   if (lessonMode === "live") return startLive(lesson);
   state.lessonMode = lessonMode;
+  resetLiveUi();
   $("startSheet").hidden = true;
   haptic("medium");
   stopAll();
@@ -441,7 +442,14 @@ async function startLive(lesson) {
   $("holdBtn").hidden = true;
   $("textForm").hidden = true;
   $("trBtn").hidden = true;
-  applySubs();
+  $("subs").hidden = true; // jonli rejimda suhbat tarixi (chatlog) ko'rsatiladi
+  $("listenBtn").hidden = true; // qo'ng'iroq paytida ibora ijrosi xalaqit beradi
+  $("phraseCard").hidden = Boolean(lesson.liveOnly); // Erkin suhbatda ibora kartasi shart emas
+  $("chatlog").hidden = false;
+  $("chatlog").innerHTML = "";
+  $("subsBtn").classList.add("on");
+  $("muteBtn").hidden = false;
+  setMuteUi(false);
   setSubs("", "", "", "");
   setPhase("thinking", "Ulanmoqda...");
   $("hint").textContent = "Shunchaki gapiring. Sado gapirayotganda gapini bo'lishingiz ham mumkin.";
@@ -461,23 +469,19 @@ async function startLive(lesson) {
       outAnalyser: audio.outAnalyser,
       onState: (st, level) => {
         if (state.phase === "ended") return;
-        if (state.phase !== st) setPhase(st, st === "speaking" ? "Sado gapirmoqda..." : "Sizni tinglayapti...");
+        const label = st === "speaking" ? "Sado gapirmoqda..." : st === "muted" ? "🔇 Mikrofon o'chiq" : "Sizni tinglayapti...";
+        const phase = st === "muted" ? "idle" : st;
+        if (state.phase !== phase || $("statusText").textContent !== label) setPhase(phase, label);
         mascot.setLevel(level);
       },
       onEvent: (m) => {
         if (m.type === "ready") {
           startTimer();
           setPhase("speaking", "Sado gapirmoqda...");
-        } else if (m.type === "sado") {
-          if (lastSpeaker !== "sado") sadoLine = "";
-          lastSpeaker = "sado";
-          sadoLine += m.text;
-          setSubs(sadoLine, "", userLine, "");
-        } else if (m.type === "user") {
-          if (lastSpeaker !== "user") userLine = "";
-          lastSpeaker = "user";
-          userLine += m.text;
-          setSubs(sadoLine, "", userLine, "");
+        } else if (m.type === "sado" || m.type === "user") {
+          if (lastSpeaker !== m.type) addBubble(m.type);
+          lastSpeaker = m.type;
+          appendBubble(m.text);
         } else if (m.type === "used") {
           markUsed(m.found || []);
         } else if (m.type === "error") {
@@ -497,6 +501,42 @@ async function startLive(lesson) {
     toast(e.name === "NotAllowedError" ? "Mikrofonga ruxsat bering." : e.message || "Jonli suhbatni boshlab bo'lmadi.", 4000);
     show("home");
   }
+}
+
+function resetLiveUi() {
+  $("chatlog").hidden = true;
+  $("muteBtn").hidden = true;
+  $("listenBtn").hidden = false;
+  $("phraseCard").hidden = false;
+}
+
+function setMuteUi(m) {
+  $("muteBtn").classList.toggle("muted", m);
+  $("muteBtn").textContent = m ? "🔇 Mikrofon o'chiq — yoqish uchun bosing" : "🎙️ Mikrofon yoqiq — o'chirish uchun bosing";
+}
+
+$("muteBtn").addEventListener("click", () => {
+  if (!state.live) return;
+  haptic("medium");
+  const m = !state.live.muted;
+  state.live.setMuted(m);
+  setMuteUi(m);
+});
+
+// Jonli suhbat tarixi: Sado va o'quvchi gaplari pufakchalarda
+function addBubble(who) {
+  const log = $("chatlog");
+  const b = el("div", "bubble " + (who === "sado" ? "b-sado" : "b-me"));
+  b.append(el("small", "", who === "sado" ? "Sado" : "Siz"), el("span", "", ""));
+  log.append(b);
+  while (log.children.length > 40) log.firstChild.remove();
+}
+function appendBubble(text) {
+  const log = $("chatlog");
+  const last = log.lastElementChild;
+  if (!last) return;
+  last.lastElementChild.textContent += text;
+  log.scrollTop = log.scrollHeight;
 }
 
 function startTimer() {
@@ -658,6 +698,12 @@ function applySubs() {
 }
 $("subsBtn").addEventListener("click", () => {
   haptic();
+  if (state.lessonMode === "live") {
+    // Jonli rejimda "Subtitrlar" suhbat tarixini yashiradi/ko'rsatadi
+    $("chatlog").hidden = !$("chatlog").hidden;
+    $("subsBtn").classList.toggle("on", !$("chatlog").hidden);
+    return;
+  }
   state.subs = !state.subs;
   localStorage.setItem("sado-subs", state.subs ? "1" : "0");
   applySubs();

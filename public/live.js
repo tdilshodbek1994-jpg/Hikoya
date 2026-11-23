@@ -26,7 +26,7 @@ export class LiveCall {
     this.sink.connect(ctx.destination);
 
     const sendPcm = (buf) => {
-      if (this.ws?.readyState === WebSocket.OPEN) this.ws.send(buf);
+      if (!this.muted && this.ws?.readyState === WebSocket.OPEN) this.ws.send(buf);
     };
     if (ctx.audioWorklet) {
       await ctx.audioWorklet.addModule("pcm-worklet.js?v=1");
@@ -95,6 +95,12 @@ export class LiveCall {
     s.onended = () => this.sources.delete(s);
   }
 
+  // Mikrofonni vaqtincha o'chirish/yoqish
+  setMuted(m) {
+    this.muted = m;
+    this.stream?.getAudioTracks().forEach((t) => (t.enabled = !m));
+  }
+
   // O'quvchi gapini bo'lsa - Sado darhol jim bo'ladi
   flush() {
     for (const s of this.sources) {
@@ -107,6 +113,11 @@ export class LiveCall {
   loop() {
     if (this.stopped) return;
     const speaking = this.sources.size > 0;
+    if (!speaking && this.muted) {
+      this.onState("muted", 0);
+      this.raf = requestAnimationFrame(this.loop);
+      return;
+    }
     const an = speaking ? this.out : this.micAnalyser;
     const buf = new Float32Array(an.fftSize);
     an.getFloatTimeDomainData(buf);
