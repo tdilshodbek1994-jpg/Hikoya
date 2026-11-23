@@ -577,7 +577,7 @@ function openTopicStats() {
   let hist = [];
   try { hist = JSON.parse(localStorage.getItem("sado-qz-hist") || "[]").slice(-12); } catch {}
   if (hist.length >= 2) {
-    const NAMES = { "gr-mix": "Aralash", "gr-daily": "Bugungi", "gr-level": "Daraja", "gr-miss": "Xatolar", "gr-weak": "Zaif mavzular" };
+    const NAMES = { "gr-mix": "Aralash", "gr-daily": "Bugungi", "gr-level": "Daraja", "gr-miss": "Xatolar", "gr-weak": "Zaif mavzular", "gr-new": "Yangi mavzular" };
     const pc = hist.map((x) => Math.round((x.r / x.n) * 100));
     const half = Math.floor(pc.length / 2);
     const avg = (a) => a.reduce((s, v) => s + v, 0) / a.length;
@@ -590,6 +590,7 @@ function openTopicStats() {
       col.style.height = `${Math.max(6, pc[k])}%`;
       const lname = NAMES[x.t] || state.lessons.find((l) => l.id === x.t)?.title.replace(/^\d+\.\s*/, "") || "Mashq";
       col.title = `${lname}: ${x.r}/${x.n}`;
+      col.append(el("em", "", `${pc[k]}`)); // telefonda title ko'rinmaydi — foiz ustun ustida
       bars.append(col);
     });
     wrap.append(bars);
@@ -627,7 +628,19 @@ function openTopicStats() {
     box.append(wb);
   }
   const untouched = state.lessons.filter((l) => l.category === "Grammatika gapirib" && !(st.by || {})[l.id]).length;
-  if (untouched) box.append(el("small", "qz-n", `Hali test ishlanmagan mavzular: ${untouched} ta`));
+  // 🆕 Hali test ishlanmagan mavzulardan (tasodifiy 5 tasi) — 10 ta savol
+  const fresh = state.lessons.filter((l) => l.category === "Grammatika gapirib" && !(st.by || {})[l.id] && l.quiz?.length);
+  if (fresh.length) {
+    const nb = el("button", "qz-again ts-new", `🆕 Yangi mavzulardan test (${fresh.length})`);
+    nb.addEventListener("click", () => {
+      haptic();
+      const pick = [...fresh].sort(() => Math.random() - 0.5).slice(0, 5);
+      const quiz = pick.flatMap((l) => l.quiz.map((q) => ({ ...q, from: l.id })));
+      state.mixWeak = new Map();
+      renderQuiz({ id: "gr-new", quiz }, $("mixQuiz"), `🆕 Yangi mavzular: ${pick.map((l) => l.emoji).join(" ")}`, Math.min(10, quiz.length));
+    });
+    box.append(nb);
+  }
 }
 
 function openMissTest() {
@@ -724,7 +737,7 @@ function renderMixPicker(gr, box) {
   // ⚡ Tezkor tanlash: zaif mavzular (aniqlik < 70%) yoki tozalash
   const tools = el("div", "mp-tools");
   const by = quizStats().by || {};
-  const weak = gr.filter((l) => by[l.id]?.all >= 3 && by[l.id].ok / by[l.id].all < 0.7).map((l) => l.id);
+  const weak = gr.filter((l) => by[l.id]?.all >= 2 && by[l.id].ok / by[l.id].all < 0.8).map((l) => l.id); // statistika oynasidagi bilan bir xil chegara
   const wk = el("button", "mp-tool", weak.length ? `⚠️ Zaif mavzularim (${weak.length})` : "⚠️ Zaif mavzu hali yo'q");
   wk.disabled = !weak.length;
   wk.addEventListener("click", () => { haptic(); sel.clear(); weak.forEach((id) => sel.add(id)); paint(); });
@@ -885,7 +898,7 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
         body.append(ul);
       }
       // 📝 Aralash test: xato qilingan mavzular — mos darsga o'tish
-      if (["gr-mix", "gr-weak"].includes(lesson.id) && state.mixWeak?.size) {
+      if (["gr-mix", "gr-weak", "gr-new"].includes(lesson.id) && state.mixWeak?.size) {
         const tl = el("div", "qz-topics");
         tl.append(el("small", "", "Takrorlash kerak bo'lgan mavzular:"));
         for (const [id, n] of [...state.mixWeak].sort((a, b) => b[1] - a[1])) {
