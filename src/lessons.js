@@ -1918,6 +1918,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-modalperf",
+    category: "Grammatika gapirib",
+    title: "Should have / must have / could have",
+    emoji: "🕰️",
+    level: "B2",
+    added: "2026-11-26",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on past modals: should have + V3 (regret or criticism: I should have studied), must have + V3 (strong guess about the past: He must have forgotten), might/could have + V3 (possibility), can't have + V3 (impossible), could have + V3 (missed chance). Talk about past mistakes, mysteries (a missing friend, a lost phone) and missed opportunities. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Your friend didn't come to the meeting yesterday. What do you think happened?",
+    openerUz: "Do'stingiz kecha uchrashuvga kelmadi. Sizningcha, nima bo'lgan?",
+    phrases: [
+      { en: "He must have forgotten about it.", uz: "U buni unutgan bo'lsa kerak." },
+      { en: "I should have studied harder.", uz: "Yaxshiroq o'qishim kerak edi." },
+      { en: "She might have missed the bus.", uz: "U avtobusdan qolgan bo'lishi mumkin." },
+      { en: "You could have called me.", uz: "Menga qo'ng'iroq qilsangiz bo'lardi." },
+      { en: "They can't have finished so quickly.", uz: "Ular buncha tez tugatgan bo'lishi mumkin emas." },
+      { en: "We shouldn't have eaten so much.", uz: "Bunchalik ko'p yemasligimiz kerak edi." },
+    ],
+  },
+  {
+    id: "gr-linking",
+    category: "Grammatika gapirib",
+    title: "Bog'lovchilar: although, despite, however",
+    emoji: "🔗",
+    level: "B2",
+    added: "2026-11-26",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on contrast and linking words useful for IELTS: although / even though + clause, despite / in spite of + noun or -ing, however (new sentence), whereas, while, therefore, as a result, moreover. Discuss opinions on city vs village life, online vs offline study, and pros and cons of social media, making the student connect ideas. Have a natural conversation that makes the student use these linking words a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Is it better to live in a big city or in a village? Give me one advantage and one disadvantage.",
+    openerUz: "Katta shaharda yashash yaxshimi yoki qishloqdami? Bitta afzallik va bitta kamchilik ayting.",
+    phrases: [
+      { en: "Although it's expensive, I love city life.", uz: "Qimmat bo'lsa ham, shahar hayotini yaxshi ko'raman." },
+      { en: "Despite the rain, we went out.", uz: "Yomg'irga qaramay, tashqariga chiqdik." },
+      { en: "However, there are some disadvantages.", uz: "Biroq, ba'zi kamchiliklar ham bor." },
+      { en: "Cities are noisy, whereas villages are quiet.", uz: "Shaharlar shovqinli, qishloqlar esa tinch." },
+      { en: "Therefore, I prefer studying online.", uz: "Shu sababli onlayn o'qishni afzal ko'raman." },
+      { en: "In spite of being tired, she kept working.", uz: "Charchaganiga qaramay, u ishlashda davom etdi." },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -2821,7 +2861,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-tobe", "gr-this", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-frequency", "gr-continuous", "gr-past", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-future", "gr-compare", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-relative", "gr-reported", "gr-passive", "gr-phrasal", "gr-tags", "gr-perfcont", "gr-wish"];
+const GR_ORDER = ["gr-tobe", "gr-this", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-frequency", "gr-continuous", "gr-past", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-future", "gr-compare", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-relative", "gr-reported", "gr-passive", "gr-phrasal", "gr-tags", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking"];
 // Avval daraja guruhi (A1–A2 → B1 → B2), guruh ichida — GR_ORDER tartibi
 const grGroup = (lv) => (/B2/.test(lv || "") ? 2 : /A2-B1|^B1$/.test(lv || "") ? 1 : 0);
 const grRank = (l) => grGroup(l.level) * 100 + (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
@@ -2848,6 +2888,8 @@ const QUIZ = {
   "gr-this": ["___ apples are very sweet.|These|This|That", "Look at ___ bird over there!|that|these|those", "I like ___ shoes in the window.|those|that|this", "How much is ___ bag?|this|these|those", "There are three ___ in the park.|children|childs|childrens", "Many ___ live in Tashkent.|people|peoples|persons", "I have two ___.|boxes|boxs|box", "Two ___ are talking outside.|men|mans|man", "Are ___ your keys on the table?|these|this|that", "___ is my friend Aziz.|This|These|Those", "She has three ___.|brothers|brother|brotheres", "Those ___ are from Samarkand.|women|woman|womans"],
   "gr-pronouns": ["My friend always helps ___.|me|I|my", "I called ___ yesterday. He was happy.|him|he|his", "Can you help ___, please?|us|we|our", "I gave ___ a present. She loved it.|her|she|hers", "We visit ___ every Sunday.|them|they|their", "___ likes football very much.|He|Him|His", "This gift is for ___.|you|your|yours", "___ are my best friends.|They|Them|Their", "Please call ___ tomorrow. I'm free.|me|I|mine", "She doesn't like ___. He is rude.|him|he|his", "Come with ___! We're going to the park.|us|we|our", "I saw Laylo and talked to ___.|her|she|hers"],
   "gr-indefinite": ["I want ___ to drink.|something|anything|nothing", "Is ___ at home?|anyone|anywhere|anything", "___ called me today. My phone was quiet.|Nobody|Anybody|Somebody not", "I looked ___ for my keys.|everywhere|anywhere|nowhere", "There isn't ___ in the fridge.|anything|nothing|something", "___ loves plov.|Everybody|Anybody|Nobody not", "Did you go ___ last weekend?|anywhere|somewhere not|nowhere", "I didn't see ___ at the bus stop.|anybody|nobody|somebody", "There's ___ at the door. Can you open it?|someone|anyone|no one", "I have ___ to do today. I'm bored.|nothing|anything|something not", "Can I get you ___?|anything|nothing|nobody", "She knows ___ about computers. She's an expert.|everything|anything|nothing"],
+  "gr-modalperf": ["He's late. He must ___ missed the bus.|have|has|had", "I failed. I should have ___ harder.|studied|study|studying", "She ___ have seen me — I was hiding.|can't|mustn't|shouldn't to", "You could ___ called me! I waited all day.|have|has|of", "They ___ have taken a taxi. I'm not sure.|might|must to|should to", "I shouldn't have ___ so much cake.|eaten|ate|eat", "The road is wet. It must have ___ last night.|rained|rain|raining", "We ___ have left earlier. Now we're late.|should|must|can't", "He looks happy. He must have ___ the exam.|passed|pass|passing", "You ___ have told me! I didn't know.|should|must|might not", "She can't have ___ it alone. It's too heavy.|carried|carry|carrying", "I might have ___ my phone in the taxi.|left|leave|leaving"],
+  "gr-linking": ["___ it was cold, we went swimming.|Although|Despite|However", "___ the rain, the match continued.|Despite|Although|Even though", "It's cheap. ___, it's very slow.|However|Although|Despite", "Cities are noisy, ___ villages are quiet.|whereas|despite|however", "In spite ___ being tired, she kept working.|of|that|to", "He was ill. ___, he stayed at home.|Therefore|Although|Despite", "___ he studied hard, he didn't pass.|Even though|In spite of|However", "Despite ___ late, he got the job.|arriving|he arrived|arrive", "The hotel was nice. ___, the food was terrible.|However|Despite|Although", "I like tea, ___ my sister prefers coffee.|while|despite|therefore", "Although ___ expensive, the phone sold well.|it was|being of|despite", "The flight was delayed. As a ___, we missed the meeting.|result|reason|despite"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink", "My sister ___ English very well.|speaks|speak|speaking", "They ___ live in Tashkent.|don't|doesn't|aren't", "Where ___ he work?|does|do|is", "The shop ___ at nine o'clock.|opens|open|opening", "Water ___ at 100 degrees.|boils|boil|is boil", "My friends ___ like rap music.|don't|doesn't|isn't", "___ your brother study at university?|Does|Do|Is", "He usually ___ his homework in the evening.|does|do|doing"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on", "I was born ___ 2008.|in|on|at", "We have a party ___ Friday evening.|on|in|at", "I usually sleep ___ night.|at|in|on", "The keys are ___ the table.|on|at|in", "The meeting is ___ 3 pm.|at|in|on", "I'll see you ___ the weekend.|at|in|on", "She lives ___ Samarkand.|in|at|on", "My birthday is ___ 5th March.|on|in|at"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do", "Listen! The baby ___ crying.|is|are|be", "We ___ waiting for the bus now.|are|is|am", "What ___ you doing?|are|do|is", "She isn't ___ TV at the moment.|watching|watch|watches", "I ___ working from home this week.|am|is|are", "Why ___ you laughing?|are|is|do", "They ___ playing football right now.|are|is|be", "Be quiet! Grandma ___ sleeping.|is|are|am"],
@@ -2898,6 +2940,8 @@ const KEYWORDS = {
   "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
 };
 const RULES = {
+  "gr-modalperf": "O'tmish haqida: modal + have + 3-shakl.\nshould have — afsus/tanqid: I should have studied. You shouldn't have said that.\nmust have — kuchli taxmin: He must have forgotten. can't have — bo'lishi mumkin emas: She can't have seen it.\nmight / could have — ehtimol: They might have missed the bus. could have — imkon bor edi: You could have called me.",
+  "gr-linking": "although / even though + gap: Although it was cold, we swam.\ndespite / in spite of + ot yoki -ing: Despite the rain, we went out. In spite of being tired, she worked.\nHowever — yangi gap boshida: It's cheap. However, it's slow.\nwhereas / while — qarama-qarshi: Cities are noisy, whereas villages are quiet. therefore — shu sababli.",
   "gr-pronouns": "Ega (kim?): I, you, he, she, it, we, they. Fe'ldan keyin (kimni? kimga?): me, you, him, her, it, us, them.\nShe helps me. I called him. Can you help us?\nPredlogdan keyin ham: with me, for her, to them.\nHe likes her. (✗ Him likes she)",
   "gr-indefinite": "some- — darak gapda: something, someone, somewhere.\nany- — savol va inkorda: anything, anyone, anywhere. Is anyone here? I didn't see anybody.\nno- — fe'l ijobiy bo'ladi: I saw nobody. There's nothing here. (✗ I didn't see nobody)\nevery- — hammasi: everything, everybody, everywhere.",
   "gr-tobe": "I + am: I am a student. (I'm)\nhe / she / it + is: She is a doctor. It is cold. (she's, it's)\nyou / we / they + are: We are friends. (we're, they're)\nInkor: I'm not, isn't, aren't. Savol: Are you OK? Is he at home?",
