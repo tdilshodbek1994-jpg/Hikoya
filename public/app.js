@@ -2717,7 +2717,7 @@ function checkCourseDone(before) {
     el("div", "cert-ico", "🎓"),
     el("div", "cert-t", "Tabriklaymiz! Kurs tugatildi"),
     el("div", "cert-c", l.category),
-    el("div", "cert-s", `${all.length} ta dars · o'rtacha ${avg} ball`),
+    el("div", "cert-s", `${all.length} ta dars · o'rtacha ${avg} ball${l.category === "CEFR kursi" && state.progress?.ml != null ? ` · Multilevel ~${state.progress.ml}/75` : ""}`),
   );
   // 👤 Shaxsiy sertifikat: Telegram ismi va sana
   const who = [tg?.initDataUnsafe?.user?.first_name, tg?.initDataUnsafe?.user?.last_name].filter(Boolean).join(" ");
@@ -2838,6 +2838,7 @@ $("shareBtn").addEventListener("click", () => {
     `${l.emoji} ${l.title}: ${sc} ball${r?.level ? ` · ${r.level}` : ""}`,
     // Erkin suhbatda iboralar yo'q — "0/0 ta ibora" yozilmasin
     !l.liveOnly && l.phrases.length ? `✅ ${state.used.size}/${l.phrases.length} ta ibora` : "",
+    Number.isFinite(r?.ml_score) ? `🇺🇿 Multilevel: ~${r.ml_score}/75` : "",
     r?.criteria ? `📊 Fluency ${r.criteria.fluency} · Lexical ${r.criteria.vocabulary} · Grammar ${r.criteria.grammar} · Pronunciation ${r.criteria.pronunciation}` : "",
     r?.new_words?.length ? `📚 ${r.new_words.length} ta yangi so'z o'rgandim` : "",
     state.progress?.streak ? `🔥 ${state.progress.streak} kunlik seriya` : "",
