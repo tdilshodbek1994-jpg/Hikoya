@@ -2398,7 +2398,7 @@ const STAGES = { ielts: IELTS_STAGES, cefr: CEFR_STAGES, "cefr-8": CEFR_STAGES }
 
 // ❓ IELTS Part 3: muhokama savollari (o'quvchi oldindan ko'rib, o'ylab oladi)
 function p3Questions(l) {
-  if (!/^ielts-p3/.test(l.id)) return null;
+  if (!/^ielts-p[13]/.test(l.id)) return null;
   const m = l.situation.match(/Ask these questions one at a time:\s*(.+?)\.\s*After each/);
   return m ? m[1].split(/;\s*/).map((x) => x.replace(/^\(\d\)\s*/, "").trim()).filter(Boolean) : null;
 }

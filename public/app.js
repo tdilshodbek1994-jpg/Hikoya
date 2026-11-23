@@ -404,7 +404,10 @@ function renderVisual(lesson) {
     sm.textContent = `❓ ${lesson.questions.length} ta savol — oldindan o'ylab oling`;
     const ol = el("ol", "");
     for (const q of lesson.questions) ol.append(el("li", "", q));
-    d.append(sm, ol, el("small", "", "💡 Har biriga 2–4 gap: fikr + sabab + misol. «I'd argue that... because... For example...»"));
+    const tip = /^ielts-p1/.test(lesson.id)
+      ? "💡 Part 1: har biriga 2–3 gap — javob + sabab yoki misol. Faqat «Yes»/«No» demang!"
+      : "💡 Har biriga 2–4 gap: fikr + sabab + misol. «I'd argue that... because... For example...»";
+    d.append(sm, ol, el("small", "", tip));
     box.append(d);
     return;
   }
