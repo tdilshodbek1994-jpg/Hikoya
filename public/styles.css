@@ -834,3 +834,7 @@ body.dark .pill.warn { color: #fbbf24; }
 .flash-mastery-t { font-size: 13px; font-weight: 700; margin: 4px 0 6px; text-align: center; }
 .flash-mastery { height: 8px; border-radius: 4px; background: var(--bg); overflow: hidden; margin-bottom: 12px; }
 .flash-mastery i { display: block; height: 100%; background: linear-gradient(90deg, var(--primary), var(--ok)); border-radius: 4px; }
+
+/* 🔥 Seriya xavf ostida */
+.goal.risk small { color: #ea580c; font-weight: 700; }
+.goal.risk .goal-ring { animation: timerPulse 1.4s ease-in-out infinite; }

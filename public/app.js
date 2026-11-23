@@ -188,6 +188,7 @@ async function loadLessons() {
   }
 }
 
+const tashDay = () => new Date(Date.now() + 5 * 3600_000).toISOString().slice(0, 10);
 async function loadProgress() {
   // ⚡ Saqlangan statistika darhol ko'rinadi (faqat shu foydalanuvchiniki), yangisi keyin keladi
   const uid = String(tg?.initDataUnsafe?.user?.id || "dev");
@@ -196,6 +197,8 @@ async function loadProgress() {
       const c = JSON.parse(localStorage.getItem("sado-progress") || "null");
       if (c?.uid === uid && c.data) {
         state.progress = c.data;
+        // Kesh kechagi bo'lsa — "bugungi" hisoblagichlar nolga tushadi (limit noto'g'ri ko'rinmasin)
+        if (c.day !== tashDay()) Object.assign(state.progress, { startedToday: 0, today: 0 });
         renderChips();
         renderLessons();
       }
@@ -203,7 +206,7 @@ async function loadProgress() {
   }
   try {
     state.progress = await api("api/progress", { method: "GET" });
-    try { localStorage.setItem("sado-progress", JSON.stringify({ uid, data: state.progress })); } catch {}
+    try { localStorage.setItem("sado-progress", JSON.stringify({ uid, day: tashDay(), data: state.progress })); } catch {}
     renderChips();
     renderLessons();
   } catch {
@@ -230,6 +233,12 @@ function renderGoal() {
     el("small", "", done ? "Ertaga ham davom eting — seriya uzilmasin 🔥" : `Kuniga ${state.goal} ta dars · bosing — maqsadni o'zgartirish`),
   );
   box.append(ring, txt);
+  // 🔥 Kechqurun (18:00 dan keyin) seriya bor-u bugun dars yo'q — uzilib qolmasin deb eslatamiz
+  const hour = new Date(Date.now() + 5 * 3600_000).getUTCHours();
+  if (p.streak > 0 && !n && hour >= 18) {
+    box.classList.add("risk");
+    txt.lastChild.textContent = `🔥 ${p.streak} kunlik seriyangiz bugun uzilishi mumkin — bitta qisqa dars yetadi!`;
+  } else box.classList.remove("risk");
   // Kunlik limit: qancha dars qolgani
   if (p.limit) {
     const left = Math.max(0, p.limit - (p.startedToday || 0));
