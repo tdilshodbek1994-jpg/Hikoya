@@ -2358,6 +2358,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-forsince",
+    category: "Grammatika gapirib",
+    title: "For, since, How long…?",
+    emoji: "⏳",
+    level: "A2-B1",
+    added: "2026-11-28",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on present perfect with for (a period: for three years, for a long time) and since (a starting point: since 2020, since Monday, since I was a child), and the question How long have you…? Uzbek speakers often say I live here for five years or I am studying English since 2022 — gently correct to I have lived here for five years / I have been studying English since 2022. Ask about how long the student has lived in their city, studied English, known their best friend, had their phone. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "How long have you lived in your city?",
+    openerUz: "Shahringizda qancha vaqtdan beri yashaysiz?",
+    phrases: [
+      { en: "I've lived in Tashkent for five years.", uz: "Men Toshkentda besh yildan beri yashayman." },
+      { en: "I've known him since school.", uz: "Uni maktabdan beri bilaman." },
+      { en: "How long have you studied English?", uz: "Qancha vaqtdan beri ingliz tilini o'rganasiz?" },
+      { en: "She's worked there since 2021.", uz: "U 2021-yildan beri u yerda ishlaydi." },
+      { en: "We haven't seen each other for ages.", uz: "Ancha vaqtdan beri bir-birimizni ko'rmadik." },
+      { en: "I've had this phone for two years.", uz: "Bu telefonim ikki yildan beri bor." },
+    ],
+  },
+  {
+    id: "gr-adjorder",
+    category: "Grammatika gapirib",
+    title: "Sifatlar tartibi: a big old wooden table",
+    emoji: "🪑",
+    level: "B1",
+    added: "2026-11-28",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on the order of several adjectives before a noun: opinion → size → age → shape → colour → origin → material → purpose + noun (a beautiful big old house, a small round black table, a lovely Italian leather bag). Usually use only two or three adjectives together. Play a describing game: the student describes their room, favourite clothes, a gift and things in a shop window. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Describe your favourite bag or jacket. What does it look like?",
+    openerUz: "Eng yoqtirgan sumkangiz yoki kurtkangizni tasvirlab bering. U qanday ko'rinishda?",
+    phrases: [
+      { en: "I have a beautiful old wooden table.", uz: "Mening chiroyli eski yog'och stolim bor." },
+      { en: "She bought a small black leather bag.", uz: "U kichkina qora charm sumka sotib oldi." },
+      { en: "It's a lovely big house.", uz: "Bu yoqimli katta uy." },
+      { en: "He wears a long blue winter coat.", uz: "U uzun ko'k qishki palto kiyadi." },
+      { en: "We have a round Italian glass vase.", uz: "Bizda yumaloq italyan shisha vaza bor." },
+      { en: "I want a nice new red car.", uz: "Men yaxshi yangi qizil mashina xohlayman." },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -3321,7 +3361,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-can", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-mine", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adverbs", "gr-tooenough", "gr-sosuch", "gr-modals", "gr-better", "gr-usedto", "gr-perfect", "gr-ppvsps", "gr-pastperf", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-tags", "gr-sotoo", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused", "gr-unless", "gr-inversion"];
+const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-can", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-mine", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adjorder", "gr-adverbs", "gr-tooenough", "gr-sosuch", "gr-modals", "gr-better", "gr-usedto", "gr-perfect", "gr-forsince", "gr-ppvsps", "gr-pastperf", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-tags", "gr-sotoo", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused", "gr-unless", "gr-inversion"];
 // Avval daraja guruhi (A1–A2 → B1 → B2), guruh ichida — GR_ORDER tartibi
 const grGroup = (lv) => (/B2/.test(lv || "") ? 2 : /A2-B1|^B1$/.test(lv || "") ? 1 : 0);
 const grRank = (l) => grGroup(l.level) * 100 + (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
@@ -3370,6 +3410,8 @@ const QUIZ = {
   "gr-inversion": ["Never ___ I seen such a beautiful place.|have|I have|did", "Rarely ___ we eat out these days.|do|we|are", "Not only ___ she win, but she also broke the record.|did|she|was", "No sooner had I arrived ___ it started to rain.|than|when|then", "Hardly had we sat down ___ the phone rang.|when|than|then", "Only then ___ I understand the problem.|did|I|have", "Seldom ___ he complain about anything.|does|he|is", "Never before ___ the city been so crowded.|had|did|was", "Not until I got home ___ I notice the mistake.|did|I|had", "Little ___ she know what was about to happen.|did|she|was", "Under no circumstances ___ you open this door.|should|you|you should", "Not only ___ he clever, but he's also kind.|is|he|does"],
   "gr-sosuch": ["It was ___ a good film!|such|so|very", "The weather was ___ cold.|so|such|such a", "They are ___ nice people.|such|so|such a", "It was so hot ___ we stayed inside.|that|than|then", "There were so ___ people at the concert.|many|much|lot", "She speaks English ___ well.|so|such|such a", "It was ___ bad weather that we cancelled the trip.|such|so|such a", "I've never seen ___ a beautiful view.|such|so|very", "He was ___ tired that he fell asleep.|so|such|such a", "Don't spend so ___ money on clothes.|much|many|lot", "It's ___ an interesting book!|such|so|too", "The test was ___ easy that everyone passed.|so|such|such an"],
   "gr-better": ["You'd better ___.|hurry|to hurry|hurrying", "You'd better ___ be late.|not|don't|no", "I'd rather ___ at home tonight.|stay|to stay|staying", "I'd rather walk ___ take the bus.|than|that|then", "I'd rather ___ talk about it.|not|don't|no", "We'd ___ take an umbrella. It's going to rain.|better|rather|best", "It's late. We ___ better go home.|had|have|would", "Would you rather ___ tea or coffee?|have|to have|having", "She'd rather ___ alone.|work|works|to work", "You ___ better see a doctor.|'d|'re|'ve", "I'd rather you ___ smoke here.|didn't|don't|not", "He'd better ___ his homework before dinner.|finish|to finish|finishes"],
+  "gr-forsince": ["I've lived here ___ ten years.|for|since|from", "I've known him ___ school.|since|for|from", "How long ___ you studied English?|have|do|did", "She's worked there ___ 2021.|since|for|from", "We haven't seen each other ___ ages.|for|since|during", "I've had this phone ___ two years.|for|since|ago", "They've been married ___ last summer.|since|for|from", "___ long have you known Aziz?|How|What|When", "I ___ here since Monday.|have been|am|was", "He hasn't called me ___ a week.|for|since|ago", "It's rained ___ this morning.|since|for|from", "I've studied English ___ I was ten.|since|for|when"],
+  "gr-adjorder": ["I have a ___ table.|beautiful old wooden|wooden old beautiful|old beautiful wooden", "She bought a ___ bag.|small black leather|black small leather|leather small black", "It's a ___ house.|lovely big|big lovely|big and lovely a", "He wears a ___ coat.|long blue winter|blue long winter|winter blue long", "We have a ___ vase.|round Italian glass|glass round Italian|Italian glass round", "I want a ___ car.|nice new red|red new nice|new red nice", "They live in a ___ flat.|small modern|modern small|small and modern a", "My grandma has a ___ cat.|fat old grey|grey old fat|old grey fat", "He gave me a ___ watch.|beautiful Swiss|Swiss beautiful|beautifully Swiss", "There's a ___ box on the table.|small square|square small|squarely small", "She has ___ hair.|long black|black long|longly black", "It was a ___ day.|lovely sunny|sunny lovely|lovely sunnily"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink", "My sister ___ English very well.|speaks|speak|speaking", "They ___ live in Tashkent.|don't|doesn't|aren't", "Where ___ he work?|does|do|is", "The shop ___ at nine o'clock.|opens|open|opening", "Water ___ at 100 degrees.|boils|boil|is boil", "My friends ___ like rap music.|don't|doesn't|isn't", "___ your brother study at university?|Does|Do|Is", "He usually ___ his homework in the evening.|does|do|doing"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on", "I was born ___ 2008.|in|on|at", "We have a party ___ Friday evening.|on|in|at", "I usually sleep ___ night.|at|in|on", "The keys are ___ the table.|on|at|in", "The meeting is ___ 3 pm.|at|in|on", "I'll see you ___ the weekend.|at|in|on", "She lives ___ Samarkand.|in|at|on", "My birthday is ___ 5th March.|on|in|at"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do", "Listen! The baby ___ crying.|is|are|be", "We ___ waiting for the bus now.|are|is|am", "What ___ you doing?|are|do|is", "She isn't ___ TV at the moment.|watching|watch|watches", "I ___ working from home this week.|am|is|are", "Why ___ you laughing?|are|is|do", "They ___ playing football right now.|are|is|be", "Be quiet! Grandma ___ sleeping.|is|are|am"],
@@ -3420,6 +3462,8 @@ const KEYWORDS = {
   "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
 };
 const RULES = {
+  "gr-forsince": "for + davr (qancha vaqt): for ten years, for two weeks, for a long time.\nsince + boshlanish nuqtasi (qachondan beri): since 2020, since last week, since childhood.\nIkkalasi ham Present Perfect bilan: I've lived here for ten years. (✗ I live here for ten years)\nSavol: How long have you studied English?",
+  "gr-adjorder": "Bir nechta sifat tartibi: fikr → o'lcham → yosh → shakl → rang → kelib chiqish → material + ot.\nI have a beautiful old wooden table. She bought a small black leather bag.\n(✗ a wooden old beautiful table) (✗ a black small bag)\nOdatda 2-3 ta sifat yetarli: a lovely big house.",
   "gr-sosuch": "so + sifat yoki ravish: It was so cold. She speaks so fast.\nsuch + a/an + sifat + ot: It was such a good film. (✗ so a good film)\nsuch + sifat + ko'plik yoki sanalmaydigan ot: such nice people, such bad weather.\nNatija: so/such ... that: It was so hot that we stayed inside. Ko'p: so many people, so much money.",
   "gr-better": "had better ('d better) + fe'lning o'zi — qilganingiz ma'qul (maslahat, ogohlantirish): You'd better hurry.\nInkor: had better not: You'd better not be late. (✗ hadn't better) (✗ had better to go)\nwould rather ('d rather) + fe'lning o'zi — afzal ko'raman: I'd rather stay at home. I'd rather not say.\nSolishtirish: I'd rather walk than take the bus.",
   "gr-can": "can + fe'lning o'zi — qila olaman / mumkin: I can swim. She can drive.\nHamma shaxsda bir xil: ✗ She cans, ✗ He can drives, ✗ I can to swim.\nInkor: can't (cannot): He can't cook.\nSavol: Can you cook? — Yes, I can. / No, I can't. Ruxsat: Can I come in?",
