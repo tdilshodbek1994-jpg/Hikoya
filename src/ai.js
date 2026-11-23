@@ -25,14 +25,19 @@ Target phrases the student should practise (index. phrase):
 ${list}
 
 How to behave:
-- Stay in character and keep the conversation natural. Reply in 1-2 short, simple English sentences (max ~30 words), because your reply is spoken aloud.
+- Stay in character and keep the conversation natural. The English part ("reply") is 1-2 short, simple sentences (max ~30 words), because it is spoken aloud.
 - Steer the conversation so the student gets chances to use the target phrases they have not used yet. Never read the list to them.
-- The student's words come from speech recognition, so ignore small transcription glitches and punctuation.
-- If the student writes or speaks Uzbek or Russian, gently answer in English and encourage them to try in English.
+- The student's words come from speech recognition, so ignore small transcription glitches, punctuation and Cyrillic/Latin spelling differences.
 - A target phrase counts as used when the student says it or a clearly equivalent sentence (filled-in blanks like "My name is Aziz" count).
 
+Speaking Uzbek ("uz_say", spoken aloud in Uzbek before your English reply):
+- If the student speaks Uzbek (or Russian), answer them in Uzbek in "uz_say": respond to what they said or asked, tell them how to say it in English (include the exact English sentence), and invite them to repeat it in English. Then continue the role-play in English in "reply".
+- If the student speaks English but makes a clear grammar, word or meaning mistake, explain it in Uzbek in "uz_say", for example: "Siz '...' dedingiz. To'g'risi: '...'. Chunki ...". Include the correct English sentence. Ignore tiny slips that do not matter.
+- If the student's English is fine, "uz_say" is an empty string.
+- Write Uzbek in the Latin alphabet, warm and simple, max ~35 words, plain text only (no markdown, no emojis), because it is read aloud.
+
 Answer with ONLY a JSON object, no markdown, in exactly this shape:
-{"reply": "<your spoken English reply>", "reply_uz": "<Uzbek translation of reply>", "used_phrases": [<indexes of target phrases the student used in THIS message>], "feedback_uz": "<one short friendly correction in Uzbek if the student made a clear grammar or word mistake, otherwise empty string>", "mood": "<one of: happy, neutral, curious, surprised>"}`;
+{"uz_say": "<Uzbek spoken help or correction, or empty string>", "reply": "<your spoken English reply>", "reply_uz": "<Uzbek translation of reply>", "used_phrases": [<indexes of target phrases the student used in THIS message>], "mood": "<one of: happy, neutral, curious, surprised>"}}`;
 }
 
 function parseJson(text) {
@@ -84,7 +89,7 @@ export async function chatTurn(session, lesson, studentText) {
       reply: "Sorry, let's get back to our conversation. Could you say that another way?",
       reply_uz: "Kechirasiz, suhbatimizga qaytaylik. Buni boshqacha ayta olasizmi?",
       used_phrases: [],
-      feedback_uz: "",
+      uz_say: "",
       mood: "neutral",
     };
   }
@@ -106,7 +111,7 @@ export async function chatTurn(session, lesson, studentText) {
     reply: String(data.reply || "").slice(0, 600) || "Sorry, could you repeat that?",
     reply_uz: String(data.reply_uz || ""),
     used_phrases: used,
-    feedback_uz: String(data.feedback_uz || ""),
+    uz_say: String(data.uz_say || "").slice(0, 600),
     mood: ["happy", "neutral", "curious", "surprised"].includes(data.mood) ? data.mood : "neutral",
   };
 }
@@ -121,8 +126,12 @@ export async function transcribe(buffer, mimeType, lesson) {
   const form = new FormData();
   form.append("file", new Blob([buffer], { type: mimeType }), `speech.${ext}`);
   form.append("model", STT_MODEL);
-  form.append("language", "en");
-  form.append("prompt", lesson.phrases.map((p) => p.en).join(" "));
+  // Til avtomatik aniqlanadi: o'quvchi inglizcha yoki o'zbekcha gapirishi mumkin
+  form.append(
+    "prompt",
+    "An Uzbek student practising English; they may speak English or Uzbek. " +
+      lesson.phrases.map((p) => p.en).join(" "),
+  );
 
   const res = await fetch("https://api.openai.com/v1/audio/transcriptions", {
     method: "POST",
@@ -135,7 +144,12 @@ export async function transcribe(buffer, mimeType, lesson) {
 }
 
 // Matn -> ovoz (mp3, base64). Kalit bo'lmasa null - brauzer o'zi o'qiydi.
-export async function speak(text) {
+const TTS_STYLE = {
+  en: "Speak clearly, warmly and a little slower than normal, like a friendly English teacher.",
+  uz: "Speak in the Uzbek language with natural Uzbek pronunciation, warmly and clearly, like a friendly teacher. Pronounce any English words inside quotes in clear English.",
+};
+
+export async function speak(text, lang = "en") {
   if (!OPENAI_KEY || !text) return null;
   const res = await fetch("https://api.openai.com/v1/audio/speech", {
     method: "POST",
@@ -145,7 +159,7 @@ export async function speak(text) {
       voice: TTS_VOICE,
       input: text,
       response_format: "mp3",
-      instructions: "Speak clearly, warmly and a little slower than normal, like a friendly English teacher.",
+      instructions: TTS_STYLE[lang] || TTS_STYLE.en,
     }),
   });
   if (!res.ok) {
@@ -153,4 +167,12 @@ export async function speak(text) {
     return null;
   }
   return Buffer.from(await res.arrayBuffer()).toString("base64");
+}
+
+// Bir nechta qismni (o'zbekcha izoh, inglizcha javob, tarjima) parallel ovozlashtiradi.
+// Qaytaradi: [{ lang, text, audio }] - audio null bo'lsa brauzer o'zi o'qiydi.
+export async function speakParts(parts) {
+  const list = parts.filter((p) => p.text && p.text.trim());
+  const audios = await Promise.all(list.map((p) => speak(p.text, p.lang).catch(() => null)));
+  return list.map((p, i) => ({ lang: p.lang, text: p.text, audio: audios[i] }));
 }

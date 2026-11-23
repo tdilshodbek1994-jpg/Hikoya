@@ -6,7 +6,7 @@ import express from "express";
 import Anthropic from "@anthropic-ai/sdk";
 import { LESSONS, getLesson, publicLesson } from "./src/lessons.js";
 import { verifyInitData } from "./src/telegram.js";
-import { chatTurn, transcribe, speak, voiceEnabled } from "./src/ai.js";
+import { chatTurn, transcribe, speakParts, voiceEnabled } from "./src/ai.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -101,14 +101,18 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
   });
 
   try {
-    const audio = await speak(lesson.opener);
+    const tr = req.body?.translate !== false;
+    const parts = await speakParts([
+      { lang: "en", text: lesson.opener },
+      ...(tr ? [{ lang: "uz", text: lesson.openerUz }] : []),
+    ]);
     res.json({
       session: id,
       lesson: publicLesson(lesson),
       seconds: SESSION_MINUTES * 60,
       reply: lesson.opener,
       reply_uz: lesson.openerUz,
-      audio,
+      parts,
     });
   } catch (err) {
     sendError(res, err);
@@ -142,13 +146,19 @@ app.post(
       s.turns += 1;
       const result = await chatTurn(s, lesson, text);
       for (const i of result.used_phrases) s.used.add(i);
-      const audio = await speak(result.reply);
+      // Tartib: o'zbekcha izoh -> inglizcha javob -> (ixtiyoriy) o'zbekcha tarjima
+      const tr = req.query.tr !== "0";
+      const parts = await speakParts([
+        { lang: "uz", text: result.uz_say },
+        { lang: "en", text: result.reply },
+        ...(tr ? [{ lang: "uz", text: result.reply_uz }] : []),
+      ]);
 
       res.json({
         heard: text,
         ...result,
         used: [...s.used].sort((a, b) => a - b),
-        audio,
+        parts,
       });
     } catch (err) {
       sendError(res, err);

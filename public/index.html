@@ -37,7 +37,8 @@
   <!-- 2. Dars (suhbat) -->
   <main id="lesson" class="screen">
     <div class="lesson-head">
-      <div><b>Sado AI</b> <span class="muted" id="lessonTitle"></span></div>
+      <div class="head-left"><b>Sado AI</b> <span class="muted" id="lessonTitle"></span></div>
+      <button class="chip" id="trBtn">🇺🇿 Tarjima</button>
       <div class="timer" id="timer">
         <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" class="t-bg"/><circle cx="10" cy="10" r="8" class="t-fg" id="timerRing"/></svg>
         <span id="timerText">10:00</span>
@@ -69,7 +70,7 @@
     <div class="subs" id="subs" hidden>
       <div class="sub sub-ai"><b>Sado:</b> <span id="subAi"></span><div class="sub-uz" id="subAiUz"></div></div>
       <div class="sub sub-me" id="subMeWrap" hidden><b>Siz:</b> <span id="subMe"></span></div>
-      <div class="sub sub-fix" id="subFixWrap" hidden>💡 <span id="subFix"></span></div>
+      <div class="sub sub-fix" id="subFixWrap" hidden>🇺🇿 <span id="subFix"></span></div>
     </div>
 
     <form class="text-reply" id="textForm" hidden>
@@ -116,7 +117,7 @@
     <div class="sheet-card">
       <div class="sheet-emoji" id="sheetEmoji">☕</div>
       <h3 id="sheetTitle"></h3>
-      <p class="muted">Sado sizga savol beradi, siz ovoz chiqarib javob berasiz. Mikrofonga ruxsat bering.</p>
+      <p class="muted">Sado inglizcha savol beradi, siz ovoz chiqarib javob berasiz. Bilmasangiz o'zbekcha so'rang — Sado o'zbekcha tushuntiradi. Mikrofonga ruxsat bering.</p>
       <ul class="sheet-phrases" id="sheetPhrases"></ul>
       <button class="btn primary wide" id="startBtn">🎤 Boshlash</button>
       <button class="btn ghost wide" id="cancelBtn">Bekor qilish</button>

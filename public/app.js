@@ -19,6 +19,7 @@ const state = {
   timer: null,
   mode: localStorage.getItem("sado-mode") || "auto",
   subs: localStorage.getItem("sado-subs") === "1",
+  tr: localStorage.getItem("sado-tr") !== "0", // o'zbekcha tarjimani ovozda aytish
   phase: "idle", // idle | listening | thinking | speaking | ended
   textOnly: false,
 };
@@ -239,6 +240,7 @@ async function startLesson(lesson) {
   renderPhrase();
   applyMode();
   applySubs();
+  applyTr();
   setSubs("", "", "", "");
   setPhase("thinking", "Tayyorlanmoqda...");
   $("hint").textContent = "";
@@ -247,12 +249,12 @@ async function startLesson(lesson) {
   applyMode();
 
   try {
-    const data = await api("api/session", { json: { lessonId: lesson.id } });
+    const data = await api("api/session", { json: { lessonId: lesson.id, translate: state.tr } });
     state.session = data.session;
     state.seconds = state.left = data.seconds;
     startTimer();
     setSubs(data.reply, data.reply_uz, "", "");
-    await playReply(data.audio, data.reply);
+    await playReply(data.parts, data.reply);
     afterReply();
   } catch (e) {
     setPhase("idle", "");
@@ -372,6 +374,18 @@ $("modeToggle").addEventListener("click", (e) => {
   } else if (state.phase === "idle" && state.mode === "auto" && state.session) {
     listenAuto();
   }
+});
+
+function applyTr() {
+  $("trBtn").classList.toggle("on", state.tr);
+  $("trBtn").textContent = state.tr ? "🇺🇿 Tarjima: yoqiq" : "🇺🇿 Tarjima: o'chiq";
+}
+$("trBtn").addEventListener("click", () => {
+  haptic();
+  state.tr = !state.tr;
+  localStorage.setItem("sado-tr", state.tr ? "1" : "0");
+  applyTr();
+  toast(state.tr ? "Sado gaplarining o'zbekcha tarjimasini ham aytadi" : "Sado faqat inglizcha gapiradi (xatolar baribir o'zbekcha tushuntiriladi)", 3000);
 });
 
 function applySubs() {
@@ -542,18 +556,21 @@ async function sendTurn(payload) {
   if (!state.session) return;
   setPhase("thinking");
   try {
-    const data = await api(`api/turn?session=${encodeURIComponent(state.session)}`, payload);
+    const data = await api(
+      `api/turn?session=${encodeURIComponent(state.session)}&tr=${state.tr ? 1 : 0}`,
+      payload,
+    );
     if (state.phase === "ended") return;
     if (data.empty) {
       $("hint").textContent = "Eshitmadim, yana bir bor ayting.";
       return afterReply();
     }
     applyHint();
-    setSubs(data.reply, data.reply_uz, data.heard, data.feedback_uz);
-    if (data.feedback_uz && !state.subs) toast("💡 " + data.feedback_uz, 4000);
+    setSubs(data.reply, data.reply_uz, data.heard, data.uz_say);
+    if (data.uz_say && !state.subs) toast("🇺🇿 " + data.uz_say, 6000);
     markUsed(data.used || []);
     if (data.mood) mascot.setMood(data.mood);
-    await playReply(data.audio, data.reply);
+    await playReply(data.parts, data.reply);
     afterReply();
   } catch (e) {
     if (state.phase === "ended") return;
@@ -598,14 +615,20 @@ function afterReply() {
 }
 
 // ---------------- Javobni ijro etish ----------------
-async function playReply(b64, text) {
+// parts: [{ lang: "uz"|"en", text, audio }] - ketma-ket ijro etiladi
+async function playReply(parts, fallbackText) {
   if (state.phase === "ended") return;
+  if (!Array.isArray(parts) || !parts.length) parts = [{ lang: "en", text: fallbackText, audio: null }];
   setPhase("speaking");
-  try {
-    if (b64) await playMp3(b64);
-    else await speakBrowser(text);
-  } catch (e) {
-    console.warn("Ijro:", e);
+  for (const p of parts) {
+    if (state.phase !== "speaking") break; // dars tugatilgan bo'lsa
+    $("statusText").textContent = p.lang === "uz" ? "Sado tushuntirmoqda..." : "Sado gapirmoqda...";
+    try {
+      if (p.audio) await playMp3(p.audio);
+      else await speakBrowser(p.text, p.lang);
+    } catch (e) {
+      console.warn("Ijro:", e);
+    }
   }
   mascot.setLevel(0);
 }
@@ -636,11 +659,11 @@ async function playMp3(b64) {
   });
 }
 
-function speakBrowser(text) {
+function speakBrowser(text, lang = "en") {
   return new Promise((resolve) => {
     if (!window.speechSynthesis || !text) return setTimeout(resolve, 1200);
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = "en-US";
+    u.lang = lang === "uz" ? "uz-UZ" : "en-US";
     u.rate = 0.95;
     let raf = 0;
     const fake = (t) => {
