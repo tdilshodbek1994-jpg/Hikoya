@@ -1911,7 +1911,8 @@ function resetLiveUi() {
 
 function setMuteUi(m) {
   $("muteBtn").classList.toggle("muted", m);
-  $("muteBtn").textContent = m ? "🔇 Mikrofon o'chiq — yoqish uchun bosing" : "🎙️ Mikrofon yoqiq — o'chirish uchun bosing";
+  // Qisqa yozuv — tor ekranda bir qatorga sig'adi
+  $("muteBtn").textContent = m ? "🔇 Mikrofon o'chiq · yoqish" : "🎙️ Mikrofon yoniq · o'chirish";
 }
 
 $("muteBtn").addEventListener("click", () => {
@@ -1935,6 +1936,8 @@ function appendBubble(text) {
   const log = $("chatlog");
   const last = log.lastElementChild;
   if (!last) return;
+  // Pastda turgan bo'lsa — kuzatib boramiz; yuqoriga surib o'qiyotgan bo'lsa — sakratmaymiz
+  const atBottom = log.scrollHeight - log.scrollTop - log.clientHeight < 60;
   last.lastElementChild.textContent += text;
   // 🗣 Jonli hisoblagich: o'quvchi aytgan inglizcha so'zlar
   if (last.classList.contains("b-me")) {
@@ -1948,7 +1951,7 @@ function appendBubble(text) {
       w.classList.add("bump");
     }
   }
-  log.scrollTop = log.scrollHeight;
+  if (atBottom) log.scrollTop = log.scrollHeight;
 }
 
 function startTimer() {
@@ -2633,7 +2636,7 @@ async function afterReply() {
 async function playReply(parts, fallbackText) {
   if (state.phase === "ended") return;
   if (!Array.isArray(parts) || !parts.length) parts = [{ lang: "en", text: fallbackText, audio: null }];
-  // Android: mikrofon yoqiq tursa ovoz "qo'ng'iroq" rejimida (quloq dinamigidan, juda past) chiqadi.
+  // Android: mikrofon yoniq tursa ovoz "qo'ng'iroq" rejimida (quloq dinamigidan, juda past) chiqadi.
   // Shuning uchun Sado gapirayotganda mikrofonni o'chiramiz; bu aks-sadoning ham oldini oladi.
   cancelRecording();
   releaseMic();
