@@ -5,7 +5,7 @@ DTM botingiz ichida ochiladigan ovozli AI suhbatdosh. O'quvchi vaziyatni (kafe, 
 **Imkoniyatlar**
 - 📞 **Jonli suhbat** (Gemini Live): xuddi telefonda gaplashgandek, gapni bo'lish mumkin; 👩/👨 ovoz tanlash; oxirgi daqiqada Sado suhbatni o'zi yakunlaydi.
 - 🇺🇿 **Ustoz** (o'zbekcha tushuntiradi) va 🇬🇧 **Inglizcha suhbat** rejimlari; 🐢 sekin gapirish, 🇺🇿 tarjima, 🔁 qayta eshitish, 💡 javob namunalari.
-- 📚 **100+ mavzu**: 💬 Erkin suhbat, 🏆 Imtihonlar, 📘 IELTS kursi (41 dars, Part 2 kartochka + 1 daqiqa tayyorlanish), 📗 CEFR kursi (8 dars), ✏️ Grammatika (14 dars, qoidalar bilan), 🧒 Bolalar uchun (7 dars), 🏠 Kundalik hayot (16 dars), ✈️ Sayohat (11 dars), 🎓 O'qish va ish, 💼 Biznes va IT (7 dars).
+- 📚 **100+ mavzu**: 💬 Erkin suhbat, 🏆 Imtihonlar, 📘 IELTS kursi (41 dars, Part 2 kartochka + 1 daqiqa tayyorlanish), 📗 CEFR kursi (8 dars), ✏️ Grammatika (14 dars, qoidalar bilan), 🧒 Bolalar uchun (7 dars), 🏠 Kundalik hayot (16 dars), ✈️ Sayohat (11 dars), 🎓 O'qish va ish (9 dars), 💼 Biznes va IT (7 dars).
 - 📝 **Hisobot**: ball, CEFR/IELTS daraja (IELTS'da 4 mezon), xatolar, maslahatlar, yangi so'zlar, avvalgi rekord bilan solishtirish, suhbat matni, ulashish.
 - 📈 **Progress**: kunlik maqsad, seriya, natijalar grafigi, 🏅 yutuqlar, 🎓 kurs sertifikati, ⭐ sevimlilar, 🔍 qidiruv.
 - 📒 **Lug'at**: yangi so'zlar va xatolar, 🃏 kartochka mashqi, 🔁 xatolar ustida shaxsiy dars.
