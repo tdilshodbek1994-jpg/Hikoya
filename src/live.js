@@ -173,7 +173,11 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
       );
     }
   }, Math.max(0, maxMs - 60_000));
+  // 💓 Har 15 soniyada "tirikman" signali: nginx/operator jim ulanishni uzmasin, telefon esa
+  // aloqa uzilganini (Wi-Fi ↔ mobil almashganda) sezib, qotib qolmasin
+  const keepAlive = setInterval(() => send({ type: "ka" }), 15_000);
   client.on("close", () => {
+    clearInterval(keepAlive);
     clearTimeout(timer);
     clearTimeout(wrapTimer);
     if (!closed) flushTurns();

@@ -63,7 +63,9 @@ export class LiveCall {
     url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
     this.ws = new WebSocket(url);
     this.ws.binaryType = "arraybuffer";
+    this.lastMsg = Date.now();
     this.ws.onmessage = (e) => {
+      this.lastMsg = Date.now(); // 💓 serverdan har qanday xabar — aloqa tirik
       if (typeof e.data !== "string") return this.play(e.data);
       let m;
       try {
@@ -71,6 +73,7 @@ export class LiveCall {
       } catch {
         return;
       }
+      if (m.type === "ka") return; // faqat "tirikman" signali
       if (m.type === "interrupted") this.flush();
       if (m.type === "turn" || m.type === "interrupted") this.dropping = false; // keyingi javob yana eshitiladi
       this.onEvent(m);

@@ -1,5 +1,5 @@
 import { Mascot } from "./mascot.js";
-import { LiveCall } from "./live.js?v=11";
+import { LiveCall } from "./live.js?v=12";
 
 const tg = window.Telegram?.WebApp;
 const inTelegram = Boolean(tg && tg.initData);
@@ -3074,6 +3074,13 @@ async function startLive(lesson) {
     clearInterval(state.quietTimer);
     state.quietTimer = setInterval(() => {
       if (state.live !== call || call.stopped) return clearInterval(state.quietTimer);
+      // 📶 40 soniya serverdan hech narsa kelmasa — aloqa jimgina uzilgan: qotib turmay yakunlaymiz
+      if (connected && Date.now() - (call.lastMsg || Date.now()) > 40_000) {
+        clearInterval(state.quietTimer);
+        toast("📶 Internet aloqasi uzildi — suhbat saqlandi", 4000);
+        if (state.phase !== "ended") finish();
+        return;
+      }
       if (call.speaking()) quiet.at = Date.now(); // jimlik Sado ovozi tugagandan keyin sanaladi
       if (!connected || call.muted || call.speaking() || quiet.done || quiet.n >= 3) return;
       if (Date.now() - quiet.at > 15000 && call.nudge()) {
