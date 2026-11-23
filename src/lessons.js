@@ -2238,6 +2238,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-pastperf",
+    category: "Grammatika gapirib",
+    title: "Past perfect: had done",
+    emoji: "⏪",
+    level: "B1",
+    added: "2026-11-27",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on past perfect (had + V3) for an action that happened before another past action: When I arrived, the film had already started. I had never seen the sea before I went to Antalya. Use it with already, just, never, before, after, by the time. Contrast with past simple for the later action. Ask the student to tell stories about a bad day, a trip and a surprise. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Tell me about a day when everything went wrong. What had happened before you left home?",
+    openerUz: "Hammasi chappasiga ketgan bir kun haqida aytib bering. Uydan chiqishingizdan oldin nima bo'lgan edi?",
+    phrases: [
+      { en: "When I arrived, the film had already started.", uz: "Men kelganimda film allaqachon boshlangan edi." },
+      { en: "I had never seen the sea before.", uz: "Men ilgari hech qachon dengizni ko'rmagan edim." },
+      { en: "She was tired because she had worked all day.", uz: "U kun bo'yi ishlagani uchun charchagan edi." },
+      { en: "By the time we got there, the shop had closed.", uz: "Biz yetib borgunimizcha do'kon yopilib bo'lgan edi." },
+      { en: "Had you eaten before the meeting?", uz: "Uchrashuvdan oldin ovqatlangan edingizmi?" },
+      { en: "After he had finished, he went home.", uz: "U tugatgach, uyiga ketdi." },
+    ],
+  },
+  {
+    id: "gr-sotoo",
+    category: "Grammatika gapirib",
+    title: "So do I / Neither do I",
+    emoji: "🤝",
+    level: "B1",
+    added: "2026-11-27",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on agreeing with so / neither + auxiliary + subject (I like tea. — So do I. I can't swim. — Neither can I. I'm tired. — So am I. I didn't go. — Neither did I) and too / either (Me too, I don't either), plus disagreeing with the auxiliary (I like coffee. — I don't.). The teacher says many short statements about likes, habits and abilities and the student reacts quickly. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "I love pizza. What about you?",
+    openerUz: "Men pitsani juda yaxshi ko'raman. Sizchi?",
+    phrases: [
+      { en: "I like tea. — So do I.", uz: "Men choyni yoqtiraman. — Men ham." },
+      { en: "I can't swim. — Neither can I.", uz: "Men suza olmayman. — Men ham." },
+      { en: "I'm tired. — So am I.", uz: "Men charchadim. — Men ham." },
+      { en: "I didn't go to the party. — Neither did I.", uz: "Men ziyofatga bormadim. — Men ham." },
+      { en: "I've been to Samarkand. — So have I.", uz: "Men Samarqandda bo'lganman. — Men ham." },
+      { en: "I like coffee. — Really? I don't.", uz: "Men qahvani yoqtiraman. — Rostdanmi? Men yoqtirmayman." },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -3141,7 +3181,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-mine", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adverbs", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-ppvsps", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-tags", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused", "gr-unless"];
+const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-mine", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adverbs", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-ppvsps", "gr-pastperf", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-tags", "gr-sotoo", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused", "gr-unless"];
 // Avval daraja guruhi (A1–A2 → B1 → B2), guruh ichida — GR_ORDER tartibi
 const grGroup = (lv) => (/B2/.test(lv || "") ? 2 : /A2-B1|^B1$/.test(lv || "") ? 1 : 0);
 const grRank = (l) => grGroup(l.level) * 100 + (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
@@ -3184,6 +3224,8 @@ const QUIZ = {
   "gr-beused": ["I'm used to ___ up early.|getting|get|got", "I'm getting used to the cold ___.|weather|weathers|whether", "She isn't used to ___ on the left.|driving|drive|drove", "You'll soon ___ used to it.|get|be getting to|getting", "When I was a child, I used to ___ milk every day.|drink|drinking|drank", "It took me a month to ___ used to the food.|get|be|getting", "Are you used to ___ alone?|living|live|lived", "He ___ used to working at night. He's done it for years.|is|does|has", "We're slowly getting used ___ the new system.|to|for|with", "My dad ___ to smoke, but he stopped.|used|is used|gets used", "She can't ___ used to the noise.|get|be getting|getting", "They aren't used to ___ English all day.|speaking|speak|spoke"],
   "gr-mine": ["This umbrella is ___.|mine|my|me", "Is this phone ___?|yours|your|you", "That bag isn't his, it's ___.|hers|her|her's", "___ keys are these?|Whose|Who's|Who", "Our house is small, but ___ is big.|theirs|their|their's", "The idea was ___.|ours|our|us", "This isn't my pen. ___ is blue.|Mine|My|Me", "Is that ___ car outside?|your|yours|you", "These books are ___. He bought them yesterday.|his|him|he's", "Can I use your phone? ___ is broken.|Mine|My|I", "The red bike is ___. She rides it every day.|hers|her|she", "Whose coat is this? — It's ___.|my brother's|my brother|mine brother"],
   "gr-unless": ["I won't go ___ you come with me.|unless|if|in case", "Take an umbrella ___ it rains.|in case|unless|as long as", "You can borrow my car ___ you drive carefully.|as long as|unless|in case", "___ it's expensive, I'll buy it.|Even if|Unless|In case", "Unless we ___, we'll miss the train.|hurry|will hurry|hurried", "I'll take some snacks in case we ___ hungry.|get|will get|got", "You can't come in ___ you have a ticket.|unless|as long as|in case", "We'll go to the beach ___ the weather is good.|as long as|unless|in case not", "Write down my number ___ you forget it.|in case|unless|as long as", "I'll be there by six ___ the traffic is bad.|unless|as long as|in case of", "Unless you ___ harder, you won't pass.|study|will study|studied", "You'll be fine ___ you follow the instructions.|as long as|unless|in case"],
+  "gr-pastperf": ["When I arrived, the film had already ___.|started|start|starting", "I had never ___ the sea before.|seen|saw|see", "She was tired because she ___ worked all day.|had|has|have", "By the time we got there, the shop ___ closed.|had|has|was", "___ you eaten before the meeting?|Had|Have|Did", "After he had ___, he went home.|finished|finish|finishing", "I couldn't get in because I ___ my keys.|had lost|have lost|lose", "They ___ already left when I called.|had|have|were", "He ___ never flown before that trip.|had|has|did", "The train had left before we ___ the station.|reached|had reached|reach", "She hadn't ___ breakfast, so she was hungry.|eaten|ate|eat", "I realised I ___ that man before.|had met|have met|meet"],
+  "gr-sotoo": ["I like tea. — So ___ I.|do|am|like", "I can't swim. — Neither ___ I.|can|do|can't", "I'm tired. — So ___ I.|am|do|is", "I didn't go to the party. — Neither ___ I.|did|do|didn't", "I've been to Samarkand. — So ___ I.|have|am|did", "She loves music. — So ___ her brother.|does|do|is", "I don't eat meat. — ___ do I.|Neither|So|Either", "I was late yesterday. — So ___ I.|was|did|am", "I'll come tomorrow. — So ___ I.|will|do|am", "I haven't finished yet. — Neither ___ I.|have|did|do", "I like coffee. — Really? I ___.|don't|am not|didn't", "We can speak English. — So ___ they.|can|do|are"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink", "My sister ___ English very well.|speaks|speak|speaking", "They ___ live in Tashkent.|don't|doesn't|aren't", "Where ___ he work?|does|do|is", "The shop ___ at nine o'clock.|opens|open|opening", "Water ___ at 100 degrees.|boils|boil|is boil", "My friends ___ like rap music.|don't|doesn't|isn't", "___ your brother study at university?|Does|Do|Is", "He usually ___ his homework in the evening.|does|do|doing"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on", "I was born ___ 2008.|in|on|at", "We have a party ___ Friday evening.|on|in|at", "I usually sleep ___ night.|at|in|on", "The keys are ___ the table.|on|at|in", "The meeting is ___ 3 pm.|at|in|on", "I'll see you ___ the weekend.|at|in|on", "She lives ___ Samarkand.|in|at|on", "My birthday is ___ 5th March.|on|in|at"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do", "Listen! The baby ___ crying.|is|are|be", "We ___ waiting for the bus now.|are|is|am", "What ___ you doing?|are|do|is", "She isn't ___ TV at the moment.|watching|watch|watches", "I ___ working from home this week.|am|is|are", "Why ___ you laughing?|are|is|do", "They ___ playing football right now.|are|is|be", "Be quiet! Grandma ___ sleeping.|is|are|am"],
@@ -3234,6 +3276,8 @@ const KEYWORDS = {
   "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
 };
 const RULES = {
+  "gr-pastperf": "Past perfect: had + 3-shakl — o'tmishdagi boshqa ishdan OLDIN bo'lgan ish.\nWhen I arrived, the film had already started. (avval film boshlandi, keyin men keldim)\nInkor: hadn't + 3-shakl. Savol: Had you eaten?\nKo'p ishlatiladi: already, just, never, before, after, by the time.",
+  "gr-sotoo": "Tasdiq gapga qo'shilish: So + yordamchi fe'l + ega: I like tea. — So do I. I'm tired. — So am I.\nInkor gapga qo'shilish: Neither + yordamchi + ega: I can't swim. — Neither can I.\nYordamchi fe'l gapdagiga mos: am/is → am, can → can, did → did, have → have.\nOg'zaki: Me too. / Me neither. Qarshi fikr: I like coffee. — I don't.",
   "gr-mine": "Ot oldidan: my, your, his, her, our, their: This is my bag.\nOtsiz (kimniki?): mine, yours, his, hers, ours, theirs: It's mine. Is this yours?\nher's yoki your's deb yozilmaydi! (✗ It's her's) (✗ This is mine bag)\nSavol: Whose is this? — It's hers.",
   "gr-unless": "unless = if not: I won't go unless you come. (= if you don't come)\nas long as / provided that = faqat shu shart bilan: You can go as long as you're back by ten.\nin case = ehtiyot uchun: Take an umbrella in case it rains.\nUlardan keyin kelasi zamon uchun ham hozirgi zamon: unless it rains (✗ unless it will rain)",
   "gr-imperative": "Buyruq — fe'lning o'zi bilan boshlanadi: Open the door. Sit down, please.\nTaqiq — Don't + fe'l: Don't run! Don't be late. (✗ Not run!)\nTaklif — Let's + fe'l: Let's go! Let's not wait. (✗ Let's to go)\nMuloyimroq: please qo'shing: Close the window, please.",
