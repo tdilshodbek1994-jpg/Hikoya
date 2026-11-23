@@ -149,28 +149,42 @@ const TTS_STYLE = {
   uz: "Speak in the Uzbek language with natural Uzbek pronunciation, warmly and clearly, like a friendly teacher. Pronounce any English words inside quotes in clear English.",
 };
 
-export async function speak(text, lang = "en") {
-  if (!OPENAI_KEY || !text) return null;
+// OpenAI'ga bitta TTS so'rovi. Muvaffaqiyatda base64 mp3, aks holda { error } qaytaradi.
+export async function ttsRequest(body) {
   const res = await fetch("https://api.openai.com/v1/audio/speech", {
     method: "POST",
     headers: { Authorization: `Bearer ${OPENAI_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
+    body: JSON.stringify({ response_format: "mp3", ...body }),
+  });
+  if (!res.ok) return { error: `${res.status} ${(await res.text()).slice(0, 300)}` };
+  return { audio: Buffer.from(await res.arrayBuffer()).toString("base64") };
+}
+
+// Asosiy model ishlamasa, zaxira "tts-1" modeliga o'tamiz va keyingi safar to'g'ridan-to'g'ri o'shani ishlatamiz
+let useFallbackTts = false;
+const FALLBACK_TTS = { model: "tts-1", voice: process.env.TTS_FALLBACK_VOICE || "nova" };
+
+export async function speak(text, lang = "en") {
+  if (!OPENAI_KEY || !text) return null;
+  if (!useFallbackTts) {
+    const r = await ttsRequest({
       model: TTS_MODEL,
       voice: TTS_VOICE,
       input: text,
-      response_format: "mp3",
       instructions: TTS_STYLE[lang] || TTS_STYLE.en,
-    }),
-  });
-  if (!res.ok) {
-    console.error("TTS xatosi:", res.status, await res.text());
-    return null;
+    });
+    if (r.audio) return r.audio;
+    console.error(`TTS xatosi (${TTS_MODEL}):`, r.error, "- zaxira tts-1 ga o'tilmoqda");
   }
-  return Buffer.from(await res.arrayBuffer()).toString("base64");
+  const f = await ttsRequest({ ...FALLBACK_TTS, input: text });
+  if (f.audio) {
+    useFallbackTts = true;
+    return f.audio;
+  }
+  console.error("TTS xatosi (tts-1):", f.error);
+  return null;
 }
 
-// Bir nechta qismni (o'zbekcha izoh, inglizcha javob, tarjima) parallel ovozlashtiradi.
-// Qaytaradi: [{ lang, text, audio }] - audio null bo'lsa brauzer o'zi o'qiydi.
 export async function speakParts(parts) {
   const list = parts.filter((p) => p.text && p.text.trim());
   const audios = await Promise.all(

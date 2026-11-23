@@ -604,11 +604,17 @@ function markUsed(list) {
   }
 }
 
-function afterReply() {
+async function afterReply() {
   if (state.phase === "ended") return;
   if (state.used.size >= state.lesson.phrases.length) {
     setTimeout(() => finish(), 600);
     return;
+  }
+  // Sado gapirayotganda mikrofon o'chirilgan edi - endi qayta yoqamiz
+  if (!state.textOnly) {
+    await ensureAudio();
+    if (state.phase === "ended") return;
+    applyMode();
   }
   if (!state.textOnly && state.mode === "auto") listenAuto();
   else setPhase("idle");
@@ -619,6 +625,10 @@ function afterReply() {
 async function playReply(parts, fallbackText) {
   if (state.phase === "ended") return;
   if (!Array.isArray(parts) || !parts.length) parts = [{ lang: "en", text: fallbackText, audio: null }];
+  // Android: mikrofon yoqiq tursa ovoz "qo'ng'iroq" rejimida (quloq dinamigidan, juda past) chiqadi.
+  // Shuning uchun Sado gapirayotganda mikrofonni o'chiramiz; bu aks-sadoning ham oldini oladi.
+  cancelRecording();
+  releaseMic();
   if (!parts.some((p) => p.audio)) toast("⚠️ Ovoz serverdan kelmadi (TTS)", 4000);
   setPhase("speaking");
   for (const p of parts) {
@@ -783,7 +793,7 @@ document.addEventListener("visibilitychange", () => {
     cancelRecording();
     setPhase("idle");
   } else if (!document.hidden && state.phase === "idle" && state.session && state.mode === "auto" && !state.textOnly) {
-    listenAuto();
+    ensureAudio().then(() => listenAuto());
   }
 });
 

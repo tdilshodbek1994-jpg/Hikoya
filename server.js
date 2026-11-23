@@ -174,7 +174,13 @@ app.post("/api/end", express.json(), auth, (req, res) => {
   res.json({ ok: true, used: s ? [...s.used] : [] });
 });
 
-app.use(express.static(path.join(here, "public"), { extensions: ["html"], maxAge: "1h" }));
+// Telegram WebView eski fayllarni keshda ushlab qolmasligi uchun har safar yangiligini tekshiradi
+app.use(
+  express.static(path.join(here, "public"), {
+    extensions: ["html"],
+    setHeaders: (res) => res.setHeader("Cache-Control", "no-cache"),
+  }),
+);
 
 app.listen(PORT, () => {
   console.log(`Sado speaking ishga tushdi: http://localhost:${PORT}`);
