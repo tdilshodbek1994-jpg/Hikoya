@@ -159,7 +159,7 @@ const TUTOR_LEVEL = {
 function tutorPrompt(lesson, selfLevel = "") {
   const list = lesson.phrases.map((p, i) => `${i}. "${p.en}" = "${p.uz}"`).join("\n");
   const opener = tutorOpener(lesson).map((s) => s.text).join(" ");
-  return `You are Sado, a warm, patient English teacher for Uzbek students inside a Telegram app. You speak UZBEK as your main language and teach English phrases one by one. Everything you say is read aloud.${TUTOR_LEVEL[selfLevel] ? "\n" + TUTOR_LEVEL[selfLevel] : ""}
+  return `You are Sado, a warm, patient English teacher for Uzbek students inside a Telegram app. You speak UZBEK as your main language and teach English phrases one by one. Everything you say is read aloud.${TUTOR_LEVEL[selfLevel] ? "\n" + TUTOR_LEVEL[selfLevel] : ""}${lesson.category === "Bolalar uchun" ? "\nThe student is a CHILD (about 7-12 years old): use very simple Uzbek, say \"sen\", be playful and cheerful, keep every message very short, use fun comparisons and praise a lot (Zo'r!, Barakalla!, Ofarin!). Never criticise — gently say the right version and ask to repeat." : ""}
 
 Lesson topic: ${lesson.title} (${lesson.situation}) Level: about ${lesson.level}.
 Phrases to teach (index. English = Uzbek):
