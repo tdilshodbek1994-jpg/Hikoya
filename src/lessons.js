@@ -1792,6 +1792,44 @@ export const LESSONS = [
       { en: "I go to bed at nine.", uz: "Soat to'qqizda uxlayman." },
     ],
   },
+  {
+    id: "kid-food",
+    category: "Bolalar uchun",
+    title: "Mevalar va taomlar",
+    emoji: "🍎",
+    level: "A1",
+    role: "a friendly shop helper at a small fruit stall talking with a child",
+    situation: "Keep every sentence very short and simple (A1, max 8 words), speak like a kind primary school teacher, praise a lot, use lots of Uzbek help when the child is stuck. Talk about favourite fruits and food, colours of fruits, I like / I don't like, and asking for things politely.",
+    opener: "Hello! Do you like apples?",
+    openerUz: "Salom! Olmani yaxshi ko'rasizmi?",
+    phrases: [
+      { en: "I like apples.", uz: "Men olmani yaxshi ko'raman." },
+      { en: "I don't like onions.", uz: "Men piyozni yoqtirmayman." },
+      { en: "Bananas are yellow.", uz: "Bananlar sariq." },
+      { en: "My favourite food is plov.", uz: "Mening sevimli taomim — osh." },
+      { en: "Can I have some grapes, please?", uz: "Menga uzum bersangiz, iltimos?" },
+      { en: "It's sweet and tasty!", uz: "U shirin va mazali!" },
+    ],
+  },
+  {
+    id: "kid-play",
+    category: "Bolalar uchun",
+    title: "O'yinlar va o'yinchoqlar",
+    emoji: "🧸",
+    level: "A1",
+    role: "a cheerful friend in the playground inviting the child to play",
+    situation: "Keep every sentence very short and simple (A1, max 8 words), speak like a kind primary school teacher, praise a lot, use lots of Uzbek help when the child is stuck. Talk about toys and games: what you have, what you like to play, inviting a friend, taking turns, can / can't.",
+    opener: "Hi! Let's play! What's your favourite toy?",
+    openerUz: "Salom! Keling, o'ynaymiz! Sevimli o'yinchog'ingiz nima?",
+    phrases: [
+      { en: "My favourite toy is a ball.", uz: "Mening sevimli o'yinchog'im — to'p." },
+      { en: "Let's play together!", uz: "Keling, birga o'ynaymiz!" },
+      { en: "It's my turn.", uz: "Mening navbatim." },
+      { en: "I can ride a bike.", uz: "Men velosiped hayday olaman." },
+      { en: "I have a red car.", uz: "Menda qizil mashina bor." },
+      { en: "This game is fun!", uz: "Bu o'yin qiziqarli!" },
+    ],
+  },
   // ======== Sayohat (qo'shimcha) ========
   {
     id: "passport",
@@ -2021,6 +2059,103 @@ for (const [id, rule] of Object.entries(RULES)) {
   const l = LESSONS.find((x) => x.id === id);
   if (l) l.rule = rule;
 }
+
+// 💬 IELTS Part 3: har bir darsda o'z mavzusiga mos iboralar (avval hammasida bir xil 6 ta ibora edi)
+const P3_LINKERS = [
+  { en: "It depends on ...", uz: "Bu ... ga bog'liq." },
+  { en: "On the one hand, ... On the other hand, ...", uz: "Bir tomondan, ... Boshqa tomondan, ..." },
+  { en: "A good example of this is ...", uz: "Bunga yaxshi misol ..." },
+  { en: "I'd argue that ...", uz: "Men ... deb ta'kidlagan bo'lardim." },
+  { en: "In the long run, ...", uz: "Uzoq muddatda, ..." },
+  { en: "This is mainly because ...", uz: "Bu asosan ... sababli." },
+  { en: "There's no doubt that ...", uz: "Shubhasiz, ..." },
+  { en: "Compared to the past, ...", uz: "O'tmish bilan solishtirganda, ..." },
+  { en: "Having said that, ...", uz: "Shunday bo'lsa-da, ..." },
+  { en: "From my point of view, ...", uz: "Mening nuqtai nazarimdan, ..." },
+  { en: "The main reason is that ...", uz: "Asosiy sabab shundaki, ..." },
+  { en: "As a result, ...", uz: "Natijada, ..." },
+];
+const P3_TOPIC = {
+  "ielts-p3-education": [
+    { en: "A degree opens many doors.", uz: "Diplom ko'p eshiklarni ochadi." },
+    { en: "Practical skills matter as much as knowledge.", uz: "Amaliy ko'nikmalar bilim kabi muhim." },
+    { en: "Online courses make learning more accessible.", uz: "Onlayn kurslar o'qishni hammabop qiladi." },
+    { en: "Teachers will become more like guides.", uz: "O'qituvchilar ko'proq yo'l ko'rsatuvchiga aylanadi." },
+  ],
+  "ielts-p3-tech": [
+    { en: "Technology brings people closer, but ...", uz: "Texnologiya odamlarni yaqinlashtiradi, lekin ..." },
+    { en: "Children can easily become addicted to screens.", uz: "Bolalar ekranlarga osongina qaram bo'lib qoladi." },
+    { en: "AI will replace some jobs, but create new ones.", uz: "Sun'iy intellekt ba'zi ishlarni egallaydi, lekin yangilarini yaratadi." },
+    { en: "Older people need patient support.", uz: "Keksalarga sabrli yordam kerak." },
+  ],
+  "ielts-p3-environment": [
+    { en: "Air pollution is a serious problem in big cities.", uz: "Havo ifloslanishi katta shaharlarda jiddiy muammo." },
+    { en: "Governments should take the lead.", uz: "Hukumatlar bosh bo'lishi kerak." },
+    { en: "Public transport reduces traffic and pollution.", uz: "Jamoat transporti tirbandlik va ifloslanishni kamaytiradi." },
+    { en: "Small changes in our habits can make a big difference.", uz: "Odatlarimizdagi kichik o'zgarishlar katta farq qiladi." },
+  ],
+  "ielts-p3-work": [
+    { en: "Job satisfaction is more important than salary.", uz: "Ishdan qoniqish maoshdan muhimroq." },
+    { en: "Working from home saves a lot of time.", uz: "Uydan ishlash ko'p vaqtni tejaydi." },
+    { en: "Young people often change jobs.", uz: "Yoshlar ko'pincha ish joyini o'zgartiradi." },
+    { en: "A good work-life balance prevents burnout.", uz: "Ish va hayot muvozanati charchab qolishning oldini oladi." },
+  ],
+  "ielts-p3-family": [
+    { en: "Families are getting smaller nowadays.", uz: "Hozir oilalar kichrayib bormoqda." },
+    { en: "Grandparents play an important role in raising children.", uz: "Bobo-buvilar bola tarbiyasida muhim rol o'ynaydi." },
+    { en: "There's a generation gap in values.", uz: "Qadriyatlarda avlodlar o'rtasida farq bor." },
+    { en: "Spending quality time together keeps families close.", uz: "Birga mazmunli vaqt o'tkazish oilani jips qiladi." },
+  ],
+  "ielts-p3-tourism": [
+    { en: "Tourism creates jobs for local people.", uz: "Turizm mahalliy aholi uchun ish o'rinlari yaratadi." },
+    { en: "Mass tourism can damage historical sites.", uz: "Ommaviy turizm tarixiy joylarga zarar yetkazishi mumkin." },
+    { en: "Travelling broadens your horizons.", uz: "Sayohat dunyoqarashni kengaytiradi." },
+    { en: "Visitors should respect local traditions.", uz: "Mehmonlar mahalliy an'analarni hurmat qilishi kerak." },
+  ],
+  "ielts-p3-health": [
+    { en: "A balanced diet is the key to good health.", uz: "Muvozanatli ovqatlanish sog'liq kaliti." },
+    { en: "People lead more sedentary lives than before.", uz: "Odamlar avvalgidan kamharakat hayot kechiradi." },
+    { en: "Prevention is better than cure.", uz: "Kasallikning oldini olish davolashdan yaxshiroq." },
+    { en: "Stress has a huge impact on our health.", uz: "Stress sog'ligimizga katta ta'sir qiladi." },
+  ],
+  "ielts-p3-media": [
+    { en: "Most people get their news from social media.", uz: "Ko'pchilik yangiliklarni ijtimoiy tarmoqlardan oladi." },
+    { en: "Fake news spreads very quickly online.", uz: "Soxta xabarlar internetda juda tez tarqaladi." },
+    { en: "We should always check the source.", uz: "Har doim manbani tekshirishimiz kerak." },
+    { en: "Journalists have a responsibility to be objective.", uz: "Jurnalistlar xolis bo'lishga mas'ul." },
+  ],
+  "ielts-p3-cities": [
+    { en: "Housing in big cities is becoming unaffordable.", uz: "Katta shaharlarda uy-joy qimmatlashib bormoqda." },
+    { en: "Many young people move to cities for work.", uz: "Ko'p yoshlar ish uchun shaharlarga ko'chadi." },
+    { en: "Cities need more green spaces.", uz: "Shaharlarga ko'proq yashil hududlar kerak." },
+    { en: "Life in the countryside is calmer but ...", uz: "Qishloqda hayot sokinroq, lekin ..." },
+  ],
+  "ielts-p3-shopping": [
+    { en: "Online shopping is more convenient.", uz: "Onlayn xarid qulayroq." },
+    { en: "Advertising makes us buy things we don't need.", uz: "Reklama bizni keraksiz narsalarni sotib olishga undaydi." },
+    { en: "People are becoming more materialistic.", uz: "Odamlar tobora moddiyatparast bo'lib bormoqda." },
+    { en: "Local markets support small businesses.", uz: "Mahalliy bozorlar kichik biznesni qo'llab-quvvatlaydi." },
+  ],
+  "ielts-p3-sport": [
+    { en: "Regular exercise improves both body and mind.", uz: "Muntazam mashq tana va ongni yaxshilaydi." },
+    { en: "Professional athletes are role models for children.", uz: "Professional sportchilar bolalar uchun namuna." },
+    { en: "Schools should encourage children to play sports.", uz: "Maktablar bolalarni sportga undashi kerak." },
+    { en: "Team sports teach cooperation.", uz: "Jamoaviy sport hamkorlikka o'rgatadi." },
+  ],
+  "ielts-p3-culture": [
+    { en: "Traditions connect us with our ancestors.", uz: "An'analar bizni ajdodlarimiz bilan bog'laydi." },
+    { en: "Globalisation is changing local cultures.", uz: "Globallashuv mahalliy madaniyatlarni o'zgartirmoqda." },
+    { en: "Young people should learn about their heritage.", uz: "Yoshlar o'z merosini o'rganishi kerak." },
+    { en: "Festivals like Navruz bring communities together.", uz: "Navro'z kabi bayramlar jamiyatni birlashtiradi." },
+  ],
+};
+Object.keys(P3_TOPIC).forEach((id, i) => {
+  const l = LESSONS.find((x) => x.id === id);
+  if (!l) return;
+  const a = P3_LINKERS[(i * 2) % P3_LINKERS.length];
+  const b = P3_LINKERS[(i * 2 + 1) % P3_LINKERS.length];
+  l.phrases = [a, ...P3_TOPIC[id].slice(0, 2), b, ...P3_TOPIC[id].slice(2)];
+});
 
 // To'liq imtihon mashqlari uzoqroq davom etadi
 for (const id of ["ielts", "cefr", "cefr-8"]) {
