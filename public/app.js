@@ -2460,9 +2460,12 @@ $("shareBtn").addEventListener("click", () => {
   const text = [
     `🎤 Sado AI bilan ingliz tilida gaplashdim!`,
     `${l.emoji} ${l.title}: ${sc} ball${r?.level ? ` · ${r.level}` : ""}`,
-    `✅ ${state.used.size}/${l.phrases.length} ta ibora`,
+    // Erkin suhbatda iboralar yo'q — "0/0 ta ibora" yozilmasin
+    !l.liveOnly && l.phrases.length ? `✅ ${state.used.size}/${l.phrases.length} ta ibora` : "",
+    r?.criteria ? `📊 Fluency ${r.criteria.fluency} · Lexical ${r.criteria.vocabulary} · Grammar ${r.criteria.grammar} · Pronunciation ${r.criteria.pronunciation}` : "",
+    r?.new_words?.length ? `📚 ${r.new_words.length} ta yangi so'z o'rgandim` : "",
     state.progress?.streak ? `🔥 ${state.progress.streak} kunlik seriya` : "",
-    `Sen ham sinab ko'r 👇`,
+    sc != null ? `Meni ${sc} balldan o'zib ko'r! 💪👇` : `Sen ham sinab ko'r 👇`,
   ].filter(Boolean).join("\n");
   const url = state.shareUrl || "https://t.me";
   const link = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
