@@ -436,13 +436,19 @@ app.post("/api/remind", express.json(), auth, (req, res) => {
   res.json({ ok: true, remind: Boolean(req.body?.on) });
 });
 const remindStats = { sent: 0, off: 0 };
+// 🌟 Kun iborasi — ilovadagi bilan bir xil hisoblanadi (Toshkent kuni bo'yicha)
+function dailyPhrase() {
+  const pool = LESSONS.filter((l) => !l.liveOnly).flatMap((l) => l.phrases.filter((p) => !p.en.includes("...")));
+  const dayNo = Math.floor((Date.now() + 5 * 3600_000) / 86400_000);
+  return pool.length ? pool[(dayNo * 7919) % pool.length] : null;
+}
 async function sendReminders() {
   const hour = new Date(Date.now() + 5 * 3600_000).getUTCHours();
   for (const t of remindTargets(hour, REMIND_HOUR)) {
     markReminded(t.id); // xato bo'lsa ham qayta-qayta yubormaymiz
     const body = {
       chat_id: t.id,
-      text: `🔥 Sizda ${t.streak} kunlik seriya bor! Bugun hali Sado bilan gaplashmadingiz — 5 daqiqalik bitta dars seriyani saqlab qoladi 💪`,
+      text: `🔥 Sizda ${t.streak} kunlik seriya bor! Bugun hali Sado bilan gaplashmadingiz — 5 daqiqalik bitta dars seriyani saqlab qoladi 💪${(() => { const d = dailyPhrase(); return d ? `\n\n🌟 Kun iborasi: ${d.en}\n🇺🇿 ${d.uz}` : ""; })()}`,
     };
     if (process.env.WEBAPP_URL) body.reply_markup = { inline_keyboard: [[{ text: "🎤 Darsni boshlash", web_app: { url: process.env.WEBAPP_URL } }]] };
     try {
