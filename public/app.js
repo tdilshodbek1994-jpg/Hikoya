@@ -497,7 +497,18 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
         if (!ok) [...opts.children].find((b) => b.textContent === (it.mode === "pick" ? it.right : it.answer))?.classList.add("ok");
         const gap = q.querySelector(".qz-gap");
         if (gap) (gap.textContent = it.answer), gap.classList.add("ok");
-        setTimeout(() => { i++; show(); }, ok ? 700 : 1500);
+        if (ok) return setTimeout(() => { i++; show(); }, 700);
+        // 💡 Xato bo'lsa — qoidadan tegishli qator (javob so'zi bor qator) va "Keyingi" tugmasi
+        const src = state.lessons.find((l) => l.id === (it.from || lesson.id));
+        const lines = String(src?.rule || "").split("\n").filter(Boolean);
+        const aw = String(it.answer).toLowerCase().replace(/[^a-z' ]/g, "").trim();
+        const has = lines.filter((ln) => aw && new RegExp(`(^|[^a-z])${aw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}([^a-z]|$)`, "i").test(ln));
+        // Izohli (":" bor, o'zbekcha) qator afzal — faqat inglizcha misol qatori emas
+        const hit = has.find((ln) => ln.includes(":")) || has[0] || lines.find((ln) => ln.includes(":")) || lines[0];
+        if (hit) body.append(el("div", "qz-why", "💡 " + hit));
+        const nx = el("button", "qz-next", i < items.length - 1 ? "Keyingi ›" : "Natija ›");
+        nx.addEventListener("click", () => { haptic(); i++; show(); });
+        body.append(nx);
       });
       opts.append(btn);
     }
