@@ -785,7 +785,7 @@ function renderVocab() {
   // 🔍 Lug'atda qidirish (ro'yxat uzun bo'lsa ko'rinadi)
   $("vocabSearch").hidden = items.length < 8 || Boolean(state.flash);
   $("vocabPlay").hidden = items.length < 2 || Boolean(state.flash);
-  $("flashBtn").textContent = state.vocabTab === "fix" ? "🃏 Xatolarim bo'yicha kartochkalar" : "🃏 Kartochka mashqi";
+  $("flashBtn").textContent = "🃏 Kartochkalar";
   const vq = $("vocabSearch").hidden ? "" : $("vocabSearch").value.trim().toLowerCase().replace(/[‘’`ʻʼ]/g, "'");
   const total = items.length;
   if (vq) items = items.filter((w) => [w.en, w.uz, w.wrong].some((x) => String(x || "").toLowerCase().replace(/[‘’`ʻʼ]/g, "'").includes(vq)));
@@ -878,7 +878,7 @@ function stopVocabPlay() {
   if (!state.vocabPlay) return;
   state.vocabPlay.stop = true;
   state.vocabPlay = null;
-  $("vocabPlay").textContent = "🎧 Hammasini tinglash";
+  $("vocabPlay").textContent = "🎧 Tinglash";
   $("vocabPlay").classList.remove("on");
   document.querySelectorAll("#vocabList .playing").forEach((x) => x.classList.remove("playing"));
 }
@@ -3933,7 +3933,7 @@ const FAQ = [
   ["Xatolarim qayerda saqlanadi?", "📒 Lug'atim → «✏️ Xatolarim». «🔁 Xatolarim ustida Sado bilan ishlash» darsida to'g'ri aytgan xatoingiz «✅ tuzatildi» bo'ladi.", "📒 Lug'atni ochish", () => { $("helpSheet").hidden = true; $("vocabBtn").hidden ? toast("Lug'at birinchi darsdan keyin paydo bo'ladi") : $("vocabBtn").click(); }],
   ["IELTS/CEFR uchun namunaviy javob bormi?", "Ha! IELTS va CEFR kurslaridagi dars tugagach, hisobot ostida «📝 Namunaviy javob» tugmasi chiqadi: o'sha savol yoki kartochkaga Band 7 / B2 darajadagi javob va foydali iboralar. O'z javobingizni u bilan solishtiring."],
   ["Jonli suhbatda Sado gapini tushunmadim", "Sado gapi yozilgan pufakchani bosing — ostida o'zbekcha tarjimasi chiqadi. Erkin suhbatda mavzu yoqmasa, «🔀 Boshqa mavzu» tugmasini bosing."],
-  ["Iboralarni qanday tez yodlayman?", "Dars oynasida «🎧 Tinglab takrorlash» (🐢 sekin tezlik bilan), dars ekranida «🙈 Yoddan» rejimi (inglizchasi yashirinadi), 📒 Lug'atda «🃏 Kartochka» va «🎧 Hammasini tinglash»."],
+  ["Iboralarni qanday tez yodlayman?", "Dars oynasida «🎧 Tinglab takrorlash» (🐢 sekin tezlik bilan), dars ekranida «🙈 Yoddan» rejimi (inglizchasi yashirinadi), 📒 Lug'atda «🃏 Kartochkalar» va «🎧 Tinglash»."],
   ["Grammatikani qanday mustahkamlayman?", "Har bir grammatika darsida «🧩 Tez mashq» bor: bo'sh joyni to'ldiring. Natija dars plitkasida 🧩 3/4 kabi ko'rinadi, «🎲 Tasodifiy mashq» hali a'lo bo'lmagan mashqni ochadi.", "✏️ Grammatika darslari", () => { $("helpSheet").hidden = true; state.filter.cat = "Grammatika gapirib"; renderChips(); renderLessons(); scrollToList(true); }],
   ["O'zbekcha gapirsam bo'ladimi?", "Ha! Sado o'zbekcha tushunadi, o'zbekcha tushuntiradi va buni inglizcha qanday aytishni o'rgatadi."],
   ["Ball qanday qo'yiladi?", "Dars oxirida AI gaplaringizni tahlil qilib 0–100 ball, daraja (CEFR yoki IELTS band), xatolar va maslahatlar beradi."],

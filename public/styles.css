@@ -1128,3 +1128,10 @@ body.dark .ml-mark { background: #5eead4; }
 /* 🎯 Tanishuv: maqsad tanlovi */
 .onb-level small + .onb-lv-row + small { margin-top: 10px; }
 .onb-lv-row.onb-goals { flex-wrap: wrap; }
+/* 📒 Lug'at: kartochka va tinglash bir qatorda */
+.vocab-acts { display: flex; gap: 8px; }
+.vocab-acts > .btn { flex: 1; margin-top: 0; min-width: 0; padding-left: 8px; padding-right: 8px; white-space: nowrap; }
+.vocab-acts > [hidden] { display: none; }
+.vocab-play { margin-top: 0; }
+/* Ibora kartasida (masalan, takrorlash darsidagi xato gaplar) birinchi harf bosh harf */
+#phraseEn::first-letter { text-transform: uppercase; }
