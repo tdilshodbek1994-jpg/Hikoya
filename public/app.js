@@ -46,7 +46,7 @@ if (tg) {
   tg.ready();
   tg.expand();
   try { tg.disableVerticalSwipes?.(); } catch {}
-  if (tg.colorScheme === "dark") document.body.classList.add("dark");
+
   try {
     const bg = getComputedStyle(document.body).getPropertyValue("--bg").trim();
     tg.setHeaderColor?.(bg);
@@ -54,6 +54,20 @@ if (tg) {
   } catch {}
   tg.BackButton?.onClick(() => onBack());
 }
+
+// Tun/kunduz rejimi: Telegram mavzusiga (yoki telefon sozlamasiga) moslashadi va o'zgarsa darhol yangilanadi
+function applyTheme() {
+  const dark = inTelegram ? tg.colorScheme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  document.body.classList.toggle("dark", dark);
+  try {
+    const bg = getComputedStyle(document.body).getPropertyValue("--bg").trim();
+    tg?.setHeaderColor?.(bg);
+    tg?.setBackgroundColor?.(bg);
+  } catch {}
+}
+applyTheme();
+tg?.onEvent?.("themeChanged", applyTheme);
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", applyTheme);
 
 function haptic(type = "light") {
   try {
@@ -118,6 +132,7 @@ async function loadLessons() {
     state.voiceEnabled = data.voiceEnabled;
     state.liveEnabled = Boolean(data.liveEnabled);
     state.sessionMinutes = data.sessionMinutes;
+    renderChips();
     renderLessons();
     loadProgress();
     if (!inTelegram) $("homeNote").textContent = "Eslatma: ilova Telegram bot orqali ochilganda to'liq ishlaydi.";
@@ -153,40 +168,95 @@ function renderStats() {
   });
 }
 
+const CAT_ICONS = { "Erkin suhbat": "💬", Imtihonlar: "🏆", "IELTS kursi": "📘", "CEFR kursi": "📗", "Grammatika gapirib": "✏️", "Kundalik hayot": "🏠", Sayohat: "✈️", "O'qish va ish": "🎓" };
+state.filter = { cat: "", q: "" };
+
+function lessonButton(l) {
+  const b = document.createElement("button");
+  b.className = "lesson";
+  b.innerHTML = `
+    <div class="lesson-emoji"></div>
+    <div class="lesson-info"><div class="lesson-title"></div><div class="lesson-sub"></div></div>
+    <span class="lesson-level"></span>`;
+  b.querySelector(".lesson-emoji").textContent = l.emoji;
+  b.querySelector(".lesson-title").textContent = l.title;
+  b.querySelector(".lesson-sub").textContent = `${l.phrases.length} ta ibora · ${state.sessionMinutes} daqiqa`;
+  b.querySelector(".lesson-level").textContent = l.level;
+  const pr = state.progress?.lessons?.[l.id];
+  if (pr) {
+    b.classList.add("done");
+    b.querySelector(".lesson-sub").textContent = `✅ O'tildi · eng yaxshi: ${pr.best} ball`;
+  }
+  b.addEventListener("click", () => openSheet(l));
+  return b;
+}
+
+// Bo'lim filtrlari (gorizontal chiplar)
+function renderChips() {
+  const box = $("chips");
+  if (!box) return;
+  const cats = [...new Set(state.lessons.filter((l) => !l.liveOnly).map((l) => l.category).filter(Boolean))];
+  box.innerHTML = "";
+  [["", "📚 Hammasi"], ...cats.map((c) => [c, `${CAT_ICONS[c] || "📚"} ${c}`])].forEach(([c, label]) => {
+    const b = el("button", "chip-f" + (state.filter.cat === c ? " on" : ""), label);
+    b.addEventListener("click", () => {
+      haptic();
+      state.filter.cat = c;
+      renderChips();
+      renderLessons();
+      $("lessonList").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    box.append(b);
+  });
+}
+
+// IELTS/CEFR kursidagi birinchi o'tilmagan dars
+function nextLesson() {
+  const done = state.progress?.lessons || {};
+  for (const cat of ["IELTS kursi", "CEFR kursi"]) {
+    const list = state.lessons.filter((l) => l.category === cat);
+    if (list.some((l) => done[l.id])) {
+      const n = list.find((l) => !done[l.id]);
+      if (n) return n;
+    }
+  }
+  return state.lessons.find((l) => l.category === "IELTS kursi" && !done[l.id]) || null;
+}
+
+function renderNext() {
+  const box = $("nextBox");
+  const n = state.filter.q || state.filter.cat ? null : nextLesson();
+  if (!n) return (box.hidden = true);
+  box.hidden = false;
+  box.innerHTML = "";
+  const started = Object.keys(state.progress?.lessons || {}).length > 0;
+  box.append(el("div", "next-label", started ? "➡️ Keyingi dars" : "🚀 Shu yerdan boshlang"));
+  box.append(lessonButton(n));
+}
+
 function renderLessons() {
   renderStats();
+  renderNext();
   const list = $("lessonList");
   list.innerHTML = "";
-  const CAT_ICONS = { "Erkin suhbat": "💬", Imtihonlar: "🏆", "IELTS kursi": "📘", "CEFR kursi": "📗", "Grammatika gapirib": "✏️", "Kundalik hayot": "🏠", Sayohat: "✈️", "O'qish va ish": "🎓" };
+  const q = state.filter.q.trim().toLowerCase();
+  const items = state.lessons.filter(
+    (l) =>
+      !l.liveOnly &&
+      (!state.filter.cat || l.category === state.filter.cat) &&
+      (!q || (l.title + " " + l.category + " " + l.phrases.map((p) => p.en + " " + p.uz).join(" ")).toLowerCase().includes(q)),
+  );
+  if (!items.length) {
+    list.append(el("p", "note", "Hech narsa topilmadi. Boshqa so'z bilan qidirib ko'ring."));
+    return;
+  }
   let lastCat = null;
-  for (const l of state.lessons) {
-    if (l.liveOnly) continue; // Erkin suhbat tepadagi katta bannerda turadi
+  for (const l of items) {
     if (l.category && l.category !== lastCat) {
       lastCat = l.category;
-      const h = document.createElement("div");
-      h.className = "cat-title";
-      h.textContent = `${CAT_ICONS[l.category] || "📚"} ${l.category}`;
-      list.appendChild(h);
+      list.append(el("div", "cat-title", `${CAT_ICONS[l.category] || "📚"} ${l.category}`));
     }
-    const b = document.createElement("button");
-    b.className = "lesson";
-    b.innerHTML = `
-      <div class="lesson-emoji"></div>
-      <div class="lesson-info"><div class="lesson-title"></div><div class="lesson-sub"></div></div>
-      <span class="lesson-level"></span>`;
-    b.querySelector(".lesson-emoji").textContent = l.emoji;
-    b.querySelector(".lesson-title").textContent = l.title;
-    b.querySelector(".lesson-sub").textContent = l.liveOnly
-      ? "Istalgan mavzu · o'zbekcha va inglizcha 📞"
-      : `${l.phrases.length} ta ibora · ${state.sessionMinutes} daqiqa`;
-    b.querySelector(".lesson-level").textContent = l.level;
-    const pr = state.progress?.lessons?.[l.id];
-    if (pr) {
-      b.classList.add("done");
-      b.querySelector(".lesson-sub").textContent = `✅ O'tildi · eng yaxshi: ${pr.best} ball`;
-    }
-    b.addEventListener("click", () => openSheet(l));
-    list.appendChild(b);
+    list.appendChild(lessonButton(l));
   }
 }
 
@@ -211,6 +281,15 @@ function openSheet(lesson) {
   }
   $("startSheet").hidden = false;
 }
+
+let searchT;
+$("searchInput").addEventListener("input", (e) => {
+  clearTimeout(searchT);
+  searchT = setTimeout(() => {
+    state.filter.q = e.target.value;
+    renderLessons();
+  }, 150);
+});
 
 $("freeHero").addEventListener("click", () => {
   const free = state.lessons.find((l) => l.liveOnly);
