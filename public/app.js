@@ -380,7 +380,7 @@ function renderVocab() {
   const items = (state.progress?.words || []).filter((w) => (state.vocabTab === "fix" ? w.type === "fix" : w.type !== "fix"));
   if (!items.length) ul.append(el("li", "muted", state.vocabTab === "fix" ? "Hozircha xato yo'q 👏" : "Hozircha so'z yo'q"));
   for (const w of items) {
-    const li = el("li", "rep-word");
+    const li = el("li", "rep-word" + (w.type === "fix" ? " rep-mistake" : ""));
     if (w.type === "fix") {
       const line = el("div", "");
       line.append(el("s", "rep-wrong", w.wrong || ""), document.createTextNode(" → "), el("b", "rep-right", w.en));
@@ -391,7 +391,30 @@ function renderVocab() {
     li.addEventListener("click", () => speakBrowser(w.en, "en"));
     ul.append(li);
   }
+  $("vocabCopy").hidden = !items.length || Boolean(state.flash);
 }
+
+// 📋 Lug'atni matn ko'rinishida nusxalash (Telegram "Saqlangan xabarlar"ga yoki daftarga)
+$("vocabCopy").addEventListener("click", async () => {
+  haptic();
+  const fix = state.vocabTab === "fix";
+  const items = (state.progress?.words || []).filter((w) => (fix ? w.type === "fix" : w.type !== "fix"));
+  const lines = items.map((w, i) => (fix ? `${i + 1}. ❌ ${w.wrong || ""} → ✅ ${w.en}${w.uz ? ` (${w.uz})` : ""}` : `${i + 1}. ${w.en} — ${w.uz || ""}`));
+  const text = `${fix ? "✏️ Xatolarim" : "📚 Yangi so'zlarim"} (Sado)\n\n${lines.join("\n")}`;
+  try {
+    await navigator.clipboard.writeText(text);
+    toast(`📋 ${items.length} ta ${fix ? "xato" : "so'z"} nusxalandi`);
+  } catch {
+    // Eski brauzerlar uchun zaxira usul
+    const ta = el("textarea", "");
+    ta.value = text;
+    document.body.append(ta);
+    ta.select();
+    const ok = document.execCommand("copy");
+    ta.remove();
+    toast(ok ? `📋 ${items.length} ta nusxalandi` : "Nusxalab bo'lmadi");
+  }
+});
 $("moreBtn").addEventListener("click", () => {
   haptic();
   localStorage.setItem("sado-more", localStorage.getItem("sado-more") === "1" ? "0" : "1");
@@ -420,6 +443,7 @@ function startFlash() {
   const deck = words.map((w) => w).sort(() => Math.random() - 0.5).slice(0, 10);
   state.flash = { deck, i: 0, known: 0, open: false };
   $("vocabList").hidden = true;
+  $("vocabCopy").hidden = true;
   $("flashBtn").hidden = true;
   $("reviewBtn").hidden = true;
   $("flash").hidden = false;

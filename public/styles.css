@@ -679,3 +679,5 @@ body:has(#lesson.active) .toast { top: calc(34vh + var(--safe-t)); }
 .goal, .today-card, .week, .daily { text-wrap: pretty; }
 .free-hero { overflow: clip; } /* ichki elementlar bannerni yon tomonga surib yubormasin */
 .tiles:has(> [hidden]) > :not([hidden]) { grid-column: 1 / -1; } /* bitta plitka qolsa to'liq eni */
+
+.vocab-copy { margin-top: 10px; font-size: 14px; }
