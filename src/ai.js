@@ -500,8 +500,12 @@ try {
 } catch {}
 // Namunadagi iboralar Sado ovozida eshittirilishi mumkin
 export const samplePhrases = () => new Set([...sampleCache.values()].flatMap((v) => v.phrases.map((p) => p.en)));
+export const sampleStats = { opens: 0, generated: 0 };
+export const sampleCount = () => sampleCache.size;
 export async function sampleAnswer(lessonId, cue, questions, task) {
+  sampleStats.opens++;
   if (sampleCache.has(lessonId)) return sampleCache.get(lessonId);
+  sampleStats.generated++;
   // Part 2 — kartochka monologi; Part 1/3 — har savolga qisqa javob (savol: javob ko'rinishida)
   const part1 = /^ielts-p1/.test(lessonId);
   const system = task

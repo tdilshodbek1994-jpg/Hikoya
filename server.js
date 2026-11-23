@@ -10,7 +10,7 @@ import { LESSONS, getLesson, publicLesson } from "./src/lessons.js";
 import { verifyInitData } from "./src/telegram.js";
 import { WebSocketServer } from "ws";
 import { liveEnabled, runLive } from "./src/live.js";
-import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies, sampleAnswer, samplePhrases, ttsStats } from "./src/ai.js";
+import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies, sampleAnswer, samplePhrases, sampleStats, sampleCount, ttsStats } from "./src/ai.js";
 import { recordSession, touchDay, summary, adminStats, startedToday, countStart, refundStart, startsTodayTotal, deleteUser, markFixed, addWord, removeWord, setRemind, remindTargets, markReminded } from "./src/store.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -415,6 +415,7 @@ app.get("/api/admin/stats", (req, res) => {
   s.top = s.top.map(([id, n]) => ({ id, n, title: getLesson(id)?.title || id, emoji: getLesson(id)?.emoji || "" }));
   s.liveNow = [...sessions.values()].filter((x) => Date.now() < x.expiresAt).length;
   s.reminders = { enabled: REMINDERS, ...remindStats };
+  s.samples = { ready: sampleCount(), ...sampleStats };
   s.startsToday = startsTodayTotal();
   s.ttsCache = ttsStats;
   res.json(s);
