@@ -153,6 +153,27 @@ async function loadProgress() {
   }
 }
 
+// 🎯 Kunlik maqsad: bugun nechta dars (maqsadni bosib 1 → 2 → 3 ga almashtirish mumkin)
+state.goal = Number(localStorage.getItem("sado-goal")) || 1;
+function renderGoal() {
+  const p = state.progress;
+  const box = $("goal");
+  if (!p) return (box.hidden = true);
+  box.hidden = false;
+  const n = Math.min(p.today || 0, state.goal);
+  const done = (p.today || 0) >= state.goal;
+  box.classList.toggle("done", done);
+  box.innerHTML = "";
+  const ring = el("span", "goal-ring", `${n}/${state.goal}`);
+  ring.style.setProperty("--p", Math.round((n / state.goal) * 100));
+  const txt = el("span", "goal-text");
+  txt.append(
+    el("b", "", done ? "🎉 Bugungi maqsad bajarildi!" : "🎯 Bugungi maqsad"),
+    el("small", "", done ? "Ertaga ham davom eting — seriya uzilmasin 🔥" : `Kuniga ${state.goal} ta dars · bosing — maqsadni o'zgartirish`),
+  );
+  box.append(ring, txt);
+}
+
 function renderStats() {
   const p = state.progress;
   const box = $("stats");
@@ -312,6 +333,7 @@ function renderTrend() {
 }
 
 function renderLessons() {
+  renderGoal();
   renderStats();
   renderVocabBtn();
   renderTrend();
@@ -393,6 +415,14 @@ function openSheet(lesson) {
   render(false);
   $("startSheet").hidden = false;
 }
+
+$("goal").addEventListener("click", () => {
+  haptic();
+  state.goal = (state.goal % 3) + 1;
+  localStorage.setItem("sado-goal", String(state.goal));
+  renderGoal();
+  toast(`🎯 Yangi maqsad: kuniga ${state.goal} ta dars`, 2000);
+});
 
 let searchT;
 $("searchInput").addEventListener("input", (e) => {

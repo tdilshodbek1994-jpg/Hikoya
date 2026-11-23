@@ -91,6 +91,7 @@ export function summary(userId) {
   for (const [id, l] of Object.entries(u.lessons)) lessons[id] = { best: l.best, count: l.count };
   return {
     streak: streak(u.days),
+    today: u.history.filter((h) => today(new Date(h.at)) === today()).length,
     done: Object.keys(u.lessons).length,
     minutes: Math.round(u.seconds / 60),
     lessons,
