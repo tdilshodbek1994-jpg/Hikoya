@@ -3426,6 +3426,20 @@ function setSubs(ai, aiUz, me, fix, say) {
   $("myVoiceBtn").hidden = !(me && state.myVoicePending && state.myVoiceUrl);
   $("subFix").textContent = fix || "";
   $("subFixWrap").hidden = !fix;
+  keepSubsVisible();
+}
+
+// 👀 Sado gapi pastki tugmalar ortida qolmasin — ko'rinadigan joyga suriladi
+// (maskot kichrayish animatsiyasi 0.3 s tugagach o'lchaymiz)
+function keepSubsVisible() {
+  clearTimeout(state.subsScroll);
+  state.subsScroll = setTimeout(() => {
+    const sb = $("subs");
+    if (sb.hidden || !$("lesson").classList.contains("active") || !($("subAi").textContent || $("subMe").textContent)) return;
+    const r = sb.getBoundingClientRect(), ctl = $("controls").getBoundingClientRect().top;
+    const dy = Math.min(r.bottom - ctl + 16, r.top - 70);
+    if (r.bottom > ctl - 8 && dy > 0) window.scrollBy({ top: dy, behavior: "smooth" });
+  }, 380);
 }
 
 // ---------------- Rejimlar ----------------
@@ -3500,6 +3514,7 @@ function applySubs() {
   const on = state.subs || state.textOnly || state.audioFail;
   $("subs").hidden = !on;
   $("subsBtn").classList.toggle("on", on);
+  if (on) keepSubsVisible();
 }
 $("subsBtn").addEventListener("click", () => {
   haptic();

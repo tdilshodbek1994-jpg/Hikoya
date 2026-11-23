@@ -1287,3 +1287,6 @@ body.dark .acc-tag.hi { color: #4ade80; } body.dark .acc-tag.mid { color: #fbbf2
 .qh-bars i { position: relative; }
 .qh-bars i em { position: absolute; left: 0; right: 0; top: -15px; text-align: center; font-style: normal; font-size: 10px; font-weight: 800; color: var(--muted); line-height: 1; }
 .ts-new { background: color-mix(in srgb, var(--primary) 14%, transparent) !important; color: var(--primary) !important; box-shadow: none !important; margin-top: 8px; }
+
+/* 👀 Subtitr ko'rinib turganda maskot kichrayadi — Sado gapi pastki tugmalar ortida qolmaydi */
+#lesson:not(.is-live):has(#subs:not([hidden]) #subAi:not(:empty)) .mascot { width: min(40vw, 160px); transition: width 0.3s ease; }
