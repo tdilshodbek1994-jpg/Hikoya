@@ -600,6 +600,7 @@ function renderLessons() {
 }
 
 function openSheet(lesson) {
+  stopShadow();
   $("startLiveBtn").hidden = !state.liveEnabled;
   // Erkin suhbat faqat jonli rejimda bo'ladi
   $("startTutorBtn").hidden = Boolean(lesson.liveOnly) && state.liveEnabled;
@@ -776,13 +777,65 @@ $("favBtn").addEventListener("click", () => {
   renderLessons();
 });
 
-$("cancelBtn").addEventListener("click", () => ($("startSheet").hidden = true));
+// 🎧 Tinglab takrorlash: har bir ibora 2 marta eshittiriladi, orada takrorlash uchun pauza
+async function sayPhrase(en) {
+  const key = (state.slow ? "slow:" : "") + en;
+  let part = sayCache.get(key);
+  if (!part) {
+    part = await api(`api/say?text=${encodeURIComponent(en)}&slow=${state.slow ? 1 : 0}`, { method: "GET" }).catch(() => null);
+    if (part?.audio) sayCache.set(key, part);
+  }
+  ensureCtx();
+  if (part?.audio) await playMp3(part.audio, part.mime).catch(() => {});
+  else await speakBrowser(en.replace(/\.\.\./g, "something"), "en");
+}
+function stopShadow() {
+  state.shadowRun = (state.shadowRun || 0) + 1;
+  $("shadow").hidden = true;
+  $("shadowBtn").hidden = false;
+  try { audio.source?.stop(); } catch {}
+}
+$("shadowBtn").addEventListener("click", async () => {
+  const lesson = state.pendingLesson;
+  if (!lesson) return;
+  haptic();
+  const run = (state.shadowRun = (state.shadowRun || 0) + 1);
+  const box = $("shadow");
+  $("shadowBtn").hidden = true;
+  box.hidden = false;
+  const list = lesson.phrases;
+  for (let i = 0; i < list.length; i++) {
+    const p = list[i];
+    for (const round of [1, 2]) {
+      if (run !== state.shadowRun) return;
+      box.innerHTML = "";
+      const stop = el("button", "shadow-stop", "■ To'xtatish");
+      stop.addEventListener("click", stopShadow);
+      box.append(el("div", "shadow-n", `${i + 1} / ${list.length}`), el("div", "shadow-en", p.en), el("div", "shadow-uz", p.uz));
+      const st = el("div", "shadow-st", "🔊 Tinglang...");
+      box.append(st, stop);
+      await sayPhrase(p.en);
+      if (run !== state.shadowRun) return;
+      st.textContent = round === 1 ? "🗣 Endi siz takrorlang!" : "🗣 Yana bir bor!";
+      st.classList.add("go");
+      await new Promise((r) => setTimeout(r, Math.max(2500, p.en.length * 110)));
+    }
+  }
+  if (run !== state.shadowRun) return;
+  box.innerHTML = "";
+  box.append(el("div", "shadow-en", "🎉 Barakalla!"), el("div", "shadow-uz", "Endi shu iboralarni Sado bilan suhbatda ishlating 👇"));
+  const again = el("button", "shadow-stop", "↻ Qaytadan");
+  again.addEventListener("click", () => $("shadowBtn").click());
+  box.append(again);
+});
+
+$("cancelBtn").addEventListener("click", () => { stopShadow(); $("startSheet").hidden = true; });
 $("startSheet").addEventListener("click", (e) => {
   if (e.target.id === "startSheet") $("startSheet").hidden = true;
 });
-$("startLiveBtn").addEventListener("click", () => startLesson(state.pendingLesson, "live"));
-$("startTutorBtn").addEventListener("click", () => startLesson(state.pendingLesson, "tutor"));
-$("startChatBtn").addEventListener("click", () => startLesson(state.pendingLesson, "chat"));
+$("startLiveBtn").addEventListener("click", () => { stopShadow(); startLesson(state.pendingLesson, "live"); });
+$("startTutorBtn").addEventListener("click", () => { stopShadow(); startLesson(state.pendingLesson, "tutor"); });
+$("startChatBtn").addEventListener("click", () => { stopShadow(); startLesson(state.pendingLesson, "chat"); });
 $("againBtn").addEventListener("click", () => startLesson(state.lesson, state.lessonMode));
 $("homeBtn").addEventListener("click", () => show("home"));
 $("nextBtn").addEventListener("click", () => {
