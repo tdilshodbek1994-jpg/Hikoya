@@ -3263,7 +3263,7 @@ export const LESSONS = [
     id: "kid-family",
     category: "Bolalar uchun",
     title: "Mening oilam",
-    emoji: "👪",
+    emoji: "🤗",
     level: "A1",
     added: "2026-11-23",
     role: "a kind primary school teacher talking with a child",
@@ -3317,6 +3317,26 @@ export const LESSONS = [
       { en: "My bed is soft.", uz: "Mening karavotim yumshoq." },
       { en: "We watch TV on the sofa.", uz: "Biz divanda televizor ko'ramiz." },
       { en: "I love my home.", uz: "Men uyimni yaxshi ko'raman." },
+    ],
+  },
+  {
+    id: "kid-transport",
+    category: "Bolalar uchun",
+    title: "Transport",
+    emoji: "🚌",
+    level: "A1",
+    added: "2026-11-23",
+    role: "a kind primary school teacher talking with a child about getting around",
+    situation: "Keep every sentence very short and simple (A1, max 8 words), speak like a kind primary school teacher, praise a lot, use lots of Uzbek help when the child is stuck. Talk about how the child goes to school (by bus, by car, on foot), favourite vehicles (bus, car, train, plane, bike, boat), their colours and sounds, and where they would like to go by plane.",
+    opener: "How do you go to school? By bus or by car?",
+    openerUz: "Maktabga qanday borasan? Avtobusdami yoki mashinadami?",
+    phrases: [
+      { en: "I go to school by bus.", uz: "Men maktabga avtobusda boraman." },
+      { en: "My dad has a red car.", uz: "Dadamning qizil mashinasi bor." },
+      { en: "I walk to school.", uz: "Men maktabga piyoda boraman." },
+      { en: "The train is very long.", uz: "Poyezd juda uzun." },
+      { en: "I want to fly on a plane!", uz: "Men samolyotda uchmoqchiman!" },
+      { en: "The boat is on the water.", uz: "Qayiq suvda." },
     ],
   },
   // ======== Sayohat (qo'shimcha) ========
@@ -3689,6 +3709,7 @@ const KID_PICS = {
   "kid-family": ["👩", "👦", "👧", "👵", "👨‍👩‍👧‍👦", "👨⚽"],
   "kid-body": ["🙂", "👀", "👃", "👂", "👏", "🖐️🖐️"],
   "kid-home": ["🏠", "🛏️", "🍳", "🛌", "🛋️📺", "❤️🏠"],
+  "kid-transport": ["🚌", "🚗", "🚶", "🚆", "✈️", "⛵"],
 };
 // 🔍 Qidiruv uchun inglizcha kalit so'zlar (o'quvchi "coffee", "hospital" deb qidirsa ham dars topilsin)
 const KEYWORDS = {
