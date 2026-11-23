@@ -87,6 +87,16 @@ export function recordSession(userId, { lessonId, mode, used, total, seconds, re
   return score;
 }
 
+// 🔥 Ballsiz faollik (masalan, tugatilmagan erkin suhbat): faqat kun va daqiqalar yoziladi — seriya uzilmaydi
+export function touchDay(userId, seconds = 0) {
+  const u = user(userId);
+  const d = today();
+  if (!u.days.includes(d)) u.days.push(d);
+  u.days = u.days.slice(-400);
+  u.seconds += Math.max(0, Math.round(seconds || 0));
+  save();
+}
+
 function streak(days) {
   const set = new Set(days);
   let n = 0;

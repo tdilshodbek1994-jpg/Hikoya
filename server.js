@@ -9,7 +9,7 @@ import { verifyInitData } from "./src/telegram.js";
 import { WebSocketServer } from "ws";
 import { liveEnabled, runLive } from "./src/live.js";
 import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies, ttsStats } from "./src/ai.js";
-import { recordSession, summary, adminStats, startedToday, countStart, refundStart, startsTodayTotal, deleteUser } from "./src/store.js";
+import { recordSession, touchDay, summary, adminStats, startedToday, countStart, refundStart, startsTodayTotal, deleteUser } from "./src/store.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -42,7 +42,12 @@ setInterval(() => {
     if (!s.ended && s.transcript.some((t) => t.who === "student" && t.text.trim())) {
       try {
         const lesson = lessonOf(s);
-        if (!lesson?.phrases?.length) continue; // iborasiz (erkin) suhbatda ball hisoblab bo'lmaydi
+        const secs = (Math.min(now, s.expiresAt) - s.startedAt) / 1000;
+        // Iborasiz (erkin) suhbatda ball hisoblab bo'lmaydi — lekin seriya va daqiqalar saqlanadi
+        if (!lesson?.phrases?.length || lesson.liveOnly) {
+          touchDay(s.userId, secs);
+          continue;
+        }
         recordSession(s.userId, {
           lessonId: s.lessonId,
           mode: s.mode,
