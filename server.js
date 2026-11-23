@@ -548,6 +548,25 @@ app.get("/api/progress", auth, (req, res) => {
 // "?v=..." versiyali fayllar uzoq keshlanadi — versiya o'zgarsa, telefon yangisini oladi.
 const PUB = path.join(here, "public");
 const gzCache = new Map();
+
+// 🔖 Avtomatik kesh-buster: "fayl.js?v=13" havolalariga fayl mazmunining qisqa xeshi qo'shiladi
+// ("?v=13.a1b2c3d4"). Fayl o'zgarsa — manzil ham o'zgaradi, telefon eskisini ishlatmaydi (versiyani
+// qo'lda oshirishni unutish xavfi yo'q). Xesh ichma-ich (app.js → live.js → pcm-worklet.js) hisoblanadi.
+const REF = /([\w-]+\.(?:js|css))\?v=(\d+)(?:\.[0-9a-f]+)?/g;
+const rendered = new Map(); // rel -> { stamp, body, hash }
+const pubStamp = () => fs.readdirSync(PUB).map((f) => { try { return f + fs.statSync(path.join(PUB, f)).mtimeMs; } catch { return f; } }).join("|");
+function renderAsset(rel, stamp = pubStamp(), depth = 0) {
+  const hit = rendered.get(rel);
+  if (hit && hit.stamp === stamp) return hit;
+  let body = fs.readFileSync(path.join(PUB, rel), "utf8");
+  if (depth < 4) body = body.replace(REF, (m, name, num) => {
+    try { return `${name}?v=${num}.${renderAsset("/" + name, stamp, depth + 1).hash}`; } catch { return m; }
+  });
+  const out = { stamp, body, hash: crypto.createHash("sha1").update(body).digest("hex").slice(0, 8) };
+  rendered.set(rel, out);
+  return out;
+}
+
 app.use((req, res, next) => {
   if (req.method !== "GET" && req.method !== "HEAD") return next();
   const rel = req.path === "/" ? "/index.html" : req.path;
@@ -561,14 +580,15 @@ app.use((req, res, next) => {
     return next();
   }
   if (!st.isFile()) return next();
-  const key = file + ":" + st.mtimeMs;
+  const asset = renderAsset(rel);
+  const key = file + ":" + asset.hash;
   let gz = gzCache.get(key);
   if (!gz) {
-    gz = zlib.gzipSync(fs.readFileSync(file), { level: 9 });
+    gz = zlib.gzipSync(Buffer.from(asset.body), { level: 9 });
     for (const k of gzCache.keys()) if (k.startsWith(file + ":")) gzCache.delete(k); // eski versiyani o'chiramiz
     gzCache.set(key, gz);
   }
-  const etag = `"gz-${st.size.toString(16)}-${Math.round(st.mtimeMs).toString(16)}"`;
+  const etag = `"gz-${asset.hash}"`;
   res.setHeader("Vary", "Accept-Encoding");
   res.setHeader("ETag", etag);
   // ⚠️ HTML hech qachon uzoq keshlanmaydi: UzDTM Sado'ni "/speaking/?v=7" bilan ochadi — avval bu

@@ -5003,10 +5003,10 @@ function showOnboarding() {
 showOnboarding();
 
 // ℹ️ Versiya va 🔄 yangilash: eski saqlangan darslar ro'yxatini tozalab, ilovani qayta yuklash
-$("appVer").textContent = `Sado v${(document.querySelector('script[src^="app.js"]')?.getAttribute("src") || "").split("v=")[1] || "?"}`;
+$("appVer").textContent = `Sado v${parseInt((document.querySelector('script[src^="app.js"]')?.getAttribute("src") || "").split("v=")[1]) || "?"}`;
 // 🔄 Telefonda eski sahifa qolib ketgan bo'lsa (kesh) — serverdagi versiya yangiroq bo'lsa o'zini bir marta yangilaydi
 (async () => {
-  const mine = Number((document.querySelector('script[src^="app.js"]')?.getAttribute("src") || "").split("v=")[1]) || 0;
+  const mine = parseInt((document.querySelector('script[src^="app.js"]')?.getAttribute("src") || "").split("v=")[1]) || 0; // "298.a1b2c3d4" → 298
   try {
     const r = await fetch(`api/version?t=${Date.now()}`, { cache: "no-store" });
     const { build } = await r.json();
