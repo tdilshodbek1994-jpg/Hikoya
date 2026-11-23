@@ -1775,9 +1775,9 @@ function renderSettings() {
         }]]
       : []),
     // 🧭 Yo'nalish (tanishuvdagi maqsad) — "Keyingi dars" va tasodifiy darslar shunga moslanadi
-    ["🧭 Yo'nalish", [["", "Umumiy"], ["IELTS kursi", "🎓 IELTS"], ["CEFR kursi", "📗 CEFR"], ["Bolalar uchun", "🧒 Bola"]], () => {
+    ["🧭 Yo'nalish", [["", "Umumiy"], ["IELTS kursi", "IELTS"], ["CEFR kursi", "CEFR"], ["Kundalik hayot", "Kundalik"], ["Bolalar uchun", "Bola"]], () => {
       const a = localStorage.getItem("sado-aim") || "";
-      return ["IELTS kursi", "CEFR kursi", "Bolalar uchun"].includes(a) ? a : "";
+      return ["IELTS kursi", "CEFR kursi", "Kundalik hayot", "Bolalar uchun"].includes(a) ? a : "";
     }, (v) => {
       v ? localStorage.setItem("sado-aim", v) : localStorage.removeItem("sado-aim");
       renderNext();
