@@ -422,7 +422,15 @@ function saveQuiz(id, right, total) {
 const quizMisses = () => { try { return JSON.parse(localStorage.getItem("sado-qz-miss") || "[]"); } catch { return []; } };
 // 🎯 Umumiy aniqlik: barcha testlardagi javoblar
 const quizStats = () => { try { return JSON.parse(localStorage.getItem("sado-qz-stats")) || { ok: 0, all: 0 }; } catch { return { ok: 0, all: 0 }; } };
+// 👁 Ko'rilgan savollar (qisqa xesh bilan) — aralash test avval yangilarini beradi
+const qKey = (it) => phraseHash(`${it.before}|${it.after}|${it.answer}`).toString(36);
+const seenSet = () => { try { return new Set(JSON.parse(localStorage.getItem("sado-qz-seen") || "[]")); } catch { return new Set(); } };
 function quizMiss(it, lessonId, ok) {
+  if (it.before != null) {
+    const seen = seenSet();
+    seen.add(qKey(it));
+    try { localStorage.setItem("sado-qz-seen", JSON.stringify([...seen].slice(-2000))); } catch {}
+  }
   const st = quizStats();
   st.all++;
   if (ok) st.ok++;
@@ -724,7 +732,13 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
     if (words.length < 3 || words.length > 10) return it;
     return { ...it, mode: "spot", words, badIdx: beforeW.length, right: sent(it, it.answer) };
   };
-  const pick = () => (pool.length > QN ? [...pool].sort(() => Math.random() - 0.5).slice(0, QN) : lesson.ordered ? [...pool] : [...pool].sort(() => Math.random() - 0.5))
+  const shuffled = () => {
+    const a = [...pool].sort(() => Math.random() - 0.5);
+    if (lesson.id !== "gr-mix") return a;
+    const seen = seenSet(); // aralash testda — hali ko'rilmagan savollar birinchi
+    return [...a.filter((x) => !seen.has(qKey(x))), ...a.filter((x) => seen.has(qKey(x)))];
+  };
+  const pick = () => (pool.length > QN ? shuffled().slice(0, QN) : lesson.ordered ? [...pool] : [...pool].sort(() => Math.random() - 0.5))
     .map((it, k) => (pool.length <= QN ? it : k % 4 === 1 ? asOrder(it) : k % 4 === 2 ? asPick(it) : k % 4 === 3 ? asSpot(it) : it)); // bo'sh joy → so'z tartibi → gap tanlash → xatoni topish
   let items = pick();
   box.hidden = items.length < (lesson.id === "gr-miss" ? 1 : 2);
@@ -1970,7 +1984,8 @@ function renderLessons() {
           const st = quizStats();
           const nQ = gr.reduce((n, x) => n + x.quiz.length, 0);
           const top = el("div", "gq-top");
-          top.append(el("b", "", "🧪 Testlar"), el("span", "", `${nQ} ta savol · 🧩 ${perfect.length}/${gr.length} a'lo`));
+          const seenN = (() => { const ss = seenSet(); return gr.reduce((n, x) => n + x.quiz.filter((q) => { const [b, a] = q.text.split("___"); return ss.has(qKey({ before: b.trimEnd(), after: a, answer: q.answer })); }).length, 0); })();
+          top.append(el("b", "", "🧪 Testlar"), el("span", "", `${seenN ? `👁 ${seenN}/${nQ}` : `${nQ} ta savol`} · 🧩 ${perfect.length}/${gr.length} a'lo`));
           if (st.all >= 5) {
             const acc = el("button", "gq-acc", `🎯 ${Math.round((st.ok / st.all) * 100)}% ›`);
             acc.title = "Mavzular bo'yicha aniqlik";
