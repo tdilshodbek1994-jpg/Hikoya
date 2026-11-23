@@ -522,7 +522,13 @@ function stopFlash() {
 function startFlash() {
   const words = (state.progress?.words || []).filter((w) => w.en && w.uz);
   if (!words.length) return toast("Lug'atda hali so'z yo'q");
-  const deck = words.map((w) => w).sort(() => Math.random() - 0.5).slice(0, 10);
+  // 🧠 Leitner usuli: "Bilmadim" deyilgan va yangi so'zlar oldinroq, yaxshi bilinganlar kamroq chiqadi
+  const box = flashBoxes();
+  const deck = words
+    .map((w) => ({ w, k: (box[w.en.toLowerCase()] || 0) + Math.random() * 0.9 }))
+    .sort((a, b) => a.k - b.k)
+    .slice(0, 10)
+    .map((x) => x.w);
   state.flash = { deck, i: 0, known: 0, open: false };
   $("vocabList").hidden = true;
   $("vocabCopy").hidden = true;
@@ -531,6 +537,14 @@ function startFlash() {
   $("flash").hidden = false;
   renderFlash();
 }
+function flashBoxes() {
+  try {
+    return JSON.parse(localStorage.getItem("sado-flash") || "{}");
+  } catch {
+    return {};
+  }
+}
+
 function renderFlash() {
   const f = state.flash;
   const box = $("flash");
@@ -539,6 +553,15 @@ function renderFlash() {
     box.append(
       el("div", "flash-done", `${f.known >= f.deck.length * 0.7 ? "🎉" : "💪"} ${f.deck.length} tadan ${f.known} tasini bildingiz!`),
     );
+    // 🧠 Yodlanganlar: kamida 3 marta ketma-ket "Bildim"
+    const bx = flashBoxes();
+    const all = (state.progress?.words || []).filter((w) => w.en && w.uz);
+    const mastered = all.filter((w) => (bx[w.en.toLowerCase()] || 0) >= 3).length;
+    const bar = el("div", "flash-mastery");
+    const fill = el("i", "");
+    fill.style.width = `${all.length ? Math.round((mastered / all.length) * 100) : 0}%`;
+    bar.append(fill);
+    box.append(el("div", "flash-mastery-t", `🧠 Yodlangan: ${mastered} / ${all.length} ta so'z`), bar);
     const again = el("button", "btn primary wide", "🔁 Yana bir marta");
     again.addEventListener("click", startFlash);
     const back = el("button", "btn ghost wide", "Lug'atga qaytish");
@@ -571,6 +594,11 @@ function renderFlash() {
   function next(knew) {
     haptic(knew ? "success" : "light");
     if (knew) f.known++;
+    // So'z "qutisi": bildim — yuqoriga (5 gacha), bilmadim — boshiga qaytadi
+    const bx = flashBoxes();
+    const key = w.en.toLowerCase();
+    bx[key] = knew ? Math.min(5, (bx[key] || 0) + 1) : 0;
+    localStorage.setItem("sado-flash", JSON.stringify(bx));
     f.i++;
     f.open = false;
     renderFlash();
