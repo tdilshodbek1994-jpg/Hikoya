@@ -1368,6 +1368,7 @@ function renderSettings() {
     ["🗣 Sado ovozi (jonli suhbat)", [["f", "👩 Ayol"], ["m", "👨 Erkak"]], () => state.voice, (v) => { state.voice = v; localStorage.setItem("sado-voice", v); }],
     ["🐇 Gapirish tezligi", [["0", "🐇 Oddiy"], ["1", "🐢 Sekin"]], () => (state.slow ? "1" : "0"), (v) => { state.slow = v === "1"; localStorage.setItem("sado-slow", v); }],
     ["🇺🇿 O'zbekcha tarjimani aytish", [["1", "Ha"], ["0", "Yo'q"]], () => (state.tr ? "1" : "0"), (v) => { state.tr = v === "1"; localStorage.setItem("sado-tr", v); }],
+    ["🙈 Ibora tarjimasini yashirish", [["0", "Yo'q"], ["1", "Ha (o'zimni sinayman)"]], () => (localStorage.getItem("sado-hideuz") === "1" ? "1" : "0"), (v) => { localStorage.setItem("sado-hideuz", v); applyHideUz(); }],
     ["🎚 Ingliz tilim darajasi", [["beg", "🌱 Boshlovchi"], ["mid", "🌿 O'rtacha"], ["adv", "🌳 Yaxshi"]], () => localStorage.getItem("sado-level") || "", (v) => { localStorage.setItem("sado-level", v); renderNext(); }],
     ...(state.progress?.remindAvailable
       ? [["🔔 Kechki eslatma (Telegram)", [["1", "Ha"], ["0", "Yo'q"]], () => (state.progress?.remind ? "1" : "0"), (v) => {
@@ -1988,6 +1989,7 @@ function renderTimer() {
 
 function renderPhrase() {
   const { lesson, used } = state;
+  $("phraseUz").classList.remove("shown"); // yangi ibora — tarjima yana yashirin
   const seg = $("segments");
   seg.innerHTML = "";
   lesson.phrases.forEach((_, i) => {
@@ -2036,6 +2038,19 @@ $("phraseEn").addEventListener("click", () => {
   const inp = $("textInput");
   inp.value = inp.value.trim() ? `${inp.value.trim()} ${p.en}` : p.en;
   inp.focus();
+});
+
+// 🙈 Tarjimani yashirish: o'quvchi avval o'zi eslaydi, keyin bosib tekshiradi
+function applyHideUz() {
+  $("phraseCard").classList.toggle("hide-uz", localStorage.getItem("sado-hideuz") === "1");
+  $("phraseUz").classList.remove("shown");
+}
+applyHideUz();
+$("phraseUz").addEventListener("click", (e) => {
+  if (!$("phraseCard").classList.contains("hide-uz")) return;
+  e.stopPropagation();
+  haptic();
+  $("phraseUz").classList.toggle("shown");
 });
 
 function nextUnused(from = 0) {

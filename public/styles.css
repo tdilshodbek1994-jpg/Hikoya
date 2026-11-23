@@ -984,3 +984,9 @@ body.dark .rep-ml { color: #5eead4; }
 .set-title em { font-style: normal; font-weight: 500; font-size: 12px; color: var(--muted); }
 .onb-lv-row { flex-wrap: nowrap; } .onb-lv-row .chip-f { white-space: nowrap; padding-left: 10px; padding-right: 10px; }
 .onb-lv-row { gap: 5px; } @media (max-width: 360px) { .onb-lv-row .chip-f { font-size: 12px; padding: 6px 8px; } .onb-card { padding-left: 14px; padding-right: 14px; } }
+/* 🙈 Tarjima yashirin: xira, bosilsa ochiladi */
+.phrase-card.hide-uz .phrase-uz:not(.shown) { filter: blur(5px); cursor: pointer; user-select: none; position: relative; }
+.phrase-card.hide-uz .phrase-uz:not(.shown)::after { content: " 👆"; filter: none; }
+.phrase-card.hide-uz .phrase-uz.shown { animation: fade 0.2s ease; }
+.phrase-card.hide-uz .phrase-uz:not(.shown) { filter: none; color: transparent; text-shadow: 0 0 7px color-mix(in srgb, var(--muted) 90%, transparent); }
+.phrase-card.hide-uz .phrase-uz:not(.shown)::after { content: "  👆 tarjima"; color: var(--primary); text-shadow: none; font-size: 12px; font-weight: 700; }
