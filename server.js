@@ -6,6 +6,8 @@ import express from "express";
 import Anthropic from "@anthropic-ai/sdk";
 import { LESSONS, getLesson, publicLesson } from "./src/lessons.js";
 import { verifyInitData } from "./src/telegram.js";
+import { WebSocketServer } from "ws";
+import { liveEnabled, runLive } from "./src/live.js";
 import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled } from "./src/ai.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -76,7 +78,7 @@ function sendError(res, err) {
 
 // ---- API ----
 app.get("/api/lessons", (req, res) => {
-  res.json({ lessons: LESSONS.map(publicLesson), voiceEnabled, sessionMinutes: SESSION_MINUTES });
+  res.json({ lessons: LESSONS.map(publicLesson), voiceEnabled, liveEnabled, sessionMinutes: SESSION_MINUTES });
 });
 
 app.post("/api/session", express.json(), auth, async (req, res) => {
@@ -91,7 +93,8 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
   daily.set(key, count + 1);
 
   // "tutor" - o'zbekcha ustoz (standart), "chat" - inglizcha suhbat
-  const mode = req.body?.mode === "chat" ? "chat" : "tutor";
+  const wanted = req.body?.mode;
+  const mode = wanted === "chat" ? "chat" : wanted === "live" && liveEnabled ? "live" : "tutor";
   const id = crypto.randomUUID();
   sessions.set(id, {
     userId: req.userId,
@@ -105,6 +108,10 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
   });
 
   try {
+    if (mode === "live") {
+      // Jonli suhbat: ovoz WebSocket orqali (/api/live) keladi
+      return res.json({ session: id, mode, lesson: publicLesson(lesson), seconds: SESSION_MINUTES * 60 });
+    }
     if (mode === "tutor") {
       const say = tutorOpener(lesson);
       const parts = await speakParts(say);
@@ -219,8 +226,29 @@ app.use(
   }),
 );
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Sado speaking ishga tushdi: http://localhost:${PORT}`);
   if (!process.env.ANTHROPIC_API_KEY) console.warn("Diqqat: ANTHROPIC_API_KEY yo'q - AI suhbatdosh javob bera olmaydi.");
   if (!voiceEnabled) console.warn("Diqqat: OPENAI_API_KEY yo'q - ovozni tanish ishlamaydi, faqat yozma rejim.");
+});
+
+// ---- 📞 Jonli suhbat (WebSocket) ----
+const wss = new WebSocketServer({ noServer: true, maxPayload: 1 << 20 });
+server.on("upgrade", (req, socket, head) => {
+  const url = new URL(req.url, "http://x");
+  if (url.pathname !== "/api/live") return socket.destroy();
+  const user = verifyInitData(url.searchParams.get("init") || "", BOT_TOKEN);
+  const userId = user ? String(user.id) : ALLOW_DEV ? "dev" : null;
+  const s = sessions.get(url.searchParams.get("session") || "");
+  if (!userId || !s || s.userId !== userId || s.mode !== "live" || s.liveStarted || Date.now() > s.expiresAt) {
+    socket.write("HTTP/1.1 403 Forbidden\r\n\r\n");
+    return socket.destroy();
+  }
+  s.liveStarted = true; // bitta sessiya - bitta ulanish
+  wss.handleUpgrade(req, socket, head, (ws) => {
+    runLive(ws, s, getLesson(s.lessonId), { maxMs: s.expiresAt - Date.now() }).catch((e) => {
+      console.error("Jonli suhbat xatosi:", e);
+      try { ws.close(); } catch {}
+    });
+  });
 });

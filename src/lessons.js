@@ -4,6 +4,25 @@
 
 export const LESSONS = [
   {
+    id: "ielts",
+    title: "IELTS Speaking",
+    emoji: "🏆",
+    level: "B1-B2",
+    role: "a friendly but professional IELTS Speaking examiner",
+    situation:
+      "This is a mock IELTS Speaking test. Part 1: 4-5 short questions about the student's life (home, studies, hobbies). Part 2: give a cue card topic, let the student talk for 1-2 minutes. Part 3: 3-4 deeper discussion questions on the same theme. At the end give an estimated band score (Fluency, Vocabulary, Grammar, Pronunciation) and 2-3 tips, explained in Uzbek.",
+    opener: "Good afternoon. My name is Sado, and I'll be your examiner today. Could you tell me your full name, please?",
+    openerUz: "Xayrli kun. Mening ismim Sado, bugun men sizning imtihonchingizman. To'liq ismingizni aytib bera olasizmi?",
+    phrases: [
+      { en: "That's a good question.", uz: "Bu yaxshi savol." },
+      { en: "In my opinion, ...", uz: "Mening fikrimcha, ..." },
+      { en: "To be honest, ...", uz: "Rostini aytsam, ..." },
+      { en: "For example, ...", uz: "Masalan, ..." },
+      { en: "On the other hand, ...", uz: "Boshqa tomondan, ..." },
+      { en: "That's why I think ...", uz: "Shuning uchun men ... deb o'ylayman." },
+    ],
+  },
+  {
     id: "cafe",
     title: "Kafeda",
     emoji: "☕",

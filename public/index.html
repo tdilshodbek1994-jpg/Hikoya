@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
   <title>Sado — ingliz tilida gaplashish</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="styles.css?v=5" />
+  <link rel="stylesheet" href="styles.css?v=7" />
 </head>
 <body>
   <header class="topbar">
@@ -119,6 +119,10 @@
       <h3 id="sheetTitle"></h3>
       <p class="muted">Qanday o'rganamiz? Mikrofonga ruxsat bering.</p>
       <ul class="sheet-phrases" id="sheetPhrases"></ul>
+      <button class="mode-card live" id="startLiveBtn" hidden>
+        <b>📞 Jonli suhbat</b>
+        <span>Sado bilan telefonda gaplashgandek: o'zi gapiradi, savol beradi, darhol javob qaytaradi.</span>
+      </button>
       <button class="mode-card primary" id="startTutorBtn">
         <b>🇺🇿 Ustoz bilan o'rganish</b>
         <span>Sado o'zbekcha tushuntiradi, iboralarni birma-bir takrorlatadi. Boshlovchilar uchun.</span>
@@ -133,6 +137,6 @@
 
   <div class="toast" id="toast" hidden></div>
 
-  <script type="module" src="app.js?v=6"></script>
+  <script type="module" src="app.js?v=7"></script>
 </body>
 </html>

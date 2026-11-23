@@ -1,4 +1,5 @@
 import { Mascot } from "./mascot.js";
+import { LiveCall } from "./live.js?v=1";
 
 const tg = window.Telegram?.WebApp;
 const inTelegram = Boolean(tg && tg.initData);
@@ -115,6 +116,7 @@ async function loadLessons() {
     const data = await api("api/lessons", { method: "GET" });
     state.lessons = data.lessons;
     state.voiceEnabled = data.voiceEnabled;
+    state.liveEnabled = Boolean(data.liveEnabled);
     state.sessionMinutes = data.sessionMinutes;
     renderLessons();
     if (!inTelegram) $("homeNote").textContent = "Eslatma: ilova Telegram bot orqali ochilganda to'liq ishlaydi.";
@@ -144,6 +146,7 @@ function renderLessons() {
 }
 
 function openSheet(lesson) {
+  $("startLiveBtn").hidden = !state.liveEnabled;
   haptic();
   state.pendingLesson = lesson;
   $("sheetEmoji").textContent = lesson.emoji;
@@ -165,6 +168,7 @@ $("cancelBtn").addEventListener("click", () => ($("startSheet").hidden = true));
 $("startSheet").addEventListener("click", (e) => {
   if (e.target.id === "startSheet") $("startSheet").hidden = true;
 });
+$("startLiveBtn").addEventListener("click", () => startLesson(state.pendingLesson, "live"));
 $("startTutorBtn").addEventListener("click", () => startLesson(state.pendingLesson, "tutor"));
 $("startChatBtn").addEventListener("click", () => startLesson(state.pendingLesson, "chat"));
 $("againBtn").addEventListener("click", () => startLesson(state.lesson, state.lessonMode));
@@ -177,6 +181,17 @@ function pickMime() {
     if (MediaRecorder.isTypeSupported?.(m)) return m;
   }
   return "";
+}
+
+function ensureCtx() {
+  if (!audio.ctx) {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    audio.ctx = new Ctx();
+    audio.outAnalyser = audio.ctx.createAnalyser();
+    audio.outAnalyser.fftSize = 512;
+    audio.outAnalyser.connect(audio.ctx.destination);
+  }
+  if (audio.ctx.state === "suspended") audio.ctx.resume().catch(() => {});
 }
 
 async function ensureAudio() {
@@ -227,6 +242,7 @@ function rms(analyser, buf) {
 // ---------------- Dars ----------------
 async function startLesson(lesson, lessonMode = "tutor") {
   if (!lesson) return;
+  if (lessonMode === "live") return startLive(lesson);
   state.lessonMode = lessonMode;
   $("startSheet").hidden = true;
   haptic("medium");
@@ -267,6 +283,83 @@ async function startLesson(lesson, lessonMode = "tutor") {
   } catch (e) {
     setPhase("idle", "");
     toast(e.message, 4000);
+    show("home");
+  }
+}
+
+// ---------------- 📞 Jonli suhbat ----------------
+async function startLive(lesson) {
+  $("startSheet").hidden = true;
+  haptic("medium");
+  stopAll();
+  state.lessonMode = "live";
+  state.lesson = lesson;
+  state.used = new Set();
+  state.phraseIdx = 0;
+  state.session = null;
+
+  show("lesson");
+  $("lessonTitle").textContent = lesson.title + " · jonli";
+  renderPhrase();
+  // Jonli rejimda tugmalar kerak emas: shunchaki gaplashiladi
+  $("modeToggle").hidden = true;
+  $("holdBtn").hidden = true;
+  $("textForm").hidden = true;
+  $("trBtn").hidden = true;
+  applySubs();
+  setSubs("", "", "", "");
+  setPhase("thinking", "Ulanmoqda...");
+  $("hint").textContent = "Shunchaki gapiring. Sado gapirayotganda gapini bo'lishingiz ham mumkin.";
+
+  ensureCtx();
+  let sadoLine = "";
+  let userLine = "";
+  let lastSpeaker = "";
+  try {
+    const data = await api("api/session", { json: { lessonId: lesson.id, mode: "live" } });
+    if (data.mode !== "live") throw new Error("Jonli suhbat serverda yoqilmagan.");
+    state.session = data.session;
+    state.seconds = state.left = data.seconds;
+
+    const call = new LiveCall({
+      ctx: audio.ctx,
+      outAnalyser: audio.outAnalyser,
+      onState: (st, level) => {
+        if (state.phase === "ended") return;
+        if (state.phase !== st) setPhase(st, st === "speaking" ? "Sado gapirmoqda..." : "Sizni tinglayapti...");
+        mascot.setLevel(level);
+      },
+      onEvent: (m) => {
+        if (m.type === "ready") {
+          startTimer();
+          setPhase("speaking", "Sado gapirmoqda...");
+        } else if (m.type === "sado") {
+          if (lastSpeaker !== "sado") sadoLine = "";
+          lastSpeaker = "sado";
+          sadoLine += m.text;
+          setSubs(sadoLine, "", userLine, "");
+        } else if (m.type === "user") {
+          if (lastSpeaker !== "user") userLine = "";
+          lastSpeaker = "user";
+          userLine += m.text;
+          setSubs(sadoLine, "", userLine, "");
+        } else if (m.type === "used") {
+          markUsed(m.found || []);
+        } else if (m.type === "error") {
+          toast("⚠️ " + m.message, 4000);
+        } else if (m.type === "closed") {
+          if (state.phase !== "ended") finish();
+        }
+      },
+    });
+    state.live = call;
+    await call.start(data.session, tg?.initData || "");
+  } catch (e) {
+    console.warn("Jonli:", e);
+    state.live?.stop();
+    state.live = null;
+    setPhase("idle", "");
+    toast(e.name === "NotAllowedError" ? "Mikrofonga ruxsat bering." : e.message || "Jonli suhbatni boshlab bo'lmadi.", 4000);
     show("home");
   }
 }
@@ -760,6 +853,8 @@ function speakBrowser(text, lang = "en") {
 // ---------------- Tugatish ----------------
 function stopAll() {
   clearInterval(state.timer);
+  state.live?.stop();
+  state.live = null;
   cancelRecording();
   try { audio.source?.stop(); } catch {}
   try { window.speechSynthesis?.cancel(); } catch {}
