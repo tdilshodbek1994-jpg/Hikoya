@@ -2822,7 +2822,9 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
 const GR_ORDER = ["gr-tobe", "gr-this", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-frequency", "gr-continuous", "gr-past", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-future", "gr-compare", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-relative", "gr-reported", "gr-passive", "gr-phrasal", "gr-tags", "gr-perfcont", "gr-wish"];
-const grRank = (l) => (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
+// Avval daraja guruhi (A1–A2 → B1 → B2), guruh ichida — GR_ORDER tartibi
+const grGroup = (lv) => (/B2/.test(lv || "") ? 2 : /A2-B1|^B1$/.test(lv || "") ? 1 : 0);
+const grRank = (l) => grGroup(l.level) * 100 + (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
 LESSONS.sort((a, b) => ORDER.indexOf(a.category) - ORDER.indexOf(b.category) || partRank(a) - partRank(b) || (a.category === "Grammatika gapirib" ? grRank(a) - grRank(b) : 0));
 // Kurs darslarini tartib raqami bilan nomlaymiz
 for (const cat of ["IELTS kursi", "CEFR kursi", "Grammatika gapirib"]) {

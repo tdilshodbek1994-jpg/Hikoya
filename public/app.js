@@ -1810,7 +1810,8 @@ function renderLessons() {
   }
   const done = state.progress?.lessons || {};
   const partOf = (l) => (l.id.match(/^ielts-p(\d)/) || [])[1];
-  const PART_NAMES = { 1: "Part 1 — qisqa savollar", 2: "Part 2 — kartochka (monolog)", 3: "Part 3 — muhokama" };
+  const PART_NAMES = { 1: "Part 1 — qisqa savollar", 2: "Part 2 — kartochka (monolog)", 3: "Part 3 — muhokama",
+    "gr-beg": "🌱 A1–A2 — boshlang'ich", "gr-mid": "🌿 B1 — o'rta", "gr-adv": "🌳 B2 — yuqori" };
   let lastCat = null;
   let lastPart = null;
   const canFold = !state.filter.q && !state.filter.cat;
@@ -1946,10 +1947,16 @@ function renderLessons() {
       }
     }
     if (canFold && folded.has(l.category)) continue;
-    const part = l.category === "IELTS kursi" ? partOf(l) : null;
+    const part = l.category === "IELTS kursi" ? partOf(l) : l.category === "Grammatika gapirib" && !q ? "gr-" + mixLevelOf(l.level) : null;
     if (part && part !== lastPart) {
       lastPart = part;
-      list.append(el("div", "part-title", PART_NAMES[part]));
+      // Grammatika daraja guruhi: nechta dars va nechtasi o'tilgan
+      let extra = "";
+      if (String(part).startsWith("gr-")) {
+        const g = state.lessons.filter((x) => x.category === "Grammatika gapirib" && "gr-" + mixLevelOf(x.level) === part);
+        extra = ` · ${g.filter((x) => state.progress?.lessons?.[x.id]).length}/${g.length}`;
+      }
+      list.append(el("div", "part-title", PART_NAMES[part] + extra));
     }
     const btn = lessonButton(l);
     const hit = hits.get(l.id);
