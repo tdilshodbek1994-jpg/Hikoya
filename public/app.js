@@ -4730,7 +4730,13 @@ function showResult() {
   // ➡️ Kurs ichidagi keyingi dars (IELTS/CEFR kursi, grammatika)
   const course = state.lessons.filter((x) => x.category === lesson.category);
   const idx = course.findIndex((x) => x.id === lesson.id);
-  const nxt = /kursi$|Grammatika/.test(lesson.category || "") && idx >= 0 ? course[idx + 1] : null;
+  let nxt = /kursi$|Grammatika/.test(lesson.category || "") && idx >= 0 ? course[idx + 1] : null;
+  // 🏠 Mavzuli bo'limlarda (Kundalik hayot, Sayohat, Bolalar ...) — shu bo'limdagi hali o'tilmagan keyingi dars
+  if (!nxt && idx >= 0 && !lesson.liveOnly && !/Imtihon|Erkin/.test(lesson.category || "")) {
+    const done = state.progress?.lessons || {};
+    const rest = [...course.slice(idx + 1), ...course.slice(0, idx)].filter((x) => !x.liveOnly);
+    nxt = rest.find((x) => !done[x.id]) || null;
+  }
   state.nextAfter = nxt || null;
   $("nextBtn").hidden = !nxt;
   if (nxt) $("nextBtn").textContent = `➡️ Keyingi dars: ${nxt.emoji} ${nxt.title.replace(/^\d+\.\s*/, "")}`;
