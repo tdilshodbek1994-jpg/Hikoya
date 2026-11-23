@@ -871,3 +871,7 @@ body.dark .pill.warn { color: #fbbf24; }
 .kid-star b { font-size: 96px; line-height: 1; filter: drop-shadow(0 6px 16px rgba(245, 158, 11, 0.5)); }
 .kid-star span { margin-top: 6px; font-size: 22px; font-weight: 800; color: #f59e0b; text-shadow: 0 2px 0 rgba(0, 0, 0, 0.08); }
 @keyframes kidStar { 0% { transform: translate(-50%, -50%) scale(0.3) rotate(-20deg); opacity: 0; } 25% { transform: translate(-50%, -50%) scale(1.15) rotate(8deg); opacity: 1; } 70% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -80%) scale(0.8); opacity: 0; } }
+
+/* 🧒 Bolalar natijasi: katta yulduzlar, ball va daraja ixcham */
+#result.kids #resultSub { font-size: 34px; letter-spacing: 4px; color: #f59e0b; }
+#result.kids .rep-level, #result.kids .rep-cmp, #result.kids .speak-stats span:nth-child(3) { display: none; }

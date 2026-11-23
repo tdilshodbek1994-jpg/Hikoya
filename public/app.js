@@ -2754,7 +2754,8 @@ function renderReport(r, score) {
   // Sarlavha va maskot AI baliga qarab
   const sc = r?.score ?? score;
   if (sc != null && !state.lesson?.liveOnly) {
-    $("resultTitle").textContent = sc >= 85 ? "Ajoyib! 🎉" : sc >= 65 ? "Barakalla! 👏" : sc >= 40 ? "Yaxshi harakat! 💪" : "Boshlanishi yomon emas! 🌱";
+    if (state.lesson?.category !== "Bolalar uchun") // bolalarda yulduzli sarlavha qoladi
+      $("resultTitle").textContent = sc >= 85 ? "Ajoyib! 🎉" : sc >= 65 ? "Barakalla! 👏" : sc >= 40 ? "Yaxshi harakat! 💪" : "Boshlanishi yomon emas! 🌱";
     resultMascot.setMood(sc >= 65 ? "happy" : "neutral");
   }
   if (sc >= 80) {
@@ -2933,6 +2934,12 @@ function showResult() {
   if (nxt) $("nextBtn").textContent = `➡️ Keyingi dars: ${nxt.emoji} ${nxt.title.replace(/^\d+\.\s*/, "")}`;
   // Erkin suhbatda iboralar ro'yxati ma'nosiz - yashiramiz
   ul.hidden = Boolean(lesson.liveOnly);
+  // 🧒 Bolalar: ball o'rniga yig'ilgan yulduzlar
+  $("result").classList.toggle("kids", lesson.category === "Bolalar uchun");
+  if (lesson.category === "Bolalar uchun") {
+    $("resultTitle").textContent = k ? `${k} ta yulduz yig'ding! 🎉` : "Yaxshi urinish! 💪";
+    $("resultSub").textContent = "⭐".repeat(k) + "☆".repeat(Math.max(0, n - k));
+  }
   $("againBtn").textContent = lesson.liveOnly ? "📞 Yana gaplashish" : state.lessonMode === "live" ? "📞 Yana qo'ng'iroq qilish" : "Qaytadan mashq qilish";
   if (lesson.liveOnly) {
     $("resultTitle").textContent = "Ajoyib suhbat bo'ldi! 🎉";
