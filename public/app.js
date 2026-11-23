@@ -335,16 +335,29 @@ function openSheet(lesson) {
   state.pendingLesson = lesson;
   $("sheetEmoji").textContent = lesson.emoji;
   $("sheetTitle").textContent = lesson.title;
+  // Daraja, iboralar soni va oldingi natija
+  const meta = $("sheetMeta");
+  meta.innerHTML = "";
+  meta.append(el("span", "pill", `📊 ${lesson.level}`), el("span", "pill", `🗂️ ${lesson.phrases.length} ta ibora`), el("span", "pill", `⏱️ ${state.sessionMinutes} daq`));
+  const pr = state.progress?.lessons?.[lesson.id];
+  if (pr) meta.append(el("span", "pill ok", `✅ ${pr.best} ball · ${pr.count} marta`));
   const ul = $("sheetPhrases");
   ul.innerHTML = "";
-  for (const p of lesson.phrases.slice(0, 3)) {
-    const li = document.createElement("li");
-    li.textContent = p.en;
-    const s = document.createElement("span");
-    s.textContent = p.uz;
-    li.appendChild(s);
-    ul.appendChild(li);
-  }
+  const render = (all) => {
+    ul.innerHTML = "";
+    for (const p of all ? lesson.phrases : lesson.phrases.slice(0, 3)) {
+      const li = el("li", "", p.en);
+      li.append(el("span", "", p.uz));
+      li.addEventListener("click", () => speakBrowser(p.en.replace(/\.\.\./g, "something"), "en"));
+      ul.append(li);
+    }
+    if (!all && lesson.phrases.length > 3) {
+      const more = el("li", "more", `＋ Yana ${lesson.phrases.length - 3} ta iborani ko'rish`);
+      more.addEventListener("click", () => render(true));
+      ul.append(more);
+    }
+  };
+  render(false);
   $("startSheet").hidden = false;
 }
 

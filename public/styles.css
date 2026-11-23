@@ -334,3 +334,13 @@ body.dark .listen-btn { color: #a5b4fc; background: rgba(165, 180, 252, 0.14); }
 .part-title { font-size: 12.5px; font-weight: 700; color: var(--primary); margin: 4px 6px -4px; text-transform: uppercase; letter-spacing: 0.4px; }
 body.dark .part-title { color: #a5b4fc; }
 #lessonList { scroll-margin-top: calc(70px + var(--safe-t)); }
+
+/* ---------- Dars oynasi ---------- */
+.sheet-meta { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 8px; }
+.pill { font-size: 12.5px; font-weight: 600; padding: 5px 10px; border-radius: 99px; background: var(--bg); color: var(--muted); }
+.pill.ok { color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, transparent); }
+.sheet-phrases li { cursor: pointer; position: relative; padding-right: 30px; }
+.sheet-phrases li:not(.more)::after { content: "🔊"; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 13px; opacity: 0.6; }
+.sheet-phrases li.more { text-align: center; font-weight: 700; color: var(--primary); padding-right: 10px; }
+body.dark .sheet-phrases li.more { color: #a5b4fc; }
+.sheet-card { max-height: 92vh; overflow-y: auto; }
