@@ -3039,6 +3039,39 @@ function renderReport(r, score) {
     d.append(sm, ruleBody(state.lesson.rule));
     box.append(d);
   }
+  // 📝 IELTS Part 2: namunaviy javob (Band 7)
+  if (state.lesson?.cue) {
+    const sb = el("button", "btn ghost wide sample-btn", "📝 Namunaviy javob (Band 7) — solishtirib ko'ring");
+    const out = el("div", "sample-box");
+    out.hidden = true;
+    sb.addEventListener("click", async () => {
+      haptic();
+      if (!out.hidden) return (out.hidden = true);
+      out.hidden = false;
+      if (out.dataset.ok) return;
+      out.innerHTML = '<div class="rep-loading"><span class="spin"></span>Namuna tayyorlanmoqda...</div>';
+      try {
+        const d = await api("api/sample", { json: { lessonId: state.lesson.id } });
+        out.innerHTML = "";
+        out.dataset.ok = "1";
+        for (const para of d.answer.split(/\n+/)) out.append(el("p", "", para));
+        if (d.phrases?.length) {
+          out.append(el("b", "", "💬 Foydali iboralar:"));
+          const ul = el("ul", "rep-list");
+          for (const ph of d.phrases) {
+            const li = el("li", "");
+            li.append(el("b", "", ph.en), el("span", "muted", " — " + ph.uz));
+            ul.append(li);
+          }
+          out.append(ul);
+        }
+      } catch (e) {
+        out.innerHTML = "";
+        out.append(el("div", "muted", e.message));
+      }
+    });
+    box.append(sb, out);
+  }
   section("💡 Keyingi safar", r.tips_uz, (t) => el("li", "", t));
   section("📚 Yangi so'zlar", r.new_words, (w) => {
     const li = el("li", "rep-word");

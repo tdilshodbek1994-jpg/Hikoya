@@ -937,3 +937,10 @@ body:has(#lesson.active) .toast { top: max(40vh, calc(290px + var(--safe-t))); }
 
 .rep-ml { display: inline-block; margin-top: 3px; font-size: 12.5px; font-weight: 700; color: #0f766e; background: color-mix(in srgb, #14b8a6 14%, transparent); padding: 2px 8px; border-radius: 99px; }
 body.dark .rep-ml { color: #5eead4; }
+
+/* 📝 Namunaviy javob */
+.sample-btn { margin-top: 12px; font-size: 14px; }
+.sample-box { margin-top: 8px; padding: 10px 12px; border-radius: 14px; background: var(--bg); font-size: 14px; line-height: 1.55; -webkit-user-select: text; user-select: text; }
+.sample-box p { margin: 0 0 8px; }
+.sample-box > b { display: block; margin: 6px 0 4px; font-size: 13.5px; }
+.sample-box .rep-list li { background: var(--card); padding: 6px 10px; }

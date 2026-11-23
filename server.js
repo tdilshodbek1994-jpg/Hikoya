@@ -10,7 +10,7 @@ import { LESSONS, getLesson, publicLesson } from "./src/lessons.js";
 import { verifyInitData } from "./src/telegram.js";
 import { WebSocketServer } from "ws";
 import { liveEnabled, runLive } from "./src/live.js";
-import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies, ttsStats } from "./src/ai.js";
+import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies, sampleAnswer, ttsStats } from "./src/ai.js";
 import { recordSession, touchDay, summary, adminStats, startedToday, countStart, refundStart, startsTodayTotal, deleteUser, markFixed, setRemind, remindTargets, markReminded } from "./src/store.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -367,6 +367,20 @@ app.post("/api/hint", express.json(), auth, async (req, res) => {
     s.sayable ||= new Set();
     for (const h of hints || []) if (h?.en) s.sayable.add(String(h.en).slice(0, 200));
     res.json({ hints });
+  } catch (err) {
+    sendError(res, err);
+  }
+});
+
+// 📝 IELTS Part 2 namunaviy javobi (faqat kartochkali darslar; natija keshlanadi)
+app.post("/api/sample", express.json(), auth, async (req, res) => {
+  const lesson = getLesson(String(req.body?.lessonId || ""));
+  const cue = lesson && publicLesson(lesson).cue;
+  if (!cue) return res.status(400).json({ error: "Bu dars uchun namunaviy javob yo'q" });
+  try {
+    const out = await sampleAnswer(lesson.id, cue);
+    if (!out) return res.status(503).json({ error: "Namuna tayyorlab bo'lmadi" });
+    res.json(out);
   } catch (err) {
     sendError(res, err);
   }

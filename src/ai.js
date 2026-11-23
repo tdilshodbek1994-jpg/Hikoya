@@ -489,6 +489,33 @@ The student is a CHILD (about 7-12 years old). Write every Uzbek text for a chil
 }
 
 // ---- 💡 Javob namunalari (o'quvchi nima deyishni bilmasa) ----
+// 📝 IELTS Part 2: namunaviy javob (Band 7). Har bir kartochka uchun bir marta yaratilib, hammaga keshdan beriladi
+const sampleCache = new Map();
+export async function sampleAnswer(lessonId, cue) {
+  if (sampleCache.has(lessonId)) return sampleCache.get(lessonId);
+  const params = {
+    model: CLAUDE_MODEL,
+    max_tokens: 2000,
+    output_config: { effort: "low" },
+    system: `You are an IELTS Speaking expert. Write a natural Band 7 sample answer for an IELTS Part 2 cue card, as a student would SAY it (spoken style, 170-220 words, first person, covers every bullet point, uses a few good linking phrases and natural vocabulary, simple paragraphs). Then list 4 useful phrases from it with Uzbek translations. Answer with ONLY JSON: {"answer":"...","phrases":[{"en":"...","uz":"..."}]}`,
+    messages: [{ role: "user", content: `${cue.title}\nYou should say:\n${cue.points.map((p) => "- " + p).join("\n")}` }],
+  };
+  if (SUPPORTS_FALLBACKS) {
+    params.betas = ["server-side-fallback-2026-07-01"];
+    params.fallbacks = "default";
+  }
+  const response = await anthropic.beta.messages.create(params);
+  if (response.stop_reason === "refusal") return null;
+  const data = parseJson(response.content.filter((b) => b.type === "text").map((b) => b.text).join(""));
+  if (!data?.answer) return null;
+  const out = {
+    answer: String(data.answer).slice(0, 2500),
+    phrases: (Array.isArray(data.phrases) ? data.phrases : []).filter((x) => x?.en).slice(0, 5).map((x) => ({ en: String(x.en).slice(0, 150), uz: String(x.uz || "").slice(0, 150) })),
+  };
+  sampleCache.set(lessonId, out);
+  return out;
+}
+
 export async function suggestReplies(lesson, lastSado, used) {
   const remaining = lesson.phrases.filter((_, i) => !used.has(i)).map((p) => p.en);
   const params = {
