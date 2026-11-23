@@ -808,6 +808,27 @@ function renderVocab() {
   // 🏆 Hamma xato tuzatilgan bo'lsa — tabrik, takrorlash tugmasi "mustahkamlash"ga aylanadi
   const allFixed = state.vocabTab === "fix" && items.length > 0 && items.every((w) => w.fixed);
   $("reviewBtn").textContent = allFixed ? "💪 Tuzatilganlarni mustahkamlash" : "🔁 Xatolarim ustida Sado bilan ishlash";
+  // 🎯 Eng ko'p uchraydigan grammatika mavzusi (tuzatilmagan xatolar bo'yicha) — mos darsga havola
+  if (state.vocabTab === "fix" && !vq) {
+    const cnt = new Map();
+    for (const w of items.filter((x) => !x.fixed)) {
+      const gl = grammarLessonFor([{ wrong: w.wrong, right: w.en }]);
+      if (gl) cnt.set(gl, (cnt.get(gl) || 0) + 1);
+    }
+    const top = [...cnt].sort((a, b) => b[1] - a[1])[0];
+    if (top) {
+      const [gl, n] = top;
+      const li = el("li", "fix-focus");
+      li.append(el("b", "", `🎯 ${n >= 2 ? "Ko'p xato" : "Tavsiya"}: ${gl.title.replace(/^\d+\.\s*/, "").replace(/\s*\([^)]*\)$/, "")}${n >= 2 ? ` — ${n} ta` : ""}`), el("span", "", "Shu grammatika darsini o'tsangiz, bu xatolar kamayadi ›"));
+      li.addEventListener("click", () => {
+        haptic();
+        $("vocabSheet").hidden = true;
+        stopVocabPlay();
+        openSheet(gl);
+      });
+      ul.append(li);
+    }
+  }
   if (allFixed) ul.append(el("li", "all-fixed", `🏆 Barcha ${items.length} ta xatoingiz tuzatilgan! Yangi darslarda yangi xatolar chiqsa, shu yerda paydo bo'ladi.`));
   if (!items.length) ul.append(el("li", "muted", vq && total ? `«${vq}» topilmadi` : state.vocabTab === "fix" ? "Hozircha xato yo'q 👏" : "Hozircha so'z yo'q"));
   for (const w of items) {
