@@ -666,25 +666,8 @@ $("searchInput").addEventListener("input", (e) => {
   }, 150);
 });
 
-// 🗣 Jonli suhbat ovozi: ayol yoki erkak
+// 🗣 Jonli suhbat ovozi: ayol yoki erkak (Sozlamalarda tanlanadi)
 state.voice = localStorage.getItem("sado-voice") || "f";
-function renderVoicePick() {
-  const box = $("voicePick");
-  box.innerHTML = "";
-  box.append(el("span", "vp-label", "Sado ovozi:"));
-  for (const [v, label] of [["f", "👩 Ayol"], ["m", "👨 Erkak"]]) {
-    const b = el("span", "vp" + (state.voice === v ? " on" : ""), label);
-    b.addEventListener("click", (e) => {
-      e.stopPropagation(); // bannerni bosgandek qo'ng'iroq boshlanmasin
-      haptic();
-      state.voice = v;
-      localStorage.setItem("sado-voice", v);
-      renderVoicePick();
-    });
-    box.append(b);
-  }
-}
-renderVoicePick();
 
 // 🗂 Erkin suhbat mavzusi (ixtiyoriy)
 const TOPICS = [["", "🎲 Istalgan"], ["football", "⚽ Futbol"], ["movies", "🎬 Kino"], ["games", "🎮 O'yinlar"], ["future", "🎓 Kelajak"], ["travel", "✈️ Sayohat"], ["music", "🎵 Musiqa"], ["food", "🍲 Taomlar"], ["ielts", "📘 IELTS"]];
@@ -705,6 +688,47 @@ function renderTopicPick() {
   }
 }
 renderTopicPick();
+
+// ⚙️ Sozlamalar: barcha shaxsiy sozlamalar bitta joyda
+function renderSettings() {
+  const rows = [
+    ["🗣 Sado ovozi (jonli suhbat)", [["f", "👩 Ayol"], ["m", "👨 Erkak"]], () => state.voice, (v) => { state.voice = v; localStorage.setItem("sado-voice", v); }],
+    ["🐇 Gapirish tezligi", [["0", "🐇 Oddiy"], ["1", "🐢 Sekin"]], () => (state.slow ? "1" : "0"), (v) => { state.slow = v === "1"; localStorage.setItem("sado-slow", v); }],
+    ["🇺🇿 O'zbekcha tarjimani aytish", [["1", "Ha"], ["0", "Yo'q"]], () => (state.tr ? "1" : "0"), (v) => { state.tr = v === "1"; localStorage.setItem("sado-tr", v); }],
+    ["🎯 Kunlik maqsad", [["1", "1 dars"], ["2", "2 dars"], ["3", "3 dars"]], () => String(state.goal), (v) => { state.goal = Number(v); localStorage.setItem("sado-goal", v); renderGoal(); }],
+    ["Aa Matn o'lchami", [["0", "Oddiy"], ["1", "Katta"], ["2", "Juda katta"]], () => String((Number(localStorage.getItem("sado-font")) || 0) % 3), (v) => { localStorage.setItem("sado-font", v); applyFont(); }],
+  ];
+  const box = $("setRows");
+  box.innerHTML = "";
+  for (const [title, opts, get, set] of rows) {
+    const r = el("div", "set-row");
+    r.append(el("div", "set-title", title));
+    const seg = el("div", "seg");
+    for (const [v, label] of opts) {
+      const b = el("button", "seg-b" + (get() === v ? " on" : ""), label);
+      b.addEventListener("click", () => {
+        haptic();
+        set(v);
+        renderSettings();
+      });
+      seg.append(b);
+    }
+    r.append(seg);
+    box.append(r);
+  }
+}
+$("setBtn").addEventListener("click", () => {
+  haptic();
+  renderSettings();
+  $("setSheet").hidden = false;
+});
+$("setClose").addEventListener("click", () => {
+  $("setSheet").hidden = true;
+  toast("✅ Sozlamalar saqlandi", 1500);
+});
+$("setSheet").addEventListener("click", (e) => {
+  if (e.target.id === "setSheet") $("setSheet").hidden = true;
+});
 
 $("freeHero").addEventListener("click", () => {
   const free = state.lessons.find((l) => l.liveOnly);

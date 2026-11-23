@@ -567,3 +567,13 @@ body.dark .onb-card { box-shadow: 0 0 0 1px var(--line), 0 20px 50px rgba(0,0,0,
 .tp.on { background: #fff; color: #4f46e5; }
 .w-ok { color: var(--ok); }
 .w-miss { color: var(--danger); text-decoration: underline wavy; text-underline-offset: 4px; }
+
+/* ---------- Sozlamalar ---------- */
+.set-card { text-align: left; }
+.set-card h3 { text-align: center; }
+.set-row { margin-top: 14px; }
+.set-title { font-weight: 700; font-size: 14.5px; margin-bottom: 6px; }
+.seg { display: flex; gap: 4px; background: var(--bg); border-radius: 14px; padding: 4px; }
+.seg-b { flex: 1; padding: 9px 4px; border-radius: 10px; font-size: 13.5px; font-weight: 700; color: var(--muted); }
+.seg-b.on { background: var(--card); color: var(--primary); box-shadow: var(--shadow); }
+body.dark .seg-b.on { color: #a5b4fc; }
