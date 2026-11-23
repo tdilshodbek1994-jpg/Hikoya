@@ -1260,3 +1260,12 @@ body.dark .acc-tag.hi { color: #4ade80; } body.dark .acc-tag.mid { color: #fbbf2
 .qz-why.qz-good { border-left-color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, var(--bg)); }
 .qz-again + .qz-full { margin-left: 8px; }
 .qz-full { color: var(--primary); }
+/* 📖 Qoidalar ma'lumotnomasi */
+.rules-search { display: block; width: 100%; margin: 8px 0; }
+.rules-list { display: grid; gap: 6px; }
+.rules-list .part-title { margin: 6px 2px 0; }
+.rule-item { background: var(--bg); border-radius: 12px; padding: 0 12px; }
+.rule-item summary { cursor: pointer; font-weight: 700; font-size: 14.5px; padding: 10px 0; }
+.rule-item[open] { padding-bottom: 10px; }
+.rule-item .rule-body { font-size: 13.5px; line-height: 1.5; }
+.rule-item .rep-grlink { margin-top: 8px; }

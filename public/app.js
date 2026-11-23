@@ -456,6 +456,44 @@ function keepScroll(fn) {
   window.scrollTo(0, y);
 }
 
+// 📖 Barcha grammatika qoidalari — bitta ma'lumotnoma (qidiruv, daraja bo'yicha)
+function openRules() {
+  state.speedRun = (state.speedRun || 0) + 1;
+  $("mixSheet").hidden = false;
+  $("mixLevels").innerHTML = "";
+  const box = $("mixQuiz");
+  box.innerHTML = "";
+  const gr = state.lessons.filter((l) => l.category === "Grammatika gapirib" && l.rule);
+  box.append(el("b", "", `📖 Grammatika qoidalari · ${gr.length} ta mavzu`));
+  const q = el("input", "vocab-search rules-search");
+  q.type = "search";
+  q.placeholder = "🔍 Qidirish: past, have, artikl…";
+  const list = el("div", "rules-list");
+  const render = () => {
+    list.innerHTML = "";
+    const t = q.value.trim().toLowerCase();
+    let last = "";
+    for (const l of gr) {
+      if (t && !(l.title + " " + l.rule).toLowerCase().includes(t)) continue;
+      const lv = mixLevelOf(l.level);
+      if (lv !== last) { last = lv; list.append(el("div", "part-title", { beg: "🌱 A1–A2", mid: "🌿 B1", adv: "🌳 B2" }[lv])); }
+      const d = document.createElement("details");
+      d.className = "rule-item";
+      const sm = document.createElement("summary");
+      sm.textContent = `${l.emoji} ${l.title.replace(/^\d+\.\s*/, "")}`;
+      const go = el("button", "rep-grlink", "🧩 Mashq ›");
+      go.addEventListener("click", () => { haptic(); $("mixSheet").hidden = true; openSheet(l); setTimeout(() => $("sheetQuiz").scrollIntoView({ behavior: "smooth", block: "start" }), 350); });
+      d.append(sm, ruleBody(l.rule), go);
+      if (t) d.open = true;
+      list.append(d);
+    }
+    if (!list.children.length) list.append(el("p", "qz-n", "Hech narsa topilmadi"));
+  };
+  q.addEventListener("input", render);
+  box.append(q, list);
+  render();
+}
+
 // 📊 Daraja testi: 20 savol (7 boshlang'ich, 7 o'rta, 6 yuqori) → taxminiy grammatika darajasi
 function openLevelTest() {
   state.speedRun = (state.speedRun || 0) + 1;
@@ -2026,7 +2064,10 @@ function renderLessons() {
           const lvb = el("button", "", "📊 Daraja testi");
           lvb.append(el("small", "", lvSaved ? `🎓 ~${lvSaved}` : "20 savol"));
           lvb.addEventListener("click", () => { haptic(); openLevelTest(); });
-          btns.append(mix, sp, lvb, go);
+          const rb = el("button", "", "📖 Qoidalar");
+          rb.append(el("small", "", `${gr.length} ta mavzu`));
+          rb.addEventListener("click", () => { haptic(); openRules(); });
+          btns.append(mix, sp, lvb, go, rb);
           const nMiss = quizMisses().length;
           if (nMiss) {
             const mb = el("button", "gr-miss", "🔁 Xatolarim");
