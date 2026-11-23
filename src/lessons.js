@@ -2278,6 +2278,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-can",
+    category: "Grammatika gapirib",
+    title: "Can / can't — qila olaman",
+    emoji: "💪",
+    level: "A1",
+    added: "2026-11-27",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice for beginners focused on can / can't + base verb for ability and permission: I can swim. She can't drive. Can you cook? — Yes, I can. / No, I can't. Can I open the window? Never add -s or to after can (not She cans, not I can to swim). Talk about sports, languages, cooking and skills in the family. Keep sentences short and simple. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Can you swim? What other sports can you do?",
+    openerUz: "Suza olasizmi? Yana qaysi sport turlarini qila olasiz?",
+    phrases: [
+      { en: "I can swim, but I can't dive.", uz: "Men suza olaman, lekin sho'ng'iy olmayman." },
+      { en: "Can you speak Russian? — Yes, I can.", uz: "Ruscha gapira olasizmi? — Ha, olaman." },
+      { en: "My sister can play the piano.", uz: "Singlim pianino chala oladi." },
+      { en: "He can't drive a car.", uz: "U mashina hayday olmaydi." },
+      { en: "Can I open the window?", uz: "Derazani ochsam bo'ladimi?" },
+      { en: "We can meet tomorrow.", uz: "Ertaga uchrashishimiz mumkin." },
+    ],
+  },
+  {
+    id: "gr-inversion",
+    category: "Grammatika gapirib",
+    title: "Inversiya: Never have I…, Not only…",
+    emoji: "🔄",
+    level: "B2-C1",
+    added: "2026-11-27",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice for advanced learners focused on inversion after negative and limiting adverbials for emphasis: Never have I seen such a beautiful place. Rarely do we eat out. Not only did she win, but she also broke the record. No sooner had I arrived than it started to rain. Hardly had we sat down when the phone rang. Only then did I understand. Explain that the auxiliary comes before the subject, like in a question. Talk about amazing experiences, surprises and strong opinions, useful for IELTS speaking and writing. Have a natural conversation that makes the student use this grammar a lot. Ask questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "What is the most beautiful place you have ever seen? Try to start with: Never have I…",
+    openerUz: "Siz ko'rgan eng go'zal joy qaysi? «Never have I…» bilan boshlab ko'ring.",
+    phrases: [
+      { en: "Never have I seen such a beautiful place.", uz: "Hech qachon bunday go'zal joyni ko'rmaganman." },
+      { en: "Rarely do we eat out these days.", uz: "Hozir kamdan-kam tashqarida ovqatlanamiz." },
+      { en: "Not only did she win, but she also broke the record.", uz: "U nafaqat g'olib bo'ldi, balki rekord ham o'rnatdi." },
+      { en: "No sooner had I arrived than it started to rain.", uz: "Yetib kelishim bilan yomg'ir yog'a boshladi." },
+      { en: "Hardly had we sat down when the phone rang.", uz: "Endigina o'tirgan edik, telefon jiringladi." },
+      { en: "Only then did I understand the problem.", uz: "Faqat o'shandagina muammoni tushundim." },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -3181,7 +3221,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-mine", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adverbs", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-ppvsps", "gr-pastperf", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-tags", "gr-sotoo", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused", "gr-unless"];
+const GR_ORDER = ["gr-tobe", "gr-this", "gr-imperative", "gr-havegot", "gr-can", "gr-simple", "gr-there", "gr-pronouns", "gr-possessive", "gr-mine", "gr-frequency", "gr-continuous", "gr-past", "gr-irregular", "gr-pastcont", "gr-questions", "gr-quantity", "gr-indefinite", "gr-articles", "gr-prepositions", "gr-place", "gr-future", "gr-compare", "gr-adverbs", "gr-tooenough", "gr-modals", "gr-usedto", "gr-perfect", "gr-ppvsps", "gr-pastperf", "gr-gerund", "gr-conditional", "gr-relative", "gr-makedo", "gr-edking", "gr-reported", "gr-indirect", "gr-passive", "gr-phrasal", "gr-tags", "gr-sotoo", "gr-perfcont", "gr-wish", "gr-modalperf", "gr-linking", "gr-causative", "gr-futureadv", "gr-beused", "gr-unless", "gr-inversion"];
 // Avval daraja guruhi (A1–A2 → B1 → B2), guruh ichida — GR_ORDER tartibi
 const grGroup = (lv) => (/B2/.test(lv || "") ? 2 : /A2-B1|^B1$/.test(lv || "") ? 1 : 0);
 const grRank = (l) => grGroup(l.level) * 100 + (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
@@ -3226,6 +3266,8 @@ const QUIZ = {
   "gr-unless": ["I won't go ___ you come with me.|unless|if|in case", "Take an umbrella ___ it rains.|in case|unless|as long as", "You can borrow my car ___ you drive carefully.|as long as|unless|in case", "___ it's expensive, I'll buy it.|Even if|Unless|In case", "Unless we ___, we'll miss the train.|hurry|will hurry|hurried", "I'll take some snacks in case we ___ hungry.|get|will get|got", "You can't come in ___ you have a ticket.|unless|as long as|in case", "We'll go to the beach ___ the weather is good.|as long as|unless|in case not", "Write down my number ___ you forget it.|in case|unless|as long as", "I'll be there by six ___ the traffic is bad.|unless|as long as|in case of", "Unless you ___ harder, you won't pass.|study|will study|studied", "You'll be fine ___ you follow the instructions.|as long as|unless|in case"],
   "gr-pastperf": ["When I arrived, the film had already ___.|started|start|starting", "I had never ___ the sea before.|seen|saw|see", "She was tired because she ___ worked all day.|had|has|have", "By the time we got there, the shop ___ closed.|had|has|was", "___ you eaten before the meeting?|Had|Have|Did", "After he had ___, he went home.|finished|finish|finishing", "I couldn't get in because I ___ my keys.|had lost|have lost|lose", "They ___ already left when I called.|had|have|were", "He ___ never flown before that trip.|had|has|did", "The train had left before we ___ the station.|reached|had reached|reach", "She hadn't ___ breakfast, so she was hungry.|eaten|ate|eat", "I realised I ___ that man before.|had met|have met|meet"],
   "gr-sotoo": ["I like tea. — So ___ I.|do|am|like", "I can't swim. — Neither ___ I.|can|do|can't", "I'm tired. — So ___ I.|am|do|is", "I didn't go to the party. — Neither ___ I.|did|do|didn't", "I've been to Samarkand. — So ___ I.|have|am|did", "She loves music. — So ___ her brother.|does|do|is", "I don't eat meat. — ___ do I.|Neither|So|Either", "I was late yesterday. — So ___ I.|was|did|am", "I'll come tomorrow. — So ___ I.|will|do|am", "I haven't finished yet. — Neither ___ I.|have|did|do", "I like coffee. — Really? I ___.|don't|am not|didn't", "We can speak English. — So ___ they.|can|do|are"],
+  "gr-can": ["I can ___ very fast.|swim|swims|to swim", "She ___ drive a car. She's only ten.|can't|cans|don't can", "___ you speak Russian?|Can|Do|Are", "Can you cook? — Yes, I ___.|can|do|cook", "My brother can ___ the guitar.|play|plays|playing", "___ I open the window, please?|Can|Do|Am", "He can't ___ English well.|speak|speaks|to speak", "Can she ride a bike? — No, she ___.|can't|doesn't|isn't", "We ___ meet tomorrow at five.|can|cans|are can", "Birds can ___.|fly|flies|flying", "I ___ hear you. Speak louder, please.|can't|don't can|not can", "Can they ___ here today?|come|came|coming"],
+  "gr-inversion": ["Never ___ I seen such a beautiful place.|have|I have|did", "Rarely ___ we eat out these days.|do|we|are", "Not only ___ she win, but she also broke the record.|did|she|was", "No sooner had I arrived ___ it started to rain.|than|when|then", "Hardly had we sat down ___ the phone rang.|when|than|then", "Only then ___ I understand the problem.|did|I|have", "Seldom ___ he complain about anything.|does|he|is", "Never before ___ the city been so crowded.|had|did|was", "Not until I got home ___ I notice the mistake.|did|I|had", "Little ___ she know what was about to happen.|did|she|was", "Under no circumstances ___ you open this door.|should|you|you should", "Not only ___ he clever, but he's also kind.|is|he|does"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink", "My sister ___ English very well.|speaks|speak|speaking", "They ___ live in Tashkent.|don't|doesn't|aren't", "Where ___ he work?|does|do|is", "The shop ___ at nine o'clock.|opens|open|opening", "Water ___ at 100 degrees.|boils|boil|is boil", "My friends ___ like rap music.|don't|doesn't|isn't", "___ your brother study at university?|Does|Do|Is", "He usually ___ his homework in the evening.|does|do|doing"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on", "I was born ___ 2008.|in|on|at", "We have a party ___ Friday evening.|on|in|at", "I usually sleep ___ night.|at|in|on", "The keys are ___ the table.|on|at|in", "The meeting is ___ 3 pm.|at|in|on", "I'll see you ___ the weekend.|at|in|on", "She lives ___ Samarkand.|in|at|on", "My birthday is ___ 5th March.|on|in|at"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do", "Listen! The baby ___ crying.|is|are|be", "We ___ waiting for the bus now.|are|is|am", "What ___ you doing?|are|do|is", "She isn't ___ TV at the moment.|watching|watch|watches", "I ___ working from home this week.|am|is|are", "Why ___ you laughing?|are|is|do", "They ___ playing football right now.|are|is|be", "Be quiet! Grandma ___ sleeping.|is|are|am"],
@@ -3276,6 +3318,8 @@ const KEYWORDS = {
   "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
 };
 const RULES = {
+  "gr-can": "can + fe'lning o'zi — qila olaman / mumkin: I can swim. She can drive.\nHamma shaxsda bir xil: ✗ She cans, ✗ He can drives, ✗ I can to swim.\nInkor: can't (cannot): He can't cook.\nSavol: Can you cook? — Yes, I can. / No, I can't. Ruxsat: Can I come in?",
+  "gr-inversion": "Inkor yoki cheklovchi so'z gap boshida kelsa — yordamchi fe'l egadan OLDIN (savoldagidek):\nNever have I seen… Rarely do we… Only then did I understand.\nNot only did she win, but she also… (✗ Not only she won)\nNo sooner had I arrived than… / Hardly had we sat down when…",
   "gr-pastperf": "Past perfect: had + 3-shakl — o'tmishdagi boshqa ishdan OLDIN bo'lgan ish.\nWhen I arrived, the film had already started. (avval film boshlandi, keyin men keldim)\nInkor: hadn't + 3-shakl. Savol: Had you eaten?\nKo'p ishlatiladi: already, just, never, before, after, by the time.",
   "gr-sotoo": "Tasdiq gapga qo'shilish: So + yordamchi fe'l + ega: I like tea. — So do I. I'm tired. — So am I.\nInkor gapga qo'shilish: Neither + yordamchi + ega: I can't swim. — Neither can I.\nYordamchi fe'l gapdagiga mos: am/is → am, can → can, did → did, have → have.\nOg'zaki: Me too. / Me neither. Qarshi fikr: I like coffee. — I don't.",
   "gr-mine": "Ot oldidan: my, your, his, her, our, their: This is my bag.\nOtsiz (kimniki?): mine, yours, his, hers, ours, theirs: It's mine. Is this yours?\nher's yoki your's deb yozilmaydi! (✗ It's her's) (✗ This is mine bag)\nSavol: Whose is this? — It's hers.",
