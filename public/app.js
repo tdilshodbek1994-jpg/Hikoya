@@ -1778,8 +1778,17 @@ $("shadowBtn").addEventListener("click", async () => {
       });
       const dots = el("div", "shadow-dots");
       list.forEach((_, j) => dots.append(el("i", j < i ? "done" : j === i ? "on" : "")));
+      // 🐢/🐇 Tezlik: keyingi ijrodan boshlab sekin yoki oddiy
+      const speed = el("button", "shadow-stop", state.slow ? "🐢 Sekin" : "🐇 Oddiy");
+      speed.addEventListener("click", () => {
+        haptic();
+        state.slow = !state.slow;
+        localStorage.setItem("sado-slow", state.slow ? "1" : "0");
+        speed.textContent = state.slow ? "🐢 Sekin" : "🐇 Oddiy";
+        if (typeof applySlow === "function") applySlow();
+      });
       const btns = el("div", "shadow-btns");
-      btns.append(stop, next);
+      btns.append(stop, speed, next);
       box.append(dots, el("div", "shadow-en", p.en), el("div", "shadow-uz", p.uz));
       const st = el("div", "shadow-st", "🔊 Tinglang...");
       const bar = el("div", "shadow-bar");
@@ -1808,7 +1817,7 @@ $("shadowBtn").addEventListener("click", async () => {
 
 $("cancelBtn").addEventListener("click", () => { stopShadow(); $("startSheet").hidden = true; });
 $("startSheet").addEventListener("click", (e) => {
-  if (e.target.id === "startSheet") $("startSheet").hidden = true;
+  if (e.target.id === "startSheet") $("startSheet").hidden = true, stopShadow(); // ovoz yopilgan oynada davom etmasin
 });
 $("startLiveBtn").addEventListener("click", () => { stopShadow(); startLesson(state.pendingLesson, "live"); });
 $("startTutorBtn").addEventListener("click", () => { stopShadow(); startLesson(state.pendingLesson, "tutor"); });
