@@ -923,3 +923,7 @@ body.dark .invite { color: #a5b4fc; }
 .badge small { overflow-wrap: normal; }
 @media (max-width: 360px) { .badge small { font-size: 9px; letter-spacing: -0.2px; } .badge { overflow: visible; } }
 .phrase-card.can-insert .phrase-en::after { content: "\00a0✍️"; }
+body:has(#lesson.active) .toast { top: max(40vh, calc(290px + var(--safe-t))); }
+/* Xabar paydo bo'lganda markazdan siljimasin (umumiy "fade" animatsiyasi transformni bekor qilardi) */
+.toast { animation: toastIn 0.2s ease; }
+@keyframes toastIn { from { opacity: 0; transform: translate(-50%, 6px); } to { opacity: 1; transform: translate(-50%, 0); } }
