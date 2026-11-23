@@ -870,6 +870,8 @@ function renderSettings() {
 $("setBtn").addEventListener("click", () => {
   haptic();
   renderSettings();
+  $("soundAsk").hidden = true;
+  $("soundTest").textContent = "🔊 Ovozni tekshirish";
   $("setSheet").hidden = false;
 });
 $("setClose").addEventListener("click", () => {
@@ -1405,6 +1407,52 @@ function nextUnused(from = 0) {
 
 // 🔊 Iborani to'g'ri talaffuzda eshitish (mikrofon vaqtincha to'xtaydi)
 const sayCache = new Map();
+// 🔊 Sozlamalarda ovozni sinash: Sado ovozi telefonda eshitilyaptimi?
+$("soundTest").addEventListener("click", async () => {
+  if (state.soundBusy) return;
+  state.soundBusy = true;
+  haptic();
+  const btn = $("soundTest");
+  const ask = $("soundAsk");
+  ask.hidden = true;
+  btn.textContent = "⏳ Sado gapirmoqda...";
+  const lesson = state.lessons.find((l) => !l.liveOnly && l.phrases?.some((p) => !p.en.includes("...")));
+  const text = lesson?.phrases.find((p) => !p.en.includes("..."))?.en || "Hello!";
+  try {
+    ensureCtx();
+    const part = state.voiceEnabled
+      ? await api(`api/say?text=${encodeURIComponent(text)}&slow=${state.slow ? 1 : 0}`, { method: "GET" }).catch(() => null)
+      : null;
+    if (part?.audio) await playMp3(part.audio, part.mime);
+    else await speakBrowser(text, "en");
+  } catch {}
+  mascot.setLevel(0);
+  btn.textContent = "🔊 Yana bir marta tekshirish";
+  state.soundBusy = false;
+  ask.innerHTML = "";
+  const yes = el("button", "chip-f", "✅ Eshitdim");
+  const no = el("button", "chip-f", "❌ Eshitilmadi");
+  yes.addEventListener("click", () => {
+    ask.hidden = true;
+    toast("👍 Ajoyib, ovoz ishlayapti!");
+  });
+  no.addEventListener("click", () => {
+    ask.innerHTML = "";
+    const ol = el("ol", "sound-tips");
+    for (const t of [
+      "Telefon ovozini baland qiling (yon tugma).",
+      "iPhone'da chap yondagi «ovozsiz» tugmasini o'chiring.",
+      "Bluetooth quloqchin ulangan bo'lsa, tekshiring.",
+      "Telegram'ni yangilang va ilovani yopib qayta oching.",
+      "Baribir eshitilmasa: darsda «Subtitrlar»ni yoqib, matndan o'qing.",
+    ])
+      ol.append(el("li", "", t));
+    ask.append(ol);
+  });
+  ask.append(el("span", "", "Sado ovozini eshitdingizmi?"), yes, no);
+  ask.hidden = false;
+});
+
 $("listenBtn").addEventListener("click", async () => {
   if (state.phase === "thinking" || state.phase === "speaking" || state.listenBusy) return;
   const p = state.lesson.phrases[state.phraseIdx];

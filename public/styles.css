@@ -681,3 +681,9 @@ body:has(#lesson.active) .toast { top: calc(34vh + var(--safe-t)); }
 .tiles:has(> [hidden]) > :not([hidden]) { grid-column: 1 / -1; } /* bitta plitka qolsa to'liq eni */
 
 .vocab-copy { margin-top: 10px; font-size: 14px; }
+
+/* 🔊 Ovozni tekshirish */
+.sound-test { margin: 4px 0 8px; }
+.sound-ask { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 14px; }
+.sound-ask > span { width: 100%; font-weight: 600; }
+.sound-tips { margin: 0; padding-left: 20px; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
