@@ -4029,6 +4029,8 @@ function startCuePrep() {
       if (n.value.trim() && !confirm("Qaydlaringiz andoza bilan almashtirilsinmi?")) return;
       n.value = pts.map((t, i) => `${i + 1}. ${t} — `).join("\n");
       n.rows = Math.max(3, pts.length);
+      n.style.height = "auto";
+      n.style.height = n.scrollHeight + 2 + "px"; // tor ekranda qatorlar bo'linsa ham hammasi ko'rinsin
       n.focus();
       n.setSelectionRange(n.value.indexOf("\n") > 0 ? n.value.indexOf("\n") : n.value.length, n.value.indexOf("\n") > 0 ? n.value.indexOf("\n") : n.value.length);
     });
