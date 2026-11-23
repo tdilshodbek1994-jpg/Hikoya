@@ -5012,17 +5012,29 @@ $("appVer").textContent = `Sado v${(document.querySelector('script[src^="app.js"
     const { build } = await r.json();
     if (build > mine && sessionStorage.getItem("sado-upd") !== String(build)) {
       sessionStorage.setItem("sado-upd", String(build)); // cheksiz qayta yuklanmasin
+      sessionStorage.setItem("sado-upd-from", String(mine));
       const u = new URL(location.href);
       u.searchParams.set("r", String(build)); // yangi manzil — eski kesh ishlatilmaydi
       location.replace(u.toString());
     }
   } catch {}
+  // ✅ Yangilanishdan keyin bir marta: o'quvchi nima bo'lganini bilsin
+  if (sessionStorage.getItem("sado-upd-manual")) {
+    sessionStorage.removeItem("sado-upd-manual");
+    setTimeout(() => toast(`✅ Eng so'nggi versiya: v${mine}`, 3000), 600);
+  }
+  const from = sessionStorage.getItem("sado-upd-from");
+  if (from && Number(sessionStorage.getItem("sado-upd")) === mine) {
+    sessionStorage.removeItem("sado-upd-from");
+    setTimeout(() => toast(`✅ Sado yangilandi (v${from} → v${mine})`, 3500), 600);
+  }
 })();
 $("appRefresh").addEventListener("click", () => {
   haptic();
   localStorage.removeItem("sado-lessons");
   toast("🔄 Yangilanmoqda...", 1500);
   // Manzilni o'zgartirib ochamiz — telefon keshidagi eski sahifa ishlatilmaydi
+  sessionStorage.setItem("sado-upd-manual", "1");
   setTimeout(() => { const u = new URL(location.href); u.searchParams.set("r", String(Date.now())); location.replace(u.toString()); }, 300);
 });
 
