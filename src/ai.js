@@ -10,6 +10,10 @@ const TTS_VOICE = process.env.TTS_VOICE || "coral";
 const GEMINI_KEY = process.env.GEMINI_API_KEY || "";
 const GEMINI_TTS_MODEL = process.env.GEMINI_TTS_MODEL || "gemini-3.8-flash-tts";
 const GEMINI_VOICE = process.env.GEMINI_VOICE || "Kore";
+// Microsoft Azure: tayyor o'zbekcha neyron ovozlar (uz-UZ-MadinaNeural — ayol, uz-UZ-SardorNeural — erkak)
+const AZURE_KEY = process.env.AZURE_SPEECH_KEY || "";
+const AZURE_REGION = process.env.AZURE_SPEECH_REGION || "";
+const AZURE_VOICE = process.env.AZURE_VOICE || "uz-UZ-MadinaNeural";
 
 const anthropic = new Anthropic(); // ANTHROPIC_API_KEY muhit o'zgaruvchisidan o'qiladi
 
@@ -288,6 +292,24 @@ export async function geminiTts(text, lang = "uz") {
   return { audio: pcmToWav(pcm, rate).toString("base64"), mime: "audio/wav" };
 }
 
+// Azure TTS so'rovi (o'zbekcha). Muvaffaqiyatda { audio (base64 mp3), mime }, aks holda { error }.
+const xmlEscape = (t) => t.replace(/[<>&'"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", "'": "&apos;", '"': "&quot;" })[c]);
+export async function azureTts(text) {
+  const res = await fetch(`https://${AZURE_REGION}.tts.speech.microsoft.com/cognitiveservices/v1`, {
+    method: "POST",
+    headers: {
+      "Ocp-Apim-Subscription-Key": AZURE_KEY,
+      "Content-Type": "application/ssml+xml",
+      "X-Microsoft-OutputFormat": "audio-24khz-48kbitrate-mono-mp3",
+      "User-Agent": "sado-speaking",
+    },
+    body: `<speak version="1.0" xml:lang="uz-UZ"><voice name="${AZURE_VOICE}">${xmlEscape(text)}</voice></speak>`,
+    signal: AbortSignal.timeout(15_000),
+  });
+  if (!res.ok) return { error: `${res.status} ${(await res.text()).slice(0, 300)}` };
+  return { audio: Buffer.from(await res.arrayBuffer()).toString("base64"), mime: "audio/mpeg" };
+}
+
 // OpenAI'ga bitta TTS so'rovi. Muvaffaqiyatda base64 mp3, aks holda { error } qaytaradi.
 export async function ttsRequest(body) {
   const res = await fetch("https://api.openai.com/v1/audio/speech", {
@@ -305,7 +327,17 @@ const FALLBACK_TTS = { model: "tts-1", voice: process.env.TTS_FALLBACK_VOICE || 
 
 export async function speak(text, lang = "en") {
   if (!text) return null;
-  // O'zbekcha qismlar: avval Gemini (o'zbekchani tabiiyroq talaffuz qiladi)
+  // O'zbekcha qismlar: avval Azure (tayyor o'zbekcha ovoz, tez)
+  if (lang === "uz" && AZURE_KEY && AZURE_REGION) {
+    try {
+      const a = await azureTts(text);
+      if (a.audio) return a;
+      console.error("Azure TTS xatosi:", a.error, "- keyingi ovozga o'tilmoqda");
+    } catch (e) {
+      console.error("Azure TTS ulanish xatosi:", e.message);
+    }
+  }
+  // Keyin Gemini (o'zbekchani tabiiyroq talaffuz qiladi)
   if (lang === "uz" && GEMINI_KEY) {
     try {
       const g = await geminiTts(text, "uz");
