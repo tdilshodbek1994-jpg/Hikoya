@@ -1774,6 +1774,14 @@ function renderSettings() {
           api("api/remind", { json: { on: true, hour: Number(v) } }).then(() => toast(`⏰ Eslatma soat ${v}:00 da keladi`)).catch((e) => toast(e.message));
         }]]
       : []),
+    // 🧭 Yo'nalish (tanishuvdagi maqsad) — "Keyingi dars" va tasodifiy darslar shunga moslanadi
+    ["🧭 Yo'nalish", [["", "Umumiy"], ["IELTS kursi", "🎓 IELTS"], ["CEFR kursi", "📗 CEFR"], ["Bolalar uchun", "🧒 Bola"]], () => {
+      const a = localStorage.getItem("sado-aim") || "";
+      return ["IELTS kursi", "CEFR kursi", "Bolalar uchun"].includes(a) ? a : "";
+    }, (v) => {
+      v ? localStorage.setItem("sado-aim", v) : localStorage.removeItem("sado-aim");
+      renderNext();
+    }],
     ["🎯 Kunlik maqsad", [["1", "1 dars"], ["2", "2 dars"], ["3", "3 dars"]], () => String(state.goal), (v) => { state.goal = Number(v); localStorage.setItem("sado-goal", v); renderGoal(); }],
     ["🌙 Ko'rinish", [["auto", "Avto"], ["light", "☀️ Kunduzgi"], ["dark", "🌙 Tungi"]], () => localStorage.getItem("sado-theme") || "auto", (v) => { localStorage.setItem("sado-theme", v); applyTheme(); }],
     ["Aa Matn o'lchami", [["0", "Oddiy"], ["1", "Katta"], ["2", "Juda katta"]], () => String((Number(localStorage.getItem("sado-font")) || 0) % 3), (v) => { localStorage.setItem("sado-font", v); applyFont(); }],
