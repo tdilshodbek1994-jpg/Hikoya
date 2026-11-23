@@ -1189,8 +1189,21 @@ function renderLessons() {
           const weak = new Set(weakIds());
           const nRep = inCat.filter((x) => weak.has(x.id)).length;
           const before = head.querySelector(".cat-progress");
-          if (nNew) head.insertBefore(el("span", "fold-tag new", `🆕${nNew}`), before);
-          if (nRep) head.insertBefore(el("span", "fold-tag rep", `🔁${nRep}`), before);
+          // Belgini bosish — tegishli filtrga o'tadi (yangi yoki takrorlash darslari)
+          const tag = (cls, txt, f) => {
+            const t = el("span", "fold-tag " + cls, txt);
+            t.addEventListener("click", (e) => {
+              e.stopPropagation();
+              haptic();
+              state.filter.cat = f;
+              renderChips();
+              renderLessons();
+              scrollToList(true);
+            });
+            return t;
+          };
+          if (nNew) head.insertBefore(tag("new", `🆕${nNew}`, "__new"), before);
+          if (nRep) head.insertBefore(tag("rep", `🔁${nRep}`, "__weak"), before);
         }
         head.addEventListener("click", () => {
           haptic();
