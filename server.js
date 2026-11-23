@@ -127,6 +127,7 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
     transcript: [],
     custom: lesson.id === "review" ? lesson : null,
     slow: Boolean(req.body?.slow),
+    selfLevel: ["beg", "mid", "adv"].includes(req.body?.level) ? req.body.level : "",
     startedAt: Date.now(),
     expiresAt: Date.now() + (lesson.minutes || SESSION_MINUTES) * 60_000,
   });

@@ -5,6 +5,7 @@
 // Server -> telefon:  binary = 24 kHz mono PCM16 Sado ovozi;
 //                     text JSON = {type:"ready"|"user"|"sado"|"turn"|"interrupted"|"used"|"error"|"closed", ...}
 
+import { SELF_LEVEL } from "./ai.js";
 import WebSocket from "ws";
 
 const GEMINI_KEY = process.env.GEMINI_API_KEY || "";
@@ -179,7 +180,7 @@ export async function runLive(client, session, lesson, { maxMs, voice, topic }) 
             responseModalities: ["AUDIO"],
             speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: VOICES[voice] || LIVE_VOICE } } },
           },
-          systemInstruction: { parts: [{ text: livePrompt(lesson, topic) }] },
+          systemInstruction: { parts: [{ text: livePrompt(lesson, topic) + (SELF_LEVEL[session.selfLevel] ? "\n\n" + SELF_LEVEL[session.selfLevel] : "") }] },
           inputAudioTranscription: {},
           outputAudioTranscription: {},
         },

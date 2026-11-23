@@ -980,6 +980,7 @@ function renderSettings() {
     ["🗣 Sado ovozi (jonli suhbat)", [["f", "👩 Ayol"], ["m", "👨 Erkak"]], () => state.voice, (v) => { state.voice = v; localStorage.setItem("sado-voice", v); }],
     ["🐇 Gapirish tezligi", [["0", "🐇 Oddiy"], ["1", "🐢 Sekin"]], () => (state.slow ? "1" : "0"), (v) => { state.slow = v === "1"; localStorage.setItem("sado-slow", v); }],
     ["🇺🇿 O'zbekcha tarjimani aytish", [["1", "Ha"], ["0", "Yo'q"]], () => (state.tr ? "1" : "0"), (v) => { state.tr = v === "1"; localStorage.setItem("sado-tr", v); }],
+    ["🎚 Ingliz tilim darajasi", [["beg", "🌱 Boshlovchi"], ["mid", "🌿 O'rtacha"], ["adv", "🌳 Yaxshi"]], () => localStorage.getItem("sado-level") || "", (v) => { localStorage.setItem("sado-level", v); renderNext(); }],
     ["🎯 Kunlik maqsad", [["1", "1 dars"], ["2", "2 dars"], ["3", "3 dars"]], () => String(state.goal), (v) => { state.goal = Number(v); localStorage.setItem("sado-goal", v); renderGoal(); }],
     ["🌙 Ko'rinish", [["auto", "Avto"], ["light", "☀️ Kunduzgi"], ["dark", "🌙 Tungi"]], () => localStorage.getItem("sado-theme") || "auto", (v) => { localStorage.setItem("sado-theme", v); applyTheme(); }],
     ["Aa Matn o'lchami", [["0", "Oddiy"], ["1", "Katta"], ["2", "Juda katta"]], () => String((Number(localStorage.getItem("sado-font")) || 0) % 3), (v) => { localStorage.setItem("sado-font", v); applyFont(); }],
@@ -1283,7 +1284,7 @@ async function startLesson(lesson, lessonMode = "tutor") {
 
   try {
     const data = await api("api/session", {
-      json: { lessonId: lesson.id, translate: state.tr, mode: state.lessonMode, slow: state.slow },
+      json: { lessonId: lesson.id, translate: state.tr, mode: state.lessonMode, slow: state.slow, level: localStorage.getItem("sado-level") || "" },
     });
     state.session = data.session;
     if (state.progress) state.progress.startedToday = (state.progress.startedToday || 0) + 1;
@@ -1350,7 +1351,7 @@ async function startLive(lesson) {
   let lastErr = "";
   clearTimeout(state.liveWait);
   try {
-    const data = await api("api/session", { json: { lessonId: lesson.id, mode: "live" } });
+    const data = await api("api/session", { json: { lessonId: lesson.id, mode: "live", level: localStorage.getItem("sado-level") || "" } });
     if (data.mode !== "live") throw new Error("Jonli suhbat serverda yoqilmagan.");
     state.session = data.session;
     if (state.progress) state.progress.startedToday = (state.progress.startedToday || 0) + 1;

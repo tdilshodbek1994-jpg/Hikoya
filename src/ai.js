@@ -20,12 +20,18 @@ const SUPPORTS_FALLBACKS = /^claude-(opus-5|sonnet-5-5|fable-5)/.test(CLAUDE_MOD
 export const voiceEnabled = Boolean(OPENAI_KEY);
 export const geminiEnabled = Boolean(GEMINI_KEY);
 
-function systemPrompt(lesson) {
+// O'quvchi o'zi tanlagan daraja (tanishuv/sozlamalar) — Sado nutqini moslash uchun
+export const SELF_LEVEL = {
+  beg: "The student says they are a BEGINNER: use very short, simple sentences and common words, speak slowly and help with Uzbek more often.",
+  mid: "The student says their English is INTERMEDIATE: use natural everyday English, not too fast.",
+  adv: "The student says their English is GOOD: speak naturally, use richer vocabulary and ask follow-up questions that push them further.",
+};
+function systemPrompt(lesson, selfLevel = "") {
   const list = lesson.phrases.map((p, i) => `${i}. "${p.en}"`).join("\n");
   return `You are Sado, a warm and patient English speaking partner inside a Telegram app for Uzbek students preparing for exams.
 
 Role-play: you are ${lesson.role}. ${lesson.situation}
-Student level: about ${lesson.level}. You already opened the conversation by saying: "${lesson.opener}"
+Student level: about ${lesson.level}.${SELF_LEVEL[selfLevel] ? " " + SELF_LEVEL[selfLevel] : ""} You already opened the conversation by saying: "${lesson.opener}"
 
 Target phrases the student should practise (index. phrase):
 ${list}
@@ -111,7 +117,7 @@ export async function chatTurn(session, lesson, studentText) {
   const remaining = lesson.phrases.map((_, i) => i).filter((i) => !session.used.has(i));
   const data = await askClaude(
     session,
-    systemPrompt(lesson),
+    systemPrompt(lesson, session.selfLevel),
     `Student said: "${studentText}"\n(Target phrases not used yet: ${remaining.length ? remaining.join(", ") : "none - all done, you can wrap up warmly"})`,
   );
   if (!data) {
