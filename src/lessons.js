@@ -1758,6 +1758,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-frequency",
+    category: "Grammatika gapirib",
+    title: "Qanchalik tez-tez: always, usually, never",
+    emoji: "📅",
+    level: "A2",
+    added: "2026-11-26",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on grammar: adverbs of frequency (always, usually, often, sometimes, rarely, never) and their position — before the main verb (I usually walk) but after be (She is always late); How often...? and once/twice a week. Talk about the student's habits: sport, food, phone, family visits. Have a natural conversation that makes the student use this grammar a lot. Ask simple questions, listen, whenever the student makes a mistake with this grammar, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "How often do you do sport? Every day, sometimes, or never?",
+    openerUz: "Qanchalik tez-tez sport bilan shug'ullanasiz? Har kuni, ba'zan yoki hech qachon?",
+    phrases: [
+      { en: "I usually get up at seven.", uz: "Men odatda soat yettida turaman." },
+      { en: "She is always on time.", uz: "U doim o'z vaqtida keladi." },
+      { en: "We sometimes eat out on Fridays.", uz: "Biz ba'zan jumalari tashqarida ovqatlanamiz." },
+      { en: "He never drinks coffee at night.", uz: "U kechasi hech qachon qahva ichmaydi." },
+      { en: "How often do you visit your grandparents?", uz: "Bobo-buvingiznikiga qanchalik tez-tez borasiz?" },
+      { en: "I go to the gym twice a week.", uz: "Men haftada ikki marta sport zaliga boraman." },
+    ],
+  },
+  {
+    id: "gr-phrasal",
+    category: "Grammatika gapirib",
+    title: "Frazali fe'llar: get up, look for, give up",
+    emoji: "🧩",
+    level: "B1",
+    added: "2026-11-26",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on common phrasal verbs: get up, wake up, look for, look after, find out, give up, turn on/off, put on, take off, pick up, run out of, come back. Talk about the student's daily routine, a time they lost something, and a habit they gave up. Have a natural conversation that makes the student use these phrasal verbs a lot. Ask simple questions, listen, whenever the student makes a mistake, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "What time do you usually get up? And is it easy for you to wake up?",
+    openerUz: "Odatda soat nechada turasiz? Uyg'onish sizga osonmi?",
+    phrases: [
+      { en: "I'm looking for my keys.", uz: "Kalitlarimni qidiryapman." },
+      { en: "Could you turn off the light?", uz: "Chiroqni o'chira olasizmi?" },
+      { en: "She looks after her little brother.", uz: "U ukasiga qaraydi." },
+      { en: "I gave up sugar last year.", uz: "O'tgan yili shakarni tashladim." },
+      { en: "Put on your coat, it's cold.", uz: "Paltongizni kiying, sovuq." },
+      { en: "We've run out of milk.", uz: "Sutimiz tugab qoldi." },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -2661,7 +2701,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-simple", "gr-there", "gr-possessive", "gr-continuous", "gr-past", "gr-pastcont", "gr-questions", "gr-quantity", "gr-articles", "gr-prepositions", "gr-future", "gr-compare", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-relative", "gr-reported", "gr-passive", "gr-perfcont", "gr-wish"];
+const GR_ORDER = ["gr-simple", "gr-there", "gr-possessive", "gr-frequency", "gr-continuous", "gr-past", "gr-pastcont", "gr-questions", "gr-quantity", "gr-articles", "gr-prepositions", "gr-future", "gr-compare", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-relative", "gr-reported", "gr-passive", "gr-phrasal", "gr-perfcont", "gr-wish"];
 const grRank = (l) => (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
 LESSONS.sort((a, b) => ORDER.indexOf(a.category) - ORDER.indexOf(b.category) || partRank(a) - partRank(b) || (a.category === "Grammatika gapirib" ? grRank(a) - grRank(b) : 0));
 // Kurs darslarini tartib raqami bilan nomlaymiz
@@ -2678,6 +2718,8 @@ const QUIZ = {
   "gr-possessive": ["Laylo is my friend. ___ dog is small.|Her|His|She", "Anvar loves ___ car.|his|her|he", "We love ___ teacher.|our|we|us", "This is my ___ room.|sister's|sisters|sister", "They love ___ new house.|their|there|they", "Is this ___ book, Aziz?|your|you|yours's", "The cat is eating ___ food.|its|it's|it", "This is my ___ car.|father's|fathers|father", "Malika and Sardor love ___ children.|their|they're|there", "Is this ___ pen or mine?|your|you|yours", "My ___ names are Ali and Vali.|brothers'|brother's|brothers", "The dog wagged ___ tail.|its|it's|his's"],
   "gr-perfcont": ["I've been ___ English for two years.|learning|learn|learned", "She ___ been working here since 2020.|has|have|is", "How long have you been ___?|waiting|wait|waited", "It has been raining ___ three hours.|for|since|from", "They have been living here ___ 2019.|since|for|from", "I'm tired. I've ___ running.|been|being|be", "___ you been studying all night?|Have|Has|Did", "My eyes hurt. I've been ___ at a screen all day.|looking|looked|look", "He hasn't ___ feeling well lately.|been|be|being", "We've been ___ for the bus for twenty minutes.|waiting|waited|wait", "How long ___ she been teaching?|has|have|is", "I've read ___ books this month.|three|been three|being three"],
   "gr-wish": ["I wish I ___ more free time.|had|have|will have", "I wish I ___ speak French.|could|can|will", "I wish I had ___ harder at school.|studied|study|studying", "If I had known, I would ___ helped you.|have|has|had", "If we ___ left earlier, we wouldn't have missed the bus.|had|have|would", "I wish it ___ so cold today.|wasn't|isn't|won't be", "If she had asked me, I ___ have said yes.|would|will|had", "I wish you ___ here with us.|were|are|will be", "He wishes he ___ that car. It was a mistake.|hadn't bought|didn't buy|doesn't buy", "If I ___ you, I would apologise.|were|am|had", "I'm glad I ___ give up.|didn't|wouldn't|hadn't", "If it hadn't rained, we ___ have gone to the park.|would|will|had"],
+  "gr-frequency": ["I ___ get up at seven.|usually|am usually|usual", "She is ___ late for class.|always|always is|alwayses", "He ___ drinks coffee at night.|never|don't never|nevers", "How ___ do you go swimming?|often|many|much", "I go to the gym twice ___ week.|a|in|the", "They ___ visit us on Sundays.|sometimes|are sometimes|sometime", "We are ___ tired after work.|often|oftenly|ever", "Do you ___ eat fast food?|often|oftenly|usual", "My dad ___ forgets his keys.|rarely|rare|is rarely", "I have English lessons three ___ a week.|times|time|once", "She ___ happy on Mondays.|is never|never is|never", "___ do you see your cousins? — Once a month.|How often|How many|When often"],
+  "gr-phrasal": ["I'm looking ___ my keys.|for|at|after", "Could you turn ___ the light? I want to sleep.|off|on|up", "She looks ___ her little brother after school.|after|for|at", "I gave ___ sugar last year.|up|out|off", "Put ___ your coat, it's cold.|on|off|in", "We've run ___ of milk.|out|off|away", "What time do you get ___ in the morning?|up|on|off", "Please take ___ your shoes.|off|out|up", "I need to find ___ the train times.|out|up|off", "Can you pick me ___ from the station?|up|on|off", "Turn ___ the TV, the match is starting!|on|off|out", "When will you come ___ from Tashkent?|back|up|off"],
   "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink", "My sister ___ English very well.|speaks|speak|speaking", "They ___ live in Tashkent.|don't|doesn't|aren't", "Where ___ he work?|does|do|is", "The shop ___ at nine o'clock.|opens|open|opening", "Water ___ at 100 degrees.|boils|boil|is boil", "My friends ___ like rap music.|don't|doesn't|isn't", "___ your brother study at university?|Does|Do|Is", "He usually ___ his homework in the evening.|does|do|doing"],
   "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on", "I was born ___ 2008.|in|on|at", "We have a party ___ Friday evening.|on|in|at", "I usually sleep ___ night.|at|in|on", "The keys are ___ the table.|on|at|in", "The meeting is ___ 3 pm.|at|in|on", "I'll see you ___ the weekend.|at|in|on", "She lives ___ Samarkand.|in|at|on", "My birthday is ___ 5th March.|on|in|at"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do", "Listen! The baby ___ crying.|is|are|be", "We ___ waiting for the bus now.|are|is|am", "What ___ you doing?|are|do|is", "She isn't ___ TV at the moment.|watching|watch|watches", "I ___ working from home this week.|am|is|are", "Why ___ you laughing?|are|is|do", "They ___ playing football right now.|are|is|be", "Be quiet! Grandma ___ sleeping.|is|are|am"],
@@ -2728,6 +2770,8 @@ const KEYWORDS = {
   "kid-play": "toys games", "kid-birthday": "party cake", "kid-weather": "clothes rain sun",
 };
 const RULES = {
+  "gr-frequency": "Tezlik so'zlari: always (doim), usually (odatda), often (tez-tez), sometimes (ba'zan), rarely (kamdan-kam), never (hech qachon).\nAsosiy fe'ldan oldin: I usually walk to school. He never drinks coffee.\nbe fe'lidan keyin: She is always late. We are often tired.\nSavol: How often do you...? — once / twice / three times a week.",
+  "gr-phrasal": "Frazali fe'l = fe'l + kichik so'z, ma'nosi o'zgaradi: get up (turmoq), look for (qidirmoq), look after (qaramoq), give up (tashlamoq).\nturn on / turn off — yoqmoq / o'chirmoq. put on / take off — kiymoq / yechmoq.\nfind out — bilib olmoq. run out of — tugab qolmoq.\nI'm looking for my phone. She gave up smoking.",
   "gr-perfcont": "O'tmishda boshlanib, hali davom etayotgan ish: have/has been + fe'l-ing.\nI've been learning English for two years. She has been working since 2020.\nSavol: How long have you been waiting?\nNatija (nechta) — Present Perfect: I've read three books. Jarayon — I've been reading all day.",
   "gr-wish": "Hozirgi istak: I wish + o'tgan zamon: I wish I had more time. I wish I could swim.\nO'tmishdagi afsus: I wish + had + 3-shakl: I wish I had studied harder.\n3-tur shart: If + had + 3-shakl, would have + 3-shakl.\nIf I had known, I would have helped you.",
   "gr-there": "Bor/yo'qligini aytish: There is + bitta narsa, There are + ko'p narsa.\nThere is a table. There are three chairs.\nInkor: There isn't a TV. There aren't any shops.\nSavol: Is there a bank? Are there any parks?",
