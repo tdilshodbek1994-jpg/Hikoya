@@ -88,7 +88,12 @@ function toast(msg, ms = 2600) {
 async function api(path, { json, body, headers = {}, method = "POST" } = {}) {
   const h = { "X-Telegram-Init-Data": tg?.initData || "", ...headers };
   if (json) h["Content-Type"] = "application/json";
-  const res = await fetch(path, { method, headers: h, body: json ? JSON.stringify(json) : body });
+  let res;
+  try {
+    res = await fetch(path, { method, headers: h, body: json ? JSON.stringify(json) : body });
+  } catch {
+    throw Object.assign(new Error("Internet bilan aloqa yo'q 📶"), { network: true });
+  }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw Object.assign(new Error(data.error || `Xatolik (${res.status})`), { status: res.status });
   return data;
@@ -876,6 +881,8 @@ function clearHints() {
 }
 
 function resetLiveUi() {
+  $("retryBtn").hidden = true;
+  state.pendingTurn = null;
   state.ttsWarned = false;
   state.lastParts = null;
   $("replayBtn").hidden = true;
@@ -1254,9 +1261,20 @@ $("textForm").addEventListener("submit", async (e) => {
   await sendTurn({ json: { text } });
 });
 
+// Internet uzilsa oxirgi gapni saqlab qo'yamiz va qayta yuborish tugmasini ko'rsatamiz
+$("retryBtn").addEventListener("click", () => {
+  const p = state.pendingTurn;
+  if (!p || state.phase === "thinking" || state.phase === "speaking") return;
+  haptic("medium");
+  $("retryBtn").hidden = true;
+  sendTurn(p);
+});
+
 async function sendTurn(payload) {
   if (!state.session) return;
   clearHints();
+  $("retryBtn").hidden = true;
+  state.pendingTurn = null;
   setPhase("thinking");
   try {
     const data = await api(
@@ -1282,7 +1300,12 @@ async function sendTurn(payload) {
     afterReply();
   } catch (e) {
     if (state.phase === "ended") return;
-    toast(e.message, 3500);
+    if (e.network || e.status >= 500 || e.status === 429) {
+      state.pendingTurn = payload;
+      $("retryBtn").hidden = false;
+      toast(`${e.message} — gapingiz saqlandi, "Qayta yuborish" ni bosing`, 4000);
+      if (e.status !== 429) return setPhase("idle", "📶 Aloqa uzildi");
+    } else toast(e.message, 3500);
     if (e.status === 404 || e.status === 410) return finish();
     afterReply();
   }

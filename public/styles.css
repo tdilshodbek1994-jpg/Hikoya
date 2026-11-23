@@ -457,3 +457,4 @@ body.dark .daily-tag { color: #fbbf24; }
 .daily-go { margin-top: 8px; font-size: 13px; font-weight: 700; color: var(--primary); }
 body.dark .daily-go { color: #a5b4fc; }
 .daily-en, .daily-go { padding: 0; }
+.hint-btn.retry, body.dark .hint-btn.retry { color: #fff; background: var(--danger); }
