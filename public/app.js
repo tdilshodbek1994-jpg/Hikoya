@@ -413,8 +413,10 @@ function quizItems(rule) {
 const quizBest = () => { try { return JSON.parse(localStorage.getItem("sado-quiz") || "{}"); } catch { return {}; } };
 function saveQuiz(id, right, total) {
   const all = quizBest();
-  const prev = Number(String(all[id] || "0").split("/")[0]);
-  if (right >= prev) { all[id] = `${right}/${total}`; localStorage.setItem("sado-quiz", JSON.stringify(all)); }
+  // Ulush bo'yicha solishtiramiz (4 savollik va 12 savollik testlar aralashmasin); teng bo'lsa — ko'proq savollisi
+  const [pr, pn] = String(all[id] || "0/1").split("/").map(Number);
+  const ratio = (r, n) => (n ? r / n : 0);
+  if (ratio(right, total) > ratio(pr, pn) || (ratio(right, total) === ratio(pr, pn) && total >= pn)) { all[id] = `${right}/${total}`; localStorage.setItem("sado-quiz", JSON.stringify(all)); }
 }
 // 🔁 Xato qilingan test savollari (localStorage): xato — qo'shiladi, keyin to'g'ri javob — o'chiriladi
 const quizMisses = () => { try { return JSON.parse(localStorage.getItem("sado-qz-miss") || "[]"); } catch { return []; } };
@@ -795,6 +797,12 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
         i = 0; right = 0; missed = []; marks = []; state.mixWeak = new Map(); items = pick(); show();
       });
       body.append(again);
+      // 📋 Mavzuning barcha savollari bilan to'liq test (dars mashqida)
+      if (/^gr-/.test(lesson.id) && !/^gr-(mix|miss|daily|level|weak)$/.test(lesson.id) && pool.length > QN && QN < pool.length) {
+        const full = el("button", "qz-again qz-full", `📋 To'liq test (${pool.length} ta)`);
+        full.addEventListener("click", () => { haptic(); renderQuiz(lesson, box, `📋 To'liq test · ${pool.length} ta savol`, pool.length); });
+        body.append(full);
+      }
       return;
     }
     const it = items[i];
@@ -1954,7 +1962,8 @@ function renderLessons() {
       if (l.category === "Grammatika gapirib" && !q && !(canFold && folded.has(l.category))) {
         const gr = state.lessons.filter((x) => x.category === l.category && x.quiz?.length);
         const best = quizBest();
-        const perfect = gr.filter((x) => best[x.id] && best[x.id] === `${x.quiz.length}/${x.quiz.length}`);
+        // A'lo — eng yaxshi natijada hamma javob to'g'ri (4/4 yoki 12/12)
+        const perfect = gr.filter((x) => { const [a, n] = String(best[x.id] || "").split("/").map(Number); return n > 0 && a === n; });
         if (gr.length) {
           const row = el("div", "gr-quizbar");
           // 🧪 Panel sarlavhasi: savollar soni va umumiy aniqlik

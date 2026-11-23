@@ -1258,3 +1258,5 @@ body.dark .acc-tag.hi { color: #4ade80; } body.dark .acc-tag.mid { color: #fbbf2
 .qz-sw.ok { background: color-mix(in srgb, var(--ok) 18%, var(--bg)); border-color: var(--ok); }
 .qz-sw.bad { background: color-mix(in srgb, var(--danger) 15%, var(--bg)); border-color: var(--danger); }
 .qz-why.qz-good { border-left-color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, var(--bg)); }
+.qz-again + .qz-full { margin-left: 8px; }
+.qz-full { color: var(--primary); }
