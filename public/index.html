@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
   <title>Sado — ingliz tilida gaplashish</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="styles.css?v=29" />
+  <link rel="stylesheet" href="styles.css?v=31" />
 </head>
 <body>
   <header class="topbar">
@@ -168,6 +168,8 @@
       <h3>📒 Mening lug'atim</h3>
       <p class="muted">Darslardagi yangi so'zlar va tuzatilgan xatolaringiz. Bosing — talaffuzini eshitasiz.</p>
       <div class="vocab-tabs"><button class="chip-f on" data-t="word">📚 So'zlar</button><button class="chip-f" data-t="fix">✏️ Xatolarim</button></div>
+      <button class="btn primary wide" id="flashBtn">🃏 Kartochka mashqi</button>
+      <div class="flash" id="flash" hidden></div>
       <ul class="rep-list" id="vocabList"></ul>
       <button class="btn ghost wide" id="vocabClose">Yopish</button>
     </div>
@@ -175,6 +177,6 @@
 
   <div class="toast" id="toast" hidden></div>
 
-  <script type="module" src="app.js?v=30"></script>
+  <script type="module" src="app.js?v=31"></script>
 </body>
 </html>

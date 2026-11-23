@@ -298,7 +298,77 @@ $("vocabBtn").addEventListener("click", () => {
   renderVocab();
   $("vocabSheet").hidden = false;
 });
-$("vocabClose").addEventListener("click", () => ($("vocabSheet").hidden = true));
+$("vocabClose").addEventListener("click", () => {
+  $("vocabSheet").hidden = true;
+  stopFlash();
+});
+
+// 🃏 Kartochka mashqi: o'zbekchasi ko'rsatiladi, inglizchasini eslash kerak
+function stopFlash() {
+  state.flash = null;
+  $("flash").hidden = true;
+  $("vocabList").hidden = false;
+  $("flashBtn").hidden = false;
+}
+function startFlash() {
+  const words = (state.progress?.words || []).filter((w) => w.en && w.uz);
+  if (!words.length) return toast("Lug'atda hali so'z yo'q");
+  const deck = words.map((w) => w).sort(() => Math.random() - 0.5).slice(0, 10);
+  state.flash = { deck, i: 0, known: 0, open: false };
+  $("vocabList").hidden = true;
+  $("flashBtn").hidden = true;
+  $("flash").hidden = false;
+  renderFlash();
+}
+function renderFlash() {
+  const f = state.flash;
+  const box = $("flash");
+  box.innerHTML = "";
+  if (f.i >= f.deck.length) {
+    box.append(
+      el("div", "flash-done", `${f.known >= f.deck.length * 0.7 ? "🎉" : "💪"} ${f.deck.length} tadan ${f.known} tasini bildingiz!`),
+    );
+    const again = el("button", "btn primary wide", "🔁 Yana bir marta");
+    again.addEventListener("click", startFlash);
+    const back = el("button", "btn ghost wide", "Lug'atga qaytish");
+    back.addEventListener("click", stopFlash);
+    box.append(again, back);
+    return;
+  }
+  const w = f.deck[f.i];
+  box.append(el("div", "flash-count", `${f.i + 1} / ${f.deck.length}`));
+  const card = el("div", "flash-card" + (f.open ? " open" : ""));
+  card.append(el("div", "flash-q", w.type === "fix" ? `Xato: ${w.wrong}` : w.uz));
+  card.append(el("div", "flash-a", f.open ? w.en : "Bosing — javobni ko'rish 👆"));
+  card.addEventListener("click", () => {
+    if (!f.open) {
+      f.open = true;
+      speakBrowser(w.en, "en");
+      renderFlash();
+    }
+  });
+  box.append(card);
+  if (f.open) {
+    const row = el("div", "flash-row");
+    const no = el("button", "btn ghost", "😕 Bilmadim");
+    const yes = el("button", "btn ok", "✅ Bildim");
+    no.addEventListener("click", () => next(false));
+    yes.addEventListener("click", () => next(true));
+    row.append(no, yes);
+    box.append(row);
+  }
+  function next(knew) {
+    haptic(knew ? "success" : "light");
+    if (knew) f.known++;
+    f.i++;
+    f.open = false;
+    renderFlash();
+  }
+}
+$("flashBtn").addEventListener("click", () => {
+  haptic();
+  startFlash();
+});
 $("vocabSheet").addEventListener("click", (e) => {
   if (e.target.id === "vocabSheet") $("vocabSheet").hidden = true;
 });
