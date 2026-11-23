@@ -424,7 +424,16 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
   const pool = lesson.quiz?.length
     ? lesson.quiz.map((q) => { const [before, after] = q.text.split("___"); return { before: before.trimEnd(), after, answer: q.answer, options: q.options, from: q.from }; })
     : lesson.rule ? quizItems(lesson.rule) : [];
-  const pick = () => (pool.length > QN ? [...pool].sort(() => Math.random() - 0.5).slice(0, QN) : pool);
+  // ✅ Ba'zi savollar "Qaysi gap to'g'ri?" ko'rinishida: to'liq to'g'ri gap va bitta noto'g'ri gap
+  const sent = (it, w) => `${it.before} ${w === "—" ? "" : w}${it.after}`.replace(/\s+/g, " ").trim();
+  const asPick = (it) => {
+    const wrong = it.options.filter((o) => o !== it.answer);
+    if (!wrong.length || /«/.test(it.before)) return it;
+    const bad = wrong[Math.floor(Math.random() * wrong.length)];
+    return { ...it, mode: "pick", sentences: [sent(it, it.answer), sent(it, bad)], right: sent(it, it.answer) };
+  };
+  const pick = () => (pool.length > QN ? [...pool].sort(() => Math.random() - 0.5).slice(0, QN) : [...pool])
+    .map((it, k) => (pool.length > QN && k % 3 === 2 ? asPick(it) : it)); // har 3-savol — gap tanlash
   let items = pick();
   box.hidden = items.length < 2;
   if (box.hidden) return;
@@ -470,23 +479,24 @@ function renderQuiz(lesson, box = $("sheetQuiz"), title = "🧩 Tez mashq", QN =
     const it = items[i];
     body.append(el("small", "qz-n", `${i + 1}/${items.length}${pool.length > QN ? ` · to'plamda ${pool.length} ta savol` : ""}`));
     const q = el("p", "qz-q");
-    q.append(document.createTextNode(it.before + " "), el("span", "qz-gap", "____"), document.createTextNode(it.after));
+    if (it.mode === "pick") q.append(el("b", "qz-pick", "✅ Qaysi gap to'g'ri?"));
+    else q.append(document.createTextNode(it.before + " "), el("span", "qz-gap", "____"), document.createTextNode(it.after));
     body.append(q);
-    const opts = el("div", "qz-opts");
-    for (const o of [...it.options].sort(() => Math.random() - 0.5)) {
+    const opts = el("div", "qz-opts" + (it.mode === "pick" ? " qz-sents" : ""));
+    for (const o of [...(it.mode === "pick" ? it.sentences : it.options)].sort(() => Math.random() - 0.5)) {
       const btn = el("button", "qz-opt", o);
       btn.addEventListener("click", () => {
         if (opts.dataset.done) return;
         opts.dataset.done = "1";
         haptic();
-        const ok = o === it.answer;
+        const ok = o === (it.mode === "pick" ? it.right : it.answer);
         if (ok) right++;
         else if (it.from) (state.mixWeak ||= new Map()).set(it.from, (state.mixWeak.get(it.from) || 0) + 1);
         if (!ok) missed.push(`${it.before} ${it.answer === "—" ? "" : it.answer}${it.after}`.replace(/\s+/g, " ").replace(/«[^»]*»\s*→\s*/, "").trim());
         btn.classList.add(ok ? "ok" : "bad");
-        if (!ok) [...opts.children].find((b) => b.textContent === it.answer)?.classList.add("ok");
-        q.querySelector(".qz-gap").textContent = it.answer;
-        q.querySelector(".qz-gap").classList.add("ok");
+        if (!ok) [...opts.children].find((b) => b.textContent === (it.mode === "pick" ? it.right : it.answer))?.classList.add("ok");
+        const gap = q.querySelector(".qz-gap");
+        if (gap) (gap.textContent = it.answer), gap.classList.add("ok");
         setTimeout(() => { i++; show(); }, ok ? 700 : 1500);
       });
       opts.append(btn);

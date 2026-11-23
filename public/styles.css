@@ -1164,3 +1164,7 @@ body.dark .ml-mark { background: #5eead4; }
 .qz-topics { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 10px; }
 .qz-topics small { width: 100%; color: var(--muted); }
 .mix-quiz, .mix-quiz .qz-missed .rule-ex { text-align: left; }
+/* ✅ "Qaysi gap to'g'ri?" savoli: gaplar ustma-ust, to'liq eni */
+.qz-pick { color: var(--primary); }
+.qz-sents { flex-direction: column; }
+.qz-sents .qz-opt { width: 100%; text-align: left; border-radius: 12px; padding: 10px 14px; font-weight: 600; }
