@@ -419,6 +419,11 @@ function quizItems(rule) {
   }
   return items.slice(0, 4);
 }
+// 🧩 Nechta grammatika mavzusida test xatosiz ishlangan (12/12, 4/4 ...)
+const grPerfectCount = () => {
+  const best = quizBest();
+  return state.lessons.filter((l) => l.category === "Grammatika gapirib" && (() => { const [a, n] = String(best[l.id] || "").split("/").map(Number); return n > 0 && a === n; })()).length;
+};
 const quizBest = () => { try { return JSON.parse(localStorage.getItem("sado-quiz") || "{}"); } catch { return {}; } };
 function saveQuiz(id, right, total) {
   const all = quizBest();
@@ -553,6 +558,7 @@ function dailyTestDone(right, total) {
   const today = dayNum();
   if (d.day === today) return; // bugun allaqachon hisoblangan
   d.streak = d.day === today - 1 ? (d.streak || 0) + 1 : 1;
+  d.best = Math.max(d.best || 0, d.streak); // 🏅 «Test seriyasi» yutug'i uchun eng uzun seriya
   d.day = today;
   d.score = `${right}/${total}`;
   localStorage.setItem("sado-daily-test", JSON.stringify(d));
@@ -1117,6 +1123,8 @@ const BADGE_PROGRESS = {
     return best;
   },
   "3 kun ketma-ket": (p) => [Math.min(3, p.streak || 0), 3],
+  "Grammatika a'lochisi": () => [Math.min(10, grPerfectCount()), 10],
+  "Test seriyasi": () => { const d = dailyTest(); const alive = d.day >= dayNum() - 1; return [Math.min(7, alive ? d.streak || 0 : 0), 7]; },
   "10 ta dars": (p) => [Math.min(10, p.done || 0), 10],
   "A'lochi": (p) => [Math.min(90, p.best || 0), 90],
   "So'z ustasi": (p) => [Math.min(30, (p.words || []).length), 30],
@@ -1749,6 +1757,8 @@ const BADGES = [
   ["🃏", "Kartochka ustasi", "Kartochkalarda 10 ta so'zni yodlang", () => Object.values(flashBoxes()).filter((n) => n >= 3).length >= 10],
   ["🗣", "Gapdon", "Bitta darsda 50 ta inglizcha so'z ayting", (p) => (p.maxWords || 0) >= 50],
   ["🎓", "Kurs bitiruvchisi", "IELTS, CEFR yoki Grammatika kursini to'liq tugating", (p) => ["IELTS kursi", "CEFR kursi", "Grammatika gapirib"].some((c) => { const all = state.lessons.filter((l) => l.category === c); return all.length && all.every((l) => p.lessons?.[l.id]); })],
+  ["🧩", "Grammatika a'lochisi", "10 ta grammatika mavzusida testni xatosiz ishlang", () => grPerfectCount() >= 10],
+  ["📅", "Test seriyasi", "«Bugungi test»ni 7 kun ketma-ket ishlang", () => (dailyTest().best || dailyTest().streak || 0) >= 7],
   ["🌍", "Har tomonlama", "5 xil bo'limdan dars o'ting", (p) => new Set(Object.keys(p.lessons || {}).map((id) => state.lessons.find((l) => l.id === id)?.category).filter(Boolean)).size >= 5],
 ];
 function renderBadges() {
