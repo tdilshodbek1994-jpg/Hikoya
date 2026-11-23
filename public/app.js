@@ -2937,6 +2937,12 @@ function renderReport(r, score) {
     items.forEach((it) => ul.append(render(it)));
     box.append(ul);
   };
+  const CRIT_INFO = {
+    fluency: "Ravonlik: to'xtab qolmasdan, uzun va bog'langan javob bera olish. Oshirish uchun: «Well, ...», «Actually, ...» kabi to'ldiruvchilar, firstly/then/finally kabi bog'lovchilar.",
+    vocabulary: "So'z boyligi: mavzuga mos va xilma-xil so'zlar, iboralar. Oshirish uchun: bir so'zni takrorlamang, sinonim ishlating (good → great, helpful).",
+    grammar: "Grammatika: zamonlarni to'g'ri qo'llash va murakkab gaplar (because, which, if). Oshirish uchun: har javobda bitta murakkab gap tuzing.",
+    pronunciation: "Talaffuz: so'zlar aniq va tushunarli, urg'u va ohang to'g'ri. Oshirish uchun: «Tinglab takrorlash» mashqi va iboralarni Sado ovozida tinglash.",
+  };
   // IELTS: 4 ta rasmiy mezon bo'yicha band
   if (r.criteria) {
     const NAMES = { fluency: "Ravonlik (Fluency)", vocabulary: "So'z boyligi (Lexical)", grammar: "Grammatika", pronunciation: "Talaffuz" };
@@ -2948,10 +2954,20 @@ function renderReport(r, score) {
       const fill = el("i", "");
       fill.style.width = `${(v / 9) * 100}%`;
       bar.append(fill);
-      row.append(el("span", "crit-name", name), bar, el("b", "", v.toFixed(1)));
-      box2.append(row);
+      const nm = el("span", "crit-name", "");
+      const [uz, en] = name.split(" (");
+      nm.append(uz, en ? el("small", "crit-en", " (" + en) : "");
+      row.append(nm, bar, el("b", "", v.toFixed(1)));
+      // ℹ️ Bosilganda mezon nimani baholashi tushuntiriladi
+      const info = el("div", "crit-info", CRIT_INFO[k]);
+      info.hidden = true;
+      row.addEventListener("click", () => {
+        haptic();
+        info.hidden = !info.hidden;
+      });
+      box2.append(row, info);
     }
-    box.append(el("div", "rep-title", "📊 IELTS mezonlari"), box2);
+    box.append(el("div", "rep-title", "📊 IELTS mezonlari"), box2, el("small", "crit-hint", "ℹ️ Mezonni bosing — nimani baholashini bilib oling"));
     // 🎯 Eng zaif mezon bo'yicha aniq maslahat va bir bosishda mashq
     const weak = Object.keys(NAMES).filter((k) => Number.isFinite(r.criteria[k])).sort((a, b) => r.criteria[a] - r.criteria[b])[0];
     const ADVICE = {
