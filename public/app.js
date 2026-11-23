@@ -1,5 +1,7 @@
 import { Mascot } from "./mascot.js";
 import { LiveCall } from "./live.js?v=13";
+// 🗂 Erkin suhbat avvalgidek oddiy: mavzu tugmalari ko'rsatilmaydi (Sado «Bugun nima haqida gaplashamiz?» deb so'raydi)
+const FREE_TOPIC_PICK = false;
 
 const tg = window.Telegram?.WebApp;
 const inTelegram = Boolean(tg && tg.initData);
@@ -2165,7 +2167,7 @@ function renderLessons() {
     // 💬 Topilmagan mavzuni Erkin suhbatda gaplashish taklifi
     const q = (state.filter.q || "").replace(/\s+/g, " ").trim().slice(0, 60);
     const free = state.lessons.find((l) => l.liveOnly);
-    if (q.length >= 3 && free && state.liveEnabled) {
+    if (FREE_TOPIC_PICK && q.length >= 3 && free && state.liveEnabled) {
       const b = el("button", "btn next wide search-free", `💬 Sado bilan «${q}» haqida gaplashish`);
       b.addEventListener("click", () => {
         haptic("medium");
@@ -2544,6 +2546,8 @@ localStorage.removeItem("sado-topic");
 function renderTopicPick() {
   const box = $("topicPick");
   box.innerHTML = "";
+  box.hidden = !FREE_TOPIC_PICK;
+  if (!FREE_TOPIC_PICK) { state.topic = ""; return; }
   const custom = state.topic.startsWith("custom:") ? state.topic.slice(7) : "";
   const items = [...TOPICS, ["__custom", custom ? `✏️ ${custom}` : "✏️ O'z mavzuim"]];
   for (const [t, label] of items) {
@@ -3015,7 +3019,7 @@ async function startLive(lesson) {
   $("subsBtn").classList.add("on");
   $("muteBtn").hidden = false;
   $("hintBtn").hidden = false; // 💡 jonli suhbatda ham javob namunalari
-  $("topicBtn").hidden = !lesson.liveOnly; // 🔀 erkin suhbatda mavzuni almashtirish
+  $("topicBtn").hidden = !(lesson.liveOnly && FREE_TOPIC_PICK); // 🔀 erkin suhbatda mavzuni almashtirish
   $("lesson").classList.add("is-live");
   resetWords(true);
   $("replayBtn").hidden = true;
@@ -5098,7 +5102,7 @@ const FAQ = [
   ["Sado meni eshitmayapti", "Telegram'ga mikrofon ruxsatini bering, telefonni yaqin tuting va tinch joyda gapiring. Shovqinli joyda «Bosib gapirish» rejimini tanlang."],
   ["Sado ovozi eshitilmayapti", "Telefon ovozini balandlating va «ovozsiz» rejimni o'chiring. «🔁 Qayta eshitish» tugmasi yoki Sado (maskot)ning o'zini bosib, oxirgi gapni yana tinglashingiz mumkin.", "🔊 Ovozni hozir tekshirish", () => { $("helpSheet").hidden = true; $("setBtn").click(); setTimeout(() => $("soundTest").click(), 150); }],
   ["Ovoz chiqarib gapira olmayman (avtobusda, kutubxonada)", "Dars ekranining pastidagi «✍️ Yozish» tugmasini bosing — javobni yozib yuborasiz. Yozma rejimda ibora kartasini bossangiz, u javob maydoniga o'zi tushadi."],
-  ["O'zim xohlagan mavzuda gaplashsam bo'ladimi?", "Ha! Bosh sahifadagi Erkin suhbat bannerida «✏️ O'z mavzuim» tugmasini bosing va istalgan mavzuni yozing — Sado shu mavzuda gaplashadi.", "✏️ Mavzu yozish", () => { $("helpSheet").hidden = true; openTopicSheet(state.topic.startsWith("custom:") ? state.topic.slice(7) : ""); }],
+  ["O'zim xohlagan mavzuda gaplashsam bo'ladimi?", "Ha! «💬 Erkin suhbat»ni boshlang — Sado «Bugun nima haqida gaplashamiz?» deb so'raydi. Istalgan mavzuni ayting, Sado shu haqda gaplashadi."],
   ["«🔁 Takrorlash» nima?", "Toifalar qatoridagi bu filtr 60 balldan past olingan va 7 kundan beri o'tilmagan darslarni ko'rsatadi. Ularni qayta o'tsangiz, iboralar uzoq muddat esda qoladi."],
   ["Xatolarim qayerda saqlanadi?", "📒 Lug'atim → «✏️ Xatolarim». «🔁 Xatolarim ustida Sado bilan ishlash» darsida to'g'ri aytgan xatoingiz «✅ tuzatildi» bo'ladi.", "📒 Lug'atni ochish", () => { $("helpSheet").hidden = true; $("vocabBtn").hidden ? toast("Lug'at birinchi darsdan keyin paydo bo'ladi") : $("vocabBtn").click(); }],
   ["IELTS/CEFR uchun namunaviy javob bormi?", "Ha! IELTS va CEFR kurslaridagi dars tugagach, hisobot ostida «📝 Namunaviy javob» tugmasi chiqadi: o'sha savol yoki kartochkaga Band 7 / B2 darajadagi javob va foydali iboralar. O'z javobingizni u bilan solishtiring."],
