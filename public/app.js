@@ -3554,6 +3554,7 @@ function keepSubsVisible() {
   state.subsScroll = setTimeout(() => {
     const sb = $("subs");
     if (sb.hidden || !$("lesson").classList.contains("active") || !($("subAi").textContent || $("subMe").textContent)) return;
+    if (!$("cue").hidden && !$("cueReady").hidden) return; // Part 2 tayyorlanishida kartochka (mavzu, taymer) ko'rinib tursin
     const r = sb.getBoundingClientRect(), ctl = $("controls").getBoundingClientRect().top;
     const dy = Math.min(r.bottom - ctl + 16, r.top - 70);
     if (r.bottom > ctl - 8 && dy > 0) window.scrollBy({ top: dy, behavior: "smooth" });
@@ -3923,6 +3924,23 @@ function startCuePrep() {
   let left = 60;
   $("cueTimer").textContent = "1:00";
   setPhase("idle", "⏳ Tayyorlanish vaqti");
+  $("hint").textContent = "Kartochkani o'qing va reja tuzing. Tayyor bo'lsangiz — «🎤 Tayyorman» ni bosing.";
+  // 📋 Reja andozasi: kartochka bandlari qaydlar maydoniga qo'yiladi — har biriga 2-3 kalit so'z yoziladi
+  if (!$("cueTpl")) {
+    const tb = el("button", "cue-tpl", "📋 Reja andozasi");
+    tb.id = "cueTpl";
+    tb.addEventListener("click", () => {
+      haptic();
+      const pts = [...$("cuePoints").querySelectorAll("li")].map((x) => x.textContent.replace(/^[✅\s]+/, "").trim());
+      const n = $("cueNotes");
+      if (n.value.trim() && !confirm("Qaydlaringiz andoza bilan almashtirilsinmi?")) return;
+      n.value = pts.map((t, i) => `${i + 1}. ${t} — `).join("\n");
+      n.rows = Math.max(3, pts.length);
+      n.focus();
+      n.setSelectionRange(n.value.indexOf("\n") > 0 ? n.value.indexOf("\n") : n.value.length, n.value.indexOf("\n") > 0 ? n.value.indexOf("\n") : n.value.length);
+    });
+    $("cueNotes").before(tb);
+  }
   clearInterval(state.cueTimer);
   state.cueTimer = setInterval(() => {
     left -= 1;
