@@ -1027,3 +1027,13 @@ body.dark .fold-tag.new { color: #fb7185; } body.dark .fold-tag.rep { color: #fb
 .qz-done { margin: 2px 0 8px; font-weight: 600; }
 .qz-missed { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-bottom: 8px; }
 .qz-missed small { width: 100%; color: var(--muted); }
+/* 🙈 Yoddan rejimi: inglizcha ibora xira, bosilsa yoki aytilsa ochiladi */
+.phrase-acts { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.phrase-acts .listen-btn { margin-top: 8px; }
+.recall-btn { color: var(--muted); background: color-mix(in srgb, var(--muted) 12%, transparent); }
+.recall-btn.on { color: var(--primary); background: color-mix(in srgb, var(--primary) 16%, transparent); }
+.phrase-card.recall:not(.done) .phrase-en:not(.shown) { filter: blur(7px); cursor: pointer; user-select: none; }
+/* Yoddan rejimida o'zbekchasi doim ko'rinadi (aks holda ikkalasi ham yashirin qoladi) */
+.phrase-card.recall:not(.done) .phrase-uz:not(.shown) { color: inherit; text-shadow: none; cursor: default; }
+.phrase-card.recall:not(.done) .phrase-uz:not(.shown)::after { content: none; }
+.phrase-card.recall .phrase-en.shown { animation: fade 0.2s ease; }

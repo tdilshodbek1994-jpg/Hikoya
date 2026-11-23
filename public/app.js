@@ -1894,6 +1894,7 @@ async function startLive(lesson) {
   $("slowBtn").hidden = true;
   $("subs").hidden = true; // jonli rejimda suhbat tarixi (chatlog) ko'rsatiladi
   $("listenBtn").hidden = true; // qo'ng'iroq paytida ibora ijrosi xalaqit beradi
+  $("recallBtn").hidden = true;
   $("phraseCard").hidden = Boolean(lesson.liveOnly); // Erkin suhbatda ibora kartasi shart emas
   $("chatlog").hidden = false;
   $("chatlog").innerHTML = "";
@@ -2063,6 +2064,7 @@ function resetLiveUi() {
   $("chatlog").hidden = true;
   $("muteBtn").hidden = true;
   $("listenBtn").hidden = false;
+  $("recallBtn").hidden = false;
   $("phraseCard").hidden = false;
 }
 
@@ -2142,6 +2144,7 @@ function renderTimer() {
 function renderPhrase() {
   const { lesson, used } = state;
   $("phraseUz").classList.remove("shown"); // yangi ibora — tarjima yana yashirin
+  $("phraseEn").classList.remove("shown");
   const seg = $("segments");
   seg.innerHTML = "";
   lesson.phrases.forEach((_, i) => {
@@ -2158,7 +2161,7 @@ function renderPhrase() {
   $("phraseUz").textContent = p.uz;
   const done = used.has(state.phraseIdx);
   $("phraseCard").classList.toggle("done", done);
-  $("phraseLabel").textContent = done ? "✓ Aytildi" : "Ovoz chiqarib ayting";
+  $("phraseLabel").textContent = done ? "✓ Aytildi" : $("phraseCard").classList.contains("recall") ? "🙈 Eslab ayting — tekshirish uchun bosing" : "Ovoz chiqarib ayting";
 }
 
 // 🟢🔴 So'zma-so'z: joriy iboradagi qaysi so'zlarni aytdi
@@ -2181,8 +2184,30 @@ function markWords(heard) {
   $("phraseLabel").textContent = hits === real.length ? "✓ Hamma so'zlar aytildi" : `${hits}/${real.length} so'z aytildi — qizillarini qo'shing`;
 }
 
+// 🙈 Yoddan: inglizcha ibora xiralashadi — o'quvchi o'zbekchasidan eslab aytadi, keyin bosib tekshiradi
+function applyRecall() {
+  const on = localStorage.getItem("sado-recall") === "1";
+  $("phraseCard").classList.toggle("recall", on);
+  $("recallBtn").classList.toggle("on", on);
+  $("recallBtn").setAttribute("aria-pressed", String(on));
+}
+applyRecall();
+$("recallBtn").addEventListener("click", () => {
+  haptic();
+  const on = localStorage.getItem("sado-recall") !== "1";
+  localStorage.setItem("sado-recall", on ? "1" : "0");
+  $("phraseEn").classList.remove("shown");
+  applyRecall();
+  if (state.lesson) renderPhrase();
+  toast(on ? "🙈 Inglizchasi yashirildi — o'zbekchasidan eslab ayting, tekshirish uchun bosing" : "👀 Inglizchasi yana ko'rinadi", 2600);
+});
+
 // ✍️ Yozma rejimda iborani bosish — uni javob maydoniga qo'yadi
 $("phraseEn").addEventListener("click", () => {
+  if ($("phraseCard").classList.contains("recall") && !$("phraseEn").classList.contains("shown") && !$("phraseCard").classList.contains("done")) {
+    haptic();
+    return $("phraseEn").classList.add("shown");
+  }
   if ($("textForm").hidden || !state.lesson) return;
   const p = state.lesson.phrases[state.phraseIdx];
   if (!p) return;
