@@ -301,16 +301,23 @@ export async function ttsRequest(body) {
 let useFallbackTts = false;
 const FALLBACK_TTS = { model: "tts-1", voice: process.env.TTS_FALLBACK_VOICE || "nova" };
 
+// Gemini xato bersa, har gapda kutib o'tirmaslik uchun 10 daqiqa unga murojaat qilmaymiz
+let geminiPausedUntil = 0;
+function pauseGemini(reason) {
+  geminiPausedUntil = Date.now() + 10 * 60_000;
+  console.error(`Gemini TTS xatosi (${GEMINI_TTS_MODEL}): ${reason} — 10 daqiqa OpenAI ovozi ishlatiladi`);
+}
+
 export async function speak(text, lang = "en", slow = false) {
   if (!text) return null;
   // O'zbekcha qismlar: avval Gemini (o'zbekchani tabiiyroq talaffuz qiladi)
-  if (lang === "uz" && GEMINI_KEY) {
+  if (lang === "uz" && GEMINI_KEY && Date.now() > geminiPausedUntil) {
     try {
       const g = await geminiTts(text, "uz", slow);
       if (g.audio) return { audio: g.audio, mime: g.mime };
-      console.error(`Gemini TTS xatosi (${GEMINI_TTS_MODEL}):`, g.error, "- OpenAI ovoziga o'tilmoqda");
+      pauseGemini(`${g.error}`.slice(0, 160));
     } catch (e) {
-      console.error("Gemini TTS ulanish xatosi:", e.message);
+      pauseGemini(e.message);
     }
   }
   if (!OPENAI_KEY) return null;
