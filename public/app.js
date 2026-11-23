@@ -207,6 +207,7 @@ async function loadProgress() {
   try {
     state.progress = await api("api/progress", { method: "GET" });
     try { localStorage.setItem("sado-progress", JSON.stringify({ uid, day: tashDay(), data: state.progress })); } catch {}
+    if (!localStorage.getItem("sado-badges")) localStorage.setItem("sado-badges", JSON.stringify(BADGES.filter((b) => b[3](state.progress)).map((b) => b[1])));
     renderChips();
     renderLessons();
   } catch {
@@ -343,6 +344,30 @@ function ruleBody(rule) {
   }
   if (box.querySelector(".rule-ex")) box.append(el("small", "rule-tip", "🔊 Misolni bosing — talaffuzini eshitasiz"));
   return box;
+}
+
+// 🏅 Yangi qo'lga kiritilgan yutuqlarni natija sahifasida e'lon qilamiz
+function announceBadges() {
+  const p = state.progress;
+  if (!p) return;
+  const have = BADGES.filter((b) => b[3](p)).map((b) => b[1]);
+  let seen;
+  try {
+    seen = JSON.parse(localStorage.getItem("sado-badges") || "null");
+  } catch {}
+  localStorage.setItem("sado-badges", JSON.stringify(have));
+  if (!Array.isArray(seen)) return; // birinchi marta — eskilarini "yangi" demaymiz
+  const fresh = BADGES.filter((b) => have.includes(b[1]) && !seen.includes(b[1]));
+  if (!fresh.length) return;
+  const box = el("div", "new-badge");
+  for (const b of fresh) {
+    const row = el("div", "nb-row");
+    row.append(el("span", "nb-ico", b[0]), el("div", "", ""));
+    row.lastChild.append(el("b", "", `Yangi yutuq: ${b[1]}!`), el("small", "", b[2]));
+    box.append(row);
+  }
+  $("report").before(box);
+  haptic("success");
 }
 
 // ⭐ Bolalar rejimi: har bir to'g'ri ibora uchun katta yulduz va maqtov
@@ -2600,6 +2625,7 @@ async function finish() {
     }
     renderReport(data.report, data.score);
     if (data.fixedNow) toast(`✅ ${data.fixedNow} ta xatoingiz tuzatildi deb belgilandi!`, 3500);
+    announceBadges();
     renderTranscript(data.transcript);
     renderSpeakStats(data.transcript);
   } catch {
@@ -2936,6 +2962,7 @@ function showResult() {
   });
   $("report").hidden = true;
   $("report").innerHTML = "";
+  document.querySelectorAll(".new-badge").forEach((x) => x.remove());
   $("shareBtn").hidden = true;
   $("transcript").hidden = true;
   $("cert").hidden = true;
