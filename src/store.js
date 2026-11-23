@@ -149,6 +149,19 @@ export function adminStats() {
     avgScore: all.length ? Math.round(all.reduce((s, h) => s + (h.score || 0), 0) / all.length) : 0,
     minutes: Math.round(users.reduce((s, u) => s + (u.seconds || 0), 0) / 60),
     top: Object.entries(byLesson).sort((a, b) => b[1] - a[1]).slice(0, 10),
+    mistakes: (() => {
+      // Eng ko'p uchraydigan tuzatishlar (to'g'ri variant bo'yicha guruhlanadi)
+      const m = new Map();
+      for (const u of users)
+        for (const w of u.words || []) {
+          if (w.type !== "fix") continue;
+          const k = w.en.toLowerCase().trim();
+          const e = m.get(k) || { right: w.en, wrong: w.wrong || "", why: w.uz || "", n: 0 };
+          e.n++;
+          m.set(k, e);
+        }
+      return [...m.values()].sort((a, b) => b.n - a.n).slice(0, 10);
+    })(),
     byDay: [...week].sort().map((k) => [k, byDay[k] || 0]),
   };
 }
