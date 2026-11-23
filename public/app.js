@@ -408,7 +408,13 @@ function saveQuiz(id, right, total) {
 }
 // 🔁 Xato qilingan test savollari (localStorage): xato — qo'shiladi, keyin to'g'ri javob — o'chiriladi
 const quizMisses = () => { try { return JSON.parse(localStorage.getItem("sado-qz-miss") || "[]"); } catch { return []; } };
+// 🎯 Umumiy aniqlik: barcha testlardagi javoblar
+const quizStats = () => { try { return JSON.parse(localStorage.getItem("sado-qz-stats")) || { ok: 0, all: 0 }; } catch { return { ok: 0, all: 0 }; } };
 function quizMiss(it, lessonId, ok) {
+  const st = quizStats();
+  st.all++;
+  if (ok) st.ok++;
+  localStorage.setItem("sado-qz-stats", JSON.stringify(st));
   if (!it.options) return;
   const text = `${it.before} ___${it.after}`;
   let list = quizMisses().filter((q) => q.text !== text);
@@ -472,7 +478,7 @@ function openSpeedTest() {
         const ok = o === it.answer;
         haptic(ok ? "light" : "medium");
         ok ? score++ : wrong++;
-        if (!ok) quizMiss(it, it.from, false);
+        quizMiss(it, it.from, ok);
         scoreEl.textContent = `✅ ${score}`;
         b.classList.add(ok ? "ok" : "bad");
         if (!ok) [...opts.children].find((x) => x.textContent === it.answer)?.classList.add("ok");
@@ -1640,9 +1646,14 @@ function renderLessons() {
         const perfect = gr.filter((x) => best[x.id] && best[x.id] === `${x.quiz.length}/${x.quiz.length}`);
         if (gr.length) {
           const row = el("div", "gr-quizbar");
-          row.append(el("span", "", `🧩 Mashqlar: ${perfect.length}/${gr.length} a'lo`));
+          // 🧪 Panel sarlavhasi: savollar soni va umumiy aniqlik
+          const st = quizStats();
+          const nQ = gr.reduce((n, x) => n + x.quiz.length, 0);
+          const top = el("div", "gq-top");
+          top.append(el("b", "", "🧪 Testlar"), el("span", "", `${nQ} ta savol · 🧩 ${perfect.length}/${gr.length} a'lo${st.all >= 5 ? ` · 🎯 ${Math.round((st.ok / st.all) * 100)}%` : ""}`));
+          row.append(top);
           const pool = gr.filter((x) => !perfect.includes(x));
-          const go = el("button", "", pool.length ? "🎲 Tasodifiy mashq" : "🎉 Hammasi a'lo — yana bir");
+          const go = el("button", "", pool.length ? "🎲 Tasodifiy mashq" : "🎉 Yana bir mashq");
           go.addEventListener("click", () => {
             haptic();
             const from = pool.length ? pool : gr;
@@ -1654,16 +1665,19 @@ function renderLessons() {
           });
           // 📝 Aralash test: barcha grammatika mavzularidan 10 ta savol
           const mixBest = quizBest()[`gr-mix${localStorage.getItem("sado-mix-lv") || ""}`];
-          const mix = el("button", "", mixBest ? `📝 Aralash test · 🏆 ${mixBest}` : "📝 Aralash test");
+          const mix = el("button", "", "📝 Aralash test");
+          if (mixBest) mix.append(el("small", "", `🏆 ${mixBest}`));
           mix.addEventListener("click", () => { haptic(); openMixTest(); });
           const btns = el("span", "gr-qbtns");
           const spBest = Number(localStorage.getItem("sado-speed-best")) || 0;
-          const sp = el("button", "", spBest ? `⚡ 60 soniya · 🏆 ${spBest}` : "⚡ 60 soniya");
+          const sp = el("button", "", "⚡ 60 soniya");
+          if (spBest) sp.append(el("small", "", `🏆 ${spBest} ta`));
           sp.addEventListener("click", () => { haptic(); openSpeedTest(); });
           btns.append(mix, sp, go);
           const nMiss = quizMisses().length;
           if (nMiss) {
-            const mb = el("button", "gr-miss", `🔁 Xato savollarim (${nMiss})`);
+            const mb = el("button", "gr-miss", "🔁 Xatolarim");
+            mb.append(el("small", "", `${nMiss} ta savol`));
             mb.addEventListener("click", () => { haptic(); openMissTest(); });
             btns.append(mb);
           }
