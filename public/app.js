@@ -710,11 +710,43 @@ function openSpeedTest() {
 
 // 📝 Aralash grammatika testi (barcha darslar savollaridan)
 // Daraja guruhlari: boshlang'ich (A1–A2), o'rta (A2-B1, B1), yuqori (B1-B2)
-const MIX_LEVELS = [["", "Hammasi"], ["beg", "🌱 A1–A2"], ["mid", "🌿 B1"], ["adv", "🌳 B2"]];
+const MIX_LEVELS = [["", "Hammasi"], ["beg", "🌱 A1–A2"], ["mid", "🌿 B1"], ["adv", "🌳 B2"], ["pick", "🎯 Tanlash"]];
+// 🎯 O'zi tanlagan mavzulardan test
+const mixPicked = () => { try { return JSON.parse(localStorage.getItem("sado-mix-pick") || "[]"); } catch { return []; } };
+function renderMixPicker(gr, box) {
+  box.innerHTML = "";
+  const sel = new Set(mixPicked().filter((id) => gr.some((l) => l.id === id)));
+  box.append(el("b", "", "🎯 Qaysi mavzulardan test tuzay?"));
+  const list = el("div", "mp-list");
+  const go = el("button", "btn primary wide mp-go");
+  const upd = () => {
+    const n = gr.filter((l) => sel.has(l.id)).reduce((a, l) => a + (l.quiz?.length || 0), 0);
+    go.textContent = sel.size ? `▶ Boshlash · ${sel.size} ta mavzu, ${Math.min(10, n)} ta savol` : "Kamida bitta mavzuni belgilang";
+    go.disabled = !sel.size;
+  };
+  let grp = "";
+  for (const l of gr) {
+    const g = mixLevelOf(l.level);
+    if (g !== grp) { grp = g; list.append(el("div", "mp-grp", MIX_LEVELS.find(([k]) => k === g)[1])); }
+    const b = el("button", "mp-item" + (sel.has(l.id) ? " on" : ""), `${l.emoji || "✏️"} ${l.title.replace(/^\d+\.\s*/, "")}`);
+    b.addEventListener("click", () => { haptic(); sel.has(l.id) ? sel.delete(l.id) : sel.add(l.id); b.classList.toggle("on"); upd(); });
+    list.append(b);
+  }
+  go.addEventListener("click", () => {
+    haptic();
+    const ids = gr.filter((l) => sel.has(l.id)).map((l) => l.id);
+    localStorage.setItem("sado-mix-pick", JSON.stringify(ids));
+    const quiz = gr.filter((l) => sel.has(l.id)).flatMap((l) => (l.quiz || []).map((q) => ({ ...q, from: l.id })));
+    renderQuiz({ id: "gr-mix", quiz }, box, `🎯 ${ids.length} ta mavzudan test · ${Math.min(10, quiz.length)} ta savol`, 10);
+  });
+  upd();
+  box.append(list, go);
+  box.hidden = false;
+}
 const mixLevelOf = (lv) => (/B2/.test(lv) ? "adv" : /A2-B1|^B1$/.test(lv) ? "mid" : "beg");
 function openMixTest(level = localStorage.getItem("sado-mix-lv") || "") {
   state.speedRun = (state.speedRun || 0) + 1; // tezkor test to'xtaydi
-  const gr = state.lessons.filter((l) => l.category === "Grammatika gapirib" && (!level || mixLevelOf(l.level) === level));
+  const gr = state.lessons.filter((l) => l.category === "Grammatika gapirib" && (!level || level === "pick" || mixLevelOf(l.level) === level));
   const quiz = gr.flatMap((l) => (l.quiz || []).map((q) => ({ ...q, from: l.id })));
   if (quiz.length < 4) return;
   localStorage.setItem("sado-mix-lv", level);
@@ -728,6 +760,7 @@ function openMixTest(level = localStorage.getItem("sado-mix-lv") || "") {
     b.addEventListener("click", () => { haptic(); openMixTest(k); });
     lv.append(b);
   }
+  if (level === "pick") return renderMixPicker(gr, $("mixQuiz"));
   renderQuiz({ id: "gr-mix", quiz }, $("mixQuiz"), `📝 Aralash test · ${quiz.length} ta savoldan 10 tasi`, 10);
 }
 $("mixClose").addEventListener("click", () => ($("mixSheet").hidden = true));
