@@ -18,7 +18,7 @@ const state = {
   seconds: 0,
   left: 0,
   timer: null,
-  mode: localStorage.getItem("sado-mode") || "auto",
+  mode: localStorage.getItem("sado-mode") === "hold" ? "hold" : "auto",
   subs: localStorage.getItem("sado-subs") === "1",
   tr: localStorage.getItem("sado-tr") !== "0", // o'zbekcha tarjimani ovozda aytish
   slow: localStorage.getItem("sado-slow") === "1", // 🐢 sekin gapirish
@@ -999,7 +999,8 @@ async function startLesson(lesson, lessonMode = "tutor") {
   stopAll();
 
   state.lesson = lesson;
-  state.used = new Set();
+  state.phraseIdx = 0;
+  if (state.mode === "text") state.mode = localStorage.getItem("sado-mode") === "hold" ? "hold" : "auto";
   state.phraseIdx = 0;
   state.session = null;
 
@@ -1368,8 +1369,9 @@ function setSubs(ai, aiUz, me, fix) {
 // ---------------- Rejimlar ----------------
 function applyMode() {
   for (const b of document.querySelectorAll(".mode")) b.classList.toggle("active", b.dataset.mode === state.mode);
-  const text = state.textOnly;
-  $("modeToggle").hidden = text;
+  // ✍️ "Yozish" — mikrofon bor bo'lsa ham vaqtincha yozib javob berish (masalan, jamoat joyida)
+  const text = state.textOnly || state.mode === "text";
+  $("modeToggle").hidden = state.textOnly;
   $("textForm").hidden = !text;
   $("phraseCard").classList.toggle("can-insert", text);
   applySubs();
@@ -1387,9 +1389,13 @@ $("modeToggle").addEventListener("click", (e) => {
   if (!b || b.dataset.mode === state.mode) return;
   haptic();
   state.mode = b.dataset.mode;
-  localStorage.setItem("sado-mode", state.mode);
+  if (state.mode !== "text") localStorage.setItem("sado-mode", state.mode); // yozish rejimi faqat shu dars uchun
   applyMode();
-  if (state.phase === "listening" && state.mode === "hold") {
+  if (state.mode === "text") {
+    if (state.phase === "listening") cancelRecording();
+    if (state.phase === "listening" || state.phase === "idle") setPhase("idle");
+    setTimeout(() => $("textInput").focus(), 50);
+  } else if (state.phase === "listening" && state.mode === "hold") {
     cancelRecording();
     setPhase("idle");
   } else if (state.phase === "idle" && state.mode === "auto" && state.session) {
@@ -1657,11 +1663,11 @@ async function sendTurn(payload) {
 }
 
 function applyHint() {
-  if (state.lessonMode === "tutor" && !state.textOnly) {
+  if (state.lessonMode === "tutor" && !state.textOnly && state.mode !== "text") {
     $("hint").textContent = "Sado aytgan iborani takrorlang yoki o'zbekcha so'rang.";
     return;
   }
-  $("hint").textContent = state.textOnly
+  $("hint").textContent = state.textOnly || state.mode === "text"
     ? "Javobingizni inglizcha yozing."
     : state.mode === "hold"
       ? "Tugmani bosib turing, gapiring va qo'yib yuboring."

@@ -649,3 +649,8 @@ body.dark .shadow-btn { color: #5eead4; }
 /* Tayyorlanish paytida faqat kartochka: ibora kartasi yashirinadi, maskot kichrayadi */
 #lesson:has(#cue:not([hidden]):not(.speaking)) .phrase-card { display: none; }
 #lesson:has(#cue:not([hidden])) .mascot { width: min(36vw, 140px); }
+
+/* Uch tugmali rejim tanlagich: "Yozish" ixchamroq */
+.mode[data-mode="text"] { flex: 0 0 auto; padding: 10px 12px; }
+/* Dars ekranida xabarlar sarlavha va taymerni yopmasin — maskot ustida chiqadi */
+body:has(#lesson.active) .toast { top: calc(34vh + var(--safe-t)); }
