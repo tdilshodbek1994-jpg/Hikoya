@@ -767,3 +767,7 @@ body:has(#lesson.active) .toast { top: calc(40vh + var(--safe-t)); }
 .stages .st.done { color: var(--ok); }
 .stages .st-line { flex: 1; height: 2px; min-width: 6px; background: color-mix(in srgb, var(--muted) 30%, transparent); }
 .stages .st-line.done { background: var(--ok); }
+
+/* 🎓 Sertifikat: ism va sana, keyingi kurs */
+.cert-who { margin-top: 6px; font-size: 13px; font-weight: 700; color: #92400e; letter-spacing: 0.3px; border-top: 1px dashed rgba(146, 64, 14, 0.35); padding-top: 6px; }
+.cert-next { margin-top: 8px; background: rgba(255, 255, 255, 0.7) !important; color: #92400e !important; }

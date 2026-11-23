@@ -2321,6 +2321,10 @@ function checkCourseDone(before) {
     el("div", "cert-c", l.category),
     el("div", "cert-s", `${all.length} ta dars · o'rtacha ${avg} ball`),
   );
+  // 👤 Shaxsiy sertifikat: Telegram ismi va sana
+  const who = [tg?.initDataUnsafe?.user?.first_name, tg?.initDataUnsafe?.user?.last_name].filter(Boolean).join(" ");
+  const d = new Date();
+  box.append(el("div", "cert-who", `${who ? who + " · " : ""}${d.getDate()}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}`));
   const share = el("button", "btn share wide", "📤 Yutuqni ulashish");
   share.addEventListener("click", () => {
     const text = `🎓 Sado AI'da «${l.category}» ni to'liq tugatdim!\n${all.length} ta dars · o'rtacha ${avg} ball\nSen ham sinab ko'r 👇`;
@@ -2329,6 +2333,21 @@ function checkCourseDone(before) {
     else window.open(link, "_blank");
   });
   box.append(share);
+  // ➡️ Keyingi kursni tavsiya qilamiz
+  const NEXT = { "Grammatika gapirib": "CEFR kursi", "CEFR kursi": "IELTS kursi", "IELTS kursi": "Imtihonlar" };
+  const nc = NEXT[l.category];
+  if (nc && state.lessons.some((x) => x.category === nc)) {
+    const go = el("button", "btn ghost wide cert-next", `➡️ Keyingi bosqich: ${CAT_ICONS[nc] || "📚"} ${nc}`);
+    go.addEventListener("click", () => {
+      haptic();
+      show("home");
+      state.filter.cat = nc;
+      renderChips();
+      renderLessons();
+      setTimeout(() => $("chips").scrollIntoView({ block: "start" }), 50);
+    });
+    box.append(go);
+  }
   box.hidden = false;
   confetti();
   haptic("success");
