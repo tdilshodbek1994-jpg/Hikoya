@@ -18,6 +18,7 @@
   .bar { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; font-size:11px; color:var(--muted); }
   .bar i { width:100%; background:var(--p); border-radius:6px 6px 2px 2px; min-height:3px; }
   .err { color:#e11d48; }
+  .bars.hours { gap: 2px; } .bars.hours .bar { font-size: 9px; }
 </style>
 </head>
 <body>
@@ -47,6 +48,9 @@ fetch("api/admin/stats", { headers: { "X-Admin-Key": key } })
       <p style="color:var(--muted);font-size:13px;margin:10px 2px 0">💾 Ovoz keshi: ${d.ttsCache.hits} marta qayta ishlatildi (tejaldi), ${d.ttsCache.misses} marta yangi yaratildi</p>
       <h2>📅 Oxirgi 7 kun (darslar)</h2>
       <div class="card"><div class="bars">${d.byDay.map(([k, n]) => `<div class="bar">${n}<i style="height:${(n / max) * 80}px"></i>${k.slice(5)}</div>`).join("")}</div></div>
+      <h2>🕐 Qaysi soatlarda mashq qilishadi (Toshkent)</h2>
+      <div class="card"><div class="bars hours">${(() => { const hm = Math.max(1, ...(d.byHour || [])); return (d.byHour || []).map((n, h) => `<div class="bar" title="${h}:00 — ${n} ta dars">${n || ""}<i style="height:${(n / hm) * 60}px"></i>${h % 3 === 0 ? h : ""}</div>`).join(""); })()}</div>
+      <p style="color:var(--muted);font-size:12px;margin:6px 0 0">${(() => { const h = d.byHour || []; const top = h.indexOf(Math.max(...h)); return Math.max(...h) ? `Eng faol soat: ${top}:00–${top + 1}:00. Eslatmani shu paytdan sal oldinroqqa qo'yish foydali.` : ""; })()}</p></div>
       <h2>🎛 Rejimlar</h2>
       <div class="card">${(d.byMode || []).map((m) => `<div class="row"><span>${esc(MODES[m.mode] || m.mode)} <small style="color:var(--muted)">· o'rtacha ${m.avg} ball</small></span><b>${m.n}</b></div>`).join("") || "<p>Hali dars yo'q</p>"}</div>
       <h2>✏️ Eng ko'p uchraydigan xatolar</h2>

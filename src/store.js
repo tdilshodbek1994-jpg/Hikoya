@@ -202,6 +202,15 @@ export function adminStats() {
       return [...m.values()].sort((a, b) => b.n - a.n).slice(0, 10);
     })(),
     byDay: [...week].sort().map((k) => [k, byDay[k] || 0]),
+    // 🕐 Soatlar bo'yicha (Toshkent vaqti): o'quvchilar qachon ko'proq mashq qiladi
+    byHour: (() => {
+      const h = Array(24).fill(0);
+      for (const x of all) {
+        const t = Date.parse(x.at);
+        if (t) h[new Date(t + 5 * 3600_000).getUTCHours()]++;
+      }
+      return h;
+    })(),
     // 🎛 Rejimlar bo'yicha: nechta dars va o'rtacha ball
     byMode: (() => {
       const m = {};
