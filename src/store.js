@@ -154,6 +154,7 @@ export function summary(userId) {
       const prev = u.history.filter((h) => inRange(h, 7, 14));
       return { n: cur.length, avg: avg(cur), prevAvg: avg(prev), prevN: prev.length };
     })(),
+    remind: Boolean(u.remind),
     words: (u.words || []).slice(-150).reverse(),
     // 🗓 Oxirgi 7 kun: qaysi kunlari mashq qilingan (eng eskisidan bugungacha)
     days7: Array.from({ length: 7 }, (_, i) => {
@@ -236,6 +237,23 @@ export function startsTodayTotal() {
 }
 
 // 🗑 Foydalanuvchi o'z ma'lumotlarini o'chiradi (kunlik limit hisobi saqlanadi)
+// 🔔 Kechki eslatma: o'quvchi o'zi yoqadi/o'chiradi
+export function setRemind(userId, on) {
+  user(userId).remind = Boolean(on);
+  save();
+}
+// Bugun eslatma kerak bo'lgan o'quvchilar: eslatma yoqilgan, seriyasi bor, bugun dars yo'q, bugun hali yozilmagan
+export function remindTargets() {
+  const d = today();
+  return Object.entries(db.users)
+    .filter(([id, u]) => u.remind && /^\d+$/.test(id) && u.lastRemind !== d && !u.days.includes(d) && streak(u.days) > 0)
+    .map(([id, u]) => ({ id, streak: streak(u.days) }));
+}
+export function markReminded(userId) {
+  user(userId).lastRemind = today();
+  save();
+}
+
 export function deleteUser(userId) {
   const u = db.users[userId];
   if (!u) return;

@@ -87,6 +87,9 @@ Har birida `WEBAPP_URL = "https://SIZNING-DOMEN.uz/speaking/"` qatorini o'z dome
 | `TTS_VOICE` | AI ovozi: `coral`, `alloy`, `nova`, `sage`... |
 | `SESSION_MINUTES` | Bitta dars davomiyligi (standart 10) |
 | `DAILY_SESSIONS` | Bir foydalanuvchi uchun kunlik darslar soni (standart 10) |
+| `REMINDERS` | `1` bo'lsa, o'quvchi sozlamalarda yoqqan **kechki eslatma** ishlaydi: seriyasi bor, lekin bugun dars qilmaganlarga bot xabar yuboradi (standart: o'chiq) |
+| `REMIND_HOUR` | Eslatma soati, Toshkent vaqti (standart 20) |
+| `WEBAPP_URL` | Eslatmadagi «🎤 Darsni boshlash» tugmasi ochadigan manzil, masalan `https://testmarkaz.online/speaking/` |
 | `ALLOW_DEV` | `1` bo'lsa Telegram'siz brauzerda sinash mumkin. **Serverda 0 qoldiring** |
 
 ## Yangi dars qo'shish

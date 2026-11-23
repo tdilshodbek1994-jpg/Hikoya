@@ -1124,6 +1124,14 @@ function renderSettings() {
     ["🐇 Gapirish tezligi", [["0", "🐇 Oddiy"], ["1", "🐢 Sekin"]], () => (state.slow ? "1" : "0"), (v) => { state.slow = v === "1"; localStorage.setItem("sado-slow", v); }],
     ["🇺🇿 O'zbekcha tarjimani aytish", [["1", "Ha"], ["0", "Yo'q"]], () => (state.tr ? "1" : "0"), (v) => { state.tr = v === "1"; localStorage.setItem("sado-tr", v); }],
     ["🎚 Ingliz tilim darajasi", [["beg", "🌱 Boshlovchi"], ["mid", "🌿 O'rtacha"], ["adv", "🌳 Yaxshi"]], () => localStorage.getItem("sado-level") || "", (v) => { localStorage.setItem("sado-level", v); renderNext(); }],
+    ...(state.progress?.remindAvailable
+      ? [["🔔 Kechki eslatma (Telegram)", [["1", "Ha"], ["0", "Yo'q"]], () => (state.progress?.remind ? "1" : "0"), (v) => {
+          state.progress.remind = v === "1";
+          api("api/remind", { json: { on: v === "1" } })
+            .then(() => toast(v === "1" ? "🔔 Seriya uzilay desa, kechqurun bot eslatadi" : "🔕 Eslatma o'chirildi"))
+            .catch((e) => toast(e.message));
+        }]]
+      : []),
     ["🎯 Kunlik maqsad", [["1", "1 dars"], ["2", "2 dars"], ["3", "3 dars"]], () => String(state.goal), (v) => { state.goal = Number(v); localStorage.setItem("sado-goal", v); renderGoal(); }],
     ["🌙 Ko'rinish", [["auto", "Avto"], ["light", "☀️ Kunduzgi"], ["dark", "🌙 Tungi"]], () => localStorage.getItem("sado-theme") || "auto", (v) => { localStorage.setItem("sado-theme", v); applyTheme(); }],
     ["Aa Matn o'lchami", [["0", "Oddiy"], ["1", "Katta"], ["2", "Juda katta"]], () => String((Number(localStorage.getItem("sado-font")) || 0) % 3), (v) => { localStorage.setItem("sado-font", v); applyFont(); }],

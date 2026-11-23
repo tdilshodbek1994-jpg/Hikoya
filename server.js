@@ -11,7 +11,7 @@ import { verifyInitData } from "./src/telegram.js";
 import { WebSocketServer } from "ws";
 import { liveEnabled, runLive } from "./src/live.js";
 import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies, ttsStats } from "./src/ai.js";
-import { recordSession, touchDay, summary, adminStats, startedToday, countStart, refundStart, startsTodayTotal, deleteUser } from "./src/store.js";
+import { recordSession, touchDay, summary, adminStats, startedToday, countStart, refundStart, startsTodayTotal, deleteUser, setRemind, remindTargets, markReminded } from "./src/store.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -387,9 +387,42 @@ app.delete("/api/progress", auth, (req, res) => {
   res.json({ ok: true });
 });
 
+// 🔔 Kechki eslatma (Telegram bot orqali). Standart holatda o'chiq: .env da REMINDERS=1 bo'lsa ishlaydi.
+const REMINDERS = process.env.REMINDERS === "1" && Boolean(BOT_TOKEN);
+const REMIND_HOUR = Number(process.env.REMIND_HOUR || 20); // Toshkent vaqti
+const TG_API = process.env.TELEGRAM_API || "https://api.telegram.org";
+app.post("/api/remind", express.json(), auth, (req, res) => {
+  if (!REMINDERS) return res.status(400).json({ error: "Eslatmalar serverda yoqilmagan" });
+  setRemind(req.userId, req.body?.on);
+  res.json({ ok: true, remind: Boolean(req.body?.on) });
+});
+async function sendReminders() {
+  const hour = new Date(Date.now() + 5 * 3600_000).getUTCHours();
+  if (hour !== REMIND_HOUR) return;
+  for (const t of remindTargets()) {
+    markReminded(t.id); // xato bo'lsa ham qayta-qayta yubormaymiz
+    const body = {
+      chat_id: t.id,
+      text: `🔥 Sizda ${t.streak} kunlik seriya bor! Bugun hali Sado bilan gaplashmadingiz — 5 daqiqalik bitta dars seriyani saqlab qoladi 💪`,
+    };
+    if (process.env.WEBAPP_URL) body.reply_markup = { inline_keyboard: [[{ text: "🎤 Darsni boshlash", web_app: { url: process.env.WEBAPP_URL } }]] };
+    try {
+      await fetch(`${TG_API}/bot${BOT_TOKEN}/sendMessage`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    } catch (e) {
+      console.error("Eslatma yuborilmadi:", e?.message || e);
+    }
+    await new Promise((r) => setTimeout(r, 60)); // Telegram limitlariga rioya
+  }
+}
+if (REMINDERS) {
+  setInterval(sendReminders, 10 * 60_000).unref();
+  setTimeout(sendReminders, 60_000).unref(); // server qayta yoqilganda ham o'tkazib yubormaslik uchun
+  console.log(`🔔 Kechki eslatmalar yoqilgan (soat ${REMIND_HOUR}:00, Toshkent)`);
+}
+
 app.get("/api/progress", auth, (req, res) => {
   const used = startedToday(req.userId);
-  res.json({ ...summary(req.userId), limit: req.userId === "dev" ? 0 : DAILY_SESSIONS, startedToday: used });
+  res.json({ ...summary(req.userId), limit: req.userId === "dev" ? 0 : DAILY_SESSIONS, startedToday: used, remindAvailable: REMINDERS });
 });
 
 // ⚡ Gzip: JS/CSS/HTML ~4 marta kichikroq yuboriladi (sekin mobil internet uchun).
