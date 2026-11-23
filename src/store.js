@@ -191,6 +191,9 @@ export function adminStats() {
     remindOn: users.filter((u) => u.remind).length,
     activeToday: users.filter((u) => u.days.includes(d)).length,
     activeWeek: users.filter((u) => u.days.some((x) => week.has(x))).length,
+    // 🔁 Qaytib kelayotganlar va bugun birinchi marta kelganlar
+    returning: users.filter((u) => new Set(u.days).size >= 2).length,
+    newToday: users.filter((u) => u.days.length && [...u.days].sort()[0] === d).length,
     lessons: all.length,
     lessonsToday: all.filter((h) => today(new Date(h.at)) === d).length,
     avgScore: all.length ? Math.round(all.reduce((s, h) => s + (h.score || 0), 0) / all.length) : 0,
