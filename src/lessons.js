@@ -1638,6 +1638,46 @@ export const LESSONS = [
     ],
   },
   {
+    id: "gr-simple",
+    category: "Grammatika gapirib",
+    title: "Hozirgi oddiy zamon (Present Simple)",
+    emoji: "🔁",
+    level: "A1-A2",
+    added: "2026-11-26",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on grammar: present simple for habits and facts, especially the -s ending with he / she / it (she works, he doesn't like, does she live?). Talk about the student's daily routine and the routine of a family member or friend. Have a natural conversation that makes the student use this grammar a lot. Ask simple questions, listen, whenever the student makes a mistake with this grammar, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "Let's talk about your family. What does your mother or father do every morning?",
+    openerUz: "Oilangiz haqida gaplashaylik. Onangiz yoki otangiz har kuni ertalab nima qiladi?",
+    phrases: [
+      { en: "I get up at seven every day.", uz: "Men har kuni soat yettida turaman." },
+      { en: "My father works in a bank.", uz: "Otam bankda ishlaydi." },
+      { en: "She doesn't drink coffee.", uz: "U qahva ichmaydi." },
+      { en: "Does your brother play football?", uz: "Akangiz futbol o'ynaydimi?" },
+      { en: "We usually have dinner at home.", uz: "Biz odatda uyda kechki ovqat qilamiz." },
+      { en: "He goes to school by bus.", uz: "U maktabga avtobusda boradi." },
+    ],
+  },
+  {
+    id: "gr-prepositions",
+    category: "Grammatika gapirib",
+    title: "Predloglar: in, on, at",
+    emoji: "📍",
+    level: "A2",
+    added: "2026-11-26",
+    role: "a fun, patient English teacher who explains grammar in Uzbek",
+    situation: "Speaking practice focused on grammar: prepositions of time and place in / on / at (in June, in the morning, on Monday, on my birthday, at 5 o'clock, at night; in Tashkent, in the kitchen, on the table, at home, at school, at the bus stop). Talk about the student's birthday, weekly schedule and where things are in their home. Have a natural conversation that makes the student use this grammar a lot. Ask simple questions, listen, whenever the student makes a mistake with this grammar, explain it briefly in Uzbek and give the correct English sentence, then ask them to say it again. Keep it fun and encouraging.",
+    opener: "When is your birthday? Tell me the month and the day.",
+    openerUz: "Tug'ilgan kuningiz qachon? Oy va kunini ayting.",
+    phrases: [
+      { en: "My birthday is in October.", uz: "Tug'ilgan kunim oktyabrda." },
+      { en: "I have English lessons on Monday.", uz: "Dushanba kuni ingliz tili darsim bor." },
+      { en: "The lesson starts at five o'clock.", uz: "Dars soat beshda boshlanadi." },
+      { en: "I study in the morning.", uz: "Men ertalab o'qiyman." },
+      { en: "My keys are on the table.", uz: "Kalitlarim stol ustida." },
+      { en: "I'm at home now.", uz: "Hozir uydaman." },
+    ],
+  },
+  {
     id: "gr-quantity",
     category: "Grammatika gapirib",
     title: "Miqdor: much, many, some, any",
@@ -2381,7 +2421,7 @@ const ORDER = ["Erkin suhbat", "Imtihonlar", "IELTS kursi", "CEFR kursi", "Gramm
 // IELTS kursi ichida: kirish -> Part 1 -> Part 2 -> Part 3
 const partRank = (l) => (/^ielts-intro/.test(l.id) ? 0 : /^ielts-p1/.test(l.id) ? 1 : /^ielts-p2/.test(l.id) ? 2 : /^ielts-p3/.test(l.id) ? 3 : 0);
 // Grammatika: osondan qiyinga
-const GR_ORDER = ["gr-continuous", "gr-past", "gr-pastcont", "gr-questions", "gr-quantity", "gr-articles", "gr-future", "gr-compare", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-relative", "gr-reported", "gr-passive"];
+const GR_ORDER = ["gr-simple", "gr-continuous", "gr-past", "gr-pastcont", "gr-questions", "gr-quantity", "gr-articles", "gr-prepositions", "gr-future", "gr-compare", "gr-modals", "gr-usedto", "gr-perfect", "gr-gerund", "gr-conditional", "gr-relative", "gr-reported", "gr-passive"];
 const grRank = (l) => (GR_ORDER.includes(l.id) ? GR_ORDER.indexOf(l.id) : 99);
 LESSONS.sort((a, b) => ORDER.indexOf(a.category) - ORDER.indexOf(b.category) || partRank(a) - partRank(b) || (a.category === "Grammatika gapirib" ? grRank(a) - grRank(b) : 0));
 // Kurs darslarini tartib raqami bilan nomlaymiz
@@ -2394,6 +2434,8 @@ for (const cat of ["IELTS kursi", "CEFR kursi", "Grammatika gapirib"]) {
 // ✏️ Grammatika darslari uchun qisqa qoida (o'zbekcha)
 // 🧩 Grammatika tez mashqi: "gap ___ bilan|to'g'ri|noto'g'ri|..." (birinchi variant — to'g'ri javob)
 const QUIZ = {
+  "gr-simple": ["She ___ in a hospital.|works|work|working", "My brother ___ like fish.|doesn't|don't|isn't", "___ your father drive a car?|Does|Do|Is", "We ___ tea every morning.|drink|drinks|are drink"],
+  "gr-prepositions": ["My birthday is ___ June.|in|on|at", "See you ___ Monday!|on|in|at", "The film starts ___ 8 o'clock.|at|in|on", "I'm ___ home now.|at|in|on"],
   "gr-continuous": ["Look! It ___ raining.|is|are|am", "They ___ watching a film now.|are|is|am", "I'm ___ my homework.|doing|do|did", "___ she working today?|Is|Are|Do"],
   "gr-past": ["Yesterday I ___ to the bazaar.|went|go|goed", "We ___ football last Sunday.|played|play|plaied", "___ you see the match?|Did|Do|Was", "She didn't ___ breakfast.|eat|ate|eaten"],
   "gr-pastcont": ["I ___ sleeping when you called.|was|were|am", "They ___ playing outside at 6 pm.|were|was|are", "What ___ you doing at 9 o'clock?|were|was|did", "I was walking ___ it started to rain.|when|while then|after that"],
@@ -2412,6 +2454,8 @@ const QUIZ = {
   "gr-passive": ["English ___ spoken all over the world.|is|are|was be", "This mosque was ___ in 1420.|built|build|builded", "The phone was invented ___ Bell.|by|from|with", "The letters ___ sent yesterday.|were|was|are"],
 };
 const RULES = {
+  "gr-simple": "Odat va doimiy narsalar: I/you/we/they + fe'l: I work. They live here.\nhe/she/it + fe'l-s: She works. He goes. It rains.\nInkor: don't / doesn't + fe'l: He doesn't like tea. (✗ He doesn't likes)\nSavol: Do you ...? Does she ...? Does he play football?",
+  "gr-prepositions": "in — oy, yil, kun qismi, shahar, xona:\nI was born in May. I study in the morning. I live in Tashkent.\non — hafta kuni, sana, narsa ustida:\nSee you on Monday. The cake is on the table.\nat — aniq soat, nuqta joy:\nThe lesson starts at five. I'm at home.",
   "gr-relative": "Odam uchun — who: a teacher who helps students.\nNarsa uchun — which yoki that: a phone which/that I bought.\nJoy uchun — where: a city where I was born.\nEgalik — whose: the girl whose brother is a pilot.\nIt's a place where you can buy medicine.",
   "gr-reported": "Ko'chirma gapda zamon bir pog'ona orqaga siljiydi: am/is → was, will → would, can → could, Past → had + V3.\n«I am tired.» → She said that she was tired.\nSavol: asked + if/where/what + darak tartib: He asked if I was ready. (✗ asked was I ready)\nVaqt so'zlari: tomorrow → the next day, today → that day.",
   "gr-pastcont": "O'tmishdagi ma'lum vaqtda davom etayotgan ish: was/were + fe'l-ing.\nI was reading at 8 pm. They were playing football.\nBoshqa ish to'satdan bo'lsa: when + Past Simple: I was walking when it started to rain.\nSavol: What were you doing? Inkor: She wasn't sleeping.",

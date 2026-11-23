@@ -3643,9 +3643,12 @@ function showOnboarding() {
 showOnboarding();
 
 // 🆕 Nima yangi: versiya o'zgarganda bir marta ko'rsatiladi (yangi foydalanuvchiga emas)
-const NEWS_VERSION = "2026-11-25";
+const NEWS_VERSION = "2026-11-26";
 const NEWS = [
-  "🆕 117 ta dars: Dorixona, Kvartira ijarasi, Kutubxona, Amaliyot suhbati, IELTS Part 2 va grammatika",
+  "🧩 Grammatika darslarida tez mashq: bo'sh joyni to'ldiring, natija saqlanadi",
+  "✏️ 2 ta yangi grammatika darsi: Present Simple (he/she + -s) va in / on / at",
+  "🇺🇿 Jonli suhbatda Sado gapini bosing — o'zbekcha tarjimasi chiqadi",
+  "🙈 «Yoddan» rejimi: inglizcha iborani eslab ayting",
   "🔁 «Takrorlash» filtri: past ballli va 7 kundan beri o'tilmagan darslar",
   "✅ Xatolar ustida ishlash: tuzatilgan xatolar belgilanadi, 🏅 yangi yutuqlar",
   "🃏 Aqlli kartochkalar: bilmagan so'zlaringiz oldinroq chiqadi",
