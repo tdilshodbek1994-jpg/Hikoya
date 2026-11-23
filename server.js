@@ -9,7 +9,7 @@ import { verifyInitData } from "./src/telegram.js";
 import { WebSocketServer } from "ws";
 import { liveEnabled, runLive } from "./src/live.js";
 import { chatTurn, tutorTurn, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies } from "./src/ai.js";
-import { recordSession, summary } from "./src/store.js";
+import { recordSession, summary, adminStats } from "./src/store.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -282,6 +282,18 @@ app.post("/api/hint", express.json(), auth, async (req, res) => {
   } catch (err) {
     sendError(res, err);
   }
+});
+
+// 📊 Admin statistikasi: /admin.html?key=ADMIN_KEY (kalit .env da)
+app.get("/api/admin/stats", (req, res) => {
+  const key = process.env.ADMIN_KEY || "";
+  const given = String(req.get("X-Admin-Key") || req.query.key || "");
+  const ok = key.length >= 8 && given.length === key.length && crypto.timingSafeEqual(Buffer.from(given), Buffer.from(key));
+  if (!ok) return res.status(403).json({ error: "Ruxsat yo'q" });
+  const s = adminStats();
+  s.top = s.top.map(([id, n]) => ({ id, n, title: getLesson(id)?.title || id, emoji: getLesson(id)?.emoji || "" }));
+  s.liveNow = [...sessions.values()].filter((x) => Date.now() < x.expiresAt).length;
+  res.json(s);
 });
 
 app.get("/api/progress", auth, (req, res) => {

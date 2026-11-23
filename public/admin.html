@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sado — statistika</title>
+<style>
+  :root { --bg:#f5f6fb; --card:#fff; --text:#141526; --muted:#6b7086; --line:#e6e8f0; --p:#4f46e5; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0f1020; --card:#1a1b2e; --text:#f1f2fa; --muted:#9a9db5; --line:#2a2c44; --p:#a5b4fc; } }
+  body { margin:0; font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:var(--bg); color:var(--text); padding:16px; max-width:640px; margin:0 auto; }
+  h1 { font-size:22px; margin:4px 0 14px; }
+  .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+  .k { background:var(--card); border-radius:16px; padding:14px; box-shadow:0 4px 16px rgba(0,0,0,.06); }
+  .k b { display:block; font-size:26px; } .k span { color:var(--muted); font-size:13px; }
+  h2 { font-size:15px; margin:18px 2px 8px; }
+  .card { background:var(--card); border-radius:16px; padding:12px 14px; box-shadow:0 4px 16px rgba(0,0,0,.06); }
+  .row { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--line); font-size:14px; } .row:last-child { border:0; }
+  .bars { display:flex; gap:8px; align-items:flex-end; height:110px; }
+  .bar { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; font-size:11px; color:var(--muted); }
+  .bar i { width:100%; background:var(--p); border-radius:6px 6px 2px 2px; min-height:3px; }
+  .err { color:#e11d48; }
+</style>
+</head>
+<body>
+<h1>📊 Sado — statistika</h1>
+<div id="out">Yuklanmoqda...</div>
+<script>
+const key = new URLSearchParams(location.search).get("key") || "";
+const out = document.getElementById("out");
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+fetch("api/admin/stats", { headers: { "X-Admin-Key": key } })
+  .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
+  .then(({ ok, d }) => {
+    if (!ok) return (out.innerHTML = `<p class="err">${esc(d.error || "Xato")}. Manzil oxiriga ?key=ADMIN_KEY qo'shing.</p>`);
+    const max = Math.max(1, ...d.byDay.map((x) => x[1]));
+    out.innerHTML = `
+      <div class="grid">
+        <div class="k"><b>${d.users}</b><span>jami o'quvchi</span></div>
+        <div class="k"><b>${d.activeToday}</b><span>bugun faol</span></div>
+        <div class="k"><b>${d.activeWeek}</b><span>7 kunda faol</span></div>
+        <div class="k"><b>${d.liveNow}</b><span>hozir darsda</span></div>
+        <div class="k"><b>${d.lessons}</b><span>jami darslar (bugun ${d.lessonsToday})</span></div>
+        <div class="k"><b>${d.avgScore}</b><span>o'rtacha ball · ${d.minutes} daqiqa</span></div>
+      </div>
+      <h2>📅 Oxirgi 7 kun (darslar)</h2>
+      <div class="card"><div class="bars">${d.byDay.map(([k, n]) => `<div class="bar">${n}<i style="height:${(n / max) * 80}px"></i>${k.slice(5)}</div>`).join("")}</div></div>
+      <h2>🔥 Eng mashhur mavzular</h2>
+      <div class="card">${d.top.map((t) => `<div class="row"><span>${esc(t.emoji)} ${esc(t.title)}</span><b>${t.n}</b></div>`).join("") || "<p>Hali dars yo'q</p>"}</div>`;
+  })
+  .catch(() => (out.innerHTML = '<p class="err">Server bilan aloqa yo\'q</p>'));
+</script>
+</body>
+</html>

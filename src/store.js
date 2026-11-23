@@ -112,3 +112,29 @@ export function summary(userId) {
     words: (u.words || []).slice(-150).reverse(),
   };
 }
+
+// 📊 Admin uchun umumiy statistika (shaxsiy ma'lumotsiz)
+export function adminStats() {
+  const users = Object.values(db.users);
+  const d = today();
+  const week = new Set(Array.from({ length: 7 }, (_, i) => today(new Date(Date.now() - i * 86400_000))));
+  const all = users.flatMap((u) => u.history);
+  const byLesson = {};
+  for (const h of all) byLesson[h.lessonId] = (byLesson[h.lessonId] || 0) + 1;
+  const byDay = {};
+  for (const h of all) {
+    const k = today(new Date(h.at));
+    if (week.has(k)) byDay[k] = (byDay[k] || 0) + 1;
+  }
+  return {
+    users: users.length,
+    activeToday: users.filter((u) => u.days.includes(d)).length,
+    activeWeek: users.filter((u) => u.days.some((x) => week.has(x))).length,
+    lessons: all.length,
+    lessonsToday: all.filter((h) => today(new Date(h.at)) === d).length,
+    avgScore: all.length ? Math.round(all.reduce((s, h) => s + (h.score || 0), 0) / all.length) : 0,
+    minutes: Math.round(users.reduce((s, u) => s + (u.seconds || 0), 0) / 60),
+    top: Object.entries(byLesson).sort((a, b) => b[1] - a[1]).slice(0, 10),
+    byDay: [...week].sort().map((k) => [k, byDay[k] || 0]),
+  };
+}
