@@ -1035,8 +1035,15 @@ function renderTrend() {
       haptic();
       for (const c of bars.children) c.classList.toggle("sel", c === col);
       const d = new Date(r.at);
-      const when = isNaN(d) ? "" : ` · ${d.getDate()}.${String(d.getMonth() + 1).padStart(2, "0")}`;
-      info.textContent = `${l?.emoji || "📘"} ${l?.title || "Dars"} — ${r.score} ball${r.level ? ` (${r.level})` : ""}${when}`;
+      const when = isNaN(d) ? "" : `\u00a0·\u00a0${d.getDate()}.${String(d.getMonth() + 1).padStart(2, "0")}`; // sana alohida qatorga tushmasin
+      info.innerHTML = "";
+      info.append(el("span", "", `${l?.emoji || "📘"} ${l?.title || "Dars"} — ${r.score} ball${r.level ? ` (${r.level})` : ""}${when}`));
+      // 🔁 Shu darsni darhol qayta o'tish (ballni oshirish uchun)
+      if (l && !l.liveOnly) {
+        const again = el("button", "trend-again", "🔁 Qayta o'tish");
+        again.addEventListener("click", (e) => { e.stopPropagation(); haptic(); openSheet(l); });
+        info.append(again);
+      }
       info.hidden = false;
     });
     bars.append(col);
