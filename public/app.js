@@ -2035,6 +2035,7 @@ function renderLessons() {
     });
     list.append(t);
   }
+  let pendingContinue = null;
   for (const l of items) {
     if (l.category && l.category !== lastCat) {
       lastCat = l.category;
@@ -2048,6 +2049,17 @@ function renderLessons() {
         bar.append(el("i", ""), el("em", "", `${n}/${all.length}`));
         bar.firstChild.style.width = `${Math.round((n / all.length) * 100)}%`;
         head.append(bar);
+      }
+      // ▶ Boshlangan kursda — keyingi o'tilmagan darsga bir bosishda o'tish (ro'yxatni aylanib qidirmaslik uchun)
+      if (state.filter.cat === l.category && !state.filter.q && all.length > 1) {
+        const n = all.filter((x) => done[x.id]).length;
+        const nx = items.find((x) => x.category === l.category && !done[x.id] && !x.liveOnly);
+        if (n > 0 && nx) {
+          const cb = el("button", "cat-continue");
+          cb.append(el("span", "", "▶ Davom etish"), el("b", "", `${nx.emoji || ""} ${nx.title}`));
+          cb.addEventListener("click", () => { haptic(); openSheet(nx); });
+          pendingContinue = cb;
+        }
       }
       // ▾/▸ "Hammasi" ko'rinishida bo'limni yig'ish/ochish (qidiruv va filtrda doim ochiq)
       if (canFold) {
@@ -2087,6 +2099,8 @@ function renderLessons() {
         });
       }
       list.append(head);
+      if (pendingContinue) list.append(pendingContinue);
+      pendingContinue = null;
       // 🧩 Grammatika: mashqlar hisobi va tasodifiy (hali a'lo bo'lmagan) mashq
       if (l.category === "Grammatika gapirib" && !q && !(canFold && folded.has(l.category))) {
         const gr = state.lessons.filter((x) => x.category === l.category && x.quiz?.length);

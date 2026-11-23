@@ -1290,3 +1290,8 @@ body.dark .acc-tag.hi { color: #4ade80; } body.dark .acc-tag.mid { color: #fbbf2
 
 /* 👀 Subtitr ko'rinib turganda maskot kichrayadi — Sado gapi pastki tugmalar ortida qolmaydi */
 #lesson:not(.is-live):has(#subs:not([hidden]) #subAi:not(:empty)) .mascot { width: min(40vw, 160px); transition: width 0.3s ease; }
+
+/* ▶ Kursni davom ettirish */
+.cat-continue { display: flex; align-items: center; gap: 10px; width: 100%; margin: 2px 0 12px; padding: 12px 14px; border: 0; border-radius: 16px; font: inherit; text-align: left; color: #fff; background: linear-gradient(135deg, #4f46e5, #6366f1); box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25); }
+.cat-continue span { flex-shrink: 0; font-size: 13px; font-weight: 800; padding: 4px 10px; border-radius: 99px; background: rgba(255, 255, 255, 0.2); }
+.cat-continue b { font-size: 15px; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
