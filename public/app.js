@@ -4592,7 +4592,7 @@ const FAQ = [
   ["Grammatikani qanday mustahkamlayman?", "Grammatika bo'limidagi «🧪 Testlar» panelida: 📅 Bugungi test (har kuni 5 savol), 📝 Aralash test (daraja tanlab), ⚡ 60 soniya, 📊 Daraja testi va 🔁 Xatolarim. «🎯 %» ni bosing — qaysi mavzu zaif ekanini ko'rasiz. Har bir darsda ham «🧩 Tez mashq» bor.", "✏️ Grammatika darslari", () => { $("helpSheet").hidden = true; state.filter.cat = "Grammatika gapirib"; renderChips(); renderLessons(); scrollToList(true); }],
   ["O'zbekcha gapirsam bo'ladimi?", "Ha! Sado o'zbekcha tushunadi, o'zbekcha tushuntiradi va buni inglizcha qanday aytishni o'rgatadi."],
   ["Ball qanday qo'yiladi?", "Dars oxirida AI gaplaringizni tahlil qilib 0–100 ball, daraja (CEFR yoki IELTS band), xatolar va maslahatlar beradi."],
-  ["Kuniga nechta dars?", "Kunlik limit bor — qolgan darslar soni bosh sahifadagi «Bugungi maqsad» blokida ko'rinadi. Limit har kuni yangilanadi."],
+  ["Kuniga nechta dars?", "Cheklov yo'q — xohlaganingizcha mashq qiling! Kunlik maqsadni (1–3 dars) bosh sahifadagi «🎯 Bugungi maqsad» blokida yoki ⚙️ Sozlamalarda tanlaysiz."],
   ["Ma'lumotlarim xavfsizmi?", "Ovozingiz dars paytida tahlil uchun AI xizmatlariga (OpenAI, Google, Anthropic) yuboriladi, lekin Sado serverida saqlanmaydi. Serverda faqat ballar, o'tilgan darslar va lug'at saqlanadi."],
 ];
 function renderFaq() {

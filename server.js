@@ -18,7 +18,7 @@ const PORT = Number(process.env.PORT || 3000);
 const BOT_TOKEN = process.env.BOT_TOKEN || "";
 const ALLOW_DEV = process.env.ALLOW_DEV === "1"; // Telegram'siz brauzerda sinash uchun
 const SESSION_MINUTES = Number(process.env.SESSION_MINUTES || 10);
-const DAILY_SESSIONS = Number(process.env.DAILY_SESSIONS || 10);
+const DAILY_SESSIONS = Number(process.env.DAILY_SESSIONS || 0); // 0 = cheksiz (kunlik limit yo'q)
 const MAX_TURNS = 60;
 
 if (!BOT_TOKEN && !ALLOW_DEV) {
@@ -152,7 +152,7 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
     });
 
   const count = startedToday(req.userId);
-  if (req.userId !== "dev" && count >= DAILY_SESSIONS) {
+  if (req.userId !== "dev" && DAILY_SESSIONS > 0 && count >= DAILY_SESSIONS) {
     return res.status(429).json({ error: `Bugungi limit tugadi (${DAILY_SESSIONS} ta dars). Ertaga davom etamiz!` });
   }
   countStart(req.userId);
@@ -515,7 +515,7 @@ if (REMINDERS) {
 
 app.get("/api/progress", auth, (req, res) => {
   const used = startedToday(req.userId);
-  res.json({ ...summary(req.userId), limit: req.userId === "dev" ? 0 : DAILY_SESSIONS, startedToday: used, remindAvailable: REMINDERS, remindDefault: REMIND_HOUR });
+  res.json({ ...summary(req.userId), limit: req.userId === "dev" || DAILY_SESSIONS <= 0 ? 0 : DAILY_SESSIONS, startedToday: used, remindAvailable: REMINDERS, remindDefault: REMIND_HOUR });
 });
 
 // ⚡ Gzip: JS/CSS/HTML ~4 marta kichikroq yuboriladi (sekin mobil internet uchun).
