@@ -394,8 +394,20 @@ $("ruleBtn").addEventListener("click", () => {
 function renderVisual(lesson) {
   const box = $("visual");
   const v = lesson?.visual;
-  box.hidden = !v;
+  box.hidden = !v && !lesson?.questions;
   box.innerHTML = "";
+  // ❓ IELTS Part 3 savollari — yig'iladigan ro'yxat
+  if (!v && lesson?.questions) {
+    const d = document.createElement("details");
+    d.className = "vis-q";
+    const sm = document.createElement("summary");
+    sm.textContent = `❓ ${lesson.questions.length} ta savol — oldindan o'ylab oling`;
+    const ol = el("ol", "");
+    for (const q of lesson.questions) ol.append(el("li", "", q));
+    d.append(sm, ol, el("small", "", "💡 Har biriga 2–4 gap: fikr + sabab + misol. «I'd argue that... because... For example...»"));
+    box.append(d);
+    return;
+  }
   if (!v) return;
   if (v.type === "pictures") {
     box.append(el("div", "vis-title", "🖼 Rasmlar"));

@@ -2396,6 +2396,13 @@ const IELTS_STAGES = [{ key: "1", label: "Part 1" }, { key: "2", label: "Part 2"
 const CEFR_STAGES = [{ key: "1.1", label: "1.1" }, { key: "1.2", label: "1.2" }, { key: "2", label: "Part 2" }, { key: "3", label: "Part 3" }];
 const STAGES = { ielts: IELTS_STAGES, cefr: CEFR_STAGES, "cefr-8": CEFR_STAGES };
 
+// ❓ IELTS Part 3: muhokama savollari (o'quvchi oldindan ko'rib, o'ylab oladi)
+function p3Questions(l) {
+  if (!/^ielts-p3/.test(l.id)) return null;
+  const m = l.situation.match(/Ask these questions one at a time:\s*(.+?)\.\s*After each/);
+  return m ? m[1].split(/;\s*/).map((x) => x.replace(/^\(\d\)\s*/, "").trim()).filter(Boolean) : null;
+}
+
 export function publicLesson(l) {
   return {
     id: l.id,
@@ -2408,6 +2415,7 @@ export function publicLesson(l) {
     rule: l.rule || "",
     visual: VISUALS[l.id] || null,
     stages: STAGES[l.id] || null,
+    questions: p3Questions(l),
     category: l.category || "",
     phrases: l.phrases,
   };

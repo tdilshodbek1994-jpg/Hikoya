@@ -846,3 +846,11 @@ body.dark .pill.warn { color: #fbbf24; }
 .rep-rule summary::after { content: " ▾"; color: var(--muted); }
 .rep-rule[open] summary::after { content: " ▴"; }
 .rep-rule .rule-body { margin-top: 6px; }
+
+/* ❓ Part 3 savollari */
+.vis-q summary { font-weight: 700; font-size: 14px; cursor: pointer; list-style: none; }
+.vis-q summary::-webkit-details-marker { display: none; }
+.vis-q summary::after { content: " ▾"; color: var(--muted); }
+.vis-q[open] summary::after { content: " ▴"; }
+.vis-q ol { margin: 8px 0 6px; padding-left: 20px; font-size: 14px; line-height: 1.5; }
+.vis-q small { display: block; font-size: 12px; color: var(--muted); }
