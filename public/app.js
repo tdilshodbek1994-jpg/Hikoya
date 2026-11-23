@@ -545,13 +545,19 @@ function renderLessons() {
   renderNext();
   const list = $("lessonList");
   list.innerHTML = "";
-  const q = state.filter.q.trim().toLowerCase();
-  const items = state.lessons.filter(
-    (l) =>
-      !l.liveOnly &&
-      (!state.filter.cat || (state.filter.cat === "__fav" ? state.favs.has(l.id) : l.category === state.filter.cat)) &&
-      (!q || (l.title + " " + l.category + " " + l.phrases.map((p) => p.en + " " + p.uz).join(" ")).toLowerCase().includes(q)),
-  );
+  // O'zbekcha tutuq belgilari (o' oʻ o` o’) va katta-kichik harf farqi hisobga olinmaydi
+  const norm = (t) => t.toLowerCase().replace(/[‘’ʻʼ`´']/g, "'").replace(/\s+/g, " ");
+  const q = norm(state.filter.q.trim());
+  const hits = new Map(); // dars id -> topilgan ibora
+  const items = state.lessons.filter((l) => {
+    if (l.liveOnly) return false;
+    if (state.filter.cat && !(state.filter.cat === "__fav" ? state.favs.has(l.id) : l.category === state.filter.cat)) return false;
+    if (!q) return true;
+    if (norm(l.title + " " + l.category).includes(q)) return true;
+    const p = l.phrases.find((x) => norm(x.en + " " + x.uz).includes(q));
+    if (p) hits.set(l.id, p);
+    return Boolean(p);
+  });
   if (!items.length) {
     list.append(el("p", "note", "Hech narsa topilmadi. Boshqa so'z bilan qidirib ko'ring."));
     return;
@@ -582,7 +588,14 @@ function renderLessons() {
       lastPart = part;
       list.append(el("div", "part-title", PART_NAMES[part]));
     }
-    list.appendChild(lessonButton(l));
+    const btn = lessonButton(l);
+    const hit = hits.get(l.id);
+    if (hit) {
+      const m = el("div", "hit");
+      m.append(el("b", "", hit.en), document.createTextNode(" — " + hit.uz));
+      btn.querySelector(".lesson-info").append(m);
+    }
+    list.appendChild(btn);
   }
 }
 
