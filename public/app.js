@@ -96,7 +96,8 @@ function toast(msg, ms = 2600) {
   toast.t = setTimeout(() => (el.hidden = true), ms);
 }
 
-async function api(path, { json, body, headers = {}, method = "POST", timeout = 0 } = {}) {
+// ⏱ Har qanday so'rov ko'pi bilan 60 s kutiladi — server yoki AI javob bermasa ilova qotib qolmaydi
+async function api(path, { json, body, headers = {}, method = "POST", timeout = 60_000 } = {}) {
   const h = { "X-Telegram-Init-Data": tg?.initData || "", ...headers };
   if (json) h["Content-Type"] = "application/json";
   let res;
