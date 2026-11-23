@@ -106,6 +106,7 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
     mode,
     current: 0,
     transcript: [],
+    slow: Boolean(req.body?.slow),
     startedAt: Date.now(),
     expiresAt: Date.now() + SESSION_MINUTES * 60_000,
   });
@@ -117,7 +118,7 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
     }
     if (mode === "tutor") {
       const say = tutorOpener(lesson);
-      const parts = await speakParts(say);
+      const parts = await speakParts(say, { slow: Boolean(req.body?.slow) });
       return res.json({
         session: id,
         mode,
@@ -133,7 +134,7 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
     const parts = await speakParts([
       { lang: "en", text: lesson.opener },
       ...(tr ? [{ lang: "uz", text: lesson.openerUz }] : []),
-    ]);
+    ], { slow: Boolean(req.body?.slow) });
     res.json({
       session: id,
       mode,
@@ -161,6 +162,7 @@ app.post(
     if (s.turns >= MAX_TURNS) return res.status(429).json({ error: "Bu darsda gaplar soni tugadi." });
 
     const lesson = getLesson(s.lessonId);
+    if (req.query.slow !== undefined) s.slow = req.query.slow === "1";
     s.busy = true;
     try {
       let text = "";
@@ -178,7 +180,7 @@ app.post(
         s.transcript.push({ who: "student", text }, { who: "sado", text: t.say.map((x) => x.text).join(" ") });
         for (const i of t.used_phrases) s.used.add(i);
         s.current = t.current;
-        const parts = await speakParts(t.say);
+        const parts = await speakParts(t.say, { slow: s.slow });
         return res.json({
           heard: text,
           reply: t.say.map((x) => x.text).join(" "),
@@ -201,7 +203,7 @@ app.post(
         { lang: "uz", text: result.uz_say },
         { lang: "en", text: result.reply },
         ...(tr ? [{ lang: "uz", text: result.reply_uz }] : []),
-      ]);
+      ], { slow: s.slow });
 
       res.json({
         heard: text,
@@ -254,14 +256,16 @@ const sayCache = new Map();
 app.get("/api/say", auth, async (req, res) => {
   const text = String(req.query.text || "");
   if (!PHRASES.has(text)) return res.status(400).json({ error: "Noma'lum ibora" });
+  const slow = req.query.slow === "1";
+  const key = (slow ? "slow:" : "") + text;
   try {
-    if (!sayCache.has(text)) {
-      const [part] = await speakParts([{ lang: "en", text: text.replace(/\.\.\./g, "something") }]);
+    if (!sayCache.has(key)) {
+      const [part] = await speakParts([{ lang: "en", text: text.replace(/\.\.\./g, "something") }], { slow });
       if (!part?.audio) return res.status(503).json({ error: "Ovoz xizmati ishlamayapti" });
-      sayCache.set(text, part);
+      sayCache.set(key, part);
       if (sayCache.size > 400) sayCache.delete(sayCache.keys().next().value);
     }
-    res.json(sayCache.get(text));
+    res.json(sayCache.get(key));
   } catch (err) {
     sendError(res, err);
   }

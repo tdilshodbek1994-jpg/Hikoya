@@ -21,6 +21,7 @@ const state = {
   mode: localStorage.getItem("sado-mode") || "auto",
   subs: localStorage.getItem("sado-subs") === "1",
   tr: localStorage.getItem("sado-tr") !== "0", // o'zbekcha tarjimani ovozda aytish
+  slow: localStorage.getItem("sado-slow") === "1", // 🐢 sekin gapirish
   phase: "idle", // idle | listening | thinking | speaking | ended
   textOnly: false,
 };
@@ -506,6 +507,7 @@ async function startLesson(lesson, lessonMode = "tutor") {
   applyMode();
   applySubs();
   applyTr();
+  applySlow();
   setSubs("", "", "", "");
   setPhase("thinking", "Tayyorlanmoqda...");
   $("hint").textContent = "";
@@ -515,7 +517,7 @@ async function startLesson(lesson, lessonMode = "tutor") {
 
   try {
     const data = await api("api/session", {
-      json: { lessonId: lesson.id, translate: state.tr, mode: state.lessonMode },
+      json: { lessonId: lesson.id, translate: state.tr, mode: state.lessonMode, slow: state.slow },
     });
     state.session = data.session;
     if (Number.isInteger(data.current)) {
@@ -553,6 +555,7 @@ async function startLive(lesson) {
   $("holdBtn").hidden = true;
   $("textForm").hidden = true;
   $("trBtn").hidden = true;
+  $("slowBtn").hidden = true;
   $("subs").hidden = true; // jonli rejimda suhbat tarixi (chatlog) ko'rsatiladi
   $("listenBtn").hidden = true; // qo'ng'iroq paytida ibora ijrosi xalaqit beradi
   $("phraseCard").hidden = Boolean(lesson.liveOnly); // Erkin suhbatda ibora kartasi shart emas
@@ -746,10 +749,11 @@ $("listenBtn").addEventListener("click", async () => {
   if (wasListening) cancelRecording();
   try {
     ensureCtx();
-    let part = sayCache.get(p.en);
+    const key = (state.slow ? "slow:" : "") + p.en;
+    let part = sayCache.get(key);
     if (!part) {
-      part = await api(`api/say?text=${encodeURIComponent(p.en)}`, { method: "GET" }).catch(() => null);
-      if (part?.audio) sayCache.set(p.en, part);
+      part = await api(`api/say?text=${encodeURIComponent(p.en)}&slow=${state.slow ? 1 : 0}`, { method: "GET" }).catch(() => null);
+      if (part?.audio) sayCache.set(key, part);
     }
     if (part?.audio) await playMp3(part.audio, part.mime);
     else await speakBrowser(p.en.replace(/\.\.\./g, "something"), "en");
@@ -822,6 +826,19 @@ $("modeToggle").addEventListener("click", (e) => {
   } else if (state.phase === "idle" && state.mode === "auto" && state.session) {
     listenAuto();
   }
+});
+
+function applySlow() {
+  $("slowBtn").hidden = state.lessonMode === "live";
+  $("slowBtn").classList.toggle("on", state.slow);
+  $("slowBtn").textContent = state.slow ? "🐢 Sekin" : "🐇 Oddiy";
+}
+$("slowBtn").addEventListener("click", () => {
+  haptic();
+  state.slow = !state.slow;
+  localStorage.setItem("sado-slow", state.slow ? "1" : "0");
+  applySlow();
+  toast(state.slow ? "🐢 Sado endi sekinroq va aniqroq gapiradi" : "🐇 Sado odatdagi tezlikda gapiradi", 2500);
 });
 
 function applyTr() {
@@ -1013,7 +1030,7 @@ async function sendTurn(payload) {
   setPhase("thinking");
   try {
     const data = await api(
-      `api/turn?session=${encodeURIComponent(state.session)}&tr=${state.tr ? 1 : 0}`,
+      `api/turn?session=${encodeURIComponent(state.session)}&tr=${state.tr ? 1 : 0}&slow=${state.slow ? 1 : 0}`,
       payload,
     );
     if (state.phase === "ended") return;
@@ -1184,7 +1201,7 @@ function speakBrowser(text, lang = "en") {
     if (!window.speechSynthesis || !text) return setTimeout(resolve, 1200);
     const u = new SpeechSynthesisUtterance(text);
     u.lang = lang === "uz" ? "uz-UZ" : "en-US";
-    u.rate = 0.95;
+    u.rate = state.slow ? 0.75 : 0.95;
     let raf = 0;
     const fake = (t) => {
       mascot.setLevel(0.35 + Math.abs(Math.sin(t / 90)) * 0.5);

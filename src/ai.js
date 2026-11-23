@@ -260,13 +260,15 @@ const GEMINI_STYLE = {
 };
 
 // Gemini TTS so'rovi. Muvaffaqiyatda { audio (base64 wav), mime }, aks holda { error }.
-export async function geminiTts(text, lang = "uz") {
+const SLOW_NOTE = " Speak slowly and very clearly, with small pauses between phrases, for a beginner learner.";
+
+export async function geminiTts(text, lang = "uz", slow = false) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_TTS_MODEL}:generateContent`;
   const res = await fetch(url, {
     method: "POST",
     headers: { "x-goog-api-key": GEMINI_KEY, "Content-Type": "application/json" },
     body: JSON.stringify({
-      contents: [{ parts: [{ text: `${GEMINI_STYLE[lang] || GEMINI_STYLE.uz}\n\n${text}` }] }],
+      contents: [{ parts: [{ text: `${GEMINI_STYLE[lang] || GEMINI_STYLE.uz}${slow ? SLOW_NOTE : ""}\n\n${text}` }] }],
       generationConfig: {
         responseModalities: ["AUDIO"],
         speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: GEMINI_VOICE } } },
@@ -299,12 +301,12 @@ export async function ttsRequest(body) {
 let useFallbackTts = false;
 const FALLBACK_TTS = { model: "tts-1", voice: process.env.TTS_FALLBACK_VOICE || "nova" };
 
-export async function speak(text, lang = "en") {
+export async function speak(text, lang = "en", slow = false) {
   if (!text) return null;
   // O'zbekcha qismlar: avval Gemini (o'zbekchani tabiiyroq talaffuz qiladi)
   if (lang === "uz" && GEMINI_KEY) {
     try {
-      const g = await geminiTts(text, "uz");
+      const g = await geminiTts(text, "uz", slow);
       if (g.audio) return { audio: g.audio, mime: g.mime };
       console.error(`Gemini TTS xatosi (${GEMINI_TTS_MODEL}):`, g.error, "- OpenAI ovoziga o'tilmoqda");
     } catch (e) {
@@ -317,12 +319,12 @@ export async function speak(text, lang = "en") {
       model: TTS_MODEL,
       voice: TTS_VOICE,
       input: text,
-      instructions: TTS_STYLE[lang] || TTS_STYLE.en,
+      instructions: (TTS_STYLE[lang] || TTS_STYLE.en) + (slow ? SLOW_NOTE : ""),
     });
     if (r.audio) return { audio: r.audio, mime: "audio/mpeg" };
     console.error(`TTS xatosi (${TTS_MODEL}):`, r.error, "- zaxira tts-1 ga o'tilmoqda");
   }
-  const f = await ttsRequest({ ...FALLBACK_TTS, input: text });
+  const f = await ttsRequest({ ...FALLBACK_TTS, input: text, ...(slow ? { speed: 0.8 } : {}) });
   if (f.audio) {
     useFallbackTts = true;
     return { audio: f.audio, mime: "audio/mpeg" };
@@ -331,11 +333,11 @@ export async function speak(text, lang = "en") {
   return null;
 }
 
-export async function speakParts(parts) {
+export async function speakParts(parts, { slow = false } = {}) {
   const list = parts.filter((p) => p.text && p.text.trim());
   const audios = await Promise.all(
     list.map((p) =>
-      speak(p.text, p.lang).catch((err) => {
+      speak(p.text, p.lang, slow).catch((err) => {
         console.error("TTS xatosi:", err?.message || err);
         return null;
       }),
