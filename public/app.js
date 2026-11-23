@@ -1312,9 +1312,18 @@ $("holdBtn").addEventListener("pointerdown", (e) => {
   setPhase("listening");
   startRecorder();
   const buf = new Float32Array(audio.micAnalyser.fftSize);
+  const label = $("holdBtn").querySelector("span");
+  let lastSec = -1;
   const meter = () => {
     if (state.phase !== "listening") return;
     mascot.setLevel(Math.min(1, rms(audio.micAnalyser, buf) * 9));
+    // 🔴 Yozib olish taymeri (25 soniyadan keyin avtomatik yuboriladi)
+    const sec = Math.floor((performance.now() - holdStart) / 1000);
+    if (sec !== lastSec) {
+      lastSec = sec;
+      label.textContent = `🔴 0:${String(sec).padStart(2, "0")} — qo'yib yuboring`;
+      if (sec >= 25) return holdEnd();
+    }
     holdLevelRaf = requestAnimationFrame(meter);
   };
   meter();
