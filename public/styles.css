@@ -1114,3 +1114,8 @@ body.dark .ml-mark { background: #5eead4; }
 .tr-log .b-sado { cursor: default; }
 .b-me .tr-err { text-decoration-color: #fde047; }
 .hint-item.picked { outline: 2px solid var(--primary); outline-offset: -2px; }
+/* ❓ Darsdagi IELTS savollari: bosib belgilash; ro'yxat ochiq paytda maskot kichikroq */
+.q-list li { cursor: pointer; }
+.q-list li.done { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--ok); }
+.q-list li.done::marker { content: "✓  "; color: var(--ok); font-weight: 800; }
+#lesson:has(#visual details[open]) .mascot { width: min(34vw, 130px); }

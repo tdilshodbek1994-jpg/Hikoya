@@ -623,8 +623,19 @@ function renderVisual(lesson) {
     d.className = "vis-q";
     const sm = document.createElement("summary");
     sm.textContent = `❓ ${lesson.questions.length} ta savol — oldindan o'ylab oling`;
-    const ol = el("ol", "");
-    for (const q of lesson.questions) ol.append(el("li", "", q));
+    const ol = el("ol", "q-list");
+    // 🔊 Savolni bosish — imtihonchi ovozida eshitiladi va «javob berildi» deb belgilanadi
+    for (const q of lesson.questions) {
+      const li = el("li", "", q);
+      li.addEventListener("click", () => {
+        haptic();
+        li.classList.toggle("done");
+        const n = ol.querySelectorAll(".done").length;
+        sm.textContent = n ? `❓ ${lesson.questions.length} ta savol — ✅ ${n} tasiga javob berdingiz` : `❓ ${lesson.questions.length} ta savol — oldindan o'ylab oling`;
+        if (li.classList.contains("done")) sayPhrase(q).then(() => mascot.setLevel(0));
+      });
+      ol.append(li);
+    }
     const tip = /^ielts-p1/.test(lesson.id)
       ? "💡 Part 1: har biriga 2–3 gap — javob + sabab yoki misol. Faqat «Yes»/«No» demang!"
       : "💡 Har biriga 2–4 gap: fikr + sabab + misol. «I'd argue that... because... For example...»";
