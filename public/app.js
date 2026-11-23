@@ -2452,14 +2452,15 @@ function showOnboarding() {
 showOnboarding();
 
 // 🆕 Nima yangi: versiya o'zgarganda bir marta ko'rsatiladi (yangi foydalanuvchiga emas)
-const NEWS_VERSION = "2026-11-23";
+const NEWS_VERSION = "2026-11-24";
 const NEWS = [
-  "📘 IELTS kursi: 39 ta dars, Part 2 kartochka va 1 daqiqa tayyorlanish",
-  "📗 CEFR kursi: 8 ta dars, to'liq sinov imtihoni",
-  "🧒 Bolalar uchun va 💼 Biznes va IT bo'limlari",
-  "📒 Lug'at, 🃏 kartochka mashqi va 🔁 xatolar ustida shaxsiy dars",
-  "🏅 Yutuqlar, 🎯 kunlik maqsad va 🎓 kurs sertifikati",
-  "💡 «Nima deyishni bilmayapman» va 🐢 sekin gapirish",
+  "✏️ Erkin suhbatda o'z mavzuingizni yozing — Sado shu haqida gaplashadi",
+  "✍️ «Yozish» rejimi: ovoz chiqarib bo'lmaydigan joyda yozib javob bering",
+  "📝 IELTS Part 2: qaydlar maydoni va gapirish sekundomeri",
+  "🖼 CEFR: rasm va jadval topshiriqlari endi ekranda ko'rinadi",
+  "📖 Grammatika: qoidani dars davomida ochish, misollarni tinglash",
+  "🎯 IELTS hisobotida eng zaif tomon va bir bosishda mashq",
+  "🔊 Sozlamalarda ovozni tekshirish, 📋 lug'at va suhbatni nusxalash",
 ];
 function showNews() {
   const seen = localStorage.getItem("sado-news");
@@ -2480,7 +2481,9 @@ else showNews();
 const FAQ = [
   ["Qaysi rejimni tanlay?", "Boshlovchi bo'lsangiz — 🇺🇿 Ustoz. O'rta darajada — 🇬🇧 Inglizcha suhbat. Erkin gaplashmoqchi bo'lsangiz — 📞 Jonli suhbat. Dars oynasidagi ⭐ Tavsiya belgisiga qarang."],
   ["Sado meni eshitmayapti", "Telegram'ga mikrofon ruxsatini bering, telefonni yaqin tuting va tinch joyda gapiring. Shovqinli joyda «Bosib gapirish» rejimini tanlang."],
-  ["Sado ovozi eshitilmayapti", "Telefon ovozini balandlating va «ovozsiz» rejimni o'chiring. «🔁 Qayta eshitish» tugmasi bilan oxirgi gapni yana tinglashingiz mumkin."],
+  ["Sado ovozi eshitilmayapti", "Telefon ovozini balandlating va «ovozsiz» rejimni o'chiring. «🔁 Qayta eshitish» tugmasi bilan oxirgi gapni yana tinglashingiz mumkin.", "🔊 Ovozni hozir tekshirish", () => { $("helpSheet").hidden = true; $("setBtn").click(); setTimeout(() => $("soundTest").click(), 150); }],
+  ["Ovoz chiqarib gapira olmayman (avtobusda, kutubxonada)", "Dars ekranining pastidagi «✍️ Yozish» tugmasini bosing — javobni yozib yuborasiz. Yozma rejimda ibora kartasini bossangiz, u javob maydoniga o'zi tushadi."],
+  ["O'zim xohlagan mavzuda gaplashsam bo'ladimi?", "Ha! Bosh sahifadagi Erkin suhbat bannerida «✏️ O'z mavzuim» tugmasini bosing va istalgan mavzuni yozing — Sado shu mavzuda gaplashadi.", "✏️ Mavzu yozish", () => { $("helpSheet").hidden = true; openTopicSheet(state.topic.startsWith("custom:") ? state.topic.slice(7) : ""); }],
   ["O'zbekcha gapirsam bo'ladimi?", "Ha! Sado o'zbekcha tushunadi, o'zbekcha tushuntiradi va buni inglizcha qanday aytishni o'rgatadi."],
   ["Ball qanday qo'yiladi?", "Dars oxirida AI gaplaringizni tahlil qilib 0–100 ball, daraja (CEFR yoki IELTS band), xatolar va maslahatlar beradi."],
   ["Kuniga nechta dars?", "Kunlik limit bor — qolgan darslar soni bosh sahifadagi «Bugungi maqsad» blokida ko'rinadi. Limit har kuni yangilanadi."],
@@ -2489,12 +2492,20 @@ const FAQ = [
 function renderFaq() {
   const box = $("faq");
   box.innerHTML = "";
-  for (const [q, a] of FAQ) {
+  for (const [q, a, label, fn] of FAQ) {
     const d = document.createElement("details");
     d.className = "faq-item";
     const s = document.createElement("summary");
     s.textContent = q;
     d.append(s, el("p", "", a));
+    if (label) {
+      const b = el("button", "btn ghost faq-act", label);
+      b.addEventListener("click", () => {
+        haptic();
+        fn();
+      });
+      d.append(b);
+    }
     box.append(d);
   }
 }

@@ -706,3 +706,5 @@ body:has(#lesson.active) .toast { top: calc(34vh + var(--safe-t)); }
 .crit-weak b { display: block; margin-bottom: 3px; font-size: 14px; }
 .crit-weak .btn { margin-top: 8px; font-size: 14px; }
 #chips { scroll-margin-top: calc(64px + var(--safe-t)); }
+
+.faq-act { margin: 0 12px 12px; padding: 8px 14px; font-size: 13.5px; }
