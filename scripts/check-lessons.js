@@ -50,6 +50,13 @@ for (const l of LESSONS) {
   for (const q of pub.quiz) if (!q.text.includes("___") || q.options.length < 2 || new Set(q.options).size !== q.options.length) errors.push(`${where}: noto'g'ri mashq "${q.text}"`);
 }
 
+// 🎨 Bir bo'lim ichida ikki dars bir xil belgida bo'lmasin (ro'yxatda adashtiriladi)
+const emo = new Map();
+for (const l of LESSONS) {
+  const k = `${l.category} ${l.emoji}`;
+  if (emo.has(k)) warns.push(`Bir xil belgi ${l.emoji} «${l.category}» bo'limida: ${emo.get(k)} va ${l.id}`);
+  else emo.set(k, l.id);
+}
 console.log(`📚 ${LESSONS.length} ta dars tekshirildi`);
 for (const w of warns) console.log("⚠️  " + w);
 for (const e of errors) console.log("❌ " + e);
