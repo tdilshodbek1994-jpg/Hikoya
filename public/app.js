@@ -3068,9 +3068,18 @@ async function startLive(lesson) {
     });
     state.live = call;
     // ⏸ Telefon ovoz tizimini to'xtatsa (ruxsat oynasi, qo'ng'iroq, boshqa ilova) — istalgan bosish uni qayta yoqadi
-    const wake = () => { if (state.live === call && audio.ctx?.state !== "running") audio.ctx.resume().catch(() => {}); };
+    const wake = () => {
+      if (state.live !== call || call.stopped) return unwake(); // suhbat tugagan — tinglovchilarni olib tashlaymiz
+      if (audio.ctx?.state !== "running") audio.ctx.resume().catch(() => {});
+    };
+    const onVis = () => { if (!document.hidden) wake(); };
+    const unwake = () => { document.removeEventListener("pointerdown", wake, true); document.removeEventListener("visibilitychange", onVis); };
+    document.removeEventListener("pointerdown", state.liveWake || (() => {}), true); // oldingi suhbatniki
+    document.removeEventListener("visibilitychange", state.liveVis || (() => {}));
+    state.liveWake = wake;
+    state.liveVis = onVis;
     document.addEventListener("pointerdown", wake, true);
-    document.addEventListener("visibilitychange", () => { if (!document.hidden) wake(); });
+    document.addEventListener("visibilitychange", onVis);
     // 🤫 O'quvchi 15 soniya jim qolsa — Sado o'zi yordam beradi (har jimlikda bir marta, jami 3 marta)
     clearInterval(state.quietTimer);
     state.quietTimer = setInterval(() => {
