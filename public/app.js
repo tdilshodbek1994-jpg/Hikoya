@@ -346,6 +346,18 @@ function ruleBody(rule) {
   return box;
 }
 
+// Ochilmagan yutuqlar uchun [hozirgi, kerakli]
+const BADGE_PROGRESS = {
+  "3 kun ketma-ket": (p) => [Math.min(3, p.streak || 0), 3],
+  "10 ta dars": (p) => [Math.min(10, p.done || 0), 10],
+  "A'lochi": (p) => [Math.min(90, p.best || 0), 90],
+  "So'z ustasi": (p) => [Math.min(30, (p.words || []).length), 30],
+  "Hafta qahramoni": (p) => [Math.min(7, p.streak || 0), 7],
+  "Xato tuzatuvchi": (p) => [Math.min(5, (p.words || []).filter((w) => w.fixed).length), 5],
+  "Kartochka ustasi": () => [Math.min(10, Object.values(flashBoxes()).filter((n) => n >= 3).length), 10],
+  "Har tomonlama": (p) => [Math.min(5, new Set(Object.keys(p.lessons || {}).map((id) => state.lessons.find((l) => l.id === id)?.category).filter(Boolean)).size), 5],
+};
+
 // 🏅 Yangi qo'lga kiritilgan yutuqlarni natija sahifasida e'lon qilamiz
 function announceBadges() {
   const p = state.progress;
@@ -829,7 +841,14 @@ function renderBadges() {
     const on = test(p);
     const b = el("button", "badge" + (on ? " on" : ""));
     b.append(el("span", "badge-ico", ico), el("small", "", name));
-    b.addEventListener("click", () => toast(on ? `🏅 ${name} — qo'lga kiritilgan!` : `🔒 ${name}: ${how}`, 2500));
+    // 📈 Ochilmagan yutuqqa qancha qolgani
+    const pr = !on && BADGE_PROGRESS[name] ? BADGE_PROGRESS[name](p) : null;
+    if (pr) {
+      const bar = el("i", "badge-bar");
+      bar.style.setProperty("--p", Math.min(100, Math.round((pr[0] / pr[1]) * 100)) + "%");
+      b.append(bar);
+    }
+    b.addEventListener("click", () => toast(on ? `🏅 ${name} — qo'lga kiritilgan!` : `🔒 ${name}: ${how}${pr ? ` (${pr[0]}/${pr[1]})` : ""}`, 2500));
     row.append(b);
   }
   box.append(row);
