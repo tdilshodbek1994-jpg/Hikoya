@@ -2721,12 +2721,15 @@ $("setClose").addEventListener("click", () => {
   toast("✅ Sozlamalar saqlandi", 1500);
 });
 $("delData").addEventListener("click", () => {
-  const ask = "Barcha ballar, o'tilgan darslar, yutuqlar va lug'at o'chiriladi. Davom etasizmi?";
+  const ask = state.freeOnly
+    ? "Suhbat statistikasi (seriya, daqiqalar, rekord) va oxirgi suhbat yozuvi o'chiriladi. Davom etasizmi?"
+    : "Barcha ballar, o'tilgan darslar, yutuqlar va lug'at o'chiriladi. Davom etasizmi?";
   const go = async (ok) => {
     if (!ok) return;
     try {
       await api("api/progress", { method: "DELETE" });
-      for (const k of ["sado-favs", "sado-more", "sado-progress", "sado-flash", "sado-badges", "sado-maxwords"]) localStorage.removeItem(k);
+      for (const k of ["sado-favs", "sado-more", "sado-progress", "sado-flash", "sado-badges", "sado-maxwords", "sado-last-chat"]) localStorage.removeItem(k);
+      state.lastTranscript = [];
       state.progress = null;
       state.favs = new Set();
       $("setSheet").hidden = true;
