@@ -5167,14 +5167,26 @@ const FAQ = [
   ["Kuniga nechta dars?", "Cheklov yo'q — xohlaganingizcha mashq qiling! Kunlik maqsadni (1–3 dars) bosh sahifadagi «🎯 Bugungi maqsad» blokida yoki ⚙️ Sozlamalarda tanlaysiz."],
   ["Ma'lumotlarim xavfsizmi?", "Ovozingiz dars paytida tahlil uchun AI xizmatlariga (OpenAI, Google, Anthropic) yuboriladi, lekin Sado serverida saqlanmaydi. Serverda faqat ballar, o'tilgan darslar va lug'at saqlanadi."],
 ];
+// 💬 Faqat Erkin suhbat rejimi uchun savol-javoblar (darslarga oid savollarsiz)
+const FAQ_FREE = [
+  ["Qanday gaplashaman?", "«💬 Gaplashishni boshlash»ni bosing. Sado salomlashib, «Bugun nima haqida gaplashamiz?» deb so'raydi. Istalgan mavzuni ayting — Sado javob beradi, keyin yana siz gapirasiz."],
+  ["Qanday mavzularda gaplashsa bo'ladi?", "Istalganida: o'qish, imtihon, ish, sport, kino, texnologiya, sog'liq, maslahat, uy vazifasi... Masalan: «Ingliz tilini qanday tez o'rgansam bo'ladi?», «Menga futbol haqida gapirib ber», «Ertaga suhbatga boraman, maslahat ber»."],
+  ["O'zbekcha gapirsam bo'ladimi?", "Ha! O'zbekcha gapirsangiz — o'zbekcha, inglizcha gapirsangiz — inglizcha javob beradi. «Buni inglizcha qanday aytaman?» deb so'rasangiz, o'rgatadi."],
+  ["Sado meni eshitmayapti", "Telegram'ga mikrofon ruxsatini bering, telefonni yaqin tuting va tinch joyda gapiring. Shovqinli joyda «Bosib gapirish» rejimini tanlang."],
+  ["Sado ovozi eshitilmayapti", "Telefon ovozini balandlating va «ovozsiz» rejimni o'chiring. «🔁 Qayta eshitish» tugmasi bilan oxirgi gapni yana tinglashingiz mumkin. Javob matni ekranda ham yozilib turadi."],
+  ["Ovoz chiqarib gapira olmayman (avtobusda, kutubxonada)", "Suhbat ekranining pastidagi «✍️ Yozish» tugmasini bosing — savolingizni yozib yuborasiz."],
+  ["Sado tez gapiryapti yoki inglizchasi qiyin", "⚙️ Sozlamalarda «🐢 Sekin» tezlikni va «🌱 Boshlovchi» darajani tanlang — Sado sekinroq va soddaroq gapiradi."],
+  ["Ma'lumotlarim xavfsizmi?", "Ovozingiz suhbat paytida tahlil uchun AI xizmatlariga yuboriladi, lekin Sado serverida saqlanmaydi."],
+];
 function renderFaq() {
   const box = $("faq");
+  $("onbAgain").hidden = Boolean(state.freeOnly); // tanishuv oynasi bu rejimda ko'rsatilmaydi
   box.innerHTML = "";
   // 🔍 Savollar ichidan qidirish
   const norm = (t) => t.toLowerCase().replace(/[‘’`ʻʼ]/g, "'");
   const search = el("input", "faq-search");
   search.type = "search";
-  search.placeholder = "🔍 Savol qidirish: mikrofon, ball, lug'at...";
+  search.placeholder = state.freeOnly ? "🔍 Savol qidirish: mikrofon, ovoz, mavzu..." : "🔍 Savol qidirish: mikrofon, ball, lug'at...";
   const none = el("p", "muted faq-none", "Topilmadi — boshqa so'z bilan qidirib ko'ring.");
   none.hidden = true;
   search.addEventListener("input", () => {
@@ -5189,7 +5201,7 @@ function renderFaq() {
     none.hidden = n > 0;
   });
   box.append(search, none);
-  for (const [q, a, label, fn] of FAQ) {
+  for (const [q, a, label, fn] of state.freeOnly ? FAQ_FREE : FAQ) {
     const d = document.createElement("details");
     d.className = "faq-item";
     // Bittasi ochilsa — qolganlari yopiladi (ro'yxat qisqa qoladi)
