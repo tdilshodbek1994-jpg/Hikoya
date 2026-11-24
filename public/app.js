@@ -3373,6 +3373,8 @@ function startTimer() {
   state.timer = setInterval(() => {
     state.left -= 1;
     renderTimer();
+    // ⏳ Erkin suhbatda vaqt tugashidan 1 daqiqa oldin ogohlantiramiz (suhbat to'satdan uzilmasin)
+    if (state.left === 60 && state.lesson?.liveOnly && state.lessonMode !== "live") toast("⏳ 1 daqiqa qoldi — keyin «💬 Yana gaplashish» bilan davom etasiz", 4000);
     if (state.left <= 0) {
       clearInterval(state.timer);
       toast("Vaqt tugadi!");

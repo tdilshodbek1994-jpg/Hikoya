@@ -11,6 +11,7 @@ export const LESSONS = [
     level: "Har qanday",
     free: true, // ssenariysiz: o'zbekcha ham, inglizcha ham, istalgan mavzuda
     liveOnly: true,
+    minutes: 20, // 💬 erkin suhbat uzunroq: 20 daqiqa
     role: "a smart, friendly bilingual (Uzbek and English) companion and English teacher",
     situation: "Free conversation about anything the student wants.",
     opener:
