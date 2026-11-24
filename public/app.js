@@ -2664,7 +2664,9 @@ function renderSettings() {
   ];
   const box = $("setRows");
   box.innerHTML = "";
-  for (const [title, opts, get, set] of rows) {
+  // 💬 Faqat Erkin suhbat rejimida darslarga oid sozlamalar (yo'nalish, test, kunlik maqsad...) ko'rsatilmaydi
+  const keep = (t) => /tezligi|darajasi|eslatma|Eslatma|Ko'rinish|Matn/.test(t) || (state.liveEnabled && /ovozi/.test(t));
+  for (const [title, opts, get, set] of state.freeOnly ? rows.filter(([t]) => keep(t)) : rows) {
     const r = el("div", "set-row");
     const tt = el("div", "set-title", title);
     // Hali tanlanmagan sozlama — kichik eslatma

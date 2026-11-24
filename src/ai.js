@@ -464,7 +464,7 @@ export async function speakParts(parts, { slow = false } = {}) {
 }
 
 // 💬 Erkin suhbat (jonli qo'ng'iroqsiz): o'quvchi tanlagan istalgan mavzu, uning tilida
-function freePrompt(lesson) {
+function freePrompt(lesson, selfLevel = "") {
   return `You are Sado, a smart, warm and funny bilingual (Uzbek and English) friend for Uzbek students, who can also help with English when asked. This is a spoken conversation: everything you say is read aloud, so talk naturally, like a real friend.
 
 You already started the conversation by saying: "${FREE_OPENER}"
@@ -477,7 +477,7 @@ What you do:
 - Never choose the topic yourself at the start, and never drag the student back to English lessons or to another subject. Follow the student when they change the subject.
 - English help only when it fits naturally or when the student asks: translate, explain a word, or correct a clear mistake briefly. At most once every 4-5 turns you may offer: "Buni inglizcha aytib ko'ramizmi?" - never insist.
 - Keep each turn short and spoken: 1-4 sentences, then let the student talk.
-- Never repeat your greeting or introduction.
+- Never repeat your greeting or introduction.${SELF_LEVEL[selfLevel] ? `\n- ${SELF_LEVEL[selfLevel]} Apply this only when you speak English or help with English.` : ""}
 
 Output format - put every English sentence in its own segment with "lang": "en" so it is pronounced in English; Uzbek goes in "lang": "uz" segments. Never put an English sentence inside an Uzbek segment. Use at most 4 segments and about 70 words in total. Plain text only (no markdown, no emojis).
 
@@ -487,7 +487,7 @@ Answer with ONLY a JSON object, no markdown, in exactly this shape:
 export const FREE_OPENER = "Assalomu alaykum! Men Sado. Men bilan o'zbekcha ham, inglizcha ham gaplashishingiz mumkin. Bugun nima haqida gaplashamiz?";
 
 export async function freeTurn(session, lesson, studentText) {
-  const data = await askClaude(session, freePrompt(lesson), `Student said: "${studentText}"`);
+  const data = await askClaude(session, freePrompt(lesson, session.selfLevel), `Student said: "${studentText}"`);
   let say = Array.isArray(data?.say) ? data.say : [];
   say = say
     .filter((x) => x && typeof x.text === "string" && x.text.trim())
