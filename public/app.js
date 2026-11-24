@@ -3994,6 +3994,7 @@ $("retryBtn").addEventListener("click", () => {
   sendTurn(p);
 });
 
+const autoRetried = new WeakSet(); // bir marta avtomatik qayta yuborilgan gaplar
 async function sendTurn(payload) {
   if (!state.session) return;
   clearHints();
@@ -4027,11 +4028,18 @@ async function sendTurn(payload) {
     afterReply();
   } catch (e) {
     if (state.phase === "ended") return;
+    // 🔁 AI xizmatining bir martalik xatosi (5xx): o'quvchini bezovta qilmay, bir marta o'zimiz qayta yuboramiz
+    if (e.status >= 500 && !autoRetried.has(payload)) {
+      autoRetried.add(payload);
+      setPhase("thinking", "Sado o'ylamoqda...");
+      await new Promise((r) => setTimeout(r, 1500));
+      if (state.phase !== "ended" && state.session) return sendTurn(payload);
+    }
     if (e.network || e.status >= 500 || e.status === 429) {
       state.pendingTurn = payload;
       $("retryBtn").hidden = false;
       toast(`${e.message} — gapingiz saqlandi, "Qayta yuborish" ni bosing`, 4000);
-      if (e.status !== 429) return setPhase("idle", "📶 Aloqa uzildi");
+      if (e.status !== 429) return setPhase("idle", e.network ? "📶 Aloqa uzildi" : "⚠️ Javob kelmadi");
     } else toast(e.message, 3500);
     if (e.status === 404 || e.status === 410) return finish();
     afterReply();
