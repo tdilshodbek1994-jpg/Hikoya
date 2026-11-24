@@ -364,7 +364,7 @@ function pauseGemini(reason) {
 // 💾 Ovoz keshi: bir xil gap (dars kirish gaplari, iboralar) qayta yaratilmaydi
 const ttsCache = new Map();
 const TTS_CACHE_MAX = Number(process.env.TTS_CACHE_MAX || 500);
-export const ttsStats = { hits: 0, misses: 0 };
+export const ttsStats = { hits: 0, misses: 0, uz: { n: 0, ms: 0, err: 0, via: {} }, en: { n: 0, ms: 0, err: 0, via: {} } };
 
 export async function speak(text, lang = "en", slow = false) {
   if (!text) return null;
@@ -377,7 +377,14 @@ export async function speak(text, lang = "en", slow = false) {
     return v;
   }
   ttsStats.misses++;
+  // ⏱ Ovoz yaratish vaqti (admin: o'zbekcha/inglizcha ovoz qancha kechikyapti, qaysi xizmat ishlatildi)
+  const t0 = Date.now();
   const v = await speakUncached(text, lang, slow);
+  const st = ttsStats[lang === "uz" ? "uz" : "en"];
+  st.n++;
+  st.ms += Date.now() - t0;
+  if (!v?.audio) st.err++;
+  else st.via[v.via || "openai"] = (st.via[v.via || "openai"] || 0) + 1;
   if (v?.audio && text.length <= 400) {
     ttsCache.set(key, v);
     if (ttsCache.size > TTS_CACHE_MAX) ttsCache.delete(ttsCache.keys().next().value);
@@ -385,6 +392,7 @@ export async function speak(text, lang = "en", slow = false) {
   return v;
 }
 
+let azurePausedUntil = 0;
 // Azure TTS so'rovi (o'zbekcha). Muvaffaqiyatda { audio (base64 mp3), mime }, aks holda { error }.
 const xmlEscape = (t) => t.replace(/[<>&'"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", "'": "&apos;", '"': "&quot;" })[c]);
 export async function azureTts(text, slow = false) {
@@ -406,11 +414,13 @@ export async function azureTts(text, slow = false) {
 
 async function speakUncached(text, lang, slow) {
   // O'zbekcha qismlar: avval Azure (tayyor o'zbekcha ovoz, tez)
-  if (lang === "uz" && AZURE_KEY && AZURE_REGION) {
+  if (lang === "uz" && AZURE_KEY && AZURE_REGION && Date.now() > azurePausedUntil) {
     try {
       const a = await azureTts(text, slow);
-      if (a.audio) return a;
+      if (a.audio) return { ...a, via: "azure" };
       console.error("Azure TTS xatosi:", a.error, "- keyingi ovozga o'tilmoqda");
+      // Kalit/obuna xatosi (401/403) bo'lsa — 10 daqiqa Azure'ni chetlab o'tamiz (har gapda behuda kutmaslik uchun)
+      if (/^40[13]/.test(String(a.error))) azurePausedUntil = Date.now() + 10 * 60_000;
     } catch (e) {
       console.error("Azure TTS ulanish xatosi:", e.message);
     }
@@ -419,7 +429,7 @@ async function speakUncached(text, lang, slow) {
   if (lang === "uz" && GEMINI_KEY && Date.now() > geminiPausedUntil) {
     try {
       const g = await geminiTts(text, "uz", slow);
-      if (g.audio) return { audio: g.audio, mime: g.mime };
+      if (g.audio) return { audio: g.audio, mime: g.mime, via: "gemini" };
       pauseGemini(`${g.error}`.slice(0, 160));
     } catch (e) {
       pauseGemini(e.message);
