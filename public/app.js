@@ -200,6 +200,7 @@ function applyLessons(data) {
   // 💬 Faqat Erkin suhbat rejimi: bosh sahifada boshqa bo'limlar, yangiliklar va tanishuv oynasi ko'rinmaydi
   state.freeOnly = Boolean(data.freeOnly);
   document.body.classList.toggle("free-only", state.freeOnly);
+  syncHomeBtn();
   if (state.freeOnly) {
     $("newsSheet").hidden = true;
     if (!$("onb").hidden) { $("onb").hidden = true; localStorage.setItem("sado-onb", "1"); }
@@ -2843,6 +2844,8 @@ $("startTutorBtn").addEventListener("click", () => { stopShadow(); startLesson(s
 $("startChatBtn").addEventListener("click", () => { stopShadow(); startLesson(state.pendingLesson, "chat"); });
 $("againBtn").addEventListener("click", () => startLesson(state.lesson, state.lessonMode));
 $("homeBtn").addEventListener("click", () => show("home"));
+// Faqat Erkin suhbat rejimida "Boshqa mavzu tanlash" emas — "Bosh sahifa"
+function syncHomeBtn() { $("homeBtn").textContent = state.freeOnly ? "🏠 Bosh sahifa" : "Boshqa mavzu tanlash"; }
 $("nextBtn").addEventListener("click", () => {
   if (!state.nextAfter) return;
   show("home");
@@ -4412,6 +4415,8 @@ function renderSpeakStats(list, serverBest) {
     el("span", "", `🔤 ${words} ta inglizcha so'z`),
     el("span", "", `📏 eng uzun gap: ${longest} so'z`),
   );
+  // ⏱ Erkin suhbat qancha davom etdi
+  if (state.lesson?.liveOnly && state.seconds) row.prepend(el("span", "", `⏱ ${Math.max(1, Math.round((state.seconds - Math.max(0, state.left)) / 60))} daqiqa`));
   // 🏆 Bir darsda eng ko'p gapirilgan so'zlar rekordi
   // Rekord serverda saqlanadi (boshqa telefondan kirsa ham); eski versiyadagi mahalliy qiymat ham hisobga olinadi
   const best = Math.max(Number(serverBest) || 0, Number(localStorage.getItem("sado-maxwords")) || 0);
@@ -4597,6 +4602,8 @@ function renderReport(r, score) {
   state.lastResult = { r, score };
   $("shareBtn").hidden = !(r || score != null);
   if (!r) {
+    // 💬 Erkin suhbatda hisobotsiz "0 ball" chalg'itadi — faqat gapirish statistikasi chiqadi
+    if (state.lesson?.liveOnly) return (box.hidden = false);
     if (score == null) return (box.hidden = true);
     box.append(el("div", "rep-score-row", ""));
     box.firstChild.append(el("div", "rep-score", String(score)), el("div", "rep-level", "ball"));
@@ -4646,7 +4653,8 @@ function renderReport(r, score) {
     right.append(el("div", "rep-cmp " + cls, txt));
   }
   top.append(ring, right);
-  box.append(top);
+  // 💬 Erkin suhbatda ball halqasi ko'rsatilmaydi (bu imtihon emas — suhbat); tahlil va maslahatlar qoladi
+  if (!state.lesson?.liveOnly) box.append(top);
   // 🪜 Past ball: yengilroq rejimni taklif qilamiz (inglizcha suhbat/jonli → ustoz)
   if (r.score < 50 && state.lessonMode !== "tutor" && !state.lesson?.liveOnly && state.lesson?.id !== "review") {
     const tip = el("div", "rep-easier");
@@ -4937,7 +4945,7 @@ function showResult() {
     $("resultTitle").textContent = k ? `${k} ta yulduz yig'ding! 🎉` : "Yaxshi urinish! 💪";
     $("resultSub").textContent = "⭐".repeat(k) + "☆".repeat(Math.max(0, n - k));
   }
-  $("againBtn").textContent = lesson.liveOnly ? "📞 Yana gaplashish" : state.lessonMode === "live" ? "📞 Yana qo'ng'iroq qilish" : "Qaytadan mashq qilish";
+  $("againBtn").textContent = lesson.liveOnly ? (state.liveEnabled ? "📞 Yana gaplashish" : "💬 Yana gaplashish") : state.lessonMode === "live" ? "📞 Yana qo'ng'iroq qilish" : "Qaytadan mashq qilish";
   document.querySelectorAll(".again-topics").forEach((x) => x.remove());
   if (lesson.liveOnly && state.liveEnabled && FREE_TOPIC_PICK) {
     // 🔄 Boshqa mavzuda darhol yana gaplashish
