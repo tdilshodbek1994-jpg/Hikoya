@@ -4270,6 +4270,7 @@ async function playReply(parts, fallbackText) {
   state.lastParts = parts;
   $("replayBtn").hidden = false;
   setPhase("speaking");
+  state.audioActive = Date.now();
   state.skipReply = false;
   const skipped = new Promise((res) => (state.skipNow = res)); // ✋ to'xtatilsa ovozni kutmaymiz
   let voiced = 0;
@@ -4294,7 +4295,18 @@ async function playReply(parts, fallbackText) {
   mascot.setLevel(0);
 }
 
+// 🛟 Qotishdan himoya: Sado "gapirmoqda" holatida 45 soniya hech qanday ovoz ijro etmasa — qolganini o'tkazib, davom etamiz
+setInterval(() => {
+  if (state.phase !== "speaking" || state.lessonMode === "live" || audio.source || audio.stopEl) return;
+  if (Date.now() - (state.audioActive || 0) < 45000) return;
+  state.audioActive = Date.now();
+  state.skipReply = true;
+  state.skipNow?.();
+  toast("⚠️ Ovoz kechikdi — matn bilan davom etamiz", 3000);
+}, 5000);
+
 async function playMp3(b64, mime = "audio/mpeg") {
+  state.audioActive = Date.now();
   // Android WebView'da AudioContext o'zi to'xtab qolishi mumkin - har safar qayta yoqamiz
   try {
     if (audio.ctx.state !== "running") await audio.ctx.resume();
@@ -4371,6 +4383,7 @@ function playViaElement(b64, mime = "audio/mpeg") {
 }
 
 function speakBrowser(text, lang = "en") {
+  state.audioActive = Date.now();
   return new Promise((resolve) => {
     if (!window.speechSynthesis || !text) return setTimeout(resolve, 1200);
     const u = new SpeechSynthesisUtterance(text);
