@@ -1367,5 +1367,7 @@ body.dark #status.paused { color: #fdba74; }
 .sample-box .rep-word .ph-keep { position: static; transform: none; margin-left: auto; flex-shrink: 0; }
 
 /* 💬 Faqat Erkin suhbat rejimi: bosh sahifada faqat Erkin suhbat tugmasi */
-body.free-only #home > :not(#freeHero):not(.note) { display: none !important; }
+body.free-only #home > :not(#freeHero):not(#freeStats):not(.note) { display: none !important; }
+.free-stats { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 4px 0 10px; }
+.free-stats span { background: var(--card); box-shadow: var(--shadow); border-radius: 99px; padding: 7px 12px; font-size: 13px; font-weight: 600; }
 body.free-only #freeHero { margin-top: 12px; }

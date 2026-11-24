@@ -2138,7 +2138,22 @@ function renderWeek() {
   }
 }
 
+// 💬 Faqat Erkin suhbat rejimi: bosh sahifada kichik statistika (seriya, jami daqiqa, so'z rekordi)
+function renderFreeStats() {
+  const box = $("freeStats");
+  const p = state.progress;
+  const items = [];
+  if (state.freeOnly && p) {
+    if (p.streak > 0) items.push(`🔥 ${p.streak} kun ketma-ket`);
+    if (p.minutes > 0) items.push(`⏱ jami ${p.minutes} daqiqa`);
+    if (p.maxWords > 0) items.push(`🏆 rekord: ${p.maxWords} so'z`);
+  }
+  box.hidden = !items.length;
+  box.replaceChildren(...items.map((t) => el("span", "", t)));
+}
+
 function renderLessons() {
+  renderFreeStats();
   renderDaily();
   renderWeek();
   renderGoal();
