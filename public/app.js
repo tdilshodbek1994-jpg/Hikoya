@@ -21,7 +21,7 @@ const state = {
   left: 0,
   timer: null,
   mode: localStorage.getItem("sado-mode") === "hold" ? "hold" : "auto",
-  subs: localStorage.getItem("sado-subs") === "1",
+  subs: localStorage.getItem("sado-subs") !== "0", // standart: yoqiq — Sado javobi yozuvda ham ko'rinadi
   tr: localStorage.getItem("sado-tr") !== "0", // o'zbekcha tarjimani ovozda aytish
   slow: localStorage.getItem("sado-slow") === "1", // 🐢 sekin gapirish
   phase: "idle", // idle | listening | thinking | speaking | ended
@@ -3706,7 +3706,7 @@ function applyMode() {
     ? (state.lesson?.liveOnly ? "O'zbekcha yoki inglizcha yozing." : "Javobingizni inglizcha yozing.")
     : state.mode === "hold"
       ? "Tugmani bosib turing, gapiring va qo'yib yuboring."
-      : "Shunchaki gapiring — Sado tinglayapti.";
+      : state.lesson?.liveOnly ? "O'zbekcha yoki inglizcha gapiring — Sado tinglayapti." : "Shunchaki gapiring — Sado tinglayapti.";
 }
 
 $("modeToggle").addEventListener("click", (e) => {
@@ -4014,7 +4014,7 @@ function applyHint() {
     ? (state.lesson?.liveOnly ? "O'zbekcha yoki inglizcha yozing." : "Javobingizni inglizcha yozing.")
     : state.mode === "hold"
       ? "Tugmani bosib turing, gapiring va qo'yib yuboring."
-      : "Shunchaki gapiring — Sado tinglayapti.";
+      : state.lesson?.liveOnly ? "O'zbekcha yoki inglizcha gapiring — Sado tinglayapti." : "Shunchaki gapiring — Sado tinglayapti.";
 }
 
 function markUsed(list) {
