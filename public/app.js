@@ -3574,11 +3574,22 @@ $("mascot").addEventListener("click", () => {
     toast("✋ Sado to'xtadi — gapiring 🎙️", 1800);
     return;
   }
+  // ✋ Oddiy suhbatda ham: Sado gapirayotganda bosilsa — qolgan gapini aytmaydi, siz gapirasiz
+  if (state.lessonMode !== "live" && state.phase === "speaking") {
+    state.skipReply = true;
+    state.skipNow?.();
+    try { audio.source?.stop(); } catch {}
+    audio.stopEl?.();
+    try { window.speechSynthesis?.cancel(); } catch {}
+    haptic("medium");
+    toast("✋ Sado to'xtadi — gapiring 🎙️", 1800);
+    return;
+  }
   if (state.lessonMode === "live" || $("replayBtn").hidden) return;
   $("replayBtn").click();
 });
 // Holat yozuvini bosish ham Sado'ni to'xtatadi (yozuvda shunday deyilgan)
-$("status").addEventListener("click", () => { if (state.live?.speaking?.()) $("mascot").click(); });
+$("status").addEventListener("click", () => { if (state.live?.speaking?.() || (state.lessonMode !== "live" && state.phase === "speaking")) $("mascot").click(); });
 
 $("myVoiceBtn").addEventListener("click", (e) => {
   e.stopPropagation();
@@ -4210,14 +4221,16 @@ async function playReply(parts, fallbackText) {
   state.lastParts = parts;
   $("replayBtn").hidden = false;
   setPhase("speaking");
+  state.skipReply = false;
+  const skipped = new Promise((res) => (state.skipNow = res)); // ✋ to'xtatilsa ovozni kutmaymiz
   let voiced = 0;
   for (const [i, p] of parts.entries()) {
-    if (state.phase !== "speaking") break; // dars tugatilgan bo'lsa
-    $("statusText").textContent = p.lang === "uz" ? "Sado tushuntirmoqda..." : "Sado gapirmoqda...";
+    if (state.phase !== "speaking" || state.skipReply) break; // dars tugatilgan yoki o'quvchi to'xtatgan bo'lsa
+    $("statusText").textContent = (p.lang === "uz" ? "Sado tushuntirmoqda" : "Sado gapirmoqda") + " · ✋ to'xtatish";
     try {
       if (jobs[i]) {
-        const a = await jobs[i];
-        if (state.phase !== "speaking") break;
+        const a = await Promise.race([jobs[i], skipped.then(() => null)]);
+        if (state.phase !== "speaking" || state.skipReply) break;
         if (a?.audio) Object.assign(p, { audio: a.audio, mime: a.mime });
       }
       if (p.audio) voiced++;
@@ -4228,7 +4241,7 @@ async function playReply(parts, fallbackText) {
       toast("⚠️ Ijro xatosi: " + (e?.message || e), 5000);
     }
   }
-  if (deferred && !voiced && state.phase === "speaking") warnTts();
+  if (deferred && !voiced && state.phase === "speaking" && !state.skipReply) warnTts();
   mascot.setLevel(0);
 }
 
@@ -4287,8 +4300,11 @@ function playViaElement(b64, mime = "audio/mpeg") {
     };
     const done = () => {
       cancelAnimationFrame(raf);
+      if (audio.stopEl === stop) audio.stopEl = null;
       resolve();
     };
+    const stop = () => { try { el.pause(); } catch {} done(); }; // ✋ maskot bosilganda to'xtatish
+    audio.stopEl = stop;
     el.onended = done;
     el.onerror = done;
     el.play()
