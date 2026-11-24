@@ -1365,3 +1365,7 @@ body.dark #status.paused { color: #fdba74; }
 .sample-box .sample-play { margin: 0 0 8px; }
 .sample-box .rep-word { display: flex; align-items: center; gap: 8px; }
 .sample-box .rep-word .ph-keep { position: static; transform: none; margin-left: auto; flex-shrink: 0; }
+
+/* 💬 Faqat Erkin suhbat rejimi: bosh sahifada faqat Erkin suhbat tugmasi */
+body.free-only #home > :not(#freeHero):not(.note) { display: none !important; }
+body.free-only #freeHero { margin-top: 12px; }

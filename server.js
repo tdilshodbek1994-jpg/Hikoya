@@ -155,10 +155,13 @@ app.get("/api/version", (req, res) => { res.setHeader("Cache-Control", "no-store
 // buyuramiz: keyingi ochilishda yangi versiya yuklanadi. (Faqat HTTP kesh; localStorage, kirish ma'lumotlari saqlanadi)
 const clearStale = (req, res) => { if (!req.get("X-Sado-Build")) res.setHeader("Clear-Site-Data", '"cache"'); };
 
+// 💬 Faqat Erkin suhbat ko'rsatiladi (darslar yashirin). Hamma darslarni qaytarish: .env ga FREE_ONLY=0
+const FREE_ONLY = process.env.FREE_ONLY !== "0";
+
 app.get("/api/lessons", (req, res) => {
   clearStale(req, res);
   if (!lessonsCache) {
-    const body = Buffer.from(JSON.stringify({ lessons: LESSONS.map(publicLesson), voiceEnabled, liveEnabled, sessionMinutes: SESSION_MINUTES, shareUrl: process.env.SHARE_URL || "", version: APP_VERSION, updated: APP_UPDATED }));
+    const body = Buffer.from(JSON.stringify({ lessons: (FREE_ONLY ? LESSONS.filter((l) => l.liveOnly) : LESSONS).map(publicLesson), freeOnly: FREE_ONLY, voiceEnabled, liveEnabled, sessionMinutes: SESSION_MINUTES, shareUrl: process.env.SHARE_URL || "", version: APP_VERSION, updated: APP_UPDATED }));
     lessonsCache = { body, gz: zlib.gzipSync(body, { level: 9 }), etag: `"l-${crypto.createHash("sha1").update(body).digest("hex").slice(0, 16)}"` };
   }
   res.setHeader("Content-Type", "application/json; charset=utf-8");

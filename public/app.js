@@ -197,6 +197,18 @@ function applyLessons(data) {
   if (!$("newsSheet").hidden) showNews(); // darslar yuklangach — yangiliklardagi sonlar aniq bo'ladi
   state.voiceEnabled = data.voiceEnabled;
   state.liveEnabled = Boolean(data.liveEnabled);
+  // 💬 Faqat Erkin suhbat rejimi: bosh sahifada boshqa bo'limlar, yangiliklar va tanishuv oynasi ko'rinmaydi
+  state.freeOnly = Boolean(data.freeOnly);
+  document.body.classList.toggle("free-only", state.freeOnly);
+  if (state.freeOnly) {
+    $("newsSheet").hidden = true;
+    if (!$("onb").hidden) { $("onb").hidden = true; localStorage.setItem("sado-onb", "1"); }
+  }
+  // Jonli qo'ng'iroq o'chiq bo'lsa — tugmada "jonli/qo'ng'iroq" deb yozilmaydi
+  if (!state.liveEnabled) {
+    $("freeHero").querySelector(".free-badge").textContent = "✨ Sado AI";
+    $("freeHero").querySelector(".free-cta").textContent = "💬 Gaplashishni boshlash";
+  }
   state.sessionMinutes = data.sessionMinutes;
   state.shareUrl = data.shareUrl || "";
   if (data.version) $("appVer").textContent = `${$("appVer").textContent.split(" · ")[0]} · server ${data.version}${data.updated ? ` (${data.updated})` : ""}`;
@@ -4972,7 +4984,7 @@ const ONB = [
   ["Har kuni oz-ozdan 🔥", "Har darsdan keyin ball, xatolar tahlili va yangi so'zlar chiqadi. Kunlik maqsad qo'ying va seriyani uzmang!"],
 ];
 function showOnboarding() {
-  if (localStorage.getItem("sado-onb") === "1") return;
+  if (localStorage.getItem("sado-onb") === "1" || state.freeOnly) return;
   let i = 0;
   const m = new Mascot($("onbMascot"));
   m.setMood("happy");
@@ -5099,6 +5111,7 @@ const NEWS = [
   ["▶ Kurslarda «Davom etish» va har bir dars oxirida «➡️ Keyingi dars»", null],
 ];
 function showNews() {
+  if (state.freeOnly) return; // faqat Erkin suhbat rejimida darslar yangiliklari kerak emas
   const seen = localStorage.getItem("sado-news");
   if (seen === NEWS_VERSION) return;
   $("newsList").innerHTML = "";
