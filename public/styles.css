@@ -1371,3 +1371,16 @@ body.free-only #home > :not(#freeHero):not(#freeStats):not(.note) { display: non
 .free-stats { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 4px 0 10px; }
 .free-stats span { background: var(--card); box-shadow: var(--shadow); border-radius: 99px; padding: 7px 12px; font-size: 13px; font-weight: 600; }
 body.free-only #freeHero { margin-top: 12px; }
+
+/* 📱 Tor ekran va katta matn: yuqoridagi ⚙️ va ? tugmalari chetdan chiqib ketmasin — "Speaking" yorlig'i qisqaradi */
+.topbar > .brand { flex: 1 1 auto; min-width: 0; overflow: hidden; }
+.topbar > .brand .brand-face, .topbar > .brand .brand-name { flex-shrink: 0; }
+.topbar > .brand .brand-tag { min-width: 0; overflow: hidden; white-space: nowrap; }
+html[data-font="2"] .brand-tag { display: none; }
+@media (max-width: 360px) {
+  .brand-tag { display: none; }
+  html[data-font="2"] .topbar { gap: 4px; padding-left: 8px; padding-right: 8px; }
+  html[data-font="2"] .brand { gap: 5px; }
+  html[data-font="2"] .brand-face { width: 32px; }
+}
+.topbar > :not(.brand) { flex-shrink: 0; }

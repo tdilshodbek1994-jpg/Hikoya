@@ -79,6 +79,7 @@ const FONT_STEPS = [1, 1.12, 1.25];
 function applyFont() {
   const i = Number(localStorage.getItem("sado-font")) || 0;
   document.documentElement.style.setProperty("--zoom", FONT_STEPS[i % FONT_STEPS.length]);
+  document.documentElement.dataset.font = String(i % FONT_STEPS.length); // CSS: katta matnda "Speaking" yorlig'i yashiriladi
   return i;
 }
 applyFont();
