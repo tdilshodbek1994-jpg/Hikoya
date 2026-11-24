@@ -5259,6 +5259,9 @@ const FAQ_FREE = [
   ["Sado meni eshitmayapti", "Telegram'ga mikrofon ruxsatini bering, telefonni yaqin tuting va tinch joyda gapiring. Shovqinli joyda «Bosib gapirish» rejimini tanlang."],
   ["Sado ovozi eshitilmayapti", "Telefon ovozini balandlating va «ovozsiz» rejimni o'chiring. «🔁 Qayta eshitish» tugmasi bilan oxirgi gapni yana tinglashingiz mumkin. Javob matni ekranda ham yozilib turadi."],
   ["Ovoz chiqarib gapira olmayman (avtobusda, kutubxonada)", "Suhbat ekranining pastidagi «✍️ Yozish» tugmasini bosing — savolingizni yozib yuborasiz."],
+  ["Sado juda uzun gapiryapti — qanday to'xtataman?", "Sado gapirayotganda maskotni (yoki «✋ to'xtatish» yozuvini) bosing — Sado darhol jim bo'ladi va siz gapirasiz."],
+  ["Suhbatni keyin davom ettirsa bo'ladimi?", "Ha! Suhbat tugagach «↩️ Shu suhbatni davom ettirish» tugmasini bosing — Sado oxirgi gaplaringizni eslab, o'sha mavzudan davom etadi. «💬 Yana gaplashish» esa yangi suhbat boshlaydi."],
+  ["Sado aytgan inglizcha gapni qayta eshitsam bo'ladimi?", "Ha — Sado javobidagi 🔊 belgili inglizcha gapni bosing, u yana o'qib beradi. «🔁 Qayta eshitish» esa butun javobni qaytaradi."],
   ["Sado tez gapiryapti yoki inglizchasi qiyin", "⚙️ Sozlamalarda «🐢 Sekin» tezlikni va «🌱 Boshlovchi» darajani tanlang — Sado sekinroq va soddaroq gapiradi."],
   ["Ma'lumotlarim xavfsizmi?", "Ovozingiz suhbat paytida tahlil uchun AI xizmatlariga yuboriladi, lekin Sado serverida saqlanmaydi."],
 ];
