@@ -2861,6 +2861,11 @@ $("startLiveBtn").addEventListener("click", () => { stopShadow(); startLesson(st
 $("startTutorBtn").addEventListener("click", () => { stopShadow(); startLesson(state.pendingLesson, "tutor"); });
 $("startChatBtn").addEventListener("click", () => { stopShadow(); startLesson(state.pendingLesson, "chat"); });
 $("againBtn").addEventListener("click", () => startLesson(state.lesson, state.lessonMode));
+// ↩️ Erkin suhbatni davom ettirish: oxirgi gaplar serverga yuboriladi, Sado shu joydan davom etadi
+$("contBtn").addEventListener("click", () => {
+  state.contextLines = (state.lastTranscript || []).slice(-8);
+  startLesson(state.lesson, "free");
+});
 $("homeBtn").addEventListener("click", () => show("home"));
 // Faqat Erkin suhbat rejimida "Boshqa mavzu tanlash" emas — "Bosh sahifa"
 function syncHomeBtn() { $("homeBtn").textContent = state.freeOnly ? "🏠 Bosh sahifa" : "Boshqa mavzu tanlash"; }
@@ -3000,8 +3005,9 @@ async function startLesson(lesson, lessonMode = "tutor") {
 
   try {
     const data = await api("api/session?fast=1", {
-      json: { lessonId: lesson.id, translate: state.tr, mode: state.lessonMode, slow: state.slow, level: localStorage.getItem("sado-level") || "" },
+      json: { lessonId: lesson.id, translate: state.tr, mode: state.lessonMode, slow: state.slow, context: state.contextLines || undefined, level: localStorage.getItem("sado-level") || "" },
     });
+    state.contextLines = null; // davom ettirish konteksti faqat bir marta yuboriladi
     state.session = data.session;
     if (state.progress) state.progress.startedToday = (state.progress.startedToday || 0) + 1;
     if (Number.isInteger(data.current)) {
@@ -4378,7 +4384,7 @@ async function finish() {
     if (data.empty) {
       $("report").hidden = true;
       $("resultTitle").textContent = "Hali hech narsa demadingiz 🙂";
-      $("resultSub").textContent = "Hisobot va ball uchun Sado bilan kamida bir-ikki gap almashing. Bu urinish kunlik limitdan hisoblanmadi.";
+      $("resultSub").textContent = state.lesson?.liveOnly ? "Sado bilan kamida bir-ikki gap almashing — keyin qisqa hisobot chiqadi." : "Hisobot va ball uchun Sado bilan kamida bir-ikki gap almashing. Bu urinish kunlik limitdan hisoblanmadi.";
       $("resultList").hidden = true;
       $("againBtn").textContent = "🎤 Qaytadan boshlash";
       if (state.progress) state.progress.startedToday = data.progress?.startedToday ?? Math.max(0, (state.progress.startedToday || 1) - 1);
@@ -4395,6 +4401,8 @@ async function finish() {
     if (data.fixedNow) toast(`✅ ${data.fixedNow} ta xatoingiz tuzatildi deb belgilandi!`, 3500);
     announceBadges();
     renderTranscript(data.transcript, data.report?.mistakes);
+    state.lastTranscript = data.transcript || [];
+    $("contBtn").hidden = !(state.lesson?.liveOnly && state.lessonMode === "free" && state.lastTranscript.some((t) => t.who === "student"));
     renderSpeakStats(data.transcript, data.prevMaxWords);
   } catch {
     // Hisobot kelmadi — aylanib turgan belgini qoldirmaymiz
@@ -5022,6 +5030,7 @@ function showResult() {
     $("resultTitle").textContent = k ? `${k} ta yulduz yig'ding! 🎉` : "Yaxshi urinish! 💪";
     $("resultSub").textContent = "⭐".repeat(k) + "☆".repeat(Math.max(0, n - k));
   }
+  $("contBtn").hidden = true; // hisobot kelgach (suhbat bo'lgan bo'lsa) ko'rsatiladi
   $("againBtn").textContent = lesson.liveOnly ? (state.liveEnabled ? "📞 Yana gaplashish" : "💬 Yana gaplashish") : state.lessonMode === "live" ? "📞 Yana qo'ng'iroq qilish" : "Qaytadan mashq qilish";
   document.querySelectorAll(".again-topics").forEach((x) => x.remove());
   if (lesson.liveOnly && state.liveEnabled && FREE_TOPIC_PICK) {

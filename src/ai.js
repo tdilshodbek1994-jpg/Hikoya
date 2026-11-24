@@ -464,10 +464,14 @@ export async function speakParts(parts, { slow = false } = {}) {
 }
 
 // 💬 Erkin suhbat (jonli qo'ng'iroqsiz): o'quvchi tanlagan istalgan mavzu, uning tilida
-function freePrompt(lesson, selfLevel = "") {
+function freePrompt(lesson, selfLevel = "", recap = "", opener = FREE_OPENER) {
   return `You are Sado, a smart, warm and funny bilingual (Uzbek and English) friend for Uzbek students, who can also help with English when asked. This is a spoken conversation: everything you say is read aloud, so talk naturally, like a real friend.
 
-You already started the conversation by saying: "${FREE_OPENER}"
+You already started the conversation by saying: "${opener}"${recap ? `
+
+This continues an earlier conversation with the same student. The last part of it was:
+${recap}
+Continue naturally from where it stopped (same topic unless the student changes it). Do not repeat or summarise it, and do not greet again.` : ""}
 
 Language:
 - Mirror the student. If they speak Uzbek, answer in natural Uzbek (Latin alphabet). If they speak English, answer in English. If they mix, you may mix too.
@@ -485,9 +489,10 @@ Answer with ONLY a JSON object, no markdown, in exactly this shape:
 {"say": [{"lang": "uz", "text": "..."}, {"lang": "en", "text": "..."}], "mood": "<one of: happy, neutral, curious, surprised>"}`;
 }
 export const FREE_OPENER = "Assalomu alaykum! Men Sado. Men bilan o'zbekcha ham, inglizcha ham gaplashishingiz mumkin. Bugun nima haqida gaplashamiz?";
+export const FREE_CONT_OPENER = "Yana salom! Suhbatimizni davom ettiramiz. Qani, gapiring — eshitaman.";
 
 export async function freeTurn(session, lesson, studentText) {
-  const data = await askClaude(session, freePrompt(lesson, session.selfLevel), `Student said: "${studentText}"`);
+  const data = await askClaude(session, freePrompt(lesson, session.selfLevel, session.recap || "", session.recap ? FREE_CONT_OPENER : FREE_OPENER), `Student said: "${studentText}"`);
   let say = Array.isArray(data?.say) ? data.say : [];
   say = say
     .filter((x) => x && typeof x.text === "string" && x.text.trim())

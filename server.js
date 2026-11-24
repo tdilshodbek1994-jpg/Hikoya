@@ -10,7 +10,7 @@ import { LESSONS, getLesson, publicLesson } from "./src/lessons.js";
 import { verifyInitData } from "./src/telegram.js";
 import { WebSocketServer } from "ws";
 import { liveEnabled, runLive, liveStats, toLatin } from "./src/live.js";
-import { chatTurn, tutorTurn, freeTurn, FREE_OPENER, deferParts, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies, translateUz, sampleAnswer, samplePhrases, samplePhraseUz, sampleStats, sampleCount, ttsStats } from "./src/ai.js";
+import { chatTurn, tutorTurn, freeTurn, FREE_OPENER, FREE_CONT_OPENER, deferParts, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies, translateUz, sampleAnswer, samplePhrases, samplePhraseUz, sampleStats, sampleCount, ttsStats } from "./src/ai.js";
 import { recordSession, touchDay, summary, adminStats, startedToday, countStart, refundStart, startsTodayTotal, deleteUser, markFixed, addWord, removeWord, setRemind, remindTargets, markReminded } from "./src/store.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -228,11 +228,20 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
       return res.json({ session: id, mode, lesson: publicLesson(lesson), seconds: (lesson.minutes || SESSION_MINUTES) * 60 });
     }
     if (mode === "free") {
-      // 💬 Erkin suhbat (jonli qo'ng'iroqsiz): Sado salomlashib, mavzuni o'quvchidan so'raydi
-      const say = [{ lang: "uz", text: FREE_OPENER }];
-      sessions.get(id).transcript.push({ who: "sado", text: FREE_OPENER });
+      // 💬 Erkin suhbat (jonli qo'ng'iroqsiz): Sado salomlashib, mavzuni o'quvchidan so'raydi.
+      // ↩️ «Davom ettirish»: oldingi suhbatning oxirgi qismi (o'quvchi telefonidan) — Sado shu joydan davom etadi
+      const ctx = Array.isArray(req.body?.context) ? req.body.context.slice(-8) : [];
+      const recap = ctx
+        .filter((t) => t && typeof t.text === "string" && t.text.trim())
+        .map((t) => `${t.who === "student" ? "STUDENT" : "SADO"}: ${t.text.replace(/\s+/g, " ").trim().slice(0, 200)}`)
+        .join("\n")
+        .slice(0, 1500);
+      const opener = recap.includes("STUDENT:") ? FREE_CONT_OPENER : FREE_OPENER;
+      if (opener === FREE_CONT_OPENER) sessions.get(id).recap = recap;
+      const say = [{ lang: "uz", text: opener }];
+      sessions.get(id).transcript.push({ who: "sado", text: opener });
       const parts = await voiceParts(req, sessions.get(id), say, { slow: Boolean(req.body?.slow) });
-      return res.json({ session: id, mode, lesson: publicLesson(lesson), seconds: (lesson.minutes || SESSION_MINUTES) * 60, reply: FREE_OPENER, reply_uz: "", say, parts });
+      return res.json({ session: id, mode, lesson: publicLesson(lesson), seconds: (lesson.minutes || SESSION_MINUTES) * 60, reply: opener, reply_uz: "", say, parts });
     }
     if (mode === "tutor") {
       const say = tutorOpener(lesson);
