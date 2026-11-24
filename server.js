@@ -300,6 +300,10 @@ app.post(
       if (s.mode === "free") {
         const t = await freeTurn(s, lesson, text);
         const reply = t.say.map((x) => x.text).join(" ");
+        // 🔊 Sado aytgan inglizcha gaplarni pufakchadan bosib qayta eshitish mumkin bo'lsin
+        s.sayable ||= new Set();
+        for (const x of t.say) if (x.lang === "en") s.sayable.add(x.text);
+        if (s.sayable.size > 300) s.sayable = new Set([...s.sayable].slice(-200));
         s.transcript.push({ who: "student", text }, { who: "sado", text: reply });
         const parts = await voiceParts(req, s, t.say, { slow: s.slow });
         return res.json({ heard: text, reply, reply_uz: "", say: t.say, uz_say: "", used_phrases: [], mood: t.mood, used: [], parts });
