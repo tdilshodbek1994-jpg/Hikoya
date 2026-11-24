@@ -124,6 +124,7 @@
     <div class="help-row">
       <button class="hint-btn retry" id="retryBtn" hidden>🔄 Qayta yuborish</button>
       <button class="hint-btn" id="replayBtn" hidden>🔁 Qayta eshitish</button>
+      <button class="hint-btn" id="histBtn" hidden>📜 Oldingi gaplar</button>
       <button class="hint-btn" id="hintBtn" hidden>💡 Nima deyishni bilmayapman</button>
       <button class="hint-btn" id="topicBtn" hidden>🔀 Boshqa mavzu</button>
     </div>
@@ -273,6 +274,15 @@
       <div class="mix-levels" id="mixLevels"></div>
       <div class="quiz mix-quiz" id="mixQuiz"></div>
       <button class="btn ghost wide" id="mixClose">Yopish</button>
+    </div>
+  </div>
+
+  <!-- 📜 Suhbat davomida: oldingi gaplar -->
+  <div class="sheet" id="histSheet" hidden>
+    <div class="sheet-card">
+      <h3>📜 Shu suhbat</h3>
+      <div class="chatlog tr-log" id="histLog"></div>
+      <button class="btn primary wide" id="histClose">Yopish</button>
     </div>
   </div>
 

@@ -3016,6 +3016,9 @@ async function startLesson(lesson, lessonMode = "tutor") {
     }
     state.seconds = state.left = data.seconds;
     startTimer();
+    state.chatLog = [];
+    $("histBtn").hidden = true;
+    noteChat("sado", data.reply);
     setSubs(data.reply, data.reply_uz, "", "", data.say);
     await playReply(data.parts, data.reply);
     afterReply();
@@ -4035,6 +4038,8 @@ async function sendTurn(payload) {
     }
     applyHint();
     const tutorCurrent = Number.isInteger(data.current) ? data.current : null;
+    noteChat("me", data.heard);
+    noteChat("sado", [data.uz_say, data.reply].filter(Boolean).join(" "));
     setSubs(data.reply, data.reply_uz, data.heard, data.uz_say, data.say);
     trackStage(data.reply);
     markWords(data.heard);
@@ -4360,6 +4365,8 @@ function speakBrowser(text, lang = "en") {
 // ---------------- Tugatish ----------------
 function stopAll() {
   keepAwake(false);
+  $("histBtn").hidden = true;
+  $("histSheet").hidden = true;
   clearInterval(state.timer);
   clearInterval(state.cueClock);
   $("lesson").classList.remove("is-live");
@@ -4513,6 +4520,28 @@ function renderSpeakStats(list, serverBest) {
   } else if (best) row.append(el("span", "rec-old", `🏆 Rekord: ${best} so'z`));
   box.firstChild ? box.firstChild.after(row) : box.append(row);
 }
+
+// 📜 Suhbat davomida oldingi gaplarni ko'rish (faqat shu telefonda, suhbat tugaguncha)
+function noteChat(who, text) {
+  if (!text || !String(text).trim()) return;
+  (state.chatLog ||= []).push({ who, text: String(text).trim() });
+  if (state.chatLog.length > 120) state.chatLog.splice(0, state.chatLog.length - 120);
+  $("histBtn").hidden = state.chatLog.filter((t) => t.who === "sado").length < 2;
+}
+$("histBtn").addEventListener("click", () => {
+  haptic();
+  const log = $("histLog");
+  log.innerHTML = "";
+  for (const t of state.chatLog || []) {
+    const b = el("div", "bubble " + (t.who === "sado" ? "b-sado" : "b-me"));
+    b.append(el("small", "", t.who === "sado" ? "Sado" : "Siz"), el("span", "", t.text));
+    log.append(b);
+  }
+  $("histSheet").hidden = false;
+  log.scrollTop = log.scrollHeight;
+});
+$("histClose").addEventListener("click", () => ($("histSheet").hidden = true));
+$("histSheet").addEventListener("click", (e) => { if (e.target.id === "histSheet") $("histSheet").hidden = true; });
 
 function renderTranscript(list, mistakes = []) {
   // ✏️ Hisobotdagi xatolar o'quvchi gapida qizil chiziq bilan belgilanadi (ustiga bosilsa — to'g'risi)
