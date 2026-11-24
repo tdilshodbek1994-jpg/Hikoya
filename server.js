@@ -300,6 +300,8 @@ app.post(
       s.turns += 1;
       if (s.mode === "free") {
         const t = await freeTurn(s, lesson, text);
+        // 🔤 Sado javobidagi o'zbekcha qism ham doim lotinda bo'lsin (model ba'zan kirillda yozadi)
+        t.say = t.say.map((x) => (x.lang === "uz" ? { ...x, text: toLatin(x.text) } : x));
         const reply = t.say.map((x) => x.text).join(" ");
         // 🔊 Sado aytgan inglizcha gaplarni pufakchadan bosib qayta eshitish mumkin bo'lsin
         s.sayable ||= new Set();
@@ -311,6 +313,7 @@ app.post(
       }
       if (s.mode === "tutor") {
         const t = await tutorTurn(s, lesson, text);
+        t.say = t.say.map((x) => (x.lang === "uz" ? { ...x, text: toLatin(x.text) } : x));
         s.sayable ||= new Set();
         for (const x of t.say) if (x.lang === "en") s.sayable.add(x.text);
         s.transcript.push({ who: "student", text }, { who: "sado", text: t.say.map((x) => x.text).join(" ") });
