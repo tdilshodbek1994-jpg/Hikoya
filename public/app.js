@@ -2140,7 +2140,14 @@ function renderWeek() {
 }
 
 // 💬 Faqat Erkin suhbat rejimi: bosh sahifada kichik statistika (seriya, jami daqiqa, so'z rekordi)
+function lastChat() {
+  try {
+    const c = JSON.parse(localStorage.getItem("sado-last-chat") || "null");
+    return c && Date.now() - c.at < 24 * 3600_000 && Array.isArray(c.lines) && c.lines.length ? c : null;
+  } catch { return null; }
+}
 function renderFreeStats() {
+  $("freeCont").hidden = !(state.freeOnly && lastChat());
   const box = $("freeStats");
   const p = state.progress;
   const items = [];
@@ -2739,6 +2746,14 @@ $("setSheet").addEventListener("click", (e) => {
   if (e.target.id === "setSheet") $("setSheet").hidden = true;
 });
 
+$("freeCont").addEventListener("click", () => {
+  const free = state.lessons.find((l) => l.liveOnly);
+  const c = lastChat();
+  if (!free || !c) return;
+  haptic("medium");
+  state.contextLines = c.lines;
+  startLesson(free, "free");
+});
 $("freeHero").addEventListener("click", () => {
   const free = state.lessons.find((l) => l.liveOnly);
   if (!free) {
@@ -4415,6 +4430,10 @@ async function finish() {
     announceBadges();
     renderTranscript(data.transcript, data.report?.mistakes);
     state.lastTranscript = data.transcript || [];
+    // ↩️ Bosh sahifadan ham davom ettirish uchun oxirgi gaplar shu telefonda saqlanadi (24 soat)
+    if (state.lesson?.liveOnly && state.lastTranscript.some((t) => t.who === "student"))
+      try { localStorage.setItem("sado-last-chat", JSON.stringify({ at: Date.now(), lines: state.lastTranscript.slice(-8) })); } catch {}
+    renderFreeStats();
     $("contBtn").hidden = !(state.lesson?.liveOnly && state.lessonMode === "free" && state.lastTranscript.some((t) => t.who === "student"));
     renderSpeakStats(data.transcript, data.prevMaxWords);
   } catch {
