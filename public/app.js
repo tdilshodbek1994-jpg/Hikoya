@@ -3397,6 +3397,8 @@ function resetWords(live = false) {
 
 // 💡 Suhbat paytida telefon ekrani o'chib qolmasin (Wake Lock; qo'llamaydigan telefonda jim o'tadi)
 function keepAwake(on) {
+  // 🛑 Telegram: suhbat paytida ilovani tasodifan pastga surib yopib yubormaslik uchun tasdiq so'raladi
+  try { if (inTelegram) on ? tg.enableClosingConfirmation?.() : tg.disableClosingConfirmation?.(); } catch {}
   try {
     if (on && !state.wake && navigator.wakeLock) navigator.wakeLock.request("screen").then((l) => { state.wake = l; l.addEventListener?.("release", () => { state.wake = null; }); }).catch(() => {});
     if (!on && state.wake) { state.wake.release().catch(() => {}); state.wake = null; }
