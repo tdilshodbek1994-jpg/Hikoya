@@ -3341,7 +3341,7 @@ function appendBubble(text) {
   last.lastElementChild.textContent += text;
   // 🗣 Jonli hisoblagich: o'quvchi aytgan inglizcha so'zlar
   if (last.classList.contains("b-me")) {
-    const n = [...log.querySelectorAll(".b-me span")].reduce((k, x) => k + (x.textContent.match(/[A-Za-z]+/g) || []).length, 0);
+    const n = [...log.querySelectorAll(".b-me span")].reduce((k, x) => k + enWordCount(x.textContent), 0);
     setWords(n);
   }
   if (atBottom) log.scrollTop = log.scrollHeight;
@@ -3999,7 +3999,7 @@ async function sendTurn(payload) {
     setSubs(data.reply, data.reply_uz, data.heard, data.uz_say, data.say);
     trackStage(data.reply);
     markWords(data.heard);
-    setWords(Number($("wordsLive").dataset.n || 0) + (String(data.heard || "").match(/[A-Za-z]+/g) || []).length);
+    setWords(Number($("wordsLive").dataset.n || 0) + enWordCount(data.heard));
     if (data.uz_say && !state.subs) toast("🇺🇿 " + data.uz_say, 6000);
     markUsed(data.used || []);
     if (tutorCurrent !== null && tutorCurrent !== state.phraseIdx) {
@@ -4419,13 +4419,26 @@ function checkCourseDone(before) {
   haptic("success");
 }
 
+// 🔤 Inglizcha so'zlarni sanash: o'zbekcha (lotin) gaplar ham A–Z harflarda yoziladi, shuning uchun gap
+// inglizcha ekanini tez-tez uchraydigan inglizcha so'zlar ulushidan aniqlaymiz; o'zbekcha gap — 0 so'z
+const EN_COMMON = new Set("i you he she it we they me my your his her our their is am are was were be been being do does did have has had can could will would should may might must a an the to of in on at for with from by and or but not no yes this that these those what where when why how who which like love want go going get got make know think good very really so too also just about some any there here because if than then all more much many one two time day people thing things please thank thanks hello hi okay ok well sure let's lets i'm don't it's that's i'd i'll can't didn't name favourite favorite play playing study work school english learn".split(" "));
+function enWordCount(text) {
+  // gapma-gap: aralash gapda ("Salom! I love football") faqat inglizcha qismi sanaladi
+  return String(text || "").split(/[.!?;\n]+/).reduce((n, part) => {
+    const t = part.toLowerCase().match(/[a-z']+/g) || [];
+    if (!t.length) return n;
+    const hits = t.filter((w) => EN_COMMON.has(w)).length;
+    return n + (hits / t.length >= 0.25 || (t.length <= 2 && hits >= 1) ? t.length : 0);
+  }, 0);
+}
+
 // 📜 Suhbat matni
 // 🗣 Qancha gapirildi: gaplar va so'zlar soni (ayniqsa erkin suhbat uchun foydali)
 function renderSpeakStats(list, serverBest) {
   const mine = (list || []).filter((t) => t.who === "student" && t.text?.trim());
   const box = $("report");
   if (!mine.length || box.hidden) return;
-  const words = mine.reduce((n, t) => n + t.text.trim().split(/\s+/).filter((w) => /[A-Za-z]/.test(w)).length, 0);
+  const words = mine.reduce((n, t) => n + enWordCount(t.text), 0);
   state.lastWords = words; // 📤 ulashish matni uchun
   const longest = mine.reduce((m, t) => Math.max(m, t.text.trim().split(/\s+/).length), 0);
   const row = el("div", "speak-stats");

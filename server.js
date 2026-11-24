@@ -79,6 +79,19 @@ function auth(req, res, next) {
   res.status(401).json({ error: "Iltimos, ilovani Telegram bot orqali oching." });
 }
 
+// 🔤 Inglizcha so'zlarni sanash: o'zbekcha (lotin) gaplar ham A–Z harflarda yoziladi, shuning uchun gap
+// inglizcha ekanini tez-tez uchraydigan inglizcha so'zlar ulushidan aniqlaymiz; o'zbekcha gap — 0 so'z
+const EN_COMMON = new Set("i you he she it we they me my your his her our their is am are was were be been being do does did have has had can could will would should may might must a an the to of in on at for with from by and or but not no yes this that these those what where when why how who which like love want go going get got make know think good very really so too also just about some any there here because if than then all more much many one two time day people thing things please thank thanks hello hi okay ok well sure let's lets i'm don't it's that's i'd i'll can't didn't name favourite favorite play playing study work school english learn".split(" "));
+function enWordCount(text) {
+  // gapma-gap: aralash gapda ("Salom! I love football") faqat inglizcha qismi sanaladi
+  return String(text || "").split(/[.!?;\n]+/).reduce((n, part) => {
+    const t = part.toLowerCase().match(/[a-z']+/g) || [];
+    if (!t.length) return n;
+    const hits = t.filter((w) => EN_COMMON.has(w)).length;
+    return n + (hits / t.length >= 0.25 || (t.length <= 2 && hits >= 1) ? t.length : 0);
+  }, 0);
+}
+
 // ⚡ fast=1 bo'lsa: ovoz keyin, gapma-gap (/api/audio) — matn darhol qaytadi
 const voiceParts = (req, s, parts, opts) => (req.query.fast === "1" && voiceEnabled && s ? deferParts(s, parts, opts) : speakParts(parts, opts));
 
@@ -378,7 +391,7 @@ app.post("/api/end", express.json(), auth, async (req, res) => {
   // 🔁 Takrorlash darsida ishlatilgan (to'g'ri aytilgan) iboralar — tuzatilgan xato
   const fixedNow = s.lessonId === "review" ? markFixed(req.userId, [...s.used].map((i) => lesson.phrases[i]?.en).filter(Boolean)) : 0;
   const prevMaxWords = summary(req.userId).maxWords || 0;
-  const words = s.transcript.filter((t) => t.who === "student").reduce((n, t) => n + (t.text.match(/[A-Za-z]+/g) || []).length, 0);
+  const words = s.transcript.filter((t) => t.who === "student").reduce((n, t) => n + enWordCount(t.text), 0);
   const score = recordSession(req.userId, {
     words,
     lessonId: s.lessonId,
