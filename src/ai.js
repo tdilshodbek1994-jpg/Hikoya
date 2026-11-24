@@ -548,7 +548,8 @@ Answer with ONLY a JSON object, no markdown:
  "mistakes": [{"wrong": "<exact student phrase>", "right": "<corrected English>", "why_uz": "<short reason in Uzbek>"}],
  "tips_uz": ["<2 concrete tips for next time>"],
  "new_words": [{"en": "<useful word or phrase from the lesson topic>", "uz": "<translation>"}]${isIelts ? ',\n "criteria": {"fluency": <band 1-9, step 0.5>, "vocabulary": <band>, "grammar": <band>, "pronunciation": <band>}' : ""}${isCefr ? ',\n "ml_score": <estimated Uzbek national CEFR Multilevel speaking score 0-75: below 38 = A2 or lower, 38-50 = B1, 51-64 = B2, 65-75 = C1; must match the level>' : ""}}
-Rules: at most 5 mistakes (most important first, only real mistakes), at most 5 new_words. If the student said very little, give a low score and encourage them.${lesson.category === "Bolalar uchun" ? `
+Rules: at most 5 mistakes (most important first, only real mistakes), at most 5 new_words. If the student said very little, give a low score and encourage them.${lesson.free ? `
+This was a FREE conversation with Sado on a topic the student chose, in Uzbek and/or English. Do not judge which topic they chose. If they spoke mostly Uzbek, do not scold: in summary_uz praise the conversation and kindly invite them to try a few English sentences next time; mistakes only from their English sentences (none if they spoke no English); new_words = useful English words and phrases about the topics THEY talked about, so they can use them next time.` : ""}${lesson.category === "Bolalar uchun" ? `
 The student is a CHILD (about 7-12 years old). Write every Uzbek text for a child: very simple words, warm and playful, address them with "sen", praise effort first, one short sentence per item, at most 2 mistakes (only the most important), at most 3 very simple new_words. Be generous with the score.` : ""}`;
 
   const params = {
@@ -560,7 +561,7 @@ The student is a CHILD (about 7-12 years old). Write every Uzbek text for a chil
     messages: [
       {
         role: "user",
-        content: `Lesson: ${lesson.title} (${lesson.situation || ""}). Mode: ${mode}. Target phrases used: ${used} of ${total}.\n\nTranscript:\n${lines}`,
+        content: `Lesson: ${lesson.title} (${lesson.situation || ""}). Mode: ${mode}.${lesson.free ? "" : ` Target phrases used: ${used} of ${total}.`}\n\nTranscript:\n${lines}`,
       },
     ],
   };

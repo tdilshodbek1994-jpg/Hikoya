@@ -4485,7 +4485,7 @@ function renderSpeakStats(list, serverBest) {
   const row = el("div", "speak-stats");
   row.append(
     el("span", "", `🗣 ${mine.length} ta gap`),
-    el("span", "", `🔤 ${words} ta inglizcha so'z`),
+    ...(words || !state.lesson?.liveOnly ? [el("span", "", `🔤 ${words} ta inglizcha so'z`)] : []), // erkin suhbatda 0 bo'lsa ko'rsatilmaydi
     el("span", "", `📏 eng uzun gap: ${longest} so'z`),
   );
   // ⏱ Erkin suhbat qancha davom etdi
@@ -4730,6 +4730,8 @@ function renderReport(r, score) {
   top.append(ring, right);
   // 💬 Erkin suhbatda ball halqasi ko'rsatilmaydi (bu imtihon emas — suhbat); tahlil va maslahatlar qoladi
   if (!state.lesson?.liveOnly) box.append(top);
+  // 💬 Erkin suhbatda: ball halqasi o'rniga faqat Sado'ning qisqa xulosasi
+  else if (r.summary_uz) box.append(el("div", "rep-summary rep-summary-free", r.summary_uz));
   // 🪜 Past ball: yengilroq rejimni taklif qilamiz (inglizcha suhbat/jonli → ustoz)
   if (r.score < 50 && state.lessonMode !== "tutor" && !state.lesson?.liveOnly && state.lesson?.id !== "review") {
     const tip = el("div", "rep-easier");
@@ -4951,7 +4953,7 @@ function renderReport(r, score) {
     return li;
   });
   if ((r.new_words || []).length || (r.mistakes || []).length)
-    box.append(el("div", "rep-saved", "📒 Yangi so'zlar va xatolar lug'atingizga saqlandi"));
+    if (!state.freeOnly) box.append(el("div", "rep-saved", "📒 Yangi so'zlar va xatolar lug'atingizga saqlandi")); // lug'at bo'limi yashirin bo'lsa — aytmaymiz
 }
 
 function showResult() {
