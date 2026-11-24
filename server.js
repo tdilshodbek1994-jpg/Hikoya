@@ -309,6 +309,7 @@ app.post(
 
     const lesson = lessonOf(s);
     if (req.query.slow !== undefined) s.slow = req.query.slow === "1";
+    if (req.query.voice) s.voice = req.query.voice === "m" ? "m" : "f"; // 🗣 suhbat o'rtasida ovoz almashtirilsa ham
     s.busy = true;
     try {
       let text = "";

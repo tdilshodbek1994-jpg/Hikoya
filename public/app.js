@@ -4024,7 +4024,7 @@ async function sendTurn(payload) {
   }, 7000);
   try {
     const data = await api(
-      `api/turn?session=${encodeURIComponent(state.session)}&tr=${state.tr ? 1 : 0}&slow=${state.slow ? 1 : 0}&fast=1`,
+      `api/turn?session=${encodeURIComponent(state.session)}&tr=${state.tr ? 1 : 0}&slow=${state.slow ? 1 : 0}&voice=${state.voice}&fast=1`,
       payload,
     );
     clearTimeout(slowNote);
