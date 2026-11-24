@@ -3618,6 +3618,8 @@ $("mascot").addEventListener("click", () => {
   if (state.lessonMode === "live" || $("replayBtn").hidden) return;
   $("replayBtn").click();
 });
+// ⌨️ Klaviatura/ekran o'quvchi: maskotga Enter yoki Bo'sh joy — bosish bilan bir xil
+$("mascot").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("mascot").click(); } });
 // Holat yozuvini bosish ham Sado'ni to'xtatadi (yozuvda shunday deyilgan)
 $("status").addEventListener("click", () => { if (state.live?.speaking?.() || (state.lessonMode !== "live" && state.phase === "speaking")) $("mascot").click(); });
 

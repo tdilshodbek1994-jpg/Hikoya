@@ -69,9 +69,9 @@
       <div class="head-left"><b id="lessonTitle"></b></div>
       <span class="chip words-live" id="wordsLive" hidden>🗣 0</span>
       <button class="chip" id="ruleBtn" hidden>📖<span class="chip-txt"> Qoida</span></button>
-      <button class="chip" id="slowBtn">🐇 Oddiy</button>
+      <button class="chip" id="slowBtn" aria-label="Gapirish tezligi: oddiy yoki sekin">🐇 Oddiy</button>
       <button class="chip" id="trBtn">🇺🇿 Tarjima</button>
-      <div class="timer" id="timer">
+      <div class="timer" id="timer" role="timer" aria-label="Qolgan vaqt">
         <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" class="t-bg"/><circle cx="10" cy="10" r="8" class="t-fg" id="timerRing"/></svg>
         <span id="timerText">10:00</span>
       </div>
@@ -109,7 +109,7 @@
     </div>
 
     <div class="stage">
-      <div class="mascot" id="mascot" data-state="idle"></div>
+      <div class="mascot" id="mascot" data-state="idle" role="button" tabindex="0" aria-label="Sado: gapirayotganda bosing — to'xtaydi; keyin bosing — oxirgi gapni qayta aytadi"></div>
       <div class="status" id="status"><span class="status-ico" id="statusIco"></span><span id="statusText">Tayyorlanmoqda...</span></div>
       <div class="hint" id="hint">Shunchaki gapiring — Sado tinglayapti.</div>
     </div>
