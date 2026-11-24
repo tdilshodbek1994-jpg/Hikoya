@@ -92,6 +92,17 @@ function enWordCount(text) {
   }, 0);
 }
 
+// 💬 Erkin suhbat statistikasi (admin uchun): AI javob vaqti va xatolar — sekinlik yoki "qotish"ni ko'rish uchun
+const freeStats = { turns: 0, totalMs: 0, maxMs: 0, slow: 0, errors: 0, recent: [] };
+function noteFree(ms) {
+  freeStats.turns++;
+  freeStats.totalMs += ms;
+  freeStats.maxMs = Math.max(freeStats.maxMs, ms);
+  if (ms > 7000) freeStats.slow++;
+  freeStats.recent.unshift(ms);
+  freeStats.recent.length = Math.min(freeStats.recent.length, 20);
+}
+
 // ⚡ fast=1 bo'lsa: ovoz keyin, gapma-gap (/api/audio) — matn darhol qaytadi
 const voiceParts = (req, s, parts, opts) => (req.query.fast === "1" && voiceEnabled && s ? deferParts(s, parts, opts) : speakParts(parts, opts));
 
@@ -308,7 +319,9 @@ app.post(
 
       s.turns += 1;
       if (s.mode === "free") {
+        const tStart = Date.now();
         const t = await freeTurn(s, lesson, text);
+        noteFree(Date.now() - tStart);
         // 🔤 Sado javobidagi o'zbekcha qism ham doim lotinda bo'lsin (model ba'zan kirillda yozadi)
         t.say = t.say.map((x) => (x.lang === "uz" ? { ...x, text: toLatin(x.text) } : x));
         const reply = t.say.map((x) => x.text).join(" ");
@@ -361,6 +374,7 @@ app.post(
         parts,
       });
     } catch (err) {
+      if (s.mode === "free") freeStats.errors++;
       sendError(res, err);
     } finally {
       s.busy = false;
@@ -542,6 +556,8 @@ app.get("/api/admin/stats", (req, res) => {
   s.startsToday = startsTodayTotal();
   s.ttsCache = ttsStats;
   s.features = { ...featStats, topic: liveStats.topicSwitches };
+  s.free = { turns: freeStats.turns, avgMs: freeStats.turns ? Math.round(freeStats.totalMs / freeStats.turns) : 0, maxMs: freeStats.maxMs, slow: freeStats.slow, errors: freeStats.errors, recent: freeStats.recent };
+  s.liveEnabled = liveEnabled;
   s.live = { calls: liveStats.calls, ready: liveStats.ready, ends: liveStats.ends, noReply: liveStats.noReply, nudges: liveStats.nudges, recent: liveStats.recent };
   res.json(s);
 });
