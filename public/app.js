@@ -154,7 +154,7 @@ function onBack() {
 }
 
 function confirmEnd() {
-  const ask = "Darsni tugatasizmi?";
+  const ask = state.lesson?.liveOnly ? "Suhbatni tugatasizmi?" : "Darsni tugatasizmi?";
   if (inTelegram && tg.showConfirm) tg.showConfirm(ask, (ok) => ok && finish());
   else if (confirm(ask)) finish();
 }
@@ -3367,7 +3367,20 @@ function resetWords(live = false) {
   $("wordsLive").textContent = "🗣 0 so'z";
 }
 
+// 💡 Suhbat paytida telefon ekrani o'chib qolmasin (Wake Lock; qo'llamaydigan telefonda jim o'tadi)
+function keepAwake(on) {
+  try {
+    if (on && !state.wake && navigator.wakeLock) navigator.wakeLock.request("screen").then((l) => { state.wake = l; l.addEventListener?.("release", () => { state.wake = null; }); }).catch(() => {});
+    if (!on && state.wake) { state.wake.release().catch(() => {}); state.wake = null; }
+  } catch {}
+}
+document.addEventListener("visibilitychange", () => {
+  // Ilovaga qaytilganda suhbat davom etayotgan bo'lsa — qayta yoqamiz (brauzer fon rejimida o'zi bo'shatadi)
+  if (!document.hidden && state.session && state.phase !== "ended") keepAwake(true);
+});
+
 function startTimer() {
+  keepAwake(true);
   clearInterval(state.timer);
   renderTimer();
   state.timer = setInterval(() => {
@@ -3377,7 +3390,7 @@ function startTimer() {
     if (state.left === 60 && state.lesson?.liveOnly && state.lessonMode !== "live") toast("⏳ 1 daqiqa qoldi — keyin «💬 Yana gaplashish» bilan davom etasiz", 4000);
     if (state.left <= 0) {
       clearInterval(state.timer);
-      toast("Vaqt tugadi!");
+      toast(state.lesson?.liveOnly ? "⏱ Suhbat vaqti tugadi — ajoyib suhbat bo'ldi!" : "Vaqt tugadi!");
       finish();
     }
   }, 1000);
@@ -4309,6 +4322,7 @@ function speakBrowser(text, lang = "en") {
 
 // ---------------- Tugatish ----------------
 function stopAll() {
+  keepAwake(false);
   clearInterval(state.timer);
   clearInterval(state.cueClock);
   $("lesson").classList.remove("is-live");

@@ -98,11 +98,11 @@ const voiceParts = (req, s, parts, opts) => (req.query.fast === "1" && voiceEnab
 function getSession(req, res) {
   const s = sessions.get(String(req.query.session || req.body?.session || ""));
   if (!s || s.userId !== req.userId) {
-    res.status(404).json({ error: "Sessiya topilmadi. Darsni qaytadan boshlang." });
+    res.status(404).json({ error: "Sessiya topilmadi. Qaytadan boshlang." });
     return null;
   }
   if (Date.now() > s.expiresAt) {
-    res.status(410).json({ error: "Dars vaqti tugadi." });
+    res.status(410).json({ error: "Vaqt tugadi. Qaytadan boshlang." });
     return null;
   }
   return s;
