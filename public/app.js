@@ -4078,8 +4078,9 @@ async function sendTurn(payload) {
   } catch (e) {
     clearTimeout(slowNote);
     if (state.phase === "ended") return;
-    // 🔁 AI xizmatining bir martalik xatosi (5xx): o'quvchini bezovta qilmay, bir marta o'zimiz qayta yuboramiz
-    if (e.status >= 500 && !autoRetried.has(payload)) {
+    // 🔁 AI xizmatining bir martalik xatosi (5xx) yoki oldingi javob hali tayyorlanayotgan bo'lsa (409):
+    // o'quvchini bezovta qilmay, bir marta o'zimiz qayta yuboramiz
+    if ((e.status >= 500 || e.status === 409) && !autoRetried.has(payload)) {
       autoRetried.add(payload);
       setPhase("thinking", "Sado o'ylamoqda...");
       await new Promise((r) => setTimeout(r, 1500));

@@ -20,7 +20,8 @@ const AZURE_VOICE = process.env.AZURE_VOICE || "uz-UZ-MadinaNeural";
 
 // ANTHROPIC_API_KEY muhit o'zgaruvchisidan o'qiladi. ⏱ 40 s chegara: SDK odatda 10 daqiqa kutadi —
 // AI sekinlashsa o'quvchi "Sado o'ylamoqda"da qotib qolmasin (ilova 60 s dan keyin baribir voz kechadi)
-const anthropic = new Anthropic({ timeout: 40_000, maxRetries: 1 });
+// Haiku odatda bir necha soniyada javob beradi — 25 s chegara (+1 qayta urinish) ilovaning 60 s kutishiga sig'adi
+const anthropic = new Anthropic({ timeout: /^claude-haiku/.test(process.env.CLAUDE_MODEL || "claude-haiku-5-5") ? 25_000 : 40_000, maxRetries: 1 });
 
 // Server tomonidagi zaxira model (refusal bo'lsa) faqat shu modellarda bor
 const SUPPORTS_FALLBACKS = /^claude-(opus-5|sonnet-5-5|fable-5)/.test(CLAUDE_MODEL);
