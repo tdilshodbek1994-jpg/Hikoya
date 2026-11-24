@@ -52,7 +52,8 @@ fetch("api/admin/stats", { headers: { "X-Admin-Key": key } })
       ${["uz", "en"].filter((k) => d.ttsCache[k]?.n).map((k) => { const t = d.ttsCache[k]; return `<p style="color:var(--muted);font-size:13px;margin:4px 2px 0">🔊 ${k === "uz" ? "O'zbekcha" : "Inglizcha"} ovoz: ${t.n} ta · o'rtacha ${(t.ms / t.n / 1000).toFixed(1)} s · xato ${t.err} · ${Object.entries(t.via).map(([v, n]) => `${esc(v)} ${n}`).join(", ")}</p>`; }).join("")}
       ${d.free ? `<div class="card" style="margin-top:12px"><b>💬 Erkin suhbat (server ishga tushgandan beri)</b>
         <p style="font-size:13px;margin:6px 0">Javoblar: ${d.free.turns} · ⏱ o'rtacha AI javobi: <b>${(d.free.avgMs / 1000).toFixed(1)} s</b> · eng uzoq: ${(d.free.maxMs / 1000).toFixed(1)} s · 🐢 7 s dan uzoq: <b>${d.free.slow}</b> · ⚠️ xato: <b>${d.free.errors}</b></p>
-        ${d.free.recent?.length ? `<p style="font-size:12px;margin:6px 0;color:var(--muted)">Oxirgi javoblar (s): ${d.free.recent.map((ms) => (ms / 1000).toFixed(1)).join(" · ")}</p>` : ""}</div>` : ""}
+        ${d.free.recent?.length ? `<p style="font-size:12px;margin:6px 0;color:var(--muted)">Oxirgi javoblar (s): ${d.free.recent.map((ms) => (ms / 1000).toFixed(1)).join(" · ")}</p>` : ""}
+        ${d.free.lastErrors?.length ? `<p style="font-size:12px;margin:6px 0">⚠️ Oxirgi xatolar:<br>${d.free.lastErrors.map(esc).join("<br>")}</p>` : ""}</div>` : ""}
       ${d.live && d.liveEnabled !== false ? `<div class="card" style="margin-top:12px"><b>📞 Jonli suhbatlar (server ishga tushgandan beri)</b>
         <p style="font-size:13px;margin:6px 0">Boshlangan: ${d.live.calls} · Gemini ulandi: ${d.live.ready} · 🤫 Sado javobsiz qolib tugagan: <b>${d.live.noReply}</b> · jimlikda yordam: ${d.live.nudges}</p>
         <p style="font-size:13px;margin:6px 0">Qanday tugadi: ${Object.entries(d.live.ends).map(([k, v]) => `${esc(k)} — ${v}`).join(" · ") || "—"}</p>

@@ -93,7 +93,7 @@ function enWordCount(text) {
 }
 
 // 💬 Erkin suhbat statistikasi (admin uchun): AI javob vaqti va xatolar — sekinlik yoki "qotish"ni ko'rish uchun
-const freeStats = { turns: 0, totalMs: 0, maxMs: 0, slow: 0, errors: 0, recent: [] };
+const freeStats = { turns: 0, totalMs: 0, maxMs: 0, slow: 0, errors: 0, recent: [], lastErrors: [] };
 function noteFree(ms) {
   freeStats.turns++;
   freeStats.totalMs += ms;
@@ -379,7 +379,13 @@ app.post(
         parts,
       });
     } catch (err) {
-      if (s.mode === "free") freeStats.errors++;
+      if (s.mode === "free") {
+        freeStats.errors++;
+        // 🩺 Oxirgi xatolar (admin): qachon va qisqa sababi — muammoni tez topish uchun (shaxsiy ma'lumotsiz)
+        const at = new Date(Date.now() + 5 * 3600_000).toISOString().slice(5, 16).replace("T", " ");
+        freeStats.lastErrors.unshift(`${at} · ${String(err?.message || err).slice(0, 90)}`);
+        freeStats.lastErrors.length = Math.min(freeStats.lastErrors.length, 8);
+      }
       sendError(res, err);
     } finally {
       s.busy = false;
@@ -562,7 +568,7 @@ app.get("/api/admin/stats", (req, res) => {
   s.startsToday = startsTodayTotal();
   s.ttsCache = ttsStats;
   s.features = { ...featStats, topic: liveStats.topicSwitches };
-  s.free = { turns: freeStats.turns, avgMs: freeStats.turns ? Math.round(freeStats.totalMs / freeStats.turns) : 0, maxMs: freeStats.maxMs, slow: freeStats.slow, errors: freeStats.errors, recent: freeStats.recent };
+  s.free = { turns: freeStats.turns, avgMs: freeStats.turns ? Math.round(freeStats.totalMs / freeStats.turns) : 0, maxMs: freeStats.maxMs, slow: freeStats.slow, errors: freeStats.errors, recent: freeStats.recent, lastErrors: freeStats.lastErrors };
   s.liveEnabled = liveEnabled;
   s.live = { calls: liveStats.calls, ready: liveStats.ready, ends: liveStats.ends, noReply: liveStats.noReply, nudges: liveStats.nudges, recent: liveStats.recent };
   res.json(s);
