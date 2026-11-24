@@ -1878,7 +1878,7 @@ function renderTrend() {
 
 // 🏅 Yutuqlar: progressdan hisoblanadi
 const BADGES = [
-  ["🎤", "Birinchi qadam", "Birinchi darsni tugating", (p) => p.done >= 1],
+  ["🎤", "Birinchi qadam", "Birinchi suhbat yoki darsni tugating", (p) => p.done >= 1],
   ["🔥", "3 kun ketma-ket", "3 kun ketma-ket mashq qiling", (p) => (p.bestStreak || p.streak) >= 3],
   ["📚", "10 ta dars", "10 xil darsni o'ting", (p) => p.done >= 10],
   ["💯", "A'lochi", "Biror darsda 90+ ball oling", (p) => (p.best || 0) >= 90],
@@ -4521,10 +4521,12 @@ $("setInvite").addEventListener("click", () => $("inviteBtn").click());
 $("shareBtn").addEventListener("click", () => {
   const { r, score } = state.lastResult || {};
   const l = state.lesson;
-  const sc = r?.score ?? score;
+  const free = Boolean(l.liveOnly); // 💬 erkin suhbatda ball ko'rsatilmaydi — o'rniga necha daqiqa gaplashgani
+  const sc = free ? null : r?.score ?? score;
+  const mins = Math.max(1, Math.round((state.seconds - Math.max(0, state.left)) / 60) || 1);
   const text = [
     `🎤 Sado AI bilan ingliz tilida gaplashdim!`,
-    `${l.emoji} ${l.title}: ${sc} ball${r?.level && l.category !== "Bolalar uchun" ? ` · ${r.level}` : ""}`, // bolalarda daraja ko'rsatilmaydi
+    free ? `💬 Erkin suhbat: ⏱ ${mins} daqiqa` : `${l.emoji} ${l.title}: ${sc} ball${r?.level && l.category !== "Bolalar uchun" ? ` · ${r.level}` : ""}`, // bolalarda daraja ko'rsatilmaydi
     // Erkin suhbatda iboralar yo'q — "0/0 ta ibora" yozilmasin
     l.category === "Bolalar uchun" && l.phrases.length
       ? `${"⭐".repeat(state.used.size)}${"☆".repeat(Math.max(0, l.phrases.length - state.used.size))} — ${state.used.size} ta yulduz yig'dim!`
