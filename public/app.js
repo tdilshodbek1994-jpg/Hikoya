@@ -4230,16 +4230,17 @@ async function afterReply() {
     applyMode();
   }
   if (!state.textOnly && state.mode === "auto") listenAuto();
+  else setPhase("idle");
   // 🤫 Erkin suhbatda 25 soniya jim qolsa — bir marta yumshoq maslahat (Sado o'zi gapirmaydi, mavzu tanlamaydi)
   clearTimeout(state.idleNudge);
-  if (state.lesson?.liveOnly && !state.idleNudged)
+  if (state.lesson?.liveOnly && !state.idleNudged) {
     state.idleNudge = setTimeout(() => {
       if (state.phase === "listening" || state.phase === "idle") {
         state.idleNudged = true;
         toast("🎙️ Istalgan mavzuda gapiring — yoki «💡 Nima deyishni bilmayapman»ni bosing", 4500);
       }
     }, 25000);
-  else setPhase("idle");
+  }
 }
 
 // ---------------- Javobni ijro etish ----------------
