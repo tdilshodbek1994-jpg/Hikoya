@@ -1398,3 +1398,8 @@ body.dark .free-cont { color: #a5b4fc; }
 .mode { min-width: 0; text-align: center; }
 html[data-font="2"] .mode, html[data-font="1"] .mode { flex-direction: column; gap: 2px; font-size: 12px; padding: 8px 4px; line-height: 1.15; }
 @media (max-width: 360px) { .mode { flex-direction: column; gap: 2px; padding: 8px 4px; line-height: 1.15; } }
+
+/* 🖥 Planshet/kompyuter: yuqori panel ham kontent bilan bir chiziqda (560px markazda) */
+@media (min-width: 700px) {
+  .topbar { padding-left: max(14px, calc((100vw - 560px) / 2)); padding-right: max(14px, calc((100vw - 560px) / 2)); }
+}
