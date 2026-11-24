@@ -555,6 +555,7 @@ The student is a CHILD (about 7-12 years old). Write every Uzbek text for a chil
     model: CLAUDE_MODEL,
     max_tokens: 3000,
     output_config: { effort: "low" },
+    ...(FAST_NO_THINKING ? { thinking: { type: "disabled" } } : {}), // ⚡ yordamchi so'rovlar ham tezroq
     system,
     messages: [
       {
@@ -632,6 +633,7 @@ export async function sampleAnswer(lessonId, cue, questions, task) {
     model: CLAUDE_MODEL,
     max_tokens: 2000,
     output_config: { effort: "low" },
+    ...(FAST_NO_THINKING ? { thinking: { type: "disabled" } } : {}), // ⚡ yordamchi so'rovlar ham tezroq
     system,
     messages: [{ role: "user", content: task ? task : cue ? `${cue.title}\nYou should say:\n${cue.points.map((p) => "- " + p).join("\n")}` : questions.map((q, i) => `${i + 1}) ${q}`).join("\n") }],
   };
@@ -663,8 +665,11 @@ export async function suggestReplies(lesson, lastSado, used) {
     model: CLAUDE_MODEL,
     max_tokens: 1500,
     output_config: { effort: "low" },
-    system: `You help an Uzbek student who doesn't know what to answer in an English speaking lesson. Suggest 2 short, natural replies they could say next (one very simple A2 reply, one a bit richer B1-B2 reply). If it fits, use one of these target phrases: ${remaining.join(" | ") || "(none)"}. Answer with ONLY JSON: {"hints":[{"en":"...","uz":"<Uzbek translation>"},{"en":"...","uz":"..."}]}`,
-    messages: [{ role: "user", content: `Lesson: ${lesson.title}. The teacher (Sado) just said: "${lastSado || lesson.opener}"` }],
+    ...(FAST_NO_THINKING ? { thinking: { type: "disabled" } } : {}), // ⚡ yordamchi so'rovlar ham tezroq
+    system: lesson.free
+      ? `You help an Uzbek student in a FREE conversation with Sado (an AI friend) who doesn't know what to say next. Suggest 2 short, natural things they could say next in ENGLISH that continue THEIR current topic (if no topic yet, two different everyday topics they might want, e.g. "Let's talk about ..."): one very simple A2 reply, one a bit richer B1-B2 reply. Answer with ONLY JSON: {"hints":[{"en":"...","uz":"<Uzbek translation>"},{"en":"...","uz":"..."}]}`
+      : `You help an Uzbek student who doesn't know what to answer in an English speaking lesson. Suggest 2 short, natural replies they could say next (one very simple A2 reply, one a bit richer B1-B2 reply). If it fits, use one of these target phrases: ${remaining.join(" | ") || "(none)"}. Answer with ONLY JSON: {"hints":[{"en":"...","uz":"<Uzbek translation>"},{"en":"...","uz":"..."}]}`,
+    messages: [{ role: "user", content: `Lesson: ${lesson.title}. ${lesson.free ? "Sado" : "The teacher (Sado)"} just said: "${lastSado || (lesson.free ? FREE_OPENER : lesson.opener)}"` }],
   };
   if (SUPPORTS_FALLBACKS) {
     params.betas = ["server-side-fallback-2026-07-01"];
@@ -688,6 +693,7 @@ export async function translateUz(text) {
     model: CLAUDE_MODEL,
     max_tokens: 800,
     output_config: { effort: "low" },
+    ...(FAST_NO_THINKING ? { thinking: { type: "disabled" } } : {}), // ⚡ yordamchi so'rovlar ham tezroq
     system: 'Translate the English text into natural, simple Uzbek (Latin script) for a learner. Answer with ONLY JSON: {"uz":"..."}',
     messages: [{ role: "user", content: key }],
   };
