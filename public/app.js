@@ -5322,7 +5322,7 @@ const FAQ_FREE = [
   ["Suhbatni keyin davom ettirsa bo'ladimi?", "Ha! Suhbat tugagach «↩️ Shu suhbatni davom ettirish» tugmasini bosing — Sado oxirgi gaplaringizni eslab, o'sha mavzudan davom etadi. «💬 Yana gaplashish» esa yangi suhbat boshlaydi."],
   ["Sado aytgan inglizcha gapni qayta eshitsam bo'ladimi?", "Ha — Sado javobidagi 🔊 belgili inglizcha gapni bosing, u yana o'qib beradi. «🔁 Qayta eshitish» esa butun javobni qaytaradi."],
   ["Sado tez gapiryapti yoki inglizchasi qiyin", "⚙️ Sozlamalarda «🐢 Sekin» tezlikni va «🌱 Boshlovchi» darajani tanlang — Sado sekinroq va soddaroq gapiradi."],
-  ["Ma'lumotlarim xavfsizmi?", "Ovozingiz suhbat paytida tahlil uchun AI xizmatlariga yuboriladi, lekin Sado serverida saqlanmaydi."],
+  ["Ma'lumotlarim xavfsizmi?", "Ovozingiz suhbat paytida matnga aylantirish uchun AI xizmatlariga yuboriladi, lekin Sado serverida saqlanmaydi. Serverda faqat statistika (seriya, daqiqalar) saqlanadi. «↩️ Davom ettirish» uchun oxirgi suhbatning bir necha gapi faqat telefoningizda 24 soat turadi. Hammasini ⚙️ Sozlamalar → «🗑 Ma'lumotlarimni o'chirish» bilan o'chirasiz."],
 ];
 function renderFaq() {
   const box = $("faq");
