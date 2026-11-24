@@ -3778,7 +3778,7 @@ function applyMode() {
   $("hint").textContent = text
     ? (state.lesson?.liveOnly ? "O'zbekcha yoki inglizcha yozing." : "Javobingizni inglizcha yozing.")
     : state.mode === "hold"
-      ? "Tugmani bosib turing, gapiring va qo'yib yuboring."
+      ? (state.lesson?.liveOnly ? "O'zbekcha yoki inglizcha gapirishingiz mumkin." : "Tugmani bosib turing, gapiring va qo'yib yuboring.")
       : state.lesson?.liveOnly ? "O'zbekcha yoki inglizcha gapiring — Sado tinglayapti." : "Shunchaki gapiring — Sado tinglayapti.";
 }
 
@@ -4102,7 +4102,7 @@ function applyHint() {
   $("hint").textContent = state.textOnly || state.mode === "text"
     ? (state.lesson?.liveOnly ? "O'zbekcha yoki inglizcha yozing." : "Javobingizni inglizcha yozing.")
     : state.mode === "hold"
-      ? "Tugmani bosib turing, gapiring va qo'yib yuboring."
+      ? (state.lesson?.liveOnly ? "O'zbekcha yoki inglizcha gapirishingiz mumkin." : "Tugmani bosib turing, gapiring va qo'yib yuboring.")
       : state.lesson?.liveOnly ? "O'zbekcha yoki inglizcha gapiring — Sado tinglayapti." : "Shunchaki gapiring — Sado tinglayapti.";
 }
 
