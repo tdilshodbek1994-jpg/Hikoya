@@ -260,7 +260,7 @@ export async function transcribe(buffer, mimeType, lesson) {
   // Til avtomatik aniqlanadi: o'quvchi inglizcha yoki o'zbekcha gapirishi mumkin
   form.append(
     "prompt",
-    "An Uzbek student practising English; they may speak English or Uzbek. " +
+    "An Uzbek student practising English; they may speak English or Uzbek. Write Uzbek in the Latin alphabet (Salom, men maktabda o'qiyman, rahmat). " +
       lesson.phrases.map((p) => p.en).join(" "),
   );
 

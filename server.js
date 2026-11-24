@@ -9,7 +9,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { LESSONS, getLesson, publicLesson } from "./src/lessons.js";
 import { verifyInitData } from "./src/telegram.js";
 import { WebSocketServer } from "ws";
-import { liveEnabled, runLive, liveStats } from "./src/live.js";
+import { liveEnabled, runLive, liveStats, toLatin } from "./src/live.js";
 import { chatTurn, tutorTurn, freeTurn, FREE_OPENER, deferParts, tutorOpener, transcribe, speakParts, voiceEnabled, lessonReport, suggestReplies, translateUz, sampleAnswer, samplePhrases, samplePhraseUz, sampleStats, sampleCount, ttsStats } from "./src/ai.js";
 import { recordSession, touchDay, summary, adminStats, startedToday, countStart, refundStart, startsTodayTotal, deleteUser, markFixed, addWord, removeWord, setRemind, remindTargets, markReminded } from "./src/store.js";
 
@@ -290,7 +290,8 @@ app.post(
       let text = "";
       if (Buffer.isBuffer(req.body) && req.body.length > 0) {
         if (req.body.length < 1500) return res.json({ heard: "", empty: true });
-        text = await transcribe(req.body, req.get("Content-Type") || "audio/webm", lesson);
+        // 🔤 O'zbekcha nutq ba'zan kirillda tanib olinadi — ilova lotin yozuvida ishlaydi
+        text = toLatin(await transcribe(req.body, req.get("Content-Type") || "audio/webm", lesson));
       } else if (typeof req.body?.text === "string") {
         text = req.body.text.trim().slice(0, 500);
       }
