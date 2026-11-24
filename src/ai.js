@@ -366,9 +366,13 @@ const ttsCache = new Map();
 const TTS_CACHE_MAX = Number(process.env.TTS_CACHE_MAX || 500);
 export const ttsStats = { hits: 0, misses: 0, uz: { n: 0, ms: 0, err: 0, via: {} }, en: { n: 0, ms: 0, err: 0, via: {} } };
 
-export async function speak(text, lang = "en", slow = false) {
+// 🗣 Sado ovozi: "f" — ayol (Madina / coral), "m" — erkak (Sardor / ash)
+const AZ_VOICES = { f: AZURE_VOICE, m: process.env.AZURE_VOICE_M || "uz-UZ-SardorNeural" };
+const OA_VOICES = { f: TTS_VOICE, m: process.env.TTS_VOICE_M || "ash" };
+export async function speak(text, lang = "en", slow = false, voice = "f") {
   if (!text) return null;
-  const key = `${lang}|${slow ? 1 : 0}|${text}`;
+  voice = voice === "m" ? "m" : "f";
+  const key = `${lang}|${slow ? 1 : 0}|${voice}|${text}`;
   if (ttsCache.has(key)) {
     ttsStats.hits++;
     const v = ttsCache.get(key);
@@ -379,7 +383,7 @@ export async function speak(text, lang = "en", slow = false) {
   ttsStats.misses++;
   // ⏱ Ovoz yaratish vaqti (admin: o'zbekcha/inglizcha ovoz qancha kechikyapti, qaysi xizmat ishlatildi)
   const t0 = Date.now();
-  const v = await speakUncached(text, lang, slow);
+  const v = await speakUncached(text, lang, slow, voice);
   const st = ttsStats[lang === "uz" ? "uz" : "en"];
   st.n++;
   st.ms += Date.now() - t0;
@@ -395,7 +399,7 @@ export async function speak(text, lang = "en", slow = false) {
 let azurePausedUntil = 0;
 // Azure TTS so'rovi (o'zbekcha). Muvaffaqiyatda { audio (base64 mp3), mime }, aks holda { error }.
 const xmlEscape = (t) => t.replace(/[<>&'"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", "'": "&apos;", '"': "&quot;" })[c]);
-export async function azureTts(text, slow = false) {
+export async function azureTts(text, slow = false, voice = "f") {
   const body = xmlEscape(text);
   const res = await fetch(`https://${AZURE_REGION}.tts.speech.microsoft.com/cognitiveservices/v1`, {
     method: "POST",
@@ -405,18 +409,18 @@ export async function azureTts(text, slow = false) {
       "X-Microsoft-OutputFormat": "audio-24khz-48kbitrate-mono-mp3",
       "User-Agent": "sado-speaking",
     },
-    body: `<speak version="1.0" xml:lang="uz-UZ"><voice name="${AZURE_VOICE}">${slow ? `<prosody rate="-15%">${body}</prosody>` : body}</voice></speak>`,
+    body: `<speak version="1.0" xml:lang="uz-UZ"><voice name="${AZ_VOICES[voice] || AZURE_VOICE}">${slow ? `<prosody rate="-15%">${body}</prosody>` : body}</voice></speak>`,
     signal: AbortSignal.timeout(15_000),
   });
   if (!res.ok) return { error: `${res.status} ${(await res.text()).slice(0, 300)}` };
   return { audio: Buffer.from(await res.arrayBuffer()).toString("base64"), mime: "audio/mpeg" };
 }
 
-async function speakUncached(text, lang, slow) {
+async function speakUncached(text, lang, slow, voice = "f") {
   // O'zbekcha qismlar: avval Azure (tayyor o'zbekcha ovoz, tez)
   if (lang === "uz" && AZURE_KEY && AZURE_REGION && Date.now() > azurePausedUntil) {
     try {
-      const a = await azureTts(text, slow);
+      const a = await azureTts(text, slow, voice);
       if (a.audio) return { ...a, via: "azure" };
       console.error("Azure TTS xatosi:", a.error, "- keyingi ovozga o'tilmoqda");
       // Kalit/obuna xatosi (401/403) bo'lsa — 10 daqiqa Azure'ni chetlab o'tamiz (har gapda behuda kutmaslik uchun)
@@ -439,14 +443,14 @@ async function speakUncached(text, lang, slow) {
   if (!useFallbackTts) {
     const r = await ttsRequest({
       model: TTS_MODEL,
-      voice: TTS_VOICE,
+      voice: OA_VOICES[voice] || TTS_VOICE,
       input: text,
       instructions: (TTS_STYLE[lang] || TTS_STYLE.en) + (slow ? SLOW_NOTE : ""),
     });
     if (r.audio) return { audio: r.audio, mime: "audio/mpeg" };
     console.error(`TTS xatosi (${TTS_MODEL}):`, r.error, "- zaxira tts-1 ga o'tilmoqda");
   }
-  const f = await ttsRequest({ ...FALLBACK_TTS, input: text, ...(slow ? { speed: 0.8 } : {}) });
+  const f = await ttsRequest({ ...FALLBACK_TTS, ...(voice === "m" ? { voice: "onyx" } : {}), input: text, ...(slow ? { speed: 0.8 } : {}) });
   if (f.audio) {
     useFallbackTts = true;
     return { audio: f.audio, mime: "audio/mpeg" };
@@ -455,11 +459,11 @@ async function speakUncached(text, lang, slow) {
   return null;
 }
 
-export async function speakParts(parts, { slow = false } = {}) {
+export async function speakParts(parts, { slow = false, voice = "f" } = {}) {
   const list = parts.filter((p) => p.text && p.text.trim());
   const audios = await Promise.all(
     list.map((p) =>
-      speak(p.text, p.lang, slow).catch((err) => {
+      speak(p.text, p.lang, slow, voice).catch((err) => {
         console.error("TTS xatosi:", err?.message || err);
         return null;
       }),
@@ -522,7 +526,7 @@ function splitSentences(text) {
   }
   return out;
 }
-export function deferParts(s, parts, { slow = false } = {}) {
+export function deferParts(s, parts, { slow = false, voice = "f" } = {}) {
   s.audio ||= new Map();
   if (s.audio.size > 200) s.audio.clear();
   const list = [];
@@ -530,7 +534,7 @@ export function deferParts(s, parts, { slow = false } = {}) {
     if (!p.text || !p.text.trim()) continue;
     for (const text of splitSentences(p.text)) {
       const id = String((s.audioSeq = (s.audioSeq || 0) + 1));
-      s.audio.set(id, speak(text, p.lang, slow).catch((err) => {
+      s.audio.set(id, speak(text, p.lang, slow, voice).catch((err) => {
         console.error("TTS xatosi:", err?.message || err);
         return null;
       }));

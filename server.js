@@ -104,7 +104,10 @@ function noteFree(ms) {
 }
 
 // ⚡ fast=1 bo'lsa: ovoz keyin, gapma-gap (/api/audio) — matn darhol qaytadi
-const voiceParts = (req, s, parts, opts) => (req.query.fast === "1" && voiceEnabled && s ? deferParts(s, parts, opts) : speakParts(parts, opts));
+const voiceParts = (req, s, parts, opts = {}) => {
+  const o = { ...opts, voice: s?.voice || "f" }; // 🗣 o'quvchi tanlagan Sado ovozi
+  return req.query.fast === "1" && voiceEnabled && s ? deferParts(s, parts, o) : speakParts(parts, o);
+};
 
 function getSession(req, res) {
   const s = sessions.get(String(req.query.session || req.body?.session || ""));
@@ -228,6 +231,7 @@ app.post("/api/session", express.json(), auth, async (req, res) => {
     transcript: [],
     custom: lesson.id === "review" ? lesson : null,
     slow: Boolean(req.body?.slow),
+    voice: req.body?.voice === "m" ? "m" : "f",
     selfLevel: ["beg", "mid", "adv"].includes(req.body?.level) ? req.body.level : "",
     startedAt: Date.now(),
     expiresAt: Date.now() + (lesson.minutes || SESSION_MINUTES) * 60_000,
@@ -459,10 +463,11 @@ app.get("/api/say", auth, async (req, res) => {
   const inSession = () => sess && sess.userId === req.userId && sess.sayable?.has(text);
   if (!test && !PHRASES.has(text) && !own() && !inSession() && !samplePhrases().has(text)) return res.status(400).json({ error: "Noma'lum ibora" });
   const slow = req.query.slow === "1";
-  const key = (slow ? "slow:" : "") + lang + ":" + text;
+  const voice = req.query.voice === "m" ? "m" : "f";
+  const key = (slow ? "slow:" : "") + voice + ":" + lang + ":" + text;
   try {
     if (!sayCache.has(key)) {
-      const [part] = await speakParts([{ lang, text: text.replace(/\.\.\./g, "something") }], { slow });
+      const [part] = await speakParts([{ lang, text: text.replace(/\.\.\./g, "something") }], { slow, voice });
       if (!part?.audio) return res.status(503).json({ error: "Ovoz xizmati ishlamayapti" });
       sayCache.set(key, part);
       if (sayCache.size > 400) sayCache.delete(sayCache.keys().next().value);

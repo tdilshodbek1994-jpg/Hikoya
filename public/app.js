@@ -2645,7 +2645,7 @@ $("topicSheet").addEventListener("click", (e) => {
 // ⚙️ Sozlamalar: barcha shaxsiy sozlamalar bitta joyda
 function renderSettings() {
   const rows = [
-    ["🗣 Sado ovozi (jonli suhbat)", [["f", "👩 Ayol"], ["m", "👨 Erkak"]], () => state.voice, (v) => { state.voice = v; localStorage.setItem("sado-voice", v); }],
+    ["🗣 Sado ovozi", [["f", "👩 Ayol"], ["m", "👨 Erkak"]], () => state.voice, (v) => { state.voice = v; localStorage.setItem("sado-voice", v); sayCache.clear(); }],
     ["🐇 Gapirish tezligi", [["0", "🐇 Oddiy"], ["1", "🐢 Sekin"]], () => (state.slow ? "1" : "0"), (v) => { state.slow = v === "1"; localStorage.setItem("sado-slow", v); }],
     ["🇺🇿 O'zbekcha tarjimani aytish", [["1", "Ha"], ["0", "Yo'q"]], () => (state.tr ? "1" : "0"), (v) => { state.tr = v === "1"; localStorage.setItem("sado-tr", v); }],
     ["🙈 Ibora tarjimasini yashirish", [["0", "Yo'q"], ["1", "Ha (o'zimni sinayman)"]], () => (localStorage.getItem("sado-hideuz") === "1" ? "1" : "0"), (v) => { localStorage.setItem("sado-hideuz", v); applyHideUz(); }],
@@ -2681,7 +2681,7 @@ function renderSettings() {
   const box = $("setRows");
   box.innerHTML = "";
   // 💬 Faqat Erkin suhbat rejimida darslarga oid sozlamalar (yo'nalish, test, kunlik maqsad...) ko'rsatilmaydi
-  const keep = (t) => /tezligi|darajasi|eslatma|Eslatma|Ko'rinish|Matn/.test(t) || (state.liveEnabled && /ovozi/.test(t));
+  const keep = (t) => /ovozi|tezligi|darajasi|eslatma|Eslatma|Ko'rinish|Matn/.test(t);
   for (const [title, opts, get, set] of state.freeOnly ? rows.filter(([t]) => keep(t)) : rows) {
     const r = el("div", "set-row");
     const tt = el("div", "set-title", title);
@@ -2771,7 +2771,7 @@ async function sayPhrase(en) {
   const key = (state.slow ? "slow:" : "") + en;
   let part = sayCache.get(key);
   if (!part) {
-    part = await api(`api/say?text=${encodeURIComponent(en)}&slow=${state.slow ? 1 : 0}&session=${encodeURIComponent(state.session || "")}`, { method: "GET" }).catch(() => null);
+    part = await api(`api/say?text=${encodeURIComponent(en)}&slow=${state.slow ? 1 : 0}&voice=${state.voice}&session=${encodeURIComponent(state.session || "")}`, { method: "GET" }).catch(() => null);
     if (part?.audio) sayCache.set(key, part);
   }
   ensureCtx();
@@ -3005,7 +3005,7 @@ async function startLesson(lesson, lessonMode = "tutor") {
 
   try {
     const data = await api("api/session?fast=1", {
-      json: { lessonId: lesson.id, translate: state.tr, mode: state.lessonMode, slow: state.slow, context: state.contextLines || undefined, level: localStorage.getItem("sado-level") || "" },
+      json: { lessonId: lesson.id, translate: state.tr, mode: state.lessonMode, slow: state.slow, voice: state.voice, context: state.contextLines || undefined, level: localStorage.getItem("sado-level") || "" },
     });
     state.contextLines = null; // davom ettirish konteksti faqat bir marta yuboriladi
     state.session = data.session;
@@ -3539,7 +3539,7 @@ $("soundTest").addEventListener("click", async () => {
     ensureCtx();
     for (const [lang, text] of samples) {
       const part = state.voiceEnabled
-        ? await api(`api/say?test=${lang}&slow=${state.slow ? 1 : 0}`, { method: "GET" }).catch(() => null)
+        ? await api(`api/say?test=${lang}&slow=${state.slow ? 1 : 0}&voice=${state.voice}`, { method: "GET" }).catch(() => null)
         : null;
       if (part?.audio) await playMp3(part.audio, part.mime);
       else await speakBrowser(text, lang);
