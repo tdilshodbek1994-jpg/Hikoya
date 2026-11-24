@@ -3513,15 +3513,17 @@ $("soundTest").addEventListener("click", async () => {
   const ask = $("soundAsk");
   ask.hidden = true;
   btn.textContent = "⏳ Sado gapirmoqda...";
-  const lesson = state.lessons.find((l) => !l.liveOnly && l.phrases?.some((p) => !p.en.includes("...")));
-  const text = lesson?.phrases.find((p) => !p.en.includes("..."))?.en || "Hello!";
+  // Haqiqiy Sado ovozi: avval o'zbekcha, keyin inglizcha qisqa namuna (darslar yashirin bo'lsa ham ishlaydi)
+  const samples = [["uz", "Salom! Men Sado. Ovozim yaxshi eshitilyaptimi?"], ["en", "Hello! I'm Sado. Nice to meet you."]];
   try {
     ensureCtx();
-    const part = state.voiceEnabled
-      ? await api(`api/say?text=${encodeURIComponent(text)}&slow=${state.slow ? 1 : 0}`, { method: "GET" }).catch(() => null)
-      : null;
-    if (part?.audio) await playMp3(part.audio, part.mime);
-    else await speakBrowser(text, "en");
+    for (const [lang, text] of samples) {
+      const part = state.voiceEnabled
+        ? await api(`api/say?test=${lang}&slow=${state.slow ? 1 : 0}`, { method: "GET" }).catch(() => null)
+        : null;
+      if (part?.audio) await playMp3(part.audio, part.mime);
+      else await speakBrowser(text, lang);
+    }
   } catch {}
   mascot.setLevel(0);
   btn.textContent = "🔊 Yana bir marta tekshirish";

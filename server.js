@@ -415,19 +415,23 @@ for (const l of LESSONS) {
   for (const q of pub.quiz || []) PHRASES.add(q.text.replace("___", q.answer === "—" ? "" : q.answer).replace(/\s+/g, " ").replace(/«[^»]*»\s*→\s*/, "").trim());
 }
 const sayCache = new Map();
+// 🔊 Sozlamalardagi «Ovozni tekshirish»: o'zbekcha (Azure) va inglizcha ovozning qisqa namunasi
+const SOUND_TEST = { uz: "Salom! Men Sado. Ovozim yaxshi eshitilyaptimi?", en: "Hello! I'm Sado. Nice to meet you." };
 app.get("/api/say", auth, async (req, res) => {
-  const text = String(req.query.text || "");
+  const test = SOUND_TEST[req.query.test];
+  const text = test || String(req.query.text || "");
+  const lang = req.query.test === "uz" ? "uz" : "en";
   // Faqat darslardagi iboralar yoki o'quvchining o'z lug'atidagi so'zlar (TTS xarajatini cheklash uchun)
   const own = () => text.length <= 120 && (summary(req.userId).words || []).some((w) => w.en === text);
   // Joriy darsda AI aytgan/taklif qilgan inglizcha gaplar (namunalar, ustoz misollari)
   const sess = sessions.get(String(req.query.session || ""));
   const inSession = () => sess && sess.userId === req.userId && sess.sayable?.has(text);
-  if (!PHRASES.has(text) && !own() && !inSession() && !samplePhrases().has(text)) return res.status(400).json({ error: "Noma'lum ibora" });
+  if (!test && !PHRASES.has(text) && !own() && !inSession() && !samplePhrases().has(text)) return res.status(400).json({ error: "Noma'lum ibora" });
   const slow = req.query.slow === "1";
-  const key = (slow ? "slow:" : "") + text;
+  const key = (slow ? "slow:" : "") + lang + ":" + text;
   try {
     if (!sayCache.has(key)) {
-      const [part] = await speakParts([{ lang: "en", text: text.replace(/\.\.\./g, "something") }], { slow });
+      const [part] = await speakParts([{ lang, text: text.replace(/\.\.\./g, "something") }], { slow });
       if (!part?.audio) return res.status(503).json({ error: "Ovoz xizmati ishlamayapti" });
       sayCache.set(key, part);
       if (sayCache.size > 400) sayCache.delete(sayCache.keys().next().value);
