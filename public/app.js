@@ -4018,11 +4018,16 @@ async function sendTurn(payload) {
   $("retryBtn").hidden = true;
   state.pendingTurn = null;
   setPhase("thinking");
+  // ⏳ Javob 7 soniyadan ko'p kechiksa — "qotib qoldi" deb o'ylamasligi uchun tinchlantiruvchi yozuv
+  const slowNote = setTimeout(() => {
+    if (state.phase === "thinking") $("statusText").textContent = "⏳ Biroz kuting — Sado javob tayyorlayapti...";
+  }, 7000);
   try {
     const data = await api(
       `api/turn?session=${encodeURIComponent(state.session)}&tr=${state.tr ? 1 : 0}&slow=${state.slow ? 1 : 0}&fast=1`,
       payload,
     );
+    clearTimeout(slowNote);
     if (state.phase === "ended") return;
     if (data.empty) {
       $("hint").textContent = "Eshitmadim, yana bir bor ayting.";
@@ -4044,6 +4049,7 @@ async function sendTurn(payload) {
     await playReply(data.parts, data.reply);
     afterReply();
   } catch (e) {
+    clearTimeout(slowNote);
     if (state.phase === "ended") return;
     // 🔁 AI xizmatining bir martalik xatosi (5xx): o'quvchini bezovta qilmay, bir marta o'zimiz qayta yuboramiz
     if (e.status >= 500 && !autoRetried.has(payload)) {
