@@ -4429,7 +4429,7 @@ async function finish() {
     if (data.empty) {
       $("report").hidden = true;
       $("resultTitle").textContent = "Hali hech narsa demadingiz 🙂";
-      $("resultSub").textContent = state.lesson?.liveOnly ? "Sado bilan kamida bir-ikki gap almashing — keyin qisqa hisobot chiqadi." : "Hisobot va ball uchun Sado bilan kamida bir-ikki gap almashing. Bu urinish kunlik limitdan hisoblanmadi.";
+      $("resultSub").textContent = state.lesson?.liveOnly ? "Sado bilan kamida bir-ikki gap almashing — keyin qisqa hisobot chiqadi. 💡 Sado eshitmagan bo'lsa: mikrofon ruxsatini tekshiring yoki «✏️ Yozish» rejimida yozib gaplashing." : "Hisobot va ball uchun Sado bilan kamida bir-ikki gap almashing. Bu urinish kunlik limitdan hisoblanmadi.";
       $("resultList").hidden = true;
       $("againBtn").textContent = "🎤 Qaytadan boshlash";
       if (state.progress) state.progress.startedToday = data.progress?.startedToday ?? Math.max(0, (state.progress.startedToday || 1) - 1);
