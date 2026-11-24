@@ -1393,3 +1393,8 @@ html[data-font="2"] .brand-tag { display: none; }
 /* 📜 Suhbat davomidagi tarix oynasi: matn chapdan */
 #histLog { text-align: left; max-height: 60vh; }
 body.dark .free-cont { color: #a5b4fc; }
+
+/* 📱 Tor ekran / katta matn: «Bosmasdan · Bosib · Yozish» qatori sig'sin (belgi ustida, yozuv ostida) */
+.mode { min-width: 0; text-align: center; }
+html[data-font="2"] .mode, html[data-font="1"] .mode { flex-direction: column; gap: 2px; font-size: 12px; padding: 8px 4px; line-height: 1.15; }
+@media (max-width: 360px) { .mode { flex-direction: column; gap: 2px; padding: 8px 4px; line-height: 1.15; } }
