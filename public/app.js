@@ -3035,6 +3035,7 @@ async function startLesson(lesson, lessonMode = "tutor") {
     state.seconds = state.left = data.seconds;
     startTimer();
     state.chatLog = [];
+    state.idleNudged = false; // har yangi suhbatda bir marta
     $("histBtn").hidden = true;
     noteChat("sado", data.reply);
     setSubs(data.reply, data.reply_uz, "", "", data.say);
@@ -4040,6 +4041,7 @@ async function sendTurn(payload) {
   clearHints();
   $("retryBtn").hidden = true;
   state.pendingTurn = null;
+  clearTimeout(state.idleNudge);
   setPhase("thinking");
   // ⏳ Javob 7 soniyadan ko'p kechiksa — "qotib qoldi" deb o'ylamasligi uchun tinchlantiruvchi yozuv
   const slowNote = setTimeout(() => {
@@ -4228,6 +4230,15 @@ async function afterReply() {
     applyMode();
   }
   if (!state.textOnly && state.mode === "auto") listenAuto();
+  // 🤫 Erkin suhbatda 25 soniya jim qolsa — bir marta yumshoq maslahat (Sado o'zi gapirmaydi, mavzu tanlamaydi)
+  clearTimeout(state.idleNudge);
+  if (state.lesson?.liveOnly && !state.idleNudged)
+    state.idleNudge = setTimeout(() => {
+      if (state.phase === "listening" || state.phase === "idle") {
+        state.idleNudged = true;
+        toast("🎙️ Istalgan mavzuda gapiring — yoki «💡 Nima deyishni bilmayapman»ni bosing", 4500);
+      }
+    }, 25000);
   else setPhase("idle");
 }
 
@@ -4385,6 +4396,7 @@ function speakBrowser(text, lang = "en") {
 // ---------------- Tugatish ----------------
 function stopAll() {
   keepAwake(false);
+  clearTimeout(state.idleNudge);
   $("histBtn").hidden = true;
   $("histSheet").hidden = true;
   clearInterval(state.timer);
